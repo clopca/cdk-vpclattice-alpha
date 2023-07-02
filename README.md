@@ -1,3 +1,3 @@
 # aws-vpclattice-prealpha
 
-Update.
+Update 0.4.2
