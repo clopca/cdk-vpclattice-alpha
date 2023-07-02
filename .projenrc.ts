@@ -14,5 +14,6 @@ const project = new awscdk.AwsCdkConstructLibrary({
     module: 'vpc_lattice',
   },
   stability: 'experimental',
+  docgen: true,
 });
 project.synth();
