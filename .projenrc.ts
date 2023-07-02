@@ -3,6 +3,7 @@ const project = new awscdk.AwsCdkConstructLibrary({
   author: 'Andrew Frazer',
   authorAddress: 'andrew.frazer@raindancers.cloud',
   cdkVersion: '2.80.0',
+  keywords: ['aws-cdk', 'cdk', 'vpclattice'],
   defaultReleaseBranch: 'main',
   jsiiVersion: '~5.0.0',
   name: 'aws-vpclattice-prealpha',

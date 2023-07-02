@@ -1,4 +1,4 @@
 
 test('hello', () => {
-  console.log('hellohello2');
+  console.log('hello');
 });
