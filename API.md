@@ -320,14 +320,14 @@ account for data recovery and cleanup later (`RemovalPolicy.RETAIN`).
 ##### `addListenerRule` <a name="addListenerRule" id="aws-vpclattice-prealpha.Listener.addListenerRule"></a>
 
 ```typescript
-public addListenerRule(props: AddRuleProps): void
+public addListenerRule(props: RuleProp): void
 ```
 
 add a rule to the listener.
 
 ###### `props`<sup>Required</sup> <a name="props" id="aws-vpclattice-prealpha.Listener.addListenerRule.parameter.props"></a>
 
-- *Type:* <a href="#aws-vpclattice-prealpha.AddRuleProps">AddRuleProps</a>
+- *Type:* <a href="#aws-vpclattice-prealpha.RuleProp">RuleProp</a>
 
 AddRuleProps.
 
@@ -654,7 +654,7 @@ Share the service to other accounts via RAM.
 | <code><a href="#aws-vpclattice-prealpha.Service.isConstruct">isConstruct</a></code> | Checks if `x` is a construct. |
 | <code><a href="#aws-vpclattice-prealpha.Service.isOwnedResource">isOwnedResource</a></code> | Returns true if the construct was created by CDK, and false otherwise. |
 | <code><a href="#aws-vpclattice-prealpha.Service.isResource">isResource</a></code> | Check whether the given construct is a Resource. |
-| <code><a href="#aws-vpclattice-prealpha.Service.fromId">fromId</a></code> | import a service from Id. |
+| <code><a href="#aws-vpclattice-prealpha.Service.fromServiceId">fromServiceId</a></code> | import a service from Id. |
 
 ---
 
@@ -708,29 +708,29 @@ Check whether the given construct is a Resource.
 
 ---
 
-##### `fromId` <a name="fromId" id="aws-vpclattice-prealpha.Service.fromId"></a>
+##### `fromServiceId` <a name="fromServiceId" id="aws-vpclattice-prealpha.Service.fromServiceId"></a>
 
 ```typescript
 import { Service } from 'aws-vpclattice-prealpha'
 
-Service.fromId(scope: Construct, id: string, serviceId: string)
+Service.fromServiceId(scope: Construct, id: string, serviceId: string)
 ```
 
 import a service from Id.
 
-###### `scope`<sup>Required</sup> <a name="scope" id="aws-vpclattice-prealpha.Service.fromId.parameter.scope"></a>
+###### `scope`<sup>Required</sup> <a name="scope" id="aws-vpclattice-prealpha.Service.fromServiceId.parameter.scope"></a>
 
 - *Type:* constructs.Construct
 
 ---
 
-###### `id`<sup>Required</sup> <a name="id" id="aws-vpclattice-prealpha.Service.fromId.parameter.id"></a>
+###### `id`<sup>Required</sup> <a name="id" id="aws-vpclattice-prealpha.Service.fromServiceId.parameter.id"></a>
 
 - *Type:* string
 
 ---
 
-###### `serviceId`<sup>Required</sup> <a name="serviceId" id="aws-vpclattice-prealpha.Service.fromId.parameter.serviceId"></a>
+###### `serviceId`<sup>Required</sup> <a name="serviceId" id="aws-vpclattice-prealpha.Service.fromServiceId.parameter.serviceId"></a>
 
 - *Type:* string
 
@@ -751,7 +751,7 @@ import a service from Id.
 | <code><a href="#aws-vpclattice-prealpha.Service.property.authType">authType</a></code> | <code>string</code> | The authType of the service. |
 | <code><a href="#aws-vpclattice-prealpha.Service.property.certificate">certificate</a></code> | <code>aws-cdk-lib.aws_certificatemanager.Certificate</code> | A certificate that may be used by the service. |
 | <code><a href="#aws-vpclattice-prealpha.Service.property.customDomain">customDomain</a></code> | <code>string</code> | A custom Domain used by the service. |
-| <code><a href="#aws-vpclattice-prealpha.Service.property.dnsEntry">dnsEntry</a></code> | <code>aws-cdk-lib.aws_vpclattice.CfnService.DnsEntryProperty</code> | A DNS Entry for the service. |
+| <code><a href="#aws-vpclattice-prealpha.Service.property.hostedZone">hostedZone</a></code> | <code>aws-cdk-lib.aws_route53.IHostedZone</code> | A DNS Entry for the service. |
 | <code><a href="#aws-vpclattice-prealpha.Service.property.name">name</a></code> | <code>string</code> | A name for the service. |
 
 ---
@@ -895,13 +895,13 @@ A custom Domain used by the service.
 
 ---
 
-##### `dnsEntry`<sup>Optional</sup> <a name="dnsEntry" id="aws-vpclattice-prealpha.Service.property.dnsEntry"></a>
+##### `hostedZone`<sup>Optional</sup> <a name="hostedZone" id="aws-vpclattice-prealpha.Service.property.hostedZone"></a>
 
 ```typescript
-public readonly dnsEntry: DnsEntryProperty;
+public readonly hostedZone: IHostedZone;
 ```
 
-- *Type:* aws-cdk-lib.aws_vpclattice.CfnService.DnsEntryProperty
+- *Type:* aws-cdk-lib.aws_route53.IHostedZone
 
 A DNS Entry for the service.
 
@@ -1288,6 +1288,7 @@ ShareServiceNetwork.
 | <code><a href="#aws-vpclattice-prealpha.ServiceNetwork.isOwnedResource">isOwnedResource</a></code> | Returns true if the construct was created by CDK, and false otherwise. |
 | <code><a href="#aws-vpclattice-prealpha.ServiceNetwork.isResource">isResource</a></code> | Check whether the given construct is a Resource. |
 | <code><a href="#aws-vpclattice-prealpha.ServiceNetwork.fromId">fromId</a></code> | Import a Service Network by Id. |
+| <code><a href="#aws-vpclattice-prealpha.ServiceNetwork.fromName">fromName</a></code> | *No description.* |
 
 ---
 
@@ -1346,7 +1347,7 @@ Check whether the given construct is a Resource.
 ```typescript
 import { ServiceNetwork } from 'aws-vpclattice-prealpha'
 
-ServiceNetwork.fromId(scope: Construct, id: string, props: ImportedServiceNetworkProps)
+ServiceNetwork.fromId(scope: Construct, id: string, serviceNetworkId: string)
 ```
 
 Import a Service Network by Id.
@@ -1363,9 +1364,35 @@ Import a Service Network by Id.
 
 ---
 
-###### `props`<sup>Required</sup> <a name="props" id="aws-vpclattice-prealpha.ServiceNetwork.fromId.parameter.props"></a>
+###### `serviceNetworkId`<sup>Required</sup> <a name="serviceNetworkId" id="aws-vpclattice-prealpha.ServiceNetwork.fromId.parameter.serviceNetworkId"></a>
 
-- *Type:* <a href="#aws-vpclattice-prealpha.ImportedServiceNetworkProps">ImportedServiceNetworkProps</a>
+- *Type:* string
+
+---
+
+##### `fromName` <a name="fromName" id="aws-vpclattice-prealpha.ServiceNetwork.fromName"></a>
+
+```typescript
+import { ServiceNetwork } from 'aws-vpclattice-prealpha'
+
+ServiceNetwork.fromName(scope: Construct, id: string, serviceNetworkName: string)
+```
+
+###### `scope`<sup>Required</sup> <a name="scope" id="aws-vpclattice-prealpha.ServiceNetwork.fromName.parameter.scope"></a>
+
+- *Type:* constructs.Construct
+
+---
+
+###### `id`<sup>Required</sup> <a name="id" id="aws-vpclattice-prealpha.ServiceNetwork.fromName.parameter.id"></a>
+
+- *Type:* string
+
+---
+
+###### `serviceNetworkName`<sup>Required</sup> <a name="serviceNetworkName" id="aws-vpclattice-prealpha.ServiceNetwork.fromName.parameter.serviceNetworkName"></a>
+
+- *Type:* string
 
 ---
 
@@ -1503,7 +1530,7 @@ the authType of the service network.
 
 ### ServiceNetworkAssociation <a name="ServiceNetworkAssociation" id="aws-vpclattice-prealpha.ServiceNetworkAssociation"></a>
 
-Creates an Association Between a Lattice Service and a Service Network.
+Creates an Association Between a Lattice Service and a Service Network consider using .associateWithServiceNetwork.
 
 #### Initializers <a name="Initializers" id="aws-vpclattice-prealpha.ServiceNetworkAssociation.Initializer"></a>
 
@@ -1945,123 +1972,6 @@ The logging destination.
 
 ---
 
-### AddRuleProps <a name="AddRuleProps" id="aws-vpclattice-prealpha.AddRuleProps"></a>
-
-Properties to add rules to to a listener One of headerMatch, PathMatch, or methodMatch can be supplied, the Rule can not match multiple Types.
-
-#### Initializer <a name="Initializer" id="aws-vpclattice-prealpha.AddRuleProps.Initializer"></a>
-
-```typescript
-import { AddRuleProps } from 'aws-vpclattice-prealpha'
-
-const addRuleProps: AddRuleProps = { ... }
-```
-
-#### Properties <a name="Properties" id="Properties"></a>
-
-| **Name** | **Type** | **Description** |
-| --- | --- | --- |
-| <code><a href="#aws-vpclattice-prealpha.AddRuleProps.property.action">action</a></code> | <code><a href="#aws-vpclattice-prealpha.FixedResponse">FixedResponse</a> \| <a href="#aws-vpclattice-prealpha.WeightedTargetGroup">WeightedTargetGroup</a>[]</code> | the action for the rule, is either a fixed Reponse, or a being sent to  Weighted TargetGroup. |
-| <code><a href="#aws-vpclattice-prealpha.AddRuleProps.property.httpMatch">httpMatch</a></code> | <code><a href="#aws-vpclattice-prealpha.HTTPMatch">HTTPMatch</a></code> | the Matching criteria for the rule. |
-| <code><a href="#aws-vpclattice-prealpha.AddRuleProps.property.name">name</a></code> | <code>string</code> | A name for the the Rule. |
-| <code><a href="#aws-vpclattice-prealpha.AddRuleProps.property.accessMode">accessMode</a></code> | <code><a href="#aws-vpclattice-prealpha.RuleAccessMode">RuleAccessMode</a></code> | Set an access mode. |
-| <code><a href="#aws-vpclattice-prealpha.AddRuleProps.property.allowedPrincipalArn">allowedPrincipalArn</a></code> | <code>string[]</code> | List of principalArns that are allowed to access the resource. |
-| <code><a href="#aws-vpclattice-prealpha.AddRuleProps.property.allowedPrincipals">allowedPrincipals</a></code> | <code>aws-cdk-lib.aws_iam.IPrincipal[]</code> | List of principals that are allowed to access the resource. |
-| <code><a href="#aws-vpclattice-prealpha.AddRuleProps.property.priority">priority</a></code> | <code>number</code> | the priority of this rule, a lower priority will be processed first. |
-
----
-
-##### `action`<sup>Required</sup> <a name="action" id="aws-vpclattice-prealpha.AddRuleProps.property.action"></a>
-
-```typescript
-public readonly action: FixedResponse | WeightedTargetGroup[];
-```
-
-- *Type:* <a href="#aws-vpclattice-prealpha.FixedResponse">FixedResponse</a> | <a href="#aws-vpclattice-prealpha.WeightedTargetGroup">WeightedTargetGroup</a>[]
-
-the action for the rule, is either a fixed Reponse, or a being sent to  Weighted TargetGroup.
-
----
-
-##### `httpMatch`<sup>Required</sup> <a name="httpMatch" id="aws-vpclattice-prealpha.AddRuleProps.property.httpMatch"></a>
-
-```typescript
-public readonly httpMatch: HTTPMatch;
-```
-
-- *Type:* <a href="#aws-vpclattice-prealpha.HTTPMatch">HTTPMatch</a>
-
-the Matching criteria for the rule.
-
-This must contain at least one of
-header, method or patchMatches
-
----
-
-##### `name`<sup>Required</sup> <a name="name" id="aws-vpclattice-prealpha.AddRuleProps.property.name"></a>
-
-```typescript
-public readonly name: string;
-```
-
-- *Type:* string
-
-A name for the the Rule.
-
----
-
-##### `accessMode`<sup>Optional</sup> <a name="accessMode" id="aws-vpclattice-prealpha.AddRuleProps.property.accessMode"></a>
-
-```typescript
-public readonly accessMode: RuleAccessMode;
-```
-
-- *Type:* <a href="#aws-vpclattice-prealpha.RuleAccessMode">RuleAccessMode</a>
-- *Default:* false
-
-Set an access mode.
-
----
-
-##### `allowedPrincipalArn`<sup>Optional</sup> <a name="allowedPrincipalArn" id="aws-vpclattice-prealpha.AddRuleProps.property.allowedPrincipalArn"></a>
-
-```typescript
-public readonly allowedPrincipalArn: string[];
-```
-
-- *Type:* string[]
-- *Default:* none
-
-List of principalArns that are allowed to access the resource.
-
----
-
-##### `allowedPrincipals`<sup>Optional</sup> <a name="allowedPrincipals" id="aws-vpclattice-prealpha.AddRuleProps.property.allowedPrincipals"></a>
-
-```typescript
-public readonly allowedPrincipals: IPrincipal[];
-```
-
-- *Type:* aws-cdk-lib.aws_iam.IPrincipal[]
-- *Default:* none
-
-List of principals that are allowed to access the resource.
-
----
-
-##### `priority`<sup>Optional</sup> <a name="priority" id="aws-vpclattice-prealpha.AddRuleProps.property.priority"></a>
-
-```typescript
-public readonly priority: number;
-```
-
-- *Type:* number
-- *Default:* 50
-
-the priority of this rule, a lower priority will be processed first.
-
----
-
 ### AddServiceProps <a name="AddServiceProps" id="aws-vpclattice-prealpha.AddServiceProps"></a>
 
 Properties to add a Service to a Service Network.
@@ -2209,6 +2119,55 @@ public readonly securityGroups: SecurityGroup[];
 - *Default:* a security group that allows inbound 443 will be permitted.
 
 The security groups to associate with the Service Network.
+
+---
+
+### DefaultListenerAction <a name="DefaultListenerAction" id="aws-vpclattice-prealpha.DefaultListenerAction"></a>
+
+A default listener action.
+
+one of fixed response or forward needs to be provided.
+
+#### Initializer <a name="Initializer" id="aws-vpclattice-prealpha.DefaultListenerAction.Initializer"></a>
+
+```typescript
+import { DefaultListenerAction } from 'aws-vpclattice-prealpha'
+
+const defaultListenerAction: DefaultListenerAction = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#aws-vpclattice-prealpha.DefaultListenerAction.property.fixedResponse">fixedResponse</a></code> | <code><a href="#aws-vpclattice-prealpha.FixedResponse">FixedResponse</a></code> | Provide a fixed Response. |
+| <code><a href="#aws-vpclattice-prealpha.DefaultListenerAction.property.forward">forward</a></code> | <code><a href="#aws-vpclattice-prealpha.WeightedTargetGroup">WeightedTargetGroup</a></code> | Forward to a target group. |
+
+---
+
+##### `fixedResponse`<sup>Optional</sup> <a name="fixedResponse" id="aws-vpclattice-prealpha.DefaultListenerAction.property.fixedResponse"></a>
+
+```typescript
+public readonly fixedResponse: FixedResponse;
+```
+
+- *Type:* <a href="#aws-vpclattice-prealpha.FixedResponse">FixedResponse</a>
+- *Default:* none
+
+Provide a fixed Response.
+
+---
+
+##### `forward`<sup>Optional</sup> <a name="forward" id="aws-vpclattice-prealpha.DefaultListenerAction.property.forward"></a>
+
+```typescript
+public readonly forward: WeightedTargetGroup;
+```
+
+- *Type:* <a href="#aws-vpclattice-prealpha.WeightedTargetGroup">WeightedTargetGroup</a>
+- *Default:* none
+
+Forward to a target group.
 
 ---
 
@@ -2409,10 +2368,11 @@ const listenerProps: ListenerProps = { ... }
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
 | <code><a href="#aws-vpclattice-prealpha.ListenerProps.property.service">service</a></code> | <code><a href="#aws-vpclattice-prealpha.IService">IService</a></code> | The Id of the service that this listener is associated with. |
-| <code><a href="#aws-vpclattice-prealpha.ListenerProps.property.defaultAction">defaultAction</a></code> | <code>aws-cdk-lib.aws_vpclattice.CfnListener.DefaultActionProperty</code> | * A default action that will be taken if no rules match. |
+| <code><a href="#aws-vpclattice-prealpha.ListenerProps.property.defaultAction">defaultAction</a></code> | <code><a href="#aws-vpclattice-prealpha.DefaultListenerAction">DefaultListenerAction</a></code> | * A default action that will be taken if no rules match. |
 | <code><a href="#aws-vpclattice-prealpha.ListenerProps.property.name">name</a></code> | <code>string</code> | The Name of the service. |
 | <code><a href="#aws-vpclattice-prealpha.ListenerProps.property.port">port</a></code> | <code>number</code> | Optional port number for the listener. |
 | <code><a href="#aws-vpclattice-prealpha.ListenerProps.property.protocol">protocol</a></code> | <code><a href="#aws-vpclattice-prealpha.Protocol">Protocol</a></code> | protocol that the listener will listen on. |
+| <code><a href="#aws-vpclattice-prealpha.ListenerProps.property.rules">rules</a></code> | <code><a href="#aws-vpclattice-prealpha.RuleProp">RuleProp</a>[]</code> | rules for the listener. |
 
 ---
 
@@ -2431,10 +2391,10 @@ The Id of the service that this listener is associated with.
 ##### `defaultAction`<sup>Optional</sup> <a name="defaultAction" id="aws-vpclattice-prealpha.ListenerProps.property.defaultAction"></a>
 
 ```typescript
-public readonly defaultAction: DefaultActionProperty;
+public readonly defaultAction: DefaultListenerAction;
 ```
 
-- *Type:* aws-cdk-lib.aws_vpclattice.CfnListener.DefaultActionProperty
+- *Type:* <a href="#aws-vpclattice-prealpha.DefaultListenerAction">DefaultListenerAction</a>
 - *Default:* 404 NOT Found
 
 * A default action that will be taken if no rules match.
@@ -2479,6 +2439,18 @@ public readonly protocol: Protocol;
 - *Default:* HTTPS
 
 protocol that the listener will listen on.
+
+---
+
+##### `rules`<sup>Optional</sup> <a name="rules" id="aws-vpclattice-prealpha.ListenerProps.property.rules"></a>
+
+```typescript
+public readonly rules: RuleProp[];
+```
+
+- *Type:* <a href="#aws-vpclattice-prealpha.RuleProp">RuleProp</a>[]
+
+rules for the listener.
 
 ---
 
@@ -2539,6 +2511,123 @@ public readonly pathMatchType: PathMatchType;
 - *Default:* PathMatchType.EXACT
 
 Type of match to make.
+
+---
+
+### RuleProp <a name="RuleProp" id="aws-vpclattice-prealpha.RuleProp"></a>
+
+Properties to add rules to to a listener One of headerMatch, PathMatch, or methodMatch can be supplied, the Rule can not match multiple Types.
+
+#### Initializer <a name="Initializer" id="aws-vpclattice-prealpha.RuleProp.Initializer"></a>
+
+```typescript
+import { RuleProp } from 'aws-vpclattice-prealpha'
+
+const ruleProp: RuleProp = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#aws-vpclattice-prealpha.RuleProp.property.action">action</a></code> | <code><a href="#aws-vpclattice-prealpha.FixedResponse">FixedResponse</a> \| <a href="#aws-vpclattice-prealpha.WeightedTargetGroup">WeightedTargetGroup</a>[]</code> | the action for the rule, is either a fixed Reponse, or a being sent to  Weighted TargetGroup. |
+| <code><a href="#aws-vpclattice-prealpha.RuleProp.property.httpMatch">httpMatch</a></code> | <code><a href="#aws-vpclattice-prealpha.HTTPMatch">HTTPMatch</a></code> | the Matching criteria for the rule. |
+| <code><a href="#aws-vpclattice-prealpha.RuleProp.property.name">name</a></code> | <code>string</code> | A name for the the Rule. |
+| <code><a href="#aws-vpclattice-prealpha.RuleProp.property.accessMode">accessMode</a></code> | <code><a href="#aws-vpclattice-prealpha.RuleAccessMode">RuleAccessMode</a></code> | Set an access mode. |
+| <code><a href="#aws-vpclattice-prealpha.RuleProp.property.allowedPrincipalArn">allowedPrincipalArn</a></code> | <code>string[]</code> | List of principalArns that are allowed to access the resource. |
+| <code><a href="#aws-vpclattice-prealpha.RuleProp.property.allowedPrincipals">allowedPrincipals</a></code> | <code>aws-cdk-lib.aws_iam.IPrincipal[]</code> | List of principals that are allowed to access the resource. |
+| <code><a href="#aws-vpclattice-prealpha.RuleProp.property.priority">priority</a></code> | <code>number</code> | the priority of this rule, a lower priority will be processed first. |
+
+---
+
+##### `action`<sup>Required</sup> <a name="action" id="aws-vpclattice-prealpha.RuleProp.property.action"></a>
+
+```typescript
+public readonly action: FixedResponse | WeightedTargetGroup[];
+```
+
+- *Type:* <a href="#aws-vpclattice-prealpha.FixedResponse">FixedResponse</a> | <a href="#aws-vpclattice-prealpha.WeightedTargetGroup">WeightedTargetGroup</a>[]
+
+the action for the rule, is either a fixed Reponse, or a being sent to  Weighted TargetGroup.
+
+---
+
+##### `httpMatch`<sup>Required</sup> <a name="httpMatch" id="aws-vpclattice-prealpha.RuleProp.property.httpMatch"></a>
+
+```typescript
+public readonly httpMatch: HTTPMatch;
+```
+
+- *Type:* <a href="#aws-vpclattice-prealpha.HTTPMatch">HTTPMatch</a>
+
+the Matching criteria for the rule.
+
+This must contain at least one of
+header, method or patchMatches
+
+---
+
+##### `name`<sup>Required</sup> <a name="name" id="aws-vpclattice-prealpha.RuleProp.property.name"></a>
+
+```typescript
+public readonly name: string;
+```
+
+- *Type:* string
+
+A name for the the Rule.
+
+---
+
+##### `accessMode`<sup>Optional</sup> <a name="accessMode" id="aws-vpclattice-prealpha.RuleProp.property.accessMode"></a>
+
+```typescript
+public readonly accessMode: RuleAccessMode;
+```
+
+- *Type:* <a href="#aws-vpclattice-prealpha.RuleAccessMode">RuleAccessMode</a>
+- *Default:* false
+
+Set an access mode.
+
+---
+
+##### `allowedPrincipalArn`<sup>Optional</sup> <a name="allowedPrincipalArn" id="aws-vpclattice-prealpha.RuleProp.property.allowedPrincipalArn"></a>
+
+```typescript
+public readonly allowedPrincipalArn: string[];
+```
+
+- *Type:* string[]
+- *Default:* none
+
+List of principalArns that are allowed to access the resource.
+
+---
+
+##### `allowedPrincipals`<sup>Optional</sup> <a name="allowedPrincipals" id="aws-vpclattice-prealpha.RuleProp.property.allowedPrincipals"></a>
+
+```typescript
+public readonly allowedPrincipals: IPrincipal[];
+```
+
+- *Type:* aws-cdk-lib.aws_iam.IPrincipal[]
+- *Default:* none
+
+List of principals that are allowed to access the resource.
+
+---
+
+##### `priority`<sup>Optional</sup> <a name="priority" id="aws-vpclattice-prealpha.RuleProp.property.priority"></a>
+
+```typescript
+public readonly priority: number;
+```
+
+- *Type:* number
+- *Default:* 50
+
+the priority of this rule, a lower priority will be processed first.
 
 ---
 
@@ -2649,6 +2738,7 @@ const serviceNetworkProps: ServiceNetworkProps = { ... }
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
 | <code><a href="#aws-vpclattice-prealpha.ServiceNetworkProps.property.accessmode">accessmode</a></code> | <code><a href="#aws-vpclattice-prealpha.ServiceNetworkAccessMode">ServiceNetworkAccessMode</a></code> | Allow external principals. |
+| <code><a href="#aws-vpclattice-prealpha.ServiceNetworkProps.property.authStatements">authStatements</a></code> | <code>aws-cdk-lib.aws_iam.PolicyStatement[]</code> | Additional AuthStatments:. |
 | <code><a href="#aws-vpclattice-prealpha.ServiceNetworkProps.property.authType">authType</a></code> | <code><a href="#aws-vpclattice-prealpha.AuthType">AuthType</a></code> | The type of  authentication to use with the Service Network. |
 | <code><a href="#aws-vpclattice-prealpha.ServiceNetworkProps.property.loggingDestinations">loggingDestinations</a></code> | <code><a href="#aws-vpclattice-prealpha.LoggingDestination">LoggingDestination</a>[]</code> | Logging destinations. |
 | <code><a href="#aws-vpclattice-prealpha.ServiceNetworkProps.property.name">name</a></code> | <code>string</code> | The name of the Service Network. |
@@ -2667,6 +2757,18 @@ public readonly accessmode: ServiceNetworkAccessMode;
 - *Default:* false
 
 Allow external principals.
+
+---
+
+##### `authStatements`<sup>Optional</sup> <a name="authStatements" id="aws-vpclattice-prealpha.ServiceNetworkProps.property.authStatements"></a>
+
+```typescript
+public readonly authStatements: PolicyStatement[];
+```
+
+- *Type:* aws-cdk-lib.aws_iam.PolicyStatement[]
+
+Additional AuthStatments:.
 
 ---
 
@@ -2757,7 +2859,7 @@ const serviceProps: ServiceProps = { ... }
 | <code><a href="#aws-vpclattice-prealpha.ServiceProps.property.authType">authType</a></code> | <code>string</code> | The authType of the Service. |
 | <code><a href="#aws-vpclattice-prealpha.ServiceProps.property.certificate">certificate</a></code> | <code>aws-cdk-lib.aws_certificatemanager.Certificate</code> | A certificate that may be used by the service. |
 | <code><a href="#aws-vpclattice-prealpha.ServiceProps.property.customDomain">customDomain</a></code> | <code>string</code> | A customDomain used by the service. |
-| <code><a href="#aws-vpclattice-prealpha.ServiceProps.property.dnsEntry">dnsEntry</a></code> | <code>aws-cdk-lib.aws_vpclattice.CfnService.DnsEntryProperty</code> | A custom hosname. |
+| <code><a href="#aws-vpclattice-prealpha.ServiceProps.property.hostedZone">hostedZone</a></code> | <code>aws-cdk-lib.aws_route53.IHostedZone</code> | A custom hosname. |
 | <code><a href="#aws-vpclattice-prealpha.ServiceProps.property.listeners">listeners</a></code> | <code><a href="#aws-vpclattice-prealpha.IListener">IListener</a>[]</code> | Listeners that will be attached to the service. |
 | <code><a href="#aws-vpclattice-prealpha.ServiceProps.property.name">name</a></code> | <code>string</code> | Name for the service. |
 | <code><a href="#aws-vpclattice-prealpha.ServiceProps.property.serviceNetwork">serviceNetwork</a></code> | <code><a href="#aws-vpclattice-prealpha.IServiceNetwork">IServiceNetwork</a></code> | ServiceNetwork to associate with. |
@@ -2804,13 +2906,13 @@ A customDomain used by the service.
 
 ---
 
-##### `dnsEntry`<sup>Optional</sup> <a name="dnsEntry" id="aws-vpclattice-prealpha.ServiceProps.property.dnsEntry"></a>
+##### `hostedZone`<sup>Optional</sup> <a name="hostedZone" id="aws-vpclattice-prealpha.ServiceProps.property.hostedZone"></a>
 
 ```typescript
-public readonly dnsEntry: DnsEntryProperty;
+public readonly hostedZone: IHostedZone;
 ```
 
-- *Type:* aws-cdk-lib.aws_vpclattice.CfnService.DnsEntryProperty
+- *Type:* aws-cdk-lib.aws_route53.IHostedZone
 - *Default:* no hostname is used
 
 A custom hosname.
@@ -3047,267 +3149,6 @@ Allow External Principals.
 
 ---
 
-### TargetConfig <a name="TargetConfig" id="aws-vpclattice-prealpha.TargetConfig"></a>
-
-TargetConfiguration.
-
-#### Initializer <a name="Initializer" id="aws-vpclattice-prealpha.TargetConfig.Initializer"></a>
-
-```typescript
-import { TargetConfig } from 'aws-vpclattice-prealpha'
-
-const targetConfig: TargetConfig = { ... }
-```
-
-#### Properties <a name="Properties" id="Properties"></a>
-
-| **Name** | **Type** | **Description** |
-| --- | --- | --- |
-| <code><a href="#aws-vpclattice-prealpha.TargetConfig.property.vpc">vpc</a></code> | <code>aws-cdk-lib.aws_ec2.IVpc</code> | VPC where the target(s) are located. |
-| <code><a href="#aws-vpclattice-prealpha.TargetConfig.property.healthcheck">healthcheck</a></code> | <code><a href="#aws-vpclattice-prealpha.HealthCheck">HealthCheck</a></code> | HealthCheckParameters - Can supply for IpAddress and ALB targets only. |
-| <code><a href="#aws-vpclattice-prealpha.TargetConfig.property.ipAddressType">ipAddressType</a></code> | <code><a href="#aws-vpclattice-prealpha.IpAddressType">IpAddressType</a></code> | IpAddressType. |
-| <code><a href="#aws-vpclattice-prealpha.TargetConfig.property.port">port</a></code> | <code>number</code> | Port. |
-| <code><a href="#aws-vpclattice-prealpha.TargetConfig.property.protocol">protocol</a></code> | <code><a href="#aws-vpclattice-prealpha.Protocol">Protocol</a></code> | Protocol. |
-| <code><a href="#aws-vpclattice-prealpha.TargetConfig.property.protocolVersion">protocolVersion</a></code> | <code><a href="#aws-vpclattice-prealpha.ProtocolVersion">ProtocolVersion</a></code> | ProtocolVersion. |
-
----
-
-##### `vpc`<sup>Required</sup> <a name="vpc" id="aws-vpclattice-prealpha.TargetConfig.property.vpc"></a>
-
-```typescript
-public readonly vpc: IVpc;
-```
-
-- *Type:* aws-cdk-lib.aws_ec2.IVpc
-
-VPC where the target(s) are located.
-
----
-
-##### `healthcheck`<sup>Optional</sup> <a name="healthcheck" id="aws-vpclattice-prealpha.TargetConfig.property.healthcheck"></a>
-
-```typescript
-public readonly healthcheck: HealthCheck;
-```
-
-- *Type:* <a href="#aws-vpclattice-prealpha.HealthCheck">HealthCheck</a>
-- *Default:* No HealthCheck
-
-HealthCheckParameters - Can supply for IpAddress and ALB targets only.
-
----
-
-##### `ipAddressType`<sup>Optional</sup> <a name="ipAddressType" id="aws-vpclattice-prealpha.TargetConfig.property.ipAddressType"></a>
-
-```typescript
-public readonly ipAddressType: IpAddressType;
-```
-
-- *Type:* <a href="#aws-vpclattice-prealpha.IpAddressType">IpAddressType</a>
-- *Default:* IPv4
-
-IpAddressType.
-
----
-
-##### `port`<sup>Optional</sup> <a name="port" id="aws-vpclattice-prealpha.TargetConfig.property.port"></a>
-
-```typescript
-public readonly port: number;
-```
-
-- *Type:* number
-- *Default:* Defaults to port 80 for HTTP, or 443 for HTTPS and GRPC
-
-Port.
-
----
-
-##### `protocol`<sup>Optional</sup> <a name="protocol" id="aws-vpclattice-prealpha.TargetConfig.property.protocol"></a>
-
-```typescript
-public readonly protocol: Protocol;
-```
-
-- *Type:* <a href="#aws-vpclattice-prealpha.Protocol">Protocol</a>
-- *Default:* HTTPS
-
-Protocol.
-
----
-
-##### `protocolVersion`<sup>Optional</sup> <a name="protocolVersion" id="aws-vpclattice-prealpha.TargetConfig.property.protocolVersion"></a>
-
-```typescript
-public readonly protocolVersion: ProtocolVersion;
-```
-
-- *Type:* <a href="#aws-vpclattice-prealpha.ProtocolVersion">ProtocolVersion</a>
-- *Default:* HTTP1
-
-ProtocolVersion.
-
----
-
-### TargetGroupHealthCheckProps <a name="TargetGroupHealthCheckProps" id="aws-vpclattice-prealpha.TargetGroupHealthCheckProps"></a>
-
-A Configuration of the TargetGroup Health Check.
-
-#### Initializer <a name="Initializer" id="aws-vpclattice-prealpha.TargetGroupHealthCheckProps.Initializer"></a>
-
-```typescript
-import { TargetGroupHealthCheckProps } from 'aws-vpclattice-prealpha'
-
-const targetGroupHealthCheckProps: TargetGroupHealthCheckProps = { ... }
-```
-
-#### Properties <a name="Properties" id="Properties"></a>
-
-| **Name** | **Type** | **Description** |
-| --- | --- | --- |
-| <code><a href="#aws-vpclattice-prealpha.TargetGroupHealthCheckProps.property.enabled">enabled</a></code> | <code>boolean</code> | Enable this Health Check. |
-| <code><a href="#aws-vpclattice-prealpha.TargetGroupHealthCheckProps.property.healthCheckInterval">healthCheckInterval</a></code> | <code>aws-cdk-lib.Duration</code> | Health Check Interval. |
-| <code><a href="#aws-vpclattice-prealpha.TargetGroupHealthCheckProps.property.healthCheckTimeout">healthCheckTimeout</a></code> | <code>aws-cdk-lib.Duration</code> | TimeOut Period. |
-| <code><a href="#aws-vpclattice-prealpha.TargetGroupHealthCheckProps.property.healthyThresholdCount">healthyThresholdCount</a></code> | <code>number</code> | Number of Healthy Responses before Target is considered healthy. |
-| <code><a href="#aws-vpclattice-prealpha.TargetGroupHealthCheckProps.property.matcher">matcher</a></code> | <code><a href="#aws-vpclattice-prealpha.FixedResponse">FixedResponse</a></code> | Check based on Response from target. |
-| <code><a href="#aws-vpclattice-prealpha.TargetGroupHealthCheckProps.property.path">path</a></code> | <code>string</code> | Path to use for Health Check. |
-| <code><a href="#aws-vpclattice-prealpha.TargetGroupHealthCheckProps.property.port">port</a></code> | <code>number</code> | Port to use for Health Check. |
-| <code><a href="#aws-vpclattice-prealpha.TargetGroupHealthCheckProps.property.protocol">protocol</a></code> | <code><a href="#aws-vpclattice-prealpha.Protocol">Protocol</a></code> | Protocol to use for Health Check. |
-| <code><a href="#aws-vpclattice-prealpha.TargetGroupHealthCheckProps.property.protocolVersion">protocolVersion</a></code> | <code><a href="#aws-vpclattice-prealpha.ProtocolVersion">ProtocolVersion</a></code> | Protocol to use for Health Check. |
-| <code><a href="#aws-vpclattice-prealpha.TargetGroupHealthCheckProps.property.unhealthyThresholdCount">unhealthyThresholdCount</a></code> | <code>number</code> | Number of unhealty events before Target is considered unhealthy. |
-
----
-
-##### `enabled`<sup>Optional</sup> <a name="enabled" id="aws-vpclattice-prealpha.TargetGroupHealthCheckProps.property.enabled"></a>
-
-```typescript
-public readonly enabled: boolean;
-```
-
-- *Type:* boolean
-- *Default:* true
-
-Enable this Health Check.
-
----
-
-##### `healthCheckInterval`<sup>Optional</sup> <a name="healthCheckInterval" id="aws-vpclattice-prealpha.TargetGroupHealthCheckProps.property.healthCheckInterval"></a>
-
-```typescript
-public readonly healthCheckInterval: Duration;
-```
-
-- *Type:* aws-cdk-lib.Duration
-- *Default:* 30 seconds
-
-Health Check Interval.
-
----
-
-##### `healthCheckTimeout`<sup>Optional</sup> <a name="healthCheckTimeout" id="aws-vpclattice-prealpha.TargetGroupHealthCheckProps.property.healthCheckTimeout"></a>
-
-```typescript
-public readonly healthCheckTimeout: Duration;
-```
-
-- *Type:* aws-cdk-lib.Duration
-- *Default:* 5 seconds
-
-TimeOut Period.
-
----
-
-##### `healthyThresholdCount`<sup>Optional</sup> <a name="healthyThresholdCount" id="aws-vpclattice-prealpha.TargetGroupHealthCheckProps.property.healthyThresholdCount"></a>
-
-```typescript
-public readonly healthyThresholdCount: number;
-```
-
-- *Type:* number
-- *Default:* 2
-
-Number of Healthy Responses before Target is considered healthy.
-
----
-
-##### `matcher`<sup>Optional</sup> <a name="matcher" id="aws-vpclattice-prealpha.TargetGroupHealthCheckProps.property.matcher"></a>
-
-```typescript
-public readonly matcher: FixedResponse;
-```
-
-- *Type:* <a href="#aws-vpclattice-prealpha.FixedResponse">FixedResponse</a>
-- *Default:* 200 OK
-
-Check based on Response from target.
-
----
-
-##### `path`<sup>Optional</sup> <a name="path" id="aws-vpclattice-prealpha.TargetGroupHealthCheckProps.property.path"></a>
-
-```typescript
-public readonly path: string;
-```
-
-- *Type:* string
-- *Default:* '/'
-
-Path to use for Health Check.
-
----
-
-##### `port`<sup>Optional</sup> <a name="port" id="aws-vpclattice-prealpha.TargetGroupHealthCheckProps.property.port"></a>
-
-```typescript
-public readonly port: number;
-```
-
-- *Type:* number
-- *Default:* 443
-
-Port to use for Health Check.
-
----
-
-##### `protocol`<sup>Optional</sup> <a name="protocol" id="aws-vpclattice-prealpha.TargetGroupHealthCheckProps.property.protocol"></a>
-
-```typescript
-public readonly protocol: Protocol;
-```
-
-- *Type:* <a href="#aws-vpclattice-prealpha.Protocol">Protocol</a>
-- *Default:* HTTPS
-
-Protocol to use for Health Check.
-
----
-
-##### `protocolVersion`<sup>Optional</sup> <a name="protocolVersion" id="aws-vpclattice-prealpha.TargetGroupHealthCheckProps.property.protocolVersion"></a>
-
-```typescript
-public readonly protocolVersion: ProtocolVersion;
-```
-
-- *Type:* <a href="#aws-vpclattice-prealpha.ProtocolVersion">ProtocolVersion</a>
-- *Default:* HTTP2
-
-Protocol to use for Health Check.
-
----
-
-##### `unhealthyThresholdCount`<sup>Optional</sup> <a name="unhealthyThresholdCount" id="aws-vpclattice-prealpha.TargetGroupHealthCheckProps.property.unhealthyThresholdCount"></a>
-
-```typescript
-public readonly unhealthyThresholdCount: number;
-```
-
-- *Type:* number
-- *Default:* 1
-
-Number of unhealty events before Target is considered unhealthy.
-
----
-
 ### TargetGroupProps <a name="TargetGroupProps" id="aws-vpclattice-prealpha.TargetGroupProps"></a>
 
 Properties for a Target Group, Only supply one of instancetargets, lambdaTargets, albTargets, ipTargets.
@@ -3325,7 +3166,7 @@ const targetGroupProps: TargetGroupProps = { ... }
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
 | <code><a href="#aws-vpclattice-prealpha.TargetGroupProps.property.name">name</a></code> | <code>string</code> | The name of the target group. |
-| <code><a href="#aws-vpclattice-prealpha.TargetGroupProps.property.target">target</a></code> | <code><a href="#aws-vpclattice-prealpha.Target">Target</a></code> | Targets. |
+| <code><a href="#aws-vpclattice-prealpha.TargetGroupProps.property.target">target</a></code> | <code><a href="#aws-vpclattice-prealpha.ITarget">ITarget</a></code> | Targets. |
 
 ---
 
@@ -3344,22 +3185,16 @@ The name of the target group.
 ##### `target`<sup>Required</sup> <a name="target" id="aws-vpclattice-prealpha.TargetGroupProps.property.target"></a>
 
 ```typescript
-public readonly target: Target;
+public readonly target: ITarget;
 ```
 
-- *Type:* <a href="#aws-vpclattice-prealpha.Target">Target</a>
+- *Type:* <a href="#aws-vpclattice-prealpha.ITarget">ITarget</a>
 
 Targets.
 
 ---
 
 ### WeightedTargetGroup <a name="WeightedTargetGroup" id="aws-vpclattice-prealpha.WeightedTargetGroup"></a>
-
-A weighted target group adds a weighting to a target group.
-
-when more than one WeightedTargetGroup is provided as the action
-for a listener, the weights are used to determine the relative proportion
-of traffic that is sent to the target
 
 #### Initializer <a name="Initializer" id="aws-vpclattice-prealpha.WeightedTargetGroup.Initializer"></a>
 
@@ -3404,186 +3239,6 @@ A weight for the target group.
 ---
 
 ## Classes <a name="Classes" id="Classes"></a>
-
-### HealthCheck <a name="HealthCheck" id="aws-vpclattice-prealpha.HealthCheck"></a>
-
-Create a Health Check for a target.
-
-#### Initializers <a name="Initializers" id="aws-vpclattice-prealpha.HealthCheck.Initializer"></a>
-
-```typescript
-import { HealthCheck } from 'aws-vpclattice-prealpha'
-
-new HealthCheck()
-```
-
-| **Name** | **Type** | **Description** |
-| --- | --- | --- |
-
----
-
-
-#### Static Functions <a name="Static Functions" id="Static Functions"></a>
-
-| **Name** | **Description** |
-| --- | --- |
-| <code><a href="#aws-vpclattice-prealpha.HealthCheck.check">check</a></code> | A Health Check configuration object for a target. |
-
----
-
-##### `check` <a name="check" id="aws-vpclattice-prealpha.HealthCheck.check"></a>
-
-```typescript
-import { HealthCheck } from 'aws-vpclattice-prealpha'
-
-HealthCheck.check(props: TargetGroupHealthCheckProps)
-```
-
-A Health Check configuration object for a target.
-
-###### `props`<sup>Required</sup> <a name="props" id="aws-vpclattice-prealpha.HealthCheck.check.parameter.props"></a>
-
-- *Type:* <a href="#aws-vpclattice-prealpha.TargetGroupHealthCheckProps">TargetGroupHealthCheckProps</a>
-
----
-
-#### Properties <a name="Properties" id="Properties"></a>
-
-| **Name** | **Type** | **Description** |
-| --- | --- | --- |
-| <code><a href="#aws-vpclattice-prealpha.HealthCheck.property.enabled">enabled</a></code> | <code>boolean</code> | health check is enabled. |
-| <code><a href="#aws-vpclattice-prealpha.HealthCheck.property.healthCheckInterval">healthCheckInterval</a></code> | <code>aws-cdk-lib.Duration</code> | healthCheck Interval. |
-| <code><a href="#aws-vpclattice-prealpha.HealthCheck.property.healthCheckTimeout">healthCheckTimeout</a></code> | <code>aws-cdk-lib.Duration</code> | HealthCheck Timeout. |
-| <code><a href="#aws-vpclattice-prealpha.HealthCheck.property.healthyThresholdCount">healthyThresholdCount</a></code> | <code>number</code> | Healthy Threshold Count. |
-| <code><a href="#aws-vpclattice-prealpha.HealthCheck.property.path">path</a></code> | <code>string</code> | Path to check. |
-| <code><a href="#aws-vpclattice-prealpha.HealthCheck.property.port">port</a></code> | <code>number</code> | Port to check. |
-| <code><a href="#aws-vpclattice-prealpha.HealthCheck.property.protocol">protocol</a></code> | <code>string</code> | Protocol. |
-| <code><a href="#aws-vpclattice-prealpha.HealthCheck.property.protocolVersion">protocolVersion</a></code> | <code>string</code> | HTTP Protocol Version. |
-| <code><a href="#aws-vpclattice-prealpha.HealthCheck.property.unhealthyThresholdCount">unhealthyThresholdCount</a></code> | <code>number</code> | Unhealthy Threshold Count. |
-| <code><a href="#aws-vpclattice-prealpha.HealthCheck.property.matcher">matcher</a></code> | <code>aws-cdk-lib.aws_vpclattice.CfnTargetGroup.MatcherProperty</code> | Target Match reponse. |
-
----
-
-##### `enabled`<sup>Required</sup> <a name="enabled" id="aws-vpclattice-prealpha.HealthCheck.property.enabled"></a>
-
-```typescript
-public readonly enabled: boolean;
-```
-
-- *Type:* boolean
-
-health check is enabled.
-
----
-
-##### `healthCheckInterval`<sup>Required</sup> <a name="healthCheckInterval" id="aws-vpclattice-prealpha.HealthCheck.property.healthCheckInterval"></a>
-
-```typescript
-public readonly healthCheckInterval: Duration;
-```
-
-- *Type:* aws-cdk-lib.Duration
-
-healthCheck Interval.
-
----
-
-##### `healthCheckTimeout`<sup>Required</sup> <a name="healthCheckTimeout" id="aws-vpclattice-prealpha.HealthCheck.property.healthCheckTimeout"></a>
-
-```typescript
-public readonly healthCheckTimeout: Duration;
-```
-
-- *Type:* aws-cdk-lib.Duration
-
-HealthCheck Timeout.
-
----
-
-##### `healthyThresholdCount`<sup>Required</sup> <a name="healthyThresholdCount" id="aws-vpclattice-prealpha.HealthCheck.property.healthyThresholdCount"></a>
-
-```typescript
-public readonly healthyThresholdCount: number;
-```
-
-- *Type:* number
-
-Healthy Threshold Count.
-
----
-
-##### `path`<sup>Required</sup> <a name="path" id="aws-vpclattice-prealpha.HealthCheck.property.path"></a>
-
-```typescript
-public readonly path: string;
-```
-
-- *Type:* string
-
-Path to check.
-
----
-
-##### `port`<sup>Required</sup> <a name="port" id="aws-vpclattice-prealpha.HealthCheck.property.port"></a>
-
-```typescript
-public readonly port: number;
-```
-
-- *Type:* number
-
-Port to check.
-
----
-
-##### `protocol`<sup>Required</sup> <a name="protocol" id="aws-vpclattice-prealpha.HealthCheck.property.protocol"></a>
-
-```typescript
-public readonly protocol: string;
-```
-
-- *Type:* string
-
-Protocol.
-
----
-
-##### `protocolVersion`<sup>Required</sup> <a name="protocolVersion" id="aws-vpclattice-prealpha.HealthCheck.property.protocolVersion"></a>
-
-```typescript
-public readonly protocolVersion: string;
-```
-
-- *Type:* string
-
-HTTP Protocol Version.
-
----
-
-##### `unhealthyThresholdCount`<sup>Required</sup> <a name="unhealthyThresholdCount" id="aws-vpclattice-prealpha.HealthCheck.property.unhealthyThresholdCount"></a>
-
-```typescript
-public readonly unhealthyThresholdCount: number;
-```
-
-- *Type:* number
-
-Unhealthy Threshold Count.
-
----
-
-##### `matcher`<sup>Optional</sup> <a name="matcher" id="aws-vpclattice-prealpha.HealthCheck.property.matcher"></a>
-
-```typescript
-public readonly matcher: MatcherProperty;
-```
-
-- *Type:* aws-cdk-lib.aws_vpclattice.CfnTargetGroup.MatcherProperty
-
-Target Match reponse.
-
----
-
 
 ### LoggingDestination <a name="LoggingDestination" id="aws-vpclattice-prealpha.LoggingDestination"></a>
 
@@ -3710,164 +3365,6 @@ A name of the destination.
 ---
 
 
-### Target <a name="Target" id="aws-vpclattice-prealpha.Target"></a>
-
-Targets for target Groups.
-
-#### Initializers <a name="Initializers" id="aws-vpclattice-prealpha.Target.Initializer"></a>
-
-```typescript
-import { Target } from 'aws-vpclattice-prealpha'
-
-new Target()
-```
-
-| **Name** | **Type** | **Description** |
-| --- | --- | --- |
-
----
-
-
-#### Static Functions <a name="Static Functions" id="Static Functions"></a>
-
-| **Name** | **Description** |
-| --- | --- |
-| <code><a href="#aws-vpclattice-prealpha.Target.applicationLoadBalancer">applicationLoadBalancer</a></code> | Application Load Balancer as Targets. |
-| <code><a href="#aws-vpclattice-prealpha.Target.ec2instance">ec2instance</a></code> | EC2 Instances as Targets. |
-| <code><a href="#aws-vpclattice-prealpha.Target.ipAddress">ipAddress</a></code> | IpAddress as Targets. |
-| <code><a href="#aws-vpclattice-prealpha.Target.lambda">lambda</a></code> | Lambda Target - Note: Lambda Targets do not have a configuration. |
-
----
-
-##### `applicationLoadBalancer` <a name="applicationLoadBalancer" id="aws-vpclattice-prealpha.Target.applicationLoadBalancer"></a>
-
-```typescript
-import { Target } from 'aws-vpclattice-prealpha'
-
-Target.applicationLoadBalancer(alb: ApplicationLoadBalancer[], targetConfig: TargetConfig)
-```
-
-Application Load Balancer as Targets.
-
-###### `alb`<sup>Required</sup> <a name="alb" id="aws-vpclattice-prealpha.Target.applicationLoadBalancer.parameter.alb"></a>
-
-- *Type:* aws-cdk-lib.aws_elasticloadbalancingv2.ApplicationLoadBalancer[]
-
----
-
-###### `targetConfig`<sup>Required</sup> <a name="targetConfig" id="aws-vpclattice-prealpha.Target.applicationLoadBalancer.parameter.targetConfig"></a>
-
-- *Type:* <a href="#aws-vpclattice-prealpha.TargetConfig">TargetConfig</a>
-
----
-
-##### `ec2instance` <a name="ec2instance" id="aws-vpclattice-prealpha.Target.ec2instance"></a>
-
-```typescript
-import { Target } from 'aws-vpclattice-prealpha'
-
-Target.ec2instance(ec2instance: Instance[], targetConfig: TargetConfig)
-```
-
-EC2 Instances as Targets.
-
-###### `ec2instance`<sup>Required</sup> <a name="ec2instance" id="aws-vpclattice-prealpha.Target.ec2instance.parameter.ec2instance"></a>
-
-- *Type:* aws-cdk-lib.aws_ec2.Instance[]
-
----
-
-###### `targetConfig`<sup>Required</sup> <a name="targetConfig" id="aws-vpclattice-prealpha.Target.ec2instance.parameter.targetConfig"></a>
-
-- *Type:* <a href="#aws-vpclattice-prealpha.TargetConfig">TargetConfig</a>
-
----
-
-##### `ipAddress` <a name="ipAddress" id="aws-vpclattice-prealpha.Target.ipAddress"></a>
-
-```typescript
-import { Target } from 'aws-vpclattice-prealpha'
-
-Target.ipAddress(ipAddress: string[], targetConfig: TargetConfig)
-```
-
-IpAddress as Targets.
-
-###### `ipAddress`<sup>Required</sup> <a name="ipAddress" id="aws-vpclattice-prealpha.Target.ipAddress.parameter.ipAddress"></a>
-
-- *Type:* string[]
-
----
-
-###### `targetConfig`<sup>Required</sup> <a name="targetConfig" id="aws-vpclattice-prealpha.Target.ipAddress.parameter.targetConfig"></a>
-
-- *Type:* <a href="#aws-vpclattice-prealpha.TargetConfig">TargetConfig</a>
-
----
-
-##### `lambda` <a name="lambda" id="aws-vpclattice-prealpha.Target.lambda"></a>
-
-```typescript
-import { Target } from 'aws-vpclattice-prealpha'
-
-Target.lambda(lambda: Function[])
-```
-
-Lambda Target - Note: Lambda Targets do not have a configuration.
-
-###### `lambda`<sup>Required</sup> <a name="lambda" id="aws-vpclattice-prealpha.Target.lambda.parameter.lambda"></a>
-
-- *Type:* aws-cdk-lib.aws_lambda.Function[]
-
----
-
-#### Properties <a name="Properties" id="Properties"></a>
-
-| **Name** | **Type** | **Description** |
-| --- | --- | --- |
-| <code><a href="#aws-vpclattice-prealpha.Target.property.targets">targets</a></code> | <code>aws-cdk-lib.aws_vpclattice.CfnTargetGroup.TargetProperty[]</code> | References to the targets, ids or Arns. |
-| <code><a href="#aws-vpclattice-prealpha.Target.property.type">type</a></code> | <code><a href="#aws-vpclattice-prealpha.TargetType">TargetType</a></code> | The type of target. |
-| <code><a href="#aws-vpclattice-prealpha.Target.property.config">config</a></code> | <code>aws-cdk-lib.aws_vpclattice.CfnTargetGroup.TargetGroupConfigProperty</code> | Configuration for the TargetGroup, if it is not a lambda. |
-
----
-
-##### `targets`<sup>Required</sup> <a name="targets" id="aws-vpclattice-prealpha.Target.property.targets"></a>
-
-```typescript
-public readonly targets: TargetProperty[];
-```
-
-- *Type:* aws-cdk-lib.aws_vpclattice.CfnTargetGroup.TargetProperty[]
-
-References to the targets, ids or Arns.
-
----
-
-##### `type`<sup>Required</sup> <a name="type" id="aws-vpclattice-prealpha.Target.property.type"></a>
-
-```typescript
-public readonly type: TargetType;
-```
-
-- *Type:* <a href="#aws-vpclattice-prealpha.TargetType">TargetType</a>
-
-The type of target.
-
----
-
-##### `config`<sup>Optional</sup> <a name="config" id="aws-vpclattice-prealpha.Target.property.config"></a>
-
-```typescript
-public readonly config: TargetGroupConfigProperty;
-```
-
-- *Type:* aws-cdk-lib.aws_vpclattice.CfnTargetGroup.TargetGroupConfigProperty
-
-Configuration for the TargetGroup, if it is not a lambda.
-
----
-
-
 ## Protocols <a name="Protocols" id="Protocols"></a>
 
 ### IListener <a name="IListener" id="aws-vpclattice-prealpha.IListener"></a>
@@ -3891,14 +3388,14 @@ Implemented by `Listener`.
 ##### `addListenerRule` <a name="addListenerRule" id="aws-vpclattice-prealpha.IListener.addListenerRule"></a>
 
 ```typescript
-public addListenerRule(props: AddRuleProps): void
+public addListenerRule(props: RuleProp): void
 ```
 
 Add A Listener Rule to the Listener.
 
 ###### `props`<sup>Required</sup> <a name="props" id="aws-vpclattice-prealpha.IListener.addListenerRule.parameter.props"></a>
 
-- *Type:* <a href="#aws-vpclattice-prealpha.AddRuleProps">AddRuleProps</a>
+- *Type:* <a href="#aws-vpclattice-prealpha.RuleProp">RuleProp</a>
 
 ---
 
@@ -3995,9 +3492,18 @@ Implemented by `Service`.
 
 | **Name** | **Description** |
 | --- | --- |
+| <code><a href="#aws-vpclattice-prealpha.IService.applyAuthPolicy">applyAuthPolicy</a></code> | apply an authpolicy to the servicenetwork. |
 | <code><a href="#aws-vpclattice-prealpha.IService.associateWithServiceNetwork">associateWithServiceNetwork</a></code> | associate the service with a servicenetwork. |
 
 ---
+
+##### `applyAuthPolicy` <a name="applyAuthPolicy" id="aws-vpclattice-prealpha.IService.applyAuthPolicy"></a>
+
+```typescript
+public applyAuthPolicy(): PolicyDocument
+```
+
+apply an authpolicy to the servicenetwork.
 
 ##### `associateWithServiceNetwork` <a name="associateWithServiceNetwork" id="aws-vpclattice-prealpha.IService.associateWithServiceNetwork"></a>
 
@@ -4028,7 +3534,6 @@ associate the service with a servicenetwork.
 | <code><a href="#aws-vpclattice-prealpha.IService.property.authType">authType</a></code> | <code>string</code> | The authType of the service. |
 | <code><a href="#aws-vpclattice-prealpha.IService.property.certificate">certificate</a></code> | <code>aws-cdk-lib.aws_certificatemanager.Certificate</code> | A certificate that may be used by the service. |
 | <code><a href="#aws-vpclattice-prealpha.IService.property.customDomain">customDomain</a></code> | <code>string</code> | A custom Domain used by the service. |
-| <code><a href="#aws-vpclattice-prealpha.IService.property.dnsEntry">dnsEntry</a></code> | <code>aws-cdk-lib.aws_vpclattice.CfnService.DnsEntryProperty</code> | A DNS Entry for the service. |
 | <code><a href="#aws-vpclattice-prealpha.IService.property.name">name</a></code> | <code>string</code> | A name for the service. |
 
 ---
@@ -4169,18 +3674,6 @@ public readonly customDomain: string;
 - *Type:* string
 
 A custom Domain used by the service.
-
----
-
-##### `dnsEntry`<sup>Optional</sup> <a name="dnsEntry" id="aws-vpclattice-prealpha.IService.property.dnsEntry"></a>
-
-```typescript
-public readonly dnsEntry: DnsEntryProperty;
-```
-
-- *Type:* aws-cdk-lib.aws_vpclattice.CfnService.DnsEntryProperty
-
-A DNS Entry for the service.
 
 ---
 
@@ -4332,6 +3825,57 @@ public readonly serviceNetworkId: string;
 - *Type:* string
 
 The Id of the Service Network.
+
+---
+
+### ITarget <a name="ITarget" id="aws-vpclattice-prealpha.ITarget"></a>
+
+- *Implemented By:* <a href="#aws-vpclattice-prealpha.ITarget">ITarget</a>
+
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#aws-vpclattice-prealpha.ITarget.property.targets">targets</a></code> | <code>aws-cdk-lib.aws_vpclattice.CfnTargetGroup.TargetProperty[]</code> | References to the targets, ids or Arns. |
+| <code><a href="#aws-vpclattice-prealpha.ITarget.property.type">type</a></code> | <code>string</code> | Target Type. |
+| <code><a href="#aws-vpclattice-prealpha.ITarget.property.config">config</a></code> | <code>aws-cdk-lib.aws_vpclattice.CfnTargetGroup.TargetGroupConfigProperty</code> | Configuration for the TargetGroup, if it is not a lambda. |
+
+---
+
+##### `targets`<sup>Required</sup> <a name="targets" id="aws-vpclattice-prealpha.ITarget.property.targets"></a>
+
+```typescript
+public readonly targets: TargetProperty[];
+```
+
+- *Type:* aws-cdk-lib.aws_vpclattice.CfnTargetGroup.TargetProperty[]
+
+References to the targets, ids or Arns.
+
+---
+
+##### `type`<sup>Required</sup> <a name="type" id="aws-vpclattice-prealpha.ITarget.property.type"></a>
+
+```typescript
+public readonly type: string;
+```
+
+- *Type:* string
+
+Target Type.
+
+---
+
+##### `config`<sup>Optional</sup> <a name="config" id="aws-vpclattice-prealpha.ITarget.property.config"></a>
+
+```typescript
+public readonly config: TargetGroupConfigProperty;
+```
+
+- *Type:* aws-cdk-lib.aws_vpclattice.CfnTargetGroup.TargetGroupConfigProperty
+
+Configuration for the TargetGroup, if it is not a lambda.
 
 ---
 
@@ -4524,33 +4068,6 @@ Delete Method.
 ---
 
 
-### IpAddressType <a name="IpAddressType" id="aws-vpclattice-prealpha.IpAddressType"></a>
-
-IpAddressType.
-
-#### Members <a name="Members" id="Members"></a>
-
-| **Name** | **Description** |
-| --- | --- |
-| <code><a href="#aws-vpclattice-prealpha.IpAddressType.IPV4">IPV4</a></code> | ipv4. |
-| <code><a href="#aws-vpclattice-prealpha.IpAddressType.IPV6">IPV6</a></code> | Ipv6. |
-
----
-
-##### `IPV4` <a name="IPV4" id="aws-vpclattice-prealpha.IpAddressType.IPV4"></a>
-
-ipv4.
-
----
-
-
-##### `IPV6` <a name="IPV6" id="aws-vpclattice-prealpha.IpAddressType.IPV6"></a>
-
-Ipv6.
-
----
-
-
 ### MatchOperator <a name="MatchOperator" id="aws-vpclattice-prealpha.MatchOperator"></a>
 
 Operators for Matches.
@@ -4640,41 +4157,6 @@ HTTPS Protocol.
 ---
 
 
-### ProtocolVersion <a name="ProtocolVersion" id="aws-vpclattice-prealpha.ProtocolVersion"></a>
-
-ProtocolVersion.
-
-#### Members <a name="Members" id="Members"></a>
-
-| **Name** | **Description** |
-| --- | --- |
-| <code><a href="#aws-vpclattice-prealpha.ProtocolVersion.HTTP1">HTTP1</a></code> | Http1. |
-| <code><a href="#aws-vpclattice-prealpha.ProtocolVersion.HTTP2">HTTP2</a></code> | Http2. |
-| <code><a href="#aws-vpclattice-prealpha.ProtocolVersion.GRPC">GRPC</a></code> | GRPC. |
-
----
-
-##### `HTTP1` <a name="HTTP1" id="aws-vpclattice-prealpha.ProtocolVersion.HTTP1"></a>
-
-Http1.
-
----
-
-
-##### `HTTP2` <a name="HTTP2" id="aws-vpclattice-prealpha.ProtocolVersion.HTTP2"></a>
-
-Http2.
-
----
-
-
-##### `GRPC` <a name="GRPC" id="aws-vpclattice-prealpha.ProtocolVersion.GRPC"></a>
-
-GRPC.
-
----
-
-
 ### RuleAccessMode <a name="RuleAccessMode" id="aws-vpclattice-prealpha.RuleAccessMode"></a>
 
 Access mode for the rule.
@@ -4749,49 +4231,6 @@ Unauthenticated Access.
 ##### `ORG_ONLY` <a name="ORG_ONLY" id="aws-vpclattice-prealpha.ServiceNetworkAccessMode.ORG_ONLY"></a>
 
 THIS Org only.
-
----
-
-
-### TargetType <a name="TargetType" id="aws-vpclattice-prealpha.TargetType"></a>
-
-Types of Targets that are usable with vpclattice.
-
-#### Members <a name="Members" id="Members"></a>
-
-| **Name** | **Description** |
-| --- | --- |
-| <code><a href="#aws-vpclattice-prealpha.TargetType.LAMBDA">LAMBDA</a></code> | Lambda Target. |
-| <code><a href="#aws-vpclattice-prealpha.TargetType.IP">IP</a></code> | IP Address Target. |
-| <code><a href="#aws-vpclattice-prealpha.TargetType.INSTANCE">INSTANCE</a></code> | EC2 Instance Targets. |
-| <code><a href="#aws-vpclattice-prealpha.TargetType.ALB">ALB</a></code> | Application Load Balancer Target. |
-
----
-
-##### `LAMBDA` <a name="LAMBDA" id="aws-vpclattice-prealpha.TargetType.LAMBDA"></a>
-
-Lambda Target.
-
----
-
-
-##### `IP` <a name="IP" id="aws-vpclattice-prealpha.TargetType.IP"></a>
-
-IP Address Target.
-
----
-
-
-##### `INSTANCE` <a name="INSTANCE" id="aws-vpclattice-prealpha.TargetType.INSTANCE"></a>
-
-EC2 Instance Targets.
-
----
-
-
-##### `ALB` <a name="ALB" id="aws-vpclattice-prealpha.TargetType.ALB"></a>
-
-Application Load Balancer Target.
 
 ---
 

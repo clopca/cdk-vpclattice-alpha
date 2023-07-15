@@ -7,7 +7,7 @@ import {
 
 import * as constructs from 'constructs';
 
-import { Target } from './index';
+import { ITarget } from './index';
 
 /**
  * Create a vpc lattice TargetGroup.
@@ -35,7 +35,7 @@ export interface TargetGroupProps {
   /**
    * Targets
    */
-  readonly target: Target;
+  readonly target: ITarget;
 }
 
 /**
@@ -66,4 +66,16 @@ export class TargetGroup extends core.Resource implements ITargetGroup {
     this.targetGroupId = targetGroup.attrId;
     this.targetGroupArn = targetGroup.attrArn;
   }
+}
+
+export interface WeightedTargetGroup {
+  /**
+   * A target Group
+   */
+  readonly targetGroup: TargetGroup;
+  /**
+  * A weight for the target group.
+  * @default 100
+  */
+  readonly weight?: number | undefined;
 }

@@ -180,6 +180,10 @@ export interface ServiceNetworkProps {
    * @default false
    */
   readonly accessmode?: ServiceNetworkAccessMode | undefined;
+  /**
+   * Additional AuthStatments:
+   */
+  readonly authStatements?: iam.PolicyStatement[] | undefined;
 }
 
 abstract class ServiceNetworkBase extends core.Resource implements IServiceNetwork {
@@ -230,8 +234,12 @@ export class ServiceNetwork extends ServiceNetworkBase {
   /**
    * Import a Service Network by Id
    */
-  public static fromId(scope: constructs.Construct, id: string, props: ImportedServiceNetworkProps ): IServiceNetwork {
-    return new ImportedServiceNetwork(scope, id, props);
+  public static fromId(scope: constructs.Construct, id: string, serviceNetworkId: string ): IServiceNetwork {
+    return new ImportedServiceNetwork(scope, id, { serviceNetworkId: serviceNetworkId });
+  }
+
+  public static fromName(scope: constructs.Construct, id: string, serviceNetworkName: string ): IServiceNetwork {
+    return new ImportedServiceNetwork(scope, id, { serviceNetworkName: serviceNetworkName });
   }
 
   /**
@@ -254,10 +262,6 @@ export class ServiceNetwork extends ServiceNetworkBase {
    * the authType of the service network
    */
   authType: AuthType | undefined;
-  /**
-   * policy document to be used.
-   */
-  //authPolicy: iam.PolicyDocument = new iam.PolicyDocument();
   /**
    * A managed Policy that is the auth policy
    */
@@ -353,7 +357,15 @@ export class ServiceNetwork extends ServiceNetworkBase {
     };
 
     this.authPolicy.addStatements(statement);
-  }
+
+    if (props.authStatements) {
+      props.authStatements.forEach((propstatement) => {
+        this.authPolicy.addStatements(propstatement);
+      });
+      this.applyAuthPolicyToServiceNetwork();
+    };
+  };
+
 
   /**
    * This will give the principals access to all resources that are on this
@@ -362,7 +374,7 @@ export class ServiceNetwork extends ServiceNetworkBase {
    * addToResourcePolicy()
    *
    */
-  addStatementToAuthPolicy(statement: iam.PolicyStatement): void {
+  public addStatementToAuthPolicy(statement: iam.PolicyStatement): void {
 
     if (this.imported) {
       throw new Error('It is not possible to add statements to an imported Service Network');
