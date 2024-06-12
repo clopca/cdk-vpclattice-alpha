@@ -1,8 +1,8 @@
 {
-  "name": "aws-vpclattice-prealpha",
+  "name": "cdk-vpclattice-alpha",
   "repository": {
     "type": "git",
-    "url": "https://github.com/raindancers/aws-vpclattice-prealpha.git"
+    "url": "https://github.com/clopca/cdk-vpclattice-alpha.git"
   },
   "scripts": {
     "build": "npx projen build",
@@ -30,8 +30,8 @@
     "projen": "npx projen"
   },
   "author": {
-    "name": "Andrew Frazer",
-    "email": "andrew.frazer@raindancers.cloud",
+    "name": "Cristobal Lopez",
+    "email": "clopca@amazon.es",
     "organization": false
   },
   "devDependencies": {
@@ -116,7 +116,7 @@
     "outdir": "dist",
     "targets": {
       "python": {
-        "distName": "aws-vpclattice-prealpha",
+        "distName": "cdk-vpclattice-alpha",
         "module": "vpc_lattice"
       }
     },

@@ -1,19 +1,19 @@
-import { awscdk } from 'projen';
+import { awscdk } from "projen";
 const project = new awscdk.AwsCdkConstructLibrary({
-  author: 'Andrew Frazer',
-  authorAddress: 'andrew.frazer@raindancers.cloud',
-  cdkVersion: '2.80.0',
-  keywords: ['aws-cdk', 'cdk', 'vpclattice'],
-  defaultReleaseBranch: 'main',
-  jsiiVersion: '~5.0.0',
-  name: 'aws-vpclattice-prealpha',
+  author: "Cristobal Lopez",
+  authorAddress: "clopca@amazon.es",
+  cdkVersion: "2.80.0",
+  keywords: ["aws-cdk", "cdk", "vpclattice"],
+  defaultReleaseBranch: "main",
+  jsiiVersion: "~5.0.0",
+  name: "cdk-vpclattice-alpha",
   projenrcTs: true,
-  repositoryUrl: 'https://github.com/raindancers/aws-vpclattice-prealpha.git',
+  repositoryUrl: "https://github.com/clopca/cdk-vpclattice-alpha.git",
   publishToPypi: {
-    distName: 'aws-vpclattice-prealpha',
-    module: 'vpc_lattice',
+    distName: "cdk-vpclattice-alpha",
+    module: "vpc_lattice",
   },
-  stability: 'experimental',
+  stability: "experimental",
   docgen: true,
 });
 project.synth();
