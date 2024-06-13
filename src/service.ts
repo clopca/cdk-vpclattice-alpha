@@ -8,12 +8,15 @@ import {
   aws_route53 as r53,
 }
   from 'aws-cdk-lib';
+
 import * as constructs from 'constructs';
 import {
   IListener,
   IServiceNetwork,
 }
   from './index';
+
+
 
 /**
  * Properties to Share the Service
@@ -34,6 +37,16 @@ export interface ShareServiceProps {
    * @default none
    */
   readonly accounts: string[] | undefined;
+}
+
+/**
+ * The authentication method used to be used
+ */
+export declare enum AuthType {
+  /** The resource does not use an IAM policy. */
+  NONE = "NONE",
+  /** The resource uses an IAM policy. When this type is used, auth is enabled and an auth policy is required. **/
+  AWS_IAM = "AWS_IAM",
 }
 
 /**
@@ -60,7 +73,7 @@ export interface IService extends core.IResource {
   /**
    * The authType of the service.
    */
-  authType: string | undefined;
+  authType: AuthType;
   /**
    * A certificate that may be used by the service
    */
@@ -95,15 +108,15 @@ export interface ServiceProps {
 
   /**
    * Name for the service
-   * @default cloudformation will provide a name
+   * @default CloudFormation will generate a name
    */
-  readonly name?: string | undefined;
+  readonly name?: string;
 
   /**
    * The authType of the Service
-   * @default 'AWS_IAM'
+   * @default AuthType.AWS_IAM
    */
-  readonly authType?: string | undefined;
+  readonly authType?: AuthType;
 
   /**
    * Listeners that will be attached to the service
@@ -159,7 +172,7 @@ abstract class ServiceBase extends core.Resource implements IService {
   /**
    * The authType of the service.
    */
-  authType: string | undefined;
+  authType: AuthType;
   /**
    * A certificate that may be used by the service
    */
@@ -243,7 +256,7 @@ export class Service extends core.Resource implements IService {
   /**
    * The authType of the service.
    */
-  authType: string | undefined;
+  authType: AuthType;
   /**
    * A certificate that may be used by the service
    */
@@ -259,24 +272,30 @@ export class Service extends core.Resource implements IService {
   /**
   * A name for the service
   */
-  name: string | undefined;
+  name: string;
   /**
    * The auth Policy for the service.
    */
   authPolicy: iam.PolicyDocument;
 
-  constructor(scope: constructs.Construct, id: string, props: ServiceProps) {
-    super(scope, id);
+  public static validateServiceName(name: string) {
+    const pattern = /^(?!svc-)(?![-])(?!.*[-]$)(?!.*[-]{2})[a-z0-9-]+$/;
+    const validationSucceeded = name.length >= 3 && name.length <= 40 && pattern.test(name) && !name.includes('--');
+    if (!validationSucceeded) {
+      throw new Error(`Invalid Service Name: ${name} (must be between 3-40 characters, and must be a valid DNS name)`);
+    }
+  }
 
-    this.name = props.name;
+  constructor(scope: constructs.Construct, id: string, props: ServiceProps) {
+    super(scope, id, {
+      physicalName: props.name,
+    });
+
+    this.name = this.physicalName;
     this.authPolicy = new iam.PolicyDocument();
     this.imported = false;
 
-    if (props.name !== undefined) {
-      if (props.name.match(/^[a-z0-9\-]{3,63}$/) === null) {
-        throw new Error('The service  name must be between 3 and 63 characters long. The name can only contain alphanumeric characters and hyphens. The name must be unique to the account.');
-      }
-    }
+    Service.validateServiceName(this.name);
 
     let dnsEntry: aws_vpclattice.CfnService.DnsEntryProperty | undefined = undefined;
     if (props.hostedZone) {
