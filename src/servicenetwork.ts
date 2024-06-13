@@ -91,7 +91,7 @@ export interface AssociateVPCProps {
  * Properties to add a logging Destination
  */
 
-export interface AddloggingDestinationProps{
+export interface AddloggingDestinationProps {
   /**
    * The logging destination
    */
@@ -156,7 +156,7 @@ export interface ServiceNetworkProps {
    * The type of  authentication to use with the Service Network
    * @default 'AWS_IAM'
    */
-  readonly authType?: AuthType | undefined;
+  readonly authType?: AuthType;
 
   /**
    * Logging destinations
@@ -234,11 +234,11 @@ export class ServiceNetwork extends ServiceNetworkBase {
   /**
    * Import a Service Network by Id
    */
-  public static fromId(scope: constructs.Construct, id: string, serviceNetworkId: string ): IServiceNetwork {
+  public static fromId(scope: constructs.Construct, id: string, serviceNetworkId: string): IServiceNetwork {
     return new ImportedServiceNetwork(scope, id, { serviceNetworkId: serviceNetworkId });
   }
 
-  public static fromName(scope: constructs.Construct, id: string, serviceNetworkName: string ): IServiceNetwork {
+  public static fromName(scope: constructs.Construct, id: string, serviceNetworkName: string): IServiceNetwork {
     return new ImportedServiceNetwork(scope, id, { serviceNetworkName: serviceNetworkName });
   }
 
@@ -349,11 +349,11 @@ export class ServiceNetwork extends ServiceNetworkBase {
       const orgId = orgIdCr.getResponseField('Organization.Id');
 
       // add the condition that requires that the principal is from this org
-      statement.addCondition('StringEquals', { 'aws:PrincipalOrgID': [orgId] } );
-      statement.addCondition('StringNotEqualsIgnoreCase', { 'aws:PrincipalType': 'Anonymous' } );
+      statement.addCondition('StringEquals', { 'aws:PrincipalOrgID': [orgId] });
+      statement.addCondition('StringNotEqualsIgnoreCase', { 'aws:PrincipalType': 'Anonymous' });
     } else if (props.accessmode === ServiceNetworkAccessMode.AUTHENTICATED_ONLY) {
       // add the condition that requires that the principal is authenticated
-      statement.addCondition('StringNotEqualsIgnoreCase', { 'aws:PrincipalType': 'Anonymous' } );
+      statement.addCondition('StringNotEqualsIgnoreCase', { 'aws:PrincipalType': 'Anonymous' });
     };
 
     this.authPolicy.addStatements(statement);
@@ -397,7 +397,7 @@ export class ServiceNetwork extends ServiceNetworkBase {
       throw new Error(`Auth Policy for granting access on  Service Network is invalid\n, ${this.authPolicy}`);
     }
     // check to see if the AuthType is AWS_IAM
-    if (this.authType !== AuthType.AWS_IAM ) {
+    if (this.authType !== AuthType.AWS_IAM) {
       throw new Error(`AuthType must be ${AuthType.AWS_IAM} to add an Auth Policy`);
     }
 

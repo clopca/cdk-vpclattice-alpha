@@ -6,6 +6,7 @@
 
 export * from './servicenetwork';
 export * from './service';
+export * from './auth';
 export * from './listener';
 export * from './matches';
 export * from './targets';

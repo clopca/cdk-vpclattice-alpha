@@ -12,19 +12,7 @@ import {
   HTTPMatch,
   IService,
 } from './index';
-/**
- * AuthTypes
- */
-export enum AuthType {
-  /**
-   * No Authorization
-   */
-  NONE = 'NONE',
-  /**
-   * Use IAM Policy as
-   */
-  AWS_IAM = 'AWS_IAM'
-}
+
 
 
 /**
@@ -324,7 +312,7 @@ export class Listener extends core.Resource implements IListener {
           },
         };
       } else {
-      // set the default action to the foward
+        // set the default action to the foward
         defaultAction = {
           forward: {
             targetGroups: [{
@@ -357,7 +345,7 @@ export class Listener extends core.Resource implements IListener {
     let port: number;
     if (protocol === Protocol.HTTP) {
       port = props.port ?? 80;
-    } else if ( protocol === Protocol.HTTPS) {
+    } else if (protocol === Protocol.HTTPS) {
       port = props.port ?? 443;
     } else {
       throw new Error('Protocol not supported');
@@ -400,20 +388,20 @@ export class Listener extends core.Resource implements IListener {
     // add the action for the statement. There is only one permissiable action
     policyStatement.addActions('vpc-lattice-svcs:Invoke');
 
-    if ( props.accessMode === RuleAccessMode.UNAUTHENTICATED ) {
+    if (props.accessMode === RuleAccessMode.UNAUTHENTICATED) {
       policyStatement.addPrincipals(new iam.StarPrincipal());
       if (props.allowedPrincipals) {
         throw new Error('An unauthenticated rule cannot have allowedPrincipals');
       }
     };
 
-    if ( props.accessMode === RuleAccessMode.AUTHENTICATED_ONLY ) {
-      policyStatement.addCondition('StringNotEqualsIgnoreCase', { 'aws:PrincipalType': 'Anonymous' } );
+    if (props.accessMode === RuleAccessMode.AUTHENTICATED_ONLY) {
+      policyStatement.addCondition('StringNotEqualsIgnoreCase', { 'aws:PrincipalType': 'Anonymous' });
     };
 
-    if ( props.accessMode === RuleAccessMode.ORG_ONLY ) {
-      policyStatement.addCondition('StringEquals', { 'aws:PrincipalOrgID': [this.service.orgId] } );
-      policyStatement.addCondition('StringNotEqualsIgnoreCase', { 'aws:PrincipalType': 'Anonymous' } );
+    if (props.accessMode === RuleAccessMode.ORG_ONLY) {
+      policyStatement.addCondition('StringEquals', { 'aws:PrincipalOrgID': [this.service.orgId] });
+      policyStatement.addCondition('StringNotEqualsIgnoreCase', { 'aws:PrincipalType': 'Anonymous' });
     };
 
     // conditionaly build a policy statement if principals were provided
@@ -540,7 +528,7 @@ export class Listener extends core.Resource implements IListener {
             },
             caseSensitive: headerMatch.caseSensitive ?? false,
           });
-          policyStatement.addCondition('StringEquals', { [`vpc-lattice-svcs:RequestHeader/${headerMatch.headername}`]: headerMatch.matchValue } );
+          policyStatement.addCondition('StringEquals', { [`vpc-lattice-svcs:RequestHeader/${headerMatch.headername}`]: headerMatch.matchValue });
         } else if (matchOperator === MatchOperator.CONTAINS) {
           headerMatches.push({
             name: headerMatch.headername,
