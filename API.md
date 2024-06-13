@@ -14,7 +14,9 @@
 
 **Status** (DRAFT)
 
-**Original Author(s):** @mrpackethead, , @taylaand, @nbaillie
+**Original Author(s):** @mrpackethead, @taylaand, @nbaillie
+
+**Additional Contributors:** @clopca, @aws-rafams
 
 **Tracking Issue:** #502
 

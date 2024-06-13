@@ -12,7 +12,9 @@
 
 **Status** (DRAFT)
 
-**Original Author(s):** @mrpackethead, , @taylaand, @nbaillie
+**Original Author(s):** @mrpackethead, @taylaand, @nbaillie
+
+**Additional Contributors:** @clopca, @aws-rafams
 
 **Tracking Issue:** #502
 
@@ -93,14 +95,10 @@ export class LatticeTestStack extends core.Stack {
       priority: 20,
       action: [
         {
-          targetGroup: new vpclattice.TargetGroup(
-            this,
-            "goodbyelambdatargets",
-            {
-              name: "goodbyeworld",
-              target: vpclattice.Target.lambda([support.goodbyeWorld]),
-            }
-          ),
+          targetGroup: new vpclattice.TargetGroup(this, "goodbyelambdatargets", {
+            name: "goodbyeworld",
+            target: vpclattice.Target.lambda([support.goodbyeWorld]),
+          }),
         },
       ],
 
@@ -752,17 +750,12 @@ export abstract class HealthCheck {
         props.healthCheckInterval.toSeconds() < 5 ||
         props.healthCheckInterval.toSeconds() > 300
       ) {
-        throw new Error(
-          "HealthCheckInterval must be between 5 and 300 seconds"
-        );
+        throw new Error("HealthCheckInterval must be between 5 and 300 seconds");
       }
     }
 
     if (props.healthCheckTimeout) {
-      if (
-        props.healthCheckTimeout.toSeconds() < 1 ||
-        props.healthCheckTimeout.toSeconds() > 120
-      ) {
+      if (props.healthCheckTimeout.toSeconds() < 1 || props.healthCheckTimeout.toSeconds() > 120) {
         throw new Error("HealthCheckTimeout must be between 1 and 120seconds");
       }
     }
@@ -780,10 +773,7 @@ export abstract class HealthCheck {
     }
 
     if (props.unhealthyThresholdCount) {
-      if (
-        props.unhealthyThresholdCount < 2 ||
-        props.unhealthyThresholdCount > 10
-      ) {
+      if (props.unhealthyThresholdCount < 2 || props.unhealthyThresholdCount > 10) {
         throw new Error("UnhealthyThresholdCount must be between 2 and 10");
       }
     }
@@ -797,8 +787,7 @@ export abstract class HealthCheck {
       port = 443;
     }
 
-    let matcher: aws_vpclattice.CfnTargetGroup.MatcherProperty | undefined =
-      undefined;
+    let matcher: aws_vpclattice.CfnTargetGroup.MatcherProperty | undefined = undefined;
     if (props.matcher) {
       const codeAsString = props.matcher.toString();
       matcher = { httpCode: codeAsString };
@@ -806,8 +795,7 @@ export abstract class HealthCheck {
 
     return {
       enabled: props.enabled ?? true,
-      healthCheckInterval:
-        props.healthCheckInterval ?? core.Duration.seconds(30),
+      healthCheckInterval: props.healthCheckInterval ?? core.Duration.seconds(30),
       healthCheckTimeout: props.healthCheckTimeout ?? core.Duration.seconds(5),
       path: props.path ?? "/",
       protocol: props.protocol ?? "HTTPS",
@@ -834,9 +822,7 @@ export abstract class HealthCheck {
   /**
    * Target Match reponse
    */
-  public abstract readonly matcher:
-    | aws_vpclattice.CfnTargetGroup.MatcherProperty
-    | undefined;
+  public abstract readonly matcher: aws_vpclattice.CfnTargetGroup.MatcherProperty | undefined;
   /**
    * Path to check
    */
