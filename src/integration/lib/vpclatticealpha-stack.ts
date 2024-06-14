@@ -14,7 +14,8 @@ export class VpclatticealphaStack extends cdk.Stack {
     // create a vpc lattice service, and associate it with the service network
     // the listener use defaults of HTTPS, on port 443, and have a default action of 404 NOT FOUND
     new vpclattice.Service(this, 'myLatticeService', {
-      // we will all unauthenticated requests to be used
+      serviceName: 'myService',
+      authType: vpclattice.AuthType.NONE,
     });
 
     // // add a listener to the service

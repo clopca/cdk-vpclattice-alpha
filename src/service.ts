@@ -1,13 +1,11 @@
 import * as core from 'aws-cdk-lib';
-// import * as acm from 'aws-cdk-lib/aws-certificatemanager';
-// import * as iam from 'aws-cdk-lib/aws-iam';
-// import * as route53 from 'aws-cdk-lib/aws-route53';
 import * as generated from 'aws-cdk-lib/aws-vpclattice';
 import { Construct } from 'constructs';
 import { AuthType } from './auth';
+import { IServiceNetwork } from './index';
 
 /**
- * Represents a Vpc Lattice Service Network.
+ * Represents a Vpc Lattice Service.
  * Implemented by `Service`.
  */
 export interface IService extends core.IResource {
@@ -59,15 +57,27 @@ export interface IService extends core.IResource {
   //  * The Hosted Zone for the Service
   //  */
   // hostedZone?: route53.HostedZone
+
+  /**
+   * associate the service with a servicenetwork.
+   */
+  associateWithServiceNetwork(serviceNetwork: IServiceNetwork): void;
 }
 
 abstract class ServiceBase extends core.Resource implements IService {
-  //public abstract readonly serviceName: string;
+  // public abstract readonly serviceName: string;
   public abstract readonly serviceArn: string;
   public abstract readonly serviceId: string;
   // public abstract readonly domainName?: string;
   // public abstract readonly authType?: AuthType;
   // public abstract readonly authPolicy?: iam.PolicyDocument;
+
+  public associateWithServiceNetwork(serviceNetwork: IServiceNetwork): void {
+    new ServiceNetworkAssociation(this, `ServiceAssociation${serviceNetwork.serviceNetworkId}`, {
+      serviceNetwork: serviceNetwork,
+      serviceId: this.serviceId,
+    });
+  }
 
   // public applyAuthPolicy() {
   //   if (this.authType != AuthType.AWS_IAM) {
@@ -105,6 +115,33 @@ export interface ServiceProps {
    * @default AuthType.AWS_IAM
    */
   readonly authType?: AuthType;
+
+  /**
+   * Listeners that will be attached to the service
+   * @default no listeners
+   */
+  // readonly listeners?: IListener[];
+
+  /**
+   * A certificate that may be used by the service
+   * @default no custom certificate is used
+   */
+  readonly certificateArn?: string;
+  /**
+   * A customDomainName used by the service
+   * @default no custom domain name is used
+   */
+  readonly customDomainName?: string;
+  /**
+   * A custom DNS entry
+   * @default no custom DNS entry is used
+   */
+  readonly dnsEntry?: generated.CfnService.DnsEntryProperty;
+  /**
+   * ServiceNetwork to associate with.
+   * @default will not assocaite with any serviceNetwork.
+   */
+  readonly serviceNetwork?: IServiceNetwork;
 }
 
 export class Service extends ServiceBase {
@@ -116,8 +153,8 @@ export class Service extends ServiceBase {
    * Must begin and end with a letter or number. No consecutive hyphens.
    */
   public static validateServiceName(name: string) {
-    const pattern = /^(?!svc-)(?![-])(?!.*[-]$)(?!.*[-]{2})[a-z0-9-]+$/;
-    const validationSucceeded = name.length >= 3 && name.length <= 40 && pattern.test(name) && !name.includes('--');
+    const pattern = /^(?!svc-)(?!-)(?!.*-$)(?!.*--)[a-z0-9-]+$/;
+    const validationSucceeded = name.length >= 3 && name.length <= 40 && pattern.test(name);
     if (!validationSucceeded) {
       throw new Error(`Invalid Service Name: ${name} (must be between 3-40 characters, and must be a valid DNS name)`);
     }
@@ -130,7 +167,6 @@ export class Service extends ServiceBase {
     class Import extends ServiceBase {
       public readonly serviceArn = arn;
       public readonly serviceId = core.Arn.extractResourceName(arn, 'service');
-      //public readonly serviceName = core.Arn.extractResourceName(arn, 'service');
     }
     return new Import(scope, id);
   }
@@ -155,9 +191,8 @@ export class Service extends ServiceBase {
 
   public readonly serviceArn: string;
   public readonly serviceId: string;
-  // public readonly serviceName: string;
   public authType: AuthType;
-  // private readonly _resource: generated.CfnService;
+  private readonly _resource: generated.CfnService;
 
   // ------------------------------------------------------
   // Construct
@@ -167,15 +202,25 @@ export class Service extends ServiceBase {
       physicalName: props.serviceName,
     });
 
-    //Service.validateServiceName(this.serviceName);
+    if (props.serviceName) {
+      Service.validateServiceName(props.serviceName);
+    }
 
     const resource = new generated.CfnService(this, 'Resource', {
+      authType: props.authType ?? AuthType.NONE,
+      certificateArn: props.certificateArn,
+      customDomainName: props.customDomainName,
+      dnsEntry: props.dnsEntry,
       name: this.physicalName,
-      authType: props.authType ?? AuthType.AWS_IAM,
     });
 
-    // this._resource = resource;
-    //this.serviceName = this.getResourceNameAttribute(resource.ref);
+    // associate with serviceNetwork
+    if (props.serviceNetwork !== undefined) {
+      this.associateWithServiceNetwork(props.serviceNetwork);
+    }
+
+    this._resource = resource;
+
     this.serviceArn = this.getResourceArnAttribute(resource.attrArn, {
       service: 'vpc-lattice',
       resource: 'service',
@@ -183,6 +228,45 @@ export class Service extends ServiceBase {
     });
     this.serviceId = this.getResourceNameAttribute(resource.attrId);
 
-    this.authType = resource.authType as AuthType;
+    this.authType = this._resource.authType as AuthType;
+  }
+
+  /**
+   * Associate with a Service Network
+   */
+  public associateWithServiceNetwork(serviceNetwork: IServiceNetwork): void {
+    new ServiceNetworkAssociation(this, 'ServiceNetworkAssociation', {
+      serviceNetwork: serviceNetwork,
+      serviceId: this.serviceId,
+    });
+  }
+}
+
+/**
+ * Props for Service Assocaition
+ */
+export interface ServiceNetworkAssociationProps {
+  /**
+   * lattice Service
+   */
+  readonly serviceNetwork: IServiceNetwork;
+  /**
+   * Lattice ServiceId
+   */
+  readonly serviceId: string;
+}
+
+/**
+ * Creates an Association Between a Lattice Service and a Service Network
+ * consider using .associateWithServiceNetwork
+ */
+export class ServiceNetworkAssociation extends core.Resource {
+  constructor(scope: Construct, id: string, props: ServiceNetworkAssociationProps) {
+    super(scope, id);
+
+    new generated.CfnServiceNetworkServiceAssociation(this, `LatticeService${this.node.addr}`, {
+      serviceIdentifier: props.serviceId,
+      serviceNetworkIdentifier: props.serviceNetwork.serviceNetworkId,
+    });
   }
 }
