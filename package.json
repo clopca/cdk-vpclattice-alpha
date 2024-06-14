@@ -35,14 +35,11 @@
     "organization": false
   },
   "devDependencies": {
+    "@aws-cdk/assertions": "^2.145.0",
     "@types/jest": "^29.5.12",
     "@types/node": "^18",
     "@typescript-eslint/eslint-plugin": "^7",
     "@typescript-eslint/parser": "^7",
-    "aws-cdk": "2.145.0",
-    "aws-cdk-lib": "2.145.0",
-    "aws-vpclattice-prealpha": "^0.4.12",
-    "constructs": "10.0.5",
     "eslint": "^8",
     "eslint-import-resolver-typescript": "^3.6.1",
     "eslint-plugin-import": "^2.29.1",
@@ -60,9 +57,12 @@
     "typescript": "^5.4.5"
   },
   "peerDependencies": {
-    "aws-cdk": "^2.145.0",
     "aws-cdk-lib": "^2.145.0",
     "constructs": "^10.0.5"
+  },
+  "dependencies": {
+    "aws-cdk-lib": "^2.145.0",
+    "constructs": "^10.0.0"
   },
   "keywords": [
     "aws-cdk",

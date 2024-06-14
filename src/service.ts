@@ -1,7 +1,7 @@
 import * as core from 'aws-cdk-lib';
-import * as acm from 'aws-cdk-lib/aws-certificatemanager';
-import * as iam from 'aws-cdk-lib/aws-iam';
-import * as route53 from 'aws-cdk-lib/aws-route53';
+// import * as acm from 'aws-cdk-lib/aws-certificatemanager';
+// import * as iam from 'aws-cdk-lib/aws-iam';
+// import * as route53 from 'aws-cdk-lib/aws-route53';
 import * as generated from 'aws-cdk-lib/aws-vpclattice';
 import { Construct } from 'constructs';
 import { AuthType } from './auth';
@@ -59,11 +59,9 @@ export interface IService extends core.IResource {
   //  * The Hosted Zone for the Service
   //  */
   // hostedZone?: route53.HostedZone
-
 }
 
 abstract class ServiceBase extends core.Resource implements IService {
-
   //public abstract readonly serviceName: string;
   public abstract readonly serviceArn: string;
   public abstract readonly serviceId: string;
@@ -85,7 +83,6 @@ abstract class ServiceBase extends core.Resource implements IService {
  * Properties for creating a new VPC Lattice Service
  */
 export interface ServiceProps {
-
   /**
    * The name to assign to the service.
    *
@@ -103,17 +100,14 @@ export interface ServiceProps {
    */
   readonly removalPolicy?: core.RemovalPolicy;
 
-
   /**
    * The authType of the Service
    * @default AuthType.AWS_IAM
    */
   readonly authType?: AuthType;
-
 }
 
 export class Service extends ServiceBase {
-
   // ------------------------------------------------------
   // Validation
   // ------------------------------------------------------
@@ -146,11 +140,14 @@ export class Service extends ServiceBase {
     class Import extends ServiceBase {
       public readonly serviceId = serviceId;
       // build ARN
-      public readonly serviceArn = core.Arn.format({
-        service: 'vpc-lattice',
-        resource: 'service',
-        resourceName: serviceId,
-      }, core.Stack.of(this))
+      public readonly serviceArn = core.Arn.format(
+        {
+          service: 'vpc-lattice',
+          resource: 'service',
+          resourceName: serviceId,
+        },
+        core.Stack.of(this),
+      );
     }
     return new Import(scope, id);
   }
@@ -158,15 +155,14 @@ export class Service extends ServiceBase {
 
   public readonly serviceArn: string;
   public readonly serviceId: string;
-  public readonly serviceName: string;
+  // public readonly serviceName: string;
   public authType: AuthType;
-  private readonly _resource: generated.CfnService;
+  // private readonly _resource: generated.CfnService;
 
   // ------------------------------------------------------
   // Construct
   // ------------------------------------------------------
   constructor(scope: Construct, id: string, props: ServiceProps) {
-
     super(scope, id, {
       physicalName: props.serviceName,
     });
@@ -178,9 +174,7 @@ export class Service extends ServiceBase {
       authType: props.authType ?? AuthType.AWS_IAM,
     });
 
-
-
-    this._resource = resource;
+    // this._resource = resource;
     //this.serviceName = this.getResourceNameAttribute(resource.ref);
     this.serviceArn = this.getResourceArnAttribute(resource.attrArn, {
       service: 'vpc-lattice',
@@ -190,9 +184,5 @@ export class Service extends ServiceBase {
     this.serviceId = this.getResourceNameAttribute(resource.attrId);
 
     this.authType = resource.authType as AuthType;
-
-
   }
 }
-
-

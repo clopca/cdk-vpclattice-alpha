@@ -12,8 +12,18 @@ const project = new awscdk.AwsCdkConstructLibrary({
   stability: 'experimental',
   license: 'Apache-2.0',
   docgen: true,
-  devDeps: ['aws-cdk', 'aws-cdk-lib', 'constructs', 'ts-node', 'aws-vpclattice-prealpha'],
-  peerDeps: ['aws-cdk', 'aws-cdk-lib', 'constructs'],
+  devDeps: [
+    'ts-node',
+    '@aws-cdk/assertions@^2.145.0', // Adding @aws-cdk/assertions for testing
+  ],
+  peerDeps: ['aws-cdk-lib@^2.145.0', 'constructs@^10.0.0'],
+  deps: ['aws-cdk-lib@^2.145.0', 'constructs@^10.0.0'],
   description: 'A CDK L2 Construct Library for VPCLattice',
 });
+
+const common_exclude = ['cdk.out', 'cdk.context.json'];
+
+project.npmignore!.exclude(...common_exclude);
+project.gitignore!.exclude(...common_exclude);
+
 project.synth();
