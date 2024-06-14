@@ -14,10 +14,11 @@ const project = new awscdk.AwsCdkConstructLibrary({
   docgen: true,
   devDeps: [
     'ts-node',
-    '@aws-cdk/assertions@^2.145.0', // Adding @aws-cdk/assertions for testing
+    'aws-cdk-lib@2.145.0', // Exact version as dev dependency
+    'constructs@10.0.5', // Exact version as dev dependency
   ],
-  peerDeps: ['aws-cdk-lib@^2.145.0', 'constructs@^10.0.0'],
-  deps: ['aws-cdk-lib@^2.145.0', 'constructs@^10.0.0'],
+  peerDeps: ['aws-cdk-lib@^2.145.0', 'constructs@^10.0.5'],
+  // deps: ['aws-cdk-lib@^2.145.0', 'constructs@^10.0.5'],
   description: 'A CDK L2 Construct Library for VPCLattice',
 });
 
