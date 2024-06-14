@@ -20,6 +20,7 @@ const project = new awscdk.AwsCdkConstructLibrary({
   peerDeps: ['aws-cdk-lib@^2.145.0', 'constructs@^10.0.5'],
   // deps: ['aws-cdk-lib@^2.145.0', 'constructs@^10.0.5'],
   description: 'A CDK L2 Construct Library for VPCLattice',
+  npmProvenance: false,
 });
 
 const common_exclude = ['cdk.out', 'cdk.context.json'];
