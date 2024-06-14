@@ -5,19 +5,49 @@ import * as constructs from 'constructs';
 import { IService, AuthType, LoggingDestination } from './index';
 
 /**
+ * Create a vpc lattice service network.
+ * Implemented by `ServiceNetwork`.
+ */
+export interface IServiceNetwork extends core.IResource {
+  /**
+   * The Amazon Resource Name (ARN) of the service network.
+   * @attribute
+   */
+  readonly serviceNetworkArn: string;
+  /**
+   * The Id of the Service Network
+   * @attribute
+   */
+  readonly serviceNetworkId: string;
+  /**
+   * Is this an imported serviceNetwork
+   * @attribute
+   */
+  readonly imported: boolean;
+  /**
+   * Add Lattice Service to the Service Network
+   */
+  addService(props: AddServiceProps): void;
+  /**
+   * Associate a VPC with the Service Network
+   */
+  associateVPC(props: AssociateVPCProps): void;
+}
+
+/**
  * AccesModes
  */
 export enum ServiceNetworkAccessMode {
   /**
-   * Unauthenticated Access
+   * Unauthenticated Access to the Service Network.
    */
   UNAUTHENTICATED = 'UNAUTHENTICATED',
   /**
-   * Unauthenticated Access
+   * Authenticated Access to the Service Network.
    */
   AUTHENTICATED_ONLY = 'AUTHENTICATED',
   /**
-   * THIS Org only
+   * Only principals from this Org can access the Service Network.
    */
   ORG_ONLY = 'ORG_ONLY',
 }
@@ -31,7 +61,7 @@ export interface ShareServiceNetworkProps {
    */
   readonly name: string;
   /**
-   * Are external Principals allowed
+   * Whether external principals are allowed.
    * @default false;
    */
   readonly allowExternalPrincipals?: boolean;
@@ -99,33 +129,6 @@ export interface AddServiceProps {
    * The Service Network to add the Service to
    */
   readonly serviceNetworkId: string;
-}
-
-/**
- * Create a vpc lattice service network.
- * Implemented by `ServiceNetwork`.
- */
-export interface IServiceNetwork extends core.IResource {
-  /**
-   * The Amazon Resource Name (ARN) of the service network.
-   */
-  readonly serviceNetworkArn: string;
-  /**
-   * The Id of the Service Network
-   */
-  readonly serviceNetworkId: string;
-  /**
-   * Is this an imported serviceNetwork
-   */
-  readonly imported: boolean;
-  /**
-   * Add Lattice Service
-   */
-  addService(props: AddServiceProps): void;
-  /**
-   * Associate a VPC with the Service Network
-   */
-  associateVPC(props: AssociateVPCProps): void;
 }
 
 /**

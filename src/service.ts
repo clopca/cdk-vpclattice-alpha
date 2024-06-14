@@ -1,20 +1,13 @@
 import * as core from 'aws-cdk-lib';
 import * as generated from 'aws-cdk-lib/aws-vpclattice';
 import { Construct } from 'constructs';
-import { AuthType } from './auth';
-import { IServiceNetwork } from './index';
+import { IServiceNetwork, AuthType } from './index';
 
 /**
  * Represents a Vpc Lattice Service.
  * Implemented by `Service`.
  */
 export interface IService extends core.IResource {
-  // /**
-  //  * The name of the service.
-  //  * @attribute
-  //  */
-  // readonly serviceName: string;
-
   /**
    * The ARN of the service.
    * @attribute
@@ -26,37 +19,6 @@ export interface IService extends core.IResource {
    * @attribute
    */
   readonly serviceId: string;
-
-  // /**
-  //  * The domain name of the service.
-  //  * @attribute
-  //  */
-  // readonly domainName?: string;
-
-  // /**
-  //  * The AuthType of the service.
-  //  */
-  // authType?: AuthType;
-
-  // /**
-  //  * The Auth Policy for the service.
-  //  */
-  // authPolicy?: iam.PolicyDocument;
-
-  // /**
-  //  * A certificate that may be used by the service
-  //  */
-  // certificate?: acm.Certificate;
-
-  // /**
-  //  * A Custom Domain used by the service
-  //  */
-  // customDomain?: string;
-
-  // /**
-  //  * The Hosted Zone for the Service
-  //  */
-  // hostedZone?: route53.HostedZone
 
   /**
    * associate the service with a servicenetwork.
@@ -232,7 +194,7 @@ export class Service extends ServiceBase {
   }
 
   /**
-   * Associate with a Service Network
+   * Associate Service with a Service Network
    */
   public associateWithServiceNetwork(serviceNetwork: IServiceNetwork): void {
     new ServiceNetworkAssociation(this, 'ServiceNetworkAssociation', {
