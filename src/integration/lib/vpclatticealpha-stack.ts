@@ -18,7 +18,7 @@ export class VpclatticealphaStack extends cdk.Stack {
       authType: vpclattice.AuthType.NONE,
     });
 
-    const serviceprop = service.serviceArn;
+    console.log(service.serviceName);
 
     // // add a listener to the service
     // const listener = new vpclattice.Listener(this, 'Listener', {

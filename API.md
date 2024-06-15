@@ -197,6 +197,8 @@ The stack in which this resource is defined.
 
 - *Implements:* <a href="#cdk-vpclattice-alpha.IService">IService</a>
 
+Define a VPC Lattice Service.
+
 #### Initializers <a name="Initializers" id="cdk-vpclattice-alpha.Service.Initializer"></a>
 
 ```typescript
@@ -237,7 +239,7 @@ new Service(scope: Construct, id: string, props: ServiceProps)
 | --- | --- |
 | <code><a href="#cdk-vpclattice-alpha.Service.toString">toString</a></code> | Returns a string representation of this construct. |
 | <code><a href="#cdk-vpclattice-alpha.Service.applyRemovalPolicy">applyRemovalPolicy</a></code> | Apply the given removal policy to this resource. |
-| <code><a href="#cdk-vpclattice-alpha.Service.associateWithServiceNetwork">associateWithServiceNetwork</a></code> | Associate with a Service Network. |
+| <code><a href="#cdk-vpclattice-alpha.Service.associateWithServiceNetwork">associateWithServiceNetwork</a></code> | Associate the service with a Service Network. |
 
 ---
 
@@ -277,7 +279,7 @@ account for data recovery and cleanup later (`RemovalPolicy.RETAIN`).
 public associateWithServiceNetwork(serviceNetwork: IServiceNetwork): void
 ```
 
-Associate with a Service Network.
+Associate the service with a Service Network.
 
 ###### `serviceNetwork`<sup>Required</sup> <a name="serviceNetwork" id="cdk-vpclattice-alpha.Service.associateWithServiceNetwork.parameter.serviceNetwork"></a>
 
@@ -426,8 +428,9 @@ Must begin and end with a letter or number. No consecutive hyphens.
 | <code><a href="#cdk-vpclattice-alpha.Service.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
 | <code><a href="#cdk-vpclattice-alpha.Service.property.env">env</a></code> | <code>aws-cdk-lib.ResourceEnvironment</code> | The environment this resource belongs to. |
 | <code><a href="#cdk-vpclattice-alpha.Service.property.stack">stack</a></code> | <code>aws-cdk-lib.Stack</code> | The stack in which this resource is defined. |
-| <code><a href="#cdk-vpclattice-alpha.Service.property.serviceArn">serviceArn</a></code> | <code>string</code> | The ARN of the service. |
+| <code><a href="#cdk-vpclattice-alpha.Service.property.serviceArn">serviceArn</a></code> | <code>string</code> | The Amazon Resource Name (ARN) of the service. |
 | <code><a href="#cdk-vpclattice-alpha.Service.property.serviceId">serviceId</a></code> | <code>string</code> | The Id of the service. |
+| <code><a href="#cdk-vpclattice-alpha.Service.property.serviceName">serviceName</a></code> | <code>string</code> | *No description.* |
 | <code><a href="#cdk-vpclattice-alpha.Service.property.authType">authType</a></code> | <code><a href="#cdk-vpclattice-alpha.AuthType">AuthType</a></code> | *No description.* |
 
 ---
@@ -483,7 +486,7 @@ public readonly serviceArn: string;
 
 - *Type:* string
 
-The ARN of the service.
+The Amazon Resource Name (ARN) of the service.
 
 ---
 
@@ -496,6 +499,16 @@ public readonly serviceId: string;
 - *Type:* string
 
 The Id of the service.
+
+---
+
+##### `serviceName`<sup>Required</sup> <a name="serviceName" id="cdk-vpclattice-alpha.Service.property.serviceName"></a>
+
+```typescript
+public readonly serviceName: string;
+```
+
+- *Type:* string
 
 ---
 
@@ -705,7 +718,7 @@ The stack in which this resource is defined.
 
 - *Implements:* <a href="#cdk-vpclattice-alpha.IServiceNetwork">IServiceNetwork</a>
 
-Create a vpcLattice Service Network.
+Define a VPC Lattice Service Network.
 
 #### Initializers <a name="Initializers" id="cdk-vpclattice-alpha.ServiceNetwork.Initializer"></a>
 
@@ -747,7 +760,7 @@ new ServiceNetwork(scope: Construct, id: string, props: ServiceNetworkProps)
 | --- | --- |
 | <code><a href="#cdk-vpclattice-alpha.ServiceNetwork.toString">toString</a></code> | Returns a string representation of this construct. |
 | <code><a href="#cdk-vpclattice-alpha.ServiceNetwork.applyRemovalPolicy">applyRemovalPolicy</a></code> | Apply the given removal policy to this resource. |
-| <code><a href="#cdk-vpclattice-alpha.ServiceNetwork.addloggingDestination">addloggingDestination</a></code> | send logs to a destination. |
+| <code><a href="#cdk-vpclattice-alpha.ServiceNetwork.addloggingDestination">addloggingDestination</a></code> | Send logs to a destination. |
 | <code><a href="#cdk-vpclattice-alpha.ServiceNetwork.addService">addService</a></code> | Add A lattice service to a lattice network. |
 | <code><a href="#cdk-vpclattice-alpha.ServiceNetwork.addStatementToAuthPolicy">addStatementToAuthPolicy</a></code> | This will give the principals access to all resources that are on this service network. |
 | <code><a href="#cdk-vpclattice-alpha.ServiceNetwork.applyAuthPolicyToServiceNetwork">applyAuthPolicyToServiceNetwork</a></code> | Apply the AuthPolicy to a Service Network. |
@@ -792,7 +805,7 @@ account for data recovery and cleanup later (`RemovalPolicy.RETAIN`).
 public addloggingDestination(props: AddloggingDestinationProps): void
 ```
 
-send logs to a destination.
+Send logs to a destination.
 
 ###### `props`<sup>Required</sup> <a name="props" id="cdk-vpclattice-alpha.ServiceNetwork.addloggingDestination.parameter.props"></a>
 
@@ -866,8 +879,6 @@ Share the The Service network using RAM.
 
 - *Type:* <a href="#cdk-vpclattice-alpha.ShareServiceNetworkProps">ShareServiceNetworkProps</a>
 
-ShareServiceNetwork.
-
 ---
 
 #### Static Functions <a name="Static Functions" id="Static Functions"></a>
@@ -877,8 +888,9 @@ ShareServiceNetwork.
 | <code><a href="#cdk-vpclattice-alpha.ServiceNetwork.isConstruct">isConstruct</a></code> | Checks if `x` is a construct. |
 | <code><a href="#cdk-vpclattice-alpha.ServiceNetwork.isOwnedResource">isOwnedResource</a></code> | Returns true if the construct was created by CDK, and false otherwise. |
 | <code><a href="#cdk-vpclattice-alpha.ServiceNetwork.isResource">isResource</a></code> | Check whether the given construct is a Resource. |
+| <code><a href="#cdk-vpclattice-alpha.ServiceNetwork.fromArn">fromArn</a></code> | Import a Service Network by Arn. |
 | <code><a href="#cdk-vpclattice-alpha.ServiceNetwork.fromId">fromId</a></code> | Import a Service Network by Id. |
-| <code><a href="#cdk-vpclattice-alpha.ServiceNetwork.fromName">fromName</a></code> | *No description.* |
+| <code><a href="#cdk-vpclattice-alpha.ServiceNetwork.validateServiceNetworkName">validateServiceNetworkName</a></code> | Must be between 3-63 characters. |
 
 ---
 
@@ -932,6 +944,34 @@ Check whether the given construct is a Resource.
 
 ---
 
+##### `fromArn` <a name="fromArn" id="cdk-vpclattice-alpha.ServiceNetwork.fromArn"></a>
+
+```typescript
+import { ServiceNetwork } from 'cdk-vpclattice-alpha'
+
+ServiceNetwork.fromArn(scope: Construct, id: string, arn: string)
+```
+
+Import a Service Network by Arn.
+
+###### `scope`<sup>Required</sup> <a name="scope" id="cdk-vpclattice-alpha.ServiceNetwork.fromArn.parameter.scope"></a>
+
+- *Type:* constructs.Construct
+
+---
+
+###### `id`<sup>Required</sup> <a name="id" id="cdk-vpclattice-alpha.ServiceNetwork.fromArn.parameter.id"></a>
+
+- *Type:* string
+
+---
+
+###### `arn`<sup>Required</sup> <a name="arn" id="cdk-vpclattice-alpha.ServiceNetwork.fromArn.parameter.arn"></a>
+
+- *Type:* string
+
+---
+
 ##### `fromId` <a name="fromId" id="cdk-vpclattice-alpha.ServiceNetwork.fromId"></a>
 
 ```typescript
@@ -960,27 +1000,20 @@ Import a Service Network by Id.
 
 ---
 
-##### `fromName` <a name="fromName" id="cdk-vpclattice-alpha.ServiceNetwork.fromName"></a>
+##### `validateServiceNetworkName` <a name="validateServiceNetworkName" id="cdk-vpclattice-alpha.ServiceNetwork.validateServiceNetworkName"></a>
 
 ```typescript
 import { ServiceNetwork } from 'cdk-vpclattice-alpha'
 
-ServiceNetwork.fromName(scope: Construct, id: string, serviceNetworkName: string)
+ServiceNetwork.validateServiceNetworkName(name: string)
 ```
 
-###### `scope`<sup>Required</sup> <a name="scope" id="cdk-vpclattice-alpha.ServiceNetwork.fromName.parameter.scope"></a>
+Must be between 3-63 characters.
 
-- *Type:* constructs.Construct
+Lowercase letters, numbers, and hyphens are accepted.
+Must begin and end with a letter or number. No consecutive hyphens.
 
----
-
-###### `id`<sup>Required</sup> <a name="id" id="cdk-vpclattice-alpha.ServiceNetwork.fromName.parameter.id"></a>
-
-- *Type:* string
-
----
-
-###### `serviceNetworkName`<sup>Required</sup> <a name="serviceNetworkName" id="cdk-vpclattice-alpha.ServiceNetwork.fromName.parameter.serviceNetworkName"></a>
+###### `name`<sup>Required</sup> <a name="name" id="cdk-vpclattice-alpha.ServiceNetwork.validateServiceNetworkName.parameter.name"></a>
 
 - *Type:* string
 
@@ -993,12 +1026,11 @@ ServiceNetwork.fromName(scope: Construct, id: string, serviceNetworkName: string
 | <code><a href="#cdk-vpclattice-alpha.ServiceNetwork.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
 | <code><a href="#cdk-vpclattice-alpha.ServiceNetwork.property.env">env</a></code> | <code>aws-cdk-lib.ResourceEnvironment</code> | The environment this resource belongs to. |
 | <code><a href="#cdk-vpclattice-alpha.ServiceNetwork.property.stack">stack</a></code> | <code>aws-cdk-lib.Stack</code> | The stack in which this resource is defined. |
-| <code><a href="#cdk-vpclattice-alpha.ServiceNetwork.property.imported">imported</a></code> | <code>boolean</code> | imported. |
 | <code><a href="#cdk-vpclattice-alpha.ServiceNetwork.property.name">name</a></code> | <code>string</code> | Name of the ServiceNetwork. |
-| <code><a href="#cdk-vpclattice-alpha.ServiceNetwork.property.serviceNetworkArn">serviceNetworkArn</a></code> | <code>string</code> | The Arn of the service network. |
+| <code><a href="#cdk-vpclattice-alpha.ServiceNetwork.property.serviceNetworkArn">serviceNetworkArn</a></code> | <code>string</code> | The Amazon Resource Name (ARN) of the service network. |
 | <code><a href="#cdk-vpclattice-alpha.ServiceNetwork.property.serviceNetworkId">serviceNetworkId</a></code> | <code>string</code> | The Id of the Service Network. |
 | <code><a href="#cdk-vpclattice-alpha.ServiceNetwork.property.authPolicy">authPolicy</a></code> | <code>aws-cdk-lib.aws_iam.PolicyDocument</code> | A managed Policy that is the auth policy. |
-| <code><a href="#cdk-vpclattice-alpha.ServiceNetwork.property.authType">authType</a></code> | <code><a href="#cdk-vpclattice-alpha.AuthType">AuthType</a></code> | the authType of the service network. |
+| <code><a href="#cdk-vpclattice-alpha.ServiceNetwork.property.authType">authType</a></code> | <code><a href="#cdk-vpclattice-alpha.AuthType">AuthType</a></code> | *No description.* |
 
 ---
 
@@ -1045,18 +1077,6 @@ The stack in which this resource is defined.
 
 ---
 
-##### `imported`<sup>Required</sup> <a name="imported" id="cdk-vpclattice-alpha.ServiceNetwork.property.imported"></a>
-
-```typescript
-public readonly imported: boolean;
-```
-
-- *Type:* boolean
-
-imported.
-
----
-
 ##### `name`<sup>Required</sup> <a name="name" id="cdk-vpclattice-alpha.ServiceNetwork.property.name"></a>
 
 ```typescript
@@ -1077,7 +1097,7 @@ public readonly serviceNetworkArn: string;
 
 - *Type:* string
 
-The Arn of the service network.
+The Amazon Resource Name (ARN) of the service network.
 
 ---
 
@@ -1112,8 +1132,6 @@ public readonly authType: AuthType;
 ```
 
 - *Type:* <a href="#cdk-vpclattice-alpha.AuthType">AuthType</a>
-
-the authType of the service network.
 
 ---
 
@@ -1345,7 +1363,7 @@ The logging destination.
 
 ### AddServiceProps <a name="AddServiceProps" id="cdk-vpclattice-alpha.AddServiceProps"></a>
 
-Properties to add a Service to a Service Network.
+Properties to add a Service to the Service Network.
 
 #### Initializer <a name="Initializer" id="cdk-vpclattice-alpha.AddServiceProps.Initializer"></a>
 
@@ -1493,53 +1511,6 @@ The security groups to associate with the Service Network.
 
 ---
 
-### ImportedServiceNetworkProps <a name="ImportedServiceNetworkProps" id="cdk-vpclattice-alpha.ImportedServiceNetworkProps"></a>
-
-Props for ImportedSearch.
-
-#### Initializer <a name="Initializer" id="cdk-vpclattice-alpha.ImportedServiceNetworkProps.Initializer"></a>
-
-```typescript
-import { ImportedServiceNetworkProps } from 'cdk-vpclattice-alpha'
-
-const importedServiceNetworkProps: ImportedServiceNetworkProps = { ... }
-```
-
-#### Properties <a name="Properties" id="Properties"></a>
-
-| **Name** | **Type** | **Description** |
-| --- | --- | --- |
-| <code><a href="#cdk-vpclattice-alpha.ImportedServiceNetworkProps.property.serviceNetworkId">serviceNetworkId</a></code> | <code>string</code> | Import by Id. |
-| <code><a href="#cdk-vpclattice-alpha.ImportedServiceNetworkProps.property.serviceNetworkName">serviceNetworkName</a></code> | <code>string</code> | Import by Name. |
-
----
-
-##### `serviceNetworkId`<sup>Optional</sup> <a name="serviceNetworkId" id="cdk-vpclattice-alpha.ImportedServiceNetworkProps.property.serviceNetworkId"></a>
-
-```typescript
-public readonly serviceNetworkId: string;
-```
-
-- *Type:* string
-- *Default:* No Search by Id
-
-Import by Id.
-
----
-
-##### `serviceNetworkName`<sup>Optional</sup> <a name="serviceNetworkName" id="cdk-vpclattice-alpha.ImportedServiceNetworkProps.property.serviceNetworkName"></a>
-
-```typescript
-public readonly serviceNetworkName: string;
-```
-
-- *Type:* string
-- *Default:* No search By Name
-
-Import by Name.
-
----
-
 ### ServiceAssociationProps <a name="ServiceAssociationProps" id="cdk-vpclattice-alpha.ServiceAssociationProps"></a>
 
 Props for Service Assocaition.
@@ -1587,7 +1558,7 @@ Lattice ServiceId.
 
 ### ServiceNetworkAssociationProps <a name="ServiceNetworkAssociationProps" id="cdk-vpclattice-alpha.ServiceNetworkAssociationProps"></a>
 
-Props for Service Assocaition.
+Properties for associating a VPC with a Service Network.
 
 #### Initializer <a name="Initializer" id="cdk-vpclattice-alpha.ServiceNetworkAssociationProps.Initializer"></a>
 
@@ -1632,7 +1603,7 @@ lattice Service.
 
 ### ServiceNetworkProps <a name="ServiceNetworkProps" id="cdk-vpclattice-alpha.ServiceNetworkProps"></a>
 
-The properties for the ServiceNetwork.
+Properties for defining a VPC Lattice Service Network.
 
 #### Initializer <a name="Initializer" id="cdk-vpclattice-alpha.ServiceNetworkProps.Initializer"></a>
 
@@ -1688,7 +1659,7 @@ public readonly authType: AuthType;
 ```
 
 - *Type:* <a href="#cdk-vpclattice-alpha.AuthType">AuthType</a>
-- *Default:* 'AWS_IAM'
+- *Default:* 'NONE'
 
 The type of  authentication to use with the Service Network.
 
@@ -1718,8 +1689,7 @@ public readonly name: string;
 
 The name of the Service Network.
 
-If not provided Cloudformation will provide
-a name
+If not provided Cloudformation will provide a name
 
 ---
 
@@ -1751,7 +1721,7 @@ Vpcs that are associated with this Service Network.
 
 ### ServiceProps <a name="ServiceProps" id="cdk-vpclattice-alpha.ServiceProps"></a>
 
-Properties for creating a new VPC Lattice Service.
+Properties for defining a VPC Lattice Service.
 
 #### Initializer <a name="Initializer" id="cdk-vpclattice-alpha.ServiceProps.Initializer"></a>
 
@@ -1890,7 +1860,7 @@ const shareServiceNetworkProps: ShareServiceNetworkProps = { ... }
 | <code><a href="#cdk-vpclattice-alpha.ShareServiceNetworkProps.property.accounts">accounts</a></code> | <code>string[]</code> | Principals to share the Service Network with. |
 | <code><a href="#cdk-vpclattice-alpha.ShareServiceNetworkProps.property.name">name</a></code> | <code>string</code> | The name of the share. |
 | <code><a href="#cdk-vpclattice-alpha.ShareServiceNetworkProps.property.accessMode">accessMode</a></code> | <code><a href="#cdk-vpclattice-alpha.ServiceNetworkAccessMode">ServiceNetworkAccessMode</a></code> | The access mode for the Service Network. |
-| <code><a href="#cdk-vpclattice-alpha.ShareServiceNetworkProps.property.allowExternalPrincipals">allowExternalPrincipals</a></code> | <code>boolean</code> | Are external Principals allowed. |
+| <code><a href="#cdk-vpclattice-alpha.ShareServiceNetworkProps.property.allowExternalPrincipals">allowExternalPrincipals</a></code> | <code>boolean</code> | Whether external principals are allowed. |
 | <code><a href="#cdk-vpclattice-alpha.ShareServiceNetworkProps.property.description">description</a></code> | <code>string</code> | The description of the Service Network. |
 | <code><a href="#cdk-vpclattice-alpha.ShareServiceNetworkProps.property.disableDiscovery">disableDiscovery</a></code> | <code>boolean</code> | disable discovery. |
 | <code><a href="#cdk-vpclattice-alpha.ShareServiceNetworkProps.property.tags">tags</a></code> | <code>{[ key: string ]: string}</code> | The tags to apply to the Service Network. |
@@ -1944,7 +1914,7 @@ public readonly allowExternalPrincipals: boolean;
 - *Type:* boolean
 - *Default:* false;
 
-Are external Principals allowed.
+Whether external principals are allowed.
 
 ---
 
@@ -2130,7 +2100,7 @@ Implemented by `Service`.
 
 | **Name** | **Description** |
 | --- | --- |
-| <code><a href="#cdk-vpclattice-alpha.IService.associateWithServiceNetwork">associateWithServiceNetwork</a></code> | associate the service with a servicenetwork. |
+| <code><a href="#cdk-vpclattice-alpha.IService.associateWithServiceNetwork">associateWithServiceNetwork</a></code> | Associate the service with a Service Network. |
 
 ---
 
@@ -2140,7 +2110,7 @@ Implemented by `Service`.
 public associateWithServiceNetwork(serviceNetwork: IServiceNetwork): void
 ```
 
-associate the service with a servicenetwork.
+Associate the service with a Service Network.
 
 ###### `serviceNetwork`<sup>Required</sup> <a name="serviceNetwork" id="cdk-vpclattice-alpha.IService.associateWithServiceNetwork.parameter.serviceNetwork"></a>
 
@@ -2155,7 +2125,7 @@ associate the service with a servicenetwork.
 | <code><a href="#cdk-vpclattice-alpha.IService.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
 | <code><a href="#cdk-vpclattice-alpha.IService.property.env">env</a></code> | <code>aws-cdk-lib.ResourceEnvironment</code> | The environment this resource belongs to. |
 | <code><a href="#cdk-vpclattice-alpha.IService.property.stack">stack</a></code> | <code>aws-cdk-lib.Stack</code> | The stack in which this resource is defined. |
-| <code><a href="#cdk-vpclattice-alpha.IService.property.serviceArn">serviceArn</a></code> | <code>string</code> | The ARN of the service. |
+| <code><a href="#cdk-vpclattice-alpha.IService.property.serviceArn">serviceArn</a></code> | <code>string</code> | The Amazon Resource Name (ARN) of the service. |
 | <code><a href="#cdk-vpclattice-alpha.IService.property.serviceId">serviceId</a></code> | <code>string</code> | The Id of the service. |
 
 ---
@@ -2211,7 +2181,7 @@ public readonly serviceArn: string;
 
 - *Type:* string
 
-The ARN of the service.
+The Amazon Resource Name (ARN) of the service.
 
 ---
 
@@ -2233,7 +2203,7 @@ The Id of the service.
 
 - *Implemented By:* <a href="#cdk-vpclattice-alpha.ServiceNetwork">ServiceNetwork</a>, <a href="#cdk-vpclattice-alpha.IServiceNetwork">IServiceNetwork</a>
 
-Create a vpc lattice service network.
+Represents a VPC Lattice Service Network.
 
 Implemented by `ServiceNetwork`.
 
@@ -2241,8 +2211,8 @@ Implemented by `ServiceNetwork`.
 
 | **Name** | **Description** |
 | --- | --- |
-| <code><a href="#cdk-vpclattice-alpha.IServiceNetwork.addService">addService</a></code> | Add Lattice Service. |
-| <code><a href="#cdk-vpclattice-alpha.IServiceNetwork.associateVPC">associateVPC</a></code> | Associate a VPC with the Service Network. |
+| <code><a href="#cdk-vpclattice-alpha.IServiceNetwork.addService">addService</a></code> | Add Lattice Service to the Service Network. |
+| <code><a href="#cdk-vpclattice-alpha.IServiceNetwork.associateVPC">associateVPC</a></code> | Associate a VPC with the Service Network This provides an opinionated default of adding a security group to allow inbound 443. |
 
 ---
 
@@ -2252,7 +2222,7 @@ Implemented by `ServiceNetwork`.
 public addService(props: AddServiceProps): void
 ```
 
-Add Lattice Service.
+Add Lattice Service to the Service Network.
 
 ###### `props`<sup>Required</sup> <a name="props" id="cdk-vpclattice-alpha.IServiceNetwork.addService.parameter.props"></a>
 
@@ -2266,7 +2236,7 @@ Add Lattice Service.
 public associateVPC(props: AssociateVPCProps): void
 ```
 
-Associate a VPC with the Service Network.
+Associate a VPC with the Service Network This provides an opinionated default of adding a security group to allow inbound 443.
 
 ###### `props`<sup>Required</sup> <a name="props" id="cdk-vpclattice-alpha.IServiceNetwork.associateVPC.parameter.props"></a>
 
@@ -2281,7 +2251,6 @@ Associate a VPC with the Service Network.
 | <code><a href="#cdk-vpclattice-alpha.IServiceNetwork.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
 | <code><a href="#cdk-vpclattice-alpha.IServiceNetwork.property.env">env</a></code> | <code>aws-cdk-lib.ResourceEnvironment</code> | The environment this resource belongs to. |
 | <code><a href="#cdk-vpclattice-alpha.IServiceNetwork.property.stack">stack</a></code> | <code>aws-cdk-lib.Stack</code> | The stack in which this resource is defined. |
-| <code><a href="#cdk-vpclattice-alpha.IServiceNetwork.property.imported">imported</a></code> | <code>boolean</code> | Is this an imported serviceNetwork. |
 | <code><a href="#cdk-vpclattice-alpha.IServiceNetwork.property.serviceNetworkArn">serviceNetworkArn</a></code> | <code>string</code> | The Amazon Resource Name (ARN) of the service network. |
 | <code><a href="#cdk-vpclattice-alpha.IServiceNetwork.property.serviceNetworkId">serviceNetworkId</a></code> | <code>string</code> | The Id of the Service Network. |
 
@@ -2327,18 +2296,6 @@ public readonly stack: Stack;
 - *Type:* aws-cdk-lib.Stack
 
 The stack in which this resource is defined.
-
----
-
-##### `imported`<sup>Required</sup> <a name="imported" id="cdk-vpclattice-alpha.IServiceNetwork.property.imported"></a>
-
-```typescript
-public readonly imported: boolean;
-```
-
-- *Type:* boolean
-
-Is this an imported serviceNetwork.
 
 ---
 
@@ -2399,35 +2356,35 @@ When this type is used, auth is enabled and an auth policy is required. *
 
 ### ServiceNetworkAccessMode <a name="ServiceNetworkAccessMode" id="cdk-vpclattice-alpha.ServiceNetworkAccessMode"></a>
 
-AccesModes.
+AccesModes for the Service Network.
 
 #### Members <a name="Members" id="Members"></a>
 
 | **Name** | **Description** |
 | --- | --- |
-| <code><a href="#cdk-vpclattice-alpha.ServiceNetworkAccessMode.UNAUTHENTICATED">UNAUTHENTICATED</a></code> | Unauthenticated Access. |
-| <code><a href="#cdk-vpclattice-alpha.ServiceNetworkAccessMode.AUTHENTICATED_ONLY">AUTHENTICATED_ONLY</a></code> | Unauthenticated Access. |
-| <code><a href="#cdk-vpclattice-alpha.ServiceNetworkAccessMode.ORG_ONLY">ORG_ONLY</a></code> | THIS Org only. |
+| <code><a href="#cdk-vpclattice-alpha.ServiceNetworkAccessMode.UNAUTHENTICATED">UNAUTHENTICATED</a></code> | Unauthenticated Access to the Service Network. |
+| <code><a href="#cdk-vpclattice-alpha.ServiceNetworkAccessMode.AUTHENTICATED_ONLY">AUTHENTICATED_ONLY</a></code> | Authenticated Access to the Service Network. |
+| <code><a href="#cdk-vpclattice-alpha.ServiceNetworkAccessMode.ORG_ONLY">ORG_ONLY</a></code> | Only principals from this Org can access the Service Network. |
 
 ---
 
 ##### `UNAUTHENTICATED` <a name="UNAUTHENTICATED" id="cdk-vpclattice-alpha.ServiceNetworkAccessMode.UNAUTHENTICATED"></a>
 
-Unauthenticated Access.
+Unauthenticated Access to the Service Network.
 
 ---
 
 
 ##### `AUTHENTICATED_ONLY` <a name="AUTHENTICATED_ONLY" id="cdk-vpclattice-alpha.ServiceNetworkAccessMode.AUTHENTICATED_ONLY"></a>
 
-Unauthenticated Access.
+Authenticated Access to the Service Network.
 
 ---
 
 
 ##### `ORG_ONLY` <a name="ORG_ONLY" id="cdk-vpclattice-alpha.ServiceNetworkAccessMode.ORG_ONLY"></a>
 
-THIS Org only.
+Only principals from this Org can access the Service Network.
 
 ---
 

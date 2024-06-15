@@ -1,41 +1,11 @@
-import * as path from 'path';
-import { aws_vpclattice, aws_iam as iam, aws_ec2 as ec2, aws_ram as ram, custom_resources as cr, aws_lambda as lambda } from 'aws-cdk-lib';
+import { aws_vpclattice, aws_iam as iam, aws_ec2 as ec2, aws_ram as ram, custom_resources as cr } from 'aws-cdk-lib';
 import * as core from 'aws-cdk-lib';
-import * as constructs from 'constructs';
+import * as generated from 'aws-cdk-lib/aws-vpclattice';
+import { Construct } from 'constructs';
 import { IService, AuthType, LoggingDestination } from './index';
 
 /**
- * Create a vpc lattice service network.
- * Implemented by `ServiceNetwork`.
- */
-export interface IServiceNetwork extends core.IResource {
-  /**
-   * The Amazon Resource Name (ARN) of the service network.
-   * @attribute
-   */
-  readonly serviceNetworkArn: string;
-  /**
-   * The Id of the Service Network
-   * @attribute
-   */
-  readonly serviceNetworkId: string;
-  /**
-   * Is this an imported serviceNetwork
-   * @attribute
-   */
-  readonly imported: boolean;
-  /**
-   * Add Lattice Service to the Service Network
-   */
-  addService(props: AddServiceProps): void;
-  /**
-   * Associate a VPC with the Service Network
-   */
-  associateVPC(props: AssociateVPCProps): void;
-}
-
-/**
- * AccesModes
+ * AccesModes for the Service Network.
  */
 export enum ServiceNetworkAccessMode {
   /**
@@ -50,6 +20,32 @@ export enum ServiceNetworkAccessMode {
    * Only principals from this Org can access the Service Network.
    */
   ORG_ONLY = 'ORG_ONLY',
+}
+
+/**
+ * Represents a VPC Lattice Service Network.
+ * Implemented by `ServiceNetwork`.
+ */
+export interface IServiceNetwork extends core.IResource {
+  /**
+   * The Amazon Resource Name (ARN) of the service network.
+   * @attribute
+   */
+  readonly serviceNetworkArn: string;
+  /**
+   * The Id of the Service Network
+   * @attribute
+   */
+  readonly serviceNetworkId: string;
+  /**
+   * Add Lattice Service to the Service Network
+   */
+  addService(props: AddServiceProps): void;
+  /**
+   * Associate a VPC with the Service Network
+   * This provides an opinionated default of adding a security group to allow inbound 443
+   */
+  associateVPC(props: AssociateVPCProps): void;
 }
 
 /**
@@ -116,9 +112,8 @@ export interface AddloggingDestinationProps {
   readonly destination: LoggingDestination;
 }
 
-// addService Props
 /**
- * Properties to add a Service to a Service Network
+ * Properties to add a Service to the Service Network
  */
 export interface AddServiceProps {
   /**
@@ -132,18 +127,19 @@ export interface AddServiceProps {
 }
 
 /**
- * The properties for the ServiceNetwork.
+ * Properties for defining a VPC Lattice Service Network
  */
 export interface ServiceNetworkProps {
-  /** The name of the Service Network. If not provided Cloudformation will provide
-   * a name
+  /**
+   * The name of the Service Network.
+   * If not provided Cloudformation will provide a name
    * @default cloudformation generated name
    */
   readonly name?: string;
 
   /**
    * The type of  authentication to use with the Service Network
-   * @default 'AWS_IAM'
+   * @default 'NONE'
    */
   readonly authType?: AuthType;
 
@@ -175,19 +171,12 @@ export interface ServiceNetworkProps {
   readonly authStatements?: iam.PolicyStatement[];
 }
 
+/**
+ * Base class for Service Network. Reused between imported and created service networks.
+ */
 abstract class ServiceNetworkBase extends core.Resource implements IServiceNetwork {
-  /**
-   * THe Arn of the Service Network
-   */
   public abstract readonly serviceNetworkArn: string;
-  /**
-   * The Id of the Service Network
-   */
   public abstract readonly serviceNetworkId: string;
-  /**
-   * Boolean
-   */
-  public abstract imported: boolean;
 
   /**
    * Add A lattice service to a lattice network
@@ -199,10 +188,6 @@ abstract class ServiceNetworkBase extends core.Resource implements IServiceNetwo
     });
   }
 
-  /**
-   * Associate a VPC with the Service Network
-   * This provides an opinionated default of adding a security group to allow inbound 443
-   */
   public associateVPC(props: AssociateVPCProps): void {
     new AssociateVpc(this, `AssociateVPC${props.vpc.node.addr}`, {
       vpc: props.vpc,
@@ -213,77 +198,101 @@ abstract class ServiceNetworkBase extends core.Resource implements IServiceNetwo
 }
 
 /**
- * Create a vpcLattice Service Network.
+ * Define a VPC Lattice Service Network.
+ *
+ * @resource AWS::VpcLattice::ServiceNetwork
  */
 export class ServiceNetwork extends ServiceNetworkBase {
+  // ------------------------------------------------------
+  // Validation
+  // ------------------------------------------------------
+  /**
+   * Must be between 3-63 characters. Lowercase letters, numbers, and hyphens are accepted.
+   * Must begin and end with a letter or number. No consecutive hyphens.
+   */
+  public static validateServiceNetworkName(name: string) {
+    const pattern = /^(?!servicenetwork-)(?!-)(?!.*-$)(?!.*--)[a-z0-9-]+$/;
+    const validationSucceeded = name.length >= 3 && name.length <= 63 && pattern.test(name);
+    if (!validationSucceeded) {
+      throw new Error(`Invalid Service Network Name: ${name} (must be between 3-63 characters, and must be a valid name)`);
+    }
+  }
+
+  // ------------------------------------------------------
+  // Imports
+  // ------------------------------------------------------
+
+  /**
+   * Import a Service Network by Arn
+   */
+  public static fromArn(scope: Construct, id: string, arn: string): IServiceNetwork {
+    class Import extends ServiceNetworkBase {
+      public readonly serviceNetworkArn = arn;
+      public readonly serviceNetworkId = core.Arn.extractResourceName(arn, 'servicenetwork');
+    }
+    return new Import(scope, id);
+  }
+  // -----------
   /**
    * Import a Service Network by Id
    */
-  public static fromId(scope: constructs.Construct, id: string, serviceNetworkId: string): IServiceNetwork {
-    return new ImportedServiceNetwork(scope, id, { serviceNetworkId: serviceNetworkId });
+  public static fromId(scope: Construct, id: string, serviceNetworkId: string): IServiceNetwork {
+    class Import extends ServiceNetworkBase {
+      public readonly serviceNetworkId = serviceNetworkId;
+      public readonly serviceNetworkArn = core.Arn.format(
+        {
+          service: 'vpc-lattice',
+          resource: 'servicenetwork',
+          resourceName: serviceNetworkId,
+        },
+        core.Stack.of(this),
+      );
+    }
+    return new Import(scope, id);
   }
+  // -----------
 
-  public static fromName(scope: constructs.Construct, id: string, serviceNetworkName: string): IServiceNetwork {
-    return new ImportedServiceNetwork(scope, id, { serviceNetworkName: serviceNetworkName });
-  }
-
-  /**
-   * The Arn of the service network
-   */
   public readonly serviceNetworkArn: string;
-  /**
-   * The Id of the Service Network
-   */
   public readonly serviceNetworkId: string;
-  /**
-   * imported
-   */
-  public readonly imported: boolean;
+  public authType: AuthType;
+  private readonly _resource: generated.CfnServiceNetwork;
   /**
    * Name of the ServiceNetwork
    */
   public readonly name: string;
   /**
-   * the authType of the service network
-   */
-  authType: AuthType;
-  /**
    * A managed Policy that is the auth policy
    */
-  authPolicy: iam.PolicyDocument;
+  public authPolicy: iam.PolicyDocument;
+  // ------------------------------------------------------
+  // Construct
+  // ------------------------------------------------------
 
-  constructor(scope: constructs.Construct, id: string, props: ServiceNetworkProps) {
-    super(scope, id);
+  constructor(scope: Construct, id: string, props: ServiceNetworkProps) {
+    super(scope, id, {
+      physicalName: props.name,
+    });
 
-    this.imported = false;
-    this.authType = props.authType ?? AuthType.AWS_IAM;
-
-    if (props.name !== undefined) {
-      if (props.name.match(/^[a-z0-9\-]{3,63}$/) === null) {
-        throw new Error(
-          'Theservice network name must be between 3 and 63 characters long. The name can only contain alphanumeric characters and hyphens. The name must be unique to the account.',
-        );
-      }
+    if (props.name) {
+      ServiceNetwork.validateServiceNetworkName(props.name);
     }
-    // the opinionated default for the servicenetwork is to use AWS_IAM as the
-    // authentication method. Provide 'NONE' to props.authType to disable.
+
+    this.authType = props.authType ?? AuthType.AWS_IAM;
 
     // Throw an error if authType and access mode are set
     if (props.accessmode && props.authType === AuthType.NONE) {
       throw new Error('AccessMode can not be set if AuthType is NONE');
     }
 
-    this.name = props.name ?? this.physicalName;
-
-    const serviceNetwork = new aws_vpclattice.CfnServiceNetwork(this, 'Resource', {
-      // if the name is not provided, Cloudformation will provide a name unless there is cross account sharing
-      // in which case a name will be generated.
-      name: this.name,
+    const resource = new generated.CfnServiceNetwork(this, 'Resource', {
+      name: this.physicalName,
       authType: this.authType,
     });
+    this._resource = resource;
 
-    this.serviceNetworkId = serviceNetwork.attrId;
-    this.serviceNetworkArn = serviceNetwork.attrArn;
+    this.name = this.physicalName;
+    this.serviceNetworkId = this._resource.attrId;
+    this.serviceNetworkArn = this._resource.attrArn;
 
     if (props.loggingDestinations !== undefined) {
       props.loggingDestinations.forEach(destination => {
@@ -294,14 +303,14 @@ export class ServiceNetwork extends ServiceNetworkBase {
     }
 
     // associate vpcs
-    if (props.vpcs !== undefined) {
+    if (props.vpcs) {
       props.vpcs.forEach(vpc => {
         this.associateVPC({ vpc: vpc });
       });
     }
 
     //associate services
-    if (props.services !== undefined) {
+    if (props.services) {
       props.services.forEach(service => {
         this.addService({
           service: service,
@@ -361,10 +370,6 @@ export class ServiceNetwork extends ServiceNetworkBase {
    *
    */
   public addStatementToAuthPolicy(statement: iam.PolicyStatement): void {
-    if (this.imported) {
-      throw new Error('It is not possible to add statements to an imported Service Network');
-    }
-
     this.authPolicy.addStatements(statement);
   }
 
@@ -372,10 +377,6 @@ export class ServiceNetwork extends ServiceNetworkBase {
    * Apply the AuthPolicy to a Service Network
    */
   public applyAuthPolicyToServiceNetwork(): void {
-    if (this.imported) {
-      throw new Error('It is not possible to apply an AuthPolicy on an imported ServiceNetwork');
-    }
-
     // check to see if there are any errors with the auth policy
     if (this.authPolicy.validateForResourcePolicy().length > 0) {
       throw new Error(`Auth Policy for granting access on  Service Network is invalid\n, ${this.authPolicy}`);
@@ -393,13 +394,9 @@ export class ServiceNetwork extends ServiceNetworkBase {
   }
 
   /**
-   * send logs to a destination
+   * Send logs to a destination
    */
   public addloggingDestination(props: AddloggingDestinationProps): void {
-    if (this.imported) {
-      throw new Error('It is not possible to add a logging destination to an imported Service Network');
-    }
-
     new aws_vpclattice.CfnAccessLogSubscription(this, `AccessLogSubscription${props.destination.addr}`, {
       destinationArn: props.destination.arn,
       resourceIdentifier: this.serviceNetworkId,
@@ -408,98 +405,14 @@ export class ServiceNetwork extends ServiceNetworkBase {
 
   /**
    * Share the The Service network using RAM
-   * @param props ShareServiceNetwork
    */
   public share(props: ShareServiceNetworkProps): void {
-    if (this.imported) {
-      throw new Error('It is not possible to share an imported Service Network');
-    }
-
     new ram.CfnResourceShare(this, 'ServiceNetworkShare', {
       name: props.name,
       resourceArns: [this.serviceNetworkArn],
       allowExternalPrincipals: props.allowExternalPrincipals,
       principals: props.accounts,
     });
-  }
-}
-/**
- * Props for ImportedSearch
- */
-export interface ImportedServiceNetworkProps {
-  /**
-   * Import by Name
-   * @default - No search By Name
-   */
-  readonly serviceNetworkName?: string;
-  /**
-   * Import by Id
-   * @default - No Search by Id
-   */
-  readonly serviceNetworkId?: string;
-}
-
-/**
- * Import an Exisiting ServiceNetwork by Id
- */
-class ImportedServiceNetwork extends ServiceNetworkBase {
-  /**
-   * The Id of the serviceNetwork
-   */
-  public readonly serviceNetworkId: string;
-  /**
-   * The Arn of the serviceNetwork
-   */
-  public readonly serviceNetworkArn: string;
-  /**
-   * is this an imported ServiceNetwork
-   */
-  public readonly imported: boolean = true;
-
-  constructor(scope: constructs.Construct, id: string, props: ImportedServiceNetworkProps) {
-    super(scope, id);
-
-    // throw an error unless only one of props.serviceNetworkId or props.serviceNetworkName is are defined
-    if (props.serviceNetworkName && props.serviceNetworkId) {
-      throw new Error('Only one of serviceNetworkName or serviceNetworkId can be defined');
-    }
-    if (!props.serviceNetworkName && !props.serviceNetworkId) {
-      throw new Error('One of serviceNetworkName or serviceNetworkId must be defined');
-    }
-
-    if (props.serviceNetworkId) {
-      this.serviceNetworkId = props.serviceNetworkId;
-      this.serviceNetworkArn = `arn:${core.Aws.PARTITION}:vpc-lattice:${core.Aws.REGION}:${core.Aws.ACCOUNT_ID}:servicenetwork/${props.serviceNetworkId}`;
-    } else {
-      const onEvent = new lambda.Function(this, 'getServiceNetworkId', {
-        runtime: lambda.Runtime.PYTHON_3_10,
-        handler: 'getnetworkId.on_event',
-        code: lambda.Code.fromAsset(path.join(__dirname, './lambda/getnetworkId')),
-        timeout: core.Duration.seconds(300),
-        memorySize: 256,
-      });
-
-      onEvent.addToRolePolicy(
-        new iam.PolicyStatement({
-          actions: ['vpc-lattice:ListServiceNetworks'],
-          resources: ['*'],
-          effect: iam.Effect.ALLOW,
-        }),
-      );
-
-      const getId = new core.CustomResource(this, 'getId', {
-        serviceToken: new cr.Provider(this, 'getIdProvider', {
-          onEventHandler: onEvent,
-          providerFunctionName: core.PhysicalName.GENERATE_IF_NEEDED,
-        }).serviceToken,
-        properties: {
-          serviceNetworkName: props.serviceNetworkName,
-        },
-      });
-
-      this.serviceNetworkId = getId.getAttString('serviceNetworkId');
-      this.serviceNetworkArn = `arn:${core.Aws.PARTITION}:vpc-lattice:${core.Aws.REGION}:${core.Aws.ACCOUNT_ID}:servicenetwork/${this.serviceNetworkId}`;
-    }
   }
 }
 
@@ -521,11 +434,12 @@ export interface AssociateVpcProps {
    */
   readonly serviceNetworkId: string;
 }
+
 /**
  * Associate a VPO with Lattice Service Network
  */
 export class AssociateVpc extends core.Resource {
-  constructor(scope: constructs.Construct, id: string, props: AssociateVpcProps) {
+  constructor(scope: Construct, id: string, props: AssociateVpcProps) {
     super(scope, id);
 
     const securityGroupIds: string[] = [];
@@ -567,7 +481,7 @@ export interface ServiceAssociationProps {
  * Creates an Association Between a Lattice Service and a Service Network
  */
 export class ServiceAssociation extends core.Resource {
-  constructor(scope: constructs.Construct, id: string, props: ServiceAssociationProps) {
+  constructor(scope: Construct, id: string, props: ServiceAssociationProps) {
     super(scope, id);
 
     new aws_vpclattice.CfnServiceNetworkServiceAssociation(this, `LatticeService${this.node.addr}`, {

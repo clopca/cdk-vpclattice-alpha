@@ -9,7 +9,7 @@ import { IServiceNetwork, AuthType } from './index';
  */
 export interface IService extends core.IResource {
   /**
-   * The ARN of the service.
+   * The Amazon Resource Name (ARN) of the service.
    * @attribute
    */
   readonly serviceArn: string;
@@ -21,38 +21,13 @@ export interface IService extends core.IResource {
   readonly serviceId: string;
 
   /**
-   * associate the service with a servicenetwork.
+   * Associate the service with a Service Network.
    */
   associateWithServiceNetwork(serviceNetwork: IServiceNetwork): void;
 }
 
-abstract class ServiceBase extends core.Resource implements IService {
-  // public abstract readonly serviceName: string;
-  public abstract readonly serviceArn: string;
-  public abstract readonly serviceId: string;
-  // public abstract readonly domainName?: string;
-  // public abstract readonly authType?: AuthType;
-  // public abstract readonly authPolicy?: iam.PolicyDocument;
-
-  public associateWithServiceNetwork(serviceNetwork: IServiceNetwork): void {
-    new ServiceNetworkAssociation(this, `ServiceAssociation${serviceNetwork.serviceNetworkId}`, {
-      serviceNetwork: serviceNetwork,
-      serviceId: this.serviceId,
-    });
-  }
-
-  // public applyAuthPolicy() {
-  //   if (this.authType != AuthType.AWS_IAM) {
-  //     throw new Error('Cannot apply a policy when authType is not equal to AWS_IAM');
-  //   }
-  //   else {
-  //     //
-  //   }
-  // }
-}
-
 /**
- * Properties for creating a new VPC Lattice Service
+ * Properties for defining a VPC Lattice Service
  */
 export interface ServiceProps {
   /**
@@ -106,6 +81,50 @@ export interface ServiceProps {
   readonly serviceNetwork?: IServiceNetwork;
 }
 
+/**
+ * Properties for associating a VPC with a Service Network
+ */
+export interface ServiceNetworkAssociationProps {
+  /**
+   * lattice Service
+   */
+  readonly serviceNetwork: IServiceNetwork;
+  /**
+   * Lattice ServiceId
+   */
+  readonly serviceId: string;
+}
+
+/**
+ * Base class for Service. Reused between imported and created services.
+ */
+abstract class ServiceBase extends core.Resource implements IService {
+  public abstract readonly serviceArn: string;
+  public abstract readonly serviceId: string;
+  // public abstract readonly authPolicy?: iam.PolicyDocument;
+
+  public associateWithServiceNetwork(serviceNetwork: IServiceNetwork): void {
+    new ServiceNetworkAssociation(this, `ServiceAssociation${serviceNetwork.serviceNetworkId}`, {
+      serviceNetwork: serviceNetwork,
+      serviceId: this.serviceId,
+    });
+  }
+
+  // public applyAuthPolicy() {
+  //   if (this.authType != AuthType.AWS_IAM) {
+  //     throw new Error('Cannot apply a policy when authType is not equal to AWS_IAM');
+  //   }
+  //   else {
+  //     //
+  //   }
+  // }
+}
+
+/**
+ * Define a VPC Lattice Service.
+ *
+ * @resource AWS::VpcLattice::Service
+ */
 export class Service extends ServiceBase {
   // ------------------------------------------------------
   // Validation
@@ -132,12 +151,10 @@ export class Service extends ServiceBase {
     }
     return new Import(scope, id);
   }
-
   // -----------
   public static fromServiceId(scope: Construct, id: string, serviceId: string): IService {
     class Import extends ServiceBase {
       public readonly serviceId = serviceId;
-      // build ARN
       public readonly serviceArn = core.Arn.format(
         {
           service: 'vpc-lattice',
@@ -153,6 +170,7 @@ export class Service extends ServiceBase {
 
   public readonly serviceArn: string;
   public readonly serviceId: string;
+  public readonly serviceName: string;
   public authType: AuthType;
   private readonly _resource: generated.CfnService;
 
@@ -175,47 +193,25 @@ export class Service extends ServiceBase {
       dnsEntry: props.dnsEntry,
       name: this.physicalName,
     });
-
-    // associate with serviceNetwork
-    if (props.serviceNetwork !== undefined) {
-      this.associateWithServiceNetwork(props.serviceNetwork);
-    }
-
     this._resource = resource;
 
-    this.serviceArn = this.getResourceArnAttribute(resource.attrArn, {
+    this.serviceArn = this.getResourceArnAttribute(this._resource.attrArn, {
       service: 'vpc-lattice',
       resource: 'service',
       resourceName: this.physicalName,
     });
-    this.serviceId = this.getResourceNameAttribute(resource.attrId);
+
+    this.serviceId = this.getResourceNameAttribute(this._resource.attrId);
+
+    this.serviceName = this.physicalName;
 
     this.authType = this._resource.authType as AuthType;
-  }
 
-  /**
-   * Associate Service with a Service Network
-   */
-  public associateWithServiceNetwork(serviceNetwork: IServiceNetwork): void {
-    new ServiceNetworkAssociation(this, 'ServiceNetworkAssociation', {
-      serviceNetwork: serviceNetwork,
-      serviceId: this.serviceId,
-    });
+    // associate with serviceNetwork if provided
+    if (props.serviceNetwork) {
+      this.associateWithServiceNetwork(props.serviceNetwork);
+    }
   }
-}
-
-/**
- * Props for Service Assocaition
- */
-export interface ServiceNetworkAssociationProps {
-  /**
-   * lattice Service
-   */
-  readonly serviceNetwork: IServiceNetwork;
-  /**
-   * Lattice ServiceId
-   */
-  readonly serviceId: string;
 }
 
 /**
