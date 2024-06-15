@@ -2,23 +2,18 @@ import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as vpclattice from '../..';
 // import * as targets from '../../aws-vpclattice-targets';
-// import { SupportResources } from './support';
+import { SupportResources } from './support';
 // import { aws_iam as iam } from 'aws-cdk-lib';
 
 export class VpclatticealphaStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    // const support = new SupportResources(this, 'SupportResources');
+    const support = new SupportResources(this, 'SupportResources');
 
     // create a vpc lattice service, and associate it with the service network
     // the listener use defaults of HTTPS, on port 443, and have a default action of 404 NOT FOUND
-    const service = new vpclattice.Service(this, 'myLatticeService', {
-      serviceName: 'myService',
-      authType: vpclattice.AuthType.NONE,
-    });
-
-    console.log(service.serviceName);
+    const myLatticeService = new vpclattice.Service(this, 'LatticeService', {});
 
     // // add a listener to the service
     // const listener = new vpclattice.Listener(this, 'Listener', {
@@ -67,16 +62,18 @@ export class VpclatticealphaStack extends cdk.Stack {
     //   accessMode: vpclattice.RuleAccessMode.AUTHENTICATED_ONLY,
     // });
 
-    // // create a latticeServiceNetwork using the default settings for a Service network;
-    // // - Requires an IAM policy, do not allow access outside this org,
-    // // Overide the default option to allow unauthenticated/signed requests
-    // // associate the vpcs
-    // // assocaite the services with the servicenetwork
-    // const serviceNetwork = new vpclattice.ServiceNetwork(this, 'ServiceNetwork', {
-    //   accessmode: vpclattice.ServiceNetworkAccessMode.UNAUTHENTICATED,
-    //   vpcs: [support.vpc1],
-    //   services: [myLatticeService],
-    // });
+    // create a latticeServiceNetwork using the default settings for a Service network;
+    // - Requires an IAM policy, do not allow access outside this org,
+    // Overide the default option to allow unauthenticated/signed requests
+    // associate the vpcs
+    // assocaite the services with the servicenetwork
+    new vpclattice.ServiceNetwork(this, 'ServiceNetwork', {
+      accessmode: vpclattice.ServiceNetworkAccessMode.UNAUTHENTICATED,
+      vpcs: [support.vpc1],
+      services: [myLatticeService],
+    });
+
+    // myLatticeService.associateWithServiceNetwork(serviceNetwork);
 
     // // after adding rules, apply the auth policy to the service and Service Network
     // myLatticeService.applyAuthPolicy();

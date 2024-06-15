@@ -104,7 +104,7 @@ abstract class ServiceBase extends core.Resource implements IService {
   // public abstract readonly authPolicy?: iam.PolicyDocument;
 
   public associateWithServiceNetwork(serviceNetwork: IServiceNetwork): void {
-    new ServiceNetworkAssociation(this, `ServiceAssociation${serviceNetwork.serviceNetworkId}`, {
+    new ServiceNetworkAssociation(this, `ServiceNetworkAssociation${serviceNetwork.node.addr}`, {
       serviceNetwork: serviceNetwork,
       serviceId: this.serviceId,
     });
@@ -222,7 +222,7 @@ export class ServiceNetworkAssociation extends core.Resource {
   constructor(scope: Construct, id: string, props: ServiceNetworkAssociationProps) {
     super(scope, id);
 
-    new generated.CfnServiceNetworkServiceAssociation(this, `LatticeService${this.node.addr}`, {
+    new generated.CfnServiceNetworkServiceAssociation(this, `ServiceNetworkServiceAssociation${this.node.addr}`, {
       serviceIdentifier: props.serviceId,
       serviceNetworkIdentifier: props.serviceNetwork.serviceNetworkId,
     });
