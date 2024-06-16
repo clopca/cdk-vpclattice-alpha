@@ -1,4 +1,5 @@
 import * as core from 'aws-cdk-lib';
+import { aws_iam as iam } from 'aws-cdk-lib';
 import * as generated from 'aws-cdk-lib/aws-vpclattice';
 import { Construct } from 'constructs';
 import { IServiceNetwork, AuthType } from './index';
@@ -101,7 +102,6 @@ export interface ServiceNetworkAssociationProps {
 abstract class ServiceBase extends core.Resource implements IService {
   public abstract readonly serviceArn: string;
   public abstract readonly serviceId: string;
-  // public abstract readonly authPolicy?: iam.PolicyDocument;
 
   public associateWithServiceNetwork(serviceNetwork: IServiceNetwork): void {
     new ServiceNetworkAssociation(this, `ServiceNetworkAssociation${serviceNetwork.node.addr}`, {
@@ -109,15 +109,6 @@ abstract class ServiceBase extends core.Resource implements IService {
       serviceId: this.serviceId,
     });
   }
-
-  // public applyAuthPolicy() {
-  //   if (this.authType != AuthType.AWS_IAM) {
-  //     throw new Error('Cannot apply a policy when authType is not equal to AWS_IAM');
-  //   }
-  //   else {
-  //     //
-  //   }
-  // }
 }
 
 /**
@@ -170,9 +161,11 @@ export class Service extends ServiceBase {
 
   public readonly serviceArn: string;
   public readonly serviceId: string;
+  // variables specific to the non-imported Service
   public readonly serviceName: string;
   public authType: AuthType;
   private readonly _resource: generated.CfnService;
+  public readonly authPolicy: iam.PolicyDocument;
 
   // ------------------------------------------------------
   // Construct
@@ -185,9 +178,10 @@ export class Service extends ServiceBase {
     if (props.serviceName) {
       Service.validateServiceName(props.serviceName);
     }
+    this.authType = props.authType ?? AuthType.NONE;
 
     const resource = new generated.CfnService(this, 'Resource', {
-      authType: props.authType ?? AuthType.NONE,
+      authType: this.authType,
       certificateArn: props.certificateArn,
       customDomainName: props.customDomainName,
       dnsEntry: props.dnsEntry,
@@ -195,21 +189,55 @@ export class Service extends ServiceBase {
     });
     this._resource = resource;
 
-    this.serviceArn = this.getResourceArnAttribute(this._resource.attrArn, {
-      service: 'vpc-lattice',
-      resource: 'service',
-      resourceName: this.physicalName,
-    });
-
-    this.serviceId = this.getResourceNameAttribute(this._resource.attrId);
-
+    this.serviceArn = this._resource.attrArn;
+    this.serviceId = this._resource.attrId;
     this.serviceName = this.physicalName;
-
-    this.authType = this._resource.authType as AuthType;
+    this.authPolicy = new iam.PolicyDocument();
 
     // associate with serviceNetwork if provided
     if (props.serviceNetwork) {
       this.associateWithServiceNetwork(props.serviceNetwork);
+    }
+  }
+
+  // ------------------------------------------------------
+  // Methods
+  // ------------------------------------------------------
+
+  /**
+   * .grantAccess on a lattice service, will permit the principals to
+   * access all of the service. Consider using more granual permissions
+   * at the rule level.
+   *
+   * @param principals
+   */
+  public grantAccess(principals: iam.IPrincipal[]): void {
+    let policyStatement: iam.PolicyStatement = new iam.PolicyStatement();
+    principals.forEach(principal => {
+      policyStatement.addPrincipals(principal);
+    });
+    policyStatement.addActions('vpc-lattice-svcs:Invoke');
+    policyStatement.addResources('*'); //TODO: check if possible to add the service arn and still have the policy work
+    policyStatement.effect = iam.Effect.ALLOW;
+
+    this.authPolicy.addStatements(policyStatement);
+  }
+
+  /**
+   * Apply the AuthPolicy to the Service
+   */
+  public applyAuthPolicy() {
+    if (this.authType != AuthType.AWS_IAM) {
+      throw new Error('Cannot apply a policy when authType is not equal to AWS_IAM');
+    } else {
+      if (this.authPolicy.validateForResourcePolicy().length > 0) {
+        throw new Error(`The following errors were found in the policy: \n${this.authPolicy.validateForResourcePolicy()} \n ${this.authPolicy}`);
+      }
+      new generated.CfnAuthPolicy(this, 'ServiceAuthPolicy', {
+        policy: this.authPolicy.toJSON(),
+        resourceIdentifier: this.serviceId,
+      });
+      return this.authPolicy;
     }
   }
 }

@@ -40,7 +40,7 @@ export interface IServiceNetwork extends core.IResource {
   /**
    * Add Lattice Service to the Service Network
    */
-  addService(props: AddServiceProps): void;
+  addService(service: IService): void;
   /**
    * Associate a VPC with the Service Network
    * This provides an opinionated default of adding a security group to allow inbound 443
@@ -113,20 +113,6 @@ export interface AddloggingDestinationProps {
 }
 
 /**
- * Properties to add a Service to the Service Network
- */
-export interface AddServiceProps {
-  /**
-   * The Service to add to the Service Network
-   */
-  readonly service: IService;
-  /**
-   * The Service Network to add the Service to
-   */
-  readonly serviceNetworkId: string;
-}
-
-/**
  * Properties for defining a VPC Lattice Service Network
  */
 export interface ServiceNetworkProps {
@@ -177,17 +163,18 @@ export interface ServiceNetworkProps {
 abstract class ServiceNetworkBase extends core.Resource implements IServiceNetwork {
   public abstract readonly serviceNetworkArn: string;
   public abstract readonly serviceNetworkId: string;
-
   /**
    * Add A lattice service to the Service Network
    */
-  public addService(props: AddServiceProps): void {
-    new ServiceAssociation(this, `ServiceAssociation${props.service.node.addr}`, {
-      service: props.service,
+  public addService(service: IService): void {
+    new ServiceAssociation(this, `ServiceAssociation${service.node.addr}`, {
+      service: service,
       serviceNetworkId: this.serviceNetworkId,
     });
   }
-
+  /**
+   * Apply the AuthPolicy to the Service Network
+   */
   public associateVPC(props: AssociateVPCProps): void {
     new AssociateVpc(this, `AssociateVPC${props.vpc.node.addr}`, {
       vpc: props.vpc,
@@ -254,20 +241,15 @@ export class ServiceNetwork extends ServiceNetworkBase {
 
   public readonly serviceNetworkArn: string;
   public readonly serviceNetworkId: string;
+  // variables specific to the non-imported Service Network
+  public readonly name: string;
   public authType: AuthType;
   private readonly _resource: generated.CfnServiceNetwork;
-  /**
-   * Name of the ServiceNetwork
-   */
-  public readonly name: string;
-  /**
-   * A managed Policy that is the auth policy
-   */
-  public authPolicy: iam.PolicyDocument;
+  public readonly authPolicy: iam.PolicyDocument;
+
   // ------------------------------------------------------
   // Construct
   // ------------------------------------------------------
-
   constructor(scope: Construct, id: string, props: ServiceNetworkProps) {
     super(scope, id, {
       physicalName: props.name,
@@ -277,11 +259,11 @@ export class ServiceNetwork extends ServiceNetworkBase {
       ServiceNetwork.validateServiceNetworkName(props.name);
     }
 
-    this.authType = props.authType ?? AuthType.AWS_IAM;
+    this.authType = props.authType ?? AuthType.NONE;
 
     // Throw an error if authType and access mode are set
-    if (props.accessmode && props.authType === AuthType.NONE) {
-      throw new Error('AccessMode can not be set if AuthType is NONE');
+    if (props.accessmode && this.authType === AuthType.NONE) {
+      throw new Error('AccessMode can not be set if AuthType is not set to AWS_IAM');
     }
 
     const resource = new generated.CfnServiceNetwork(this, 'Resource', {
@@ -290,10 +272,12 @@ export class ServiceNetwork extends ServiceNetworkBase {
     });
     this._resource = resource;
 
-    this.name = this.physicalName;
-    this.serviceNetworkId = this._resource.attrId;
     this.serviceNetworkArn = this._resource.attrArn;
+    this.serviceNetworkId = this._resource.attrId;
+    this.name = this.physicalName;
+    this.authPolicy = new iam.PolicyDocument();
 
+    // Define logging destinations
     if (props.loggingDestinations !== undefined) {
       props.loggingDestinations.forEach(destination => {
         this.addloggingDestination({
@@ -302,26 +286,22 @@ export class ServiceNetwork extends ServiceNetworkBase {
       });
     }
 
-    // associate vpcs
+    // Associate VPCs
     if (props.vpcs) {
       props.vpcs.forEach(vpc => {
         this.associateVPC({ vpc: vpc });
       });
     }
 
-    //associate services
+    // Associate Services
     if (props.services) {
       props.services.forEach(service => {
-        this.addService({
-          service: service,
-          serviceNetworkId: this.serviceNetworkId,
-        });
+        this.addService(service);
       });
     }
 
-    // create a managedPolicy for the lattice ServiceNetwork.
-    this.authPolicy = new iam.PolicyDocument();
-
+    // Create a Policy for the Service Network
+    // Start with the default policy allowing unauthenticated access
     const statement = new iam.PolicyStatement({
       effect: iam.Effect.ALLOW,
       actions: ['vpc-lattice-svcs:Invoke'],
@@ -341,7 +321,6 @@ export class ServiceNetwork extends ServiceNetworkBase {
           resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE,
         }),
       });
-
       const orgId = orgIdCr.getResponseField('Organization.Id');
 
       // add the condition that requires that the principal is from this org
@@ -362,12 +341,12 @@ export class ServiceNetwork extends ServiceNetworkBase {
     }
   }
 
+  // ------------------------------------------------------
+  // Methods
+  // ------------------------------------------------------
+
   /**
-   * This will give the principals access to all resources that are on this
-   * service network. This is a broad permission.
-   * Consider granting Access at the Service
-   * addToResourcePolicy()
-   *
+   * Add a Policy Statement to the Auth Policy
    */
   public addStatementToAuthPolicy(statement: iam.PolicyStatement): void {
     this.authPolicy.addStatements(statement);
@@ -379,7 +358,7 @@ export class ServiceNetwork extends ServiceNetworkBase {
   public applyAuthPolicyToServiceNetwork(): void {
     // check to see if there are any errors with the auth policy
     if (this.authPolicy.validateForResourcePolicy().length > 0) {
-      throw new Error(`Auth Policy for granting access on  Service Network is invalid\n, ${this.authPolicy}`);
+      throw new Error(`The following errors were found in the policy: \n${this.authPolicy.validateForResourcePolicy()} \n ${this.authPolicy}`);
     }
     // check to see if the AuthType is AWS_IAM
     if (this.authType !== AuthType.AWS_IAM) {
