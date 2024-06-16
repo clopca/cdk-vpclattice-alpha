@@ -179,7 +179,7 @@ abstract class ServiceNetworkBase extends core.Resource implements IServiceNetwo
   public abstract readonly serviceNetworkId: string;
 
   /**
-   * Add A lattice service to a lattice network
+   * Add A lattice service to the Service Network
    */
   public addService(props: AddServiceProps): void {
     new ServiceAssociation(this, `ServiceAssociation${props.service.node.addr}`, {

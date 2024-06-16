@@ -1,8 +1,8 @@
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
+import { SupportResources } from './support';
 import * as vpclattice from '../..';
 // import * as targets from '../../aws-vpclattice-targets';
-import { SupportResources } from './support';
 // import { aws_iam as iam } from 'aws-cdk-lib';
 
 export class VpclatticealphaStack extends cdk.Stack {

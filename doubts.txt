@@ -33,5 +33,7 @@ Or is it beeter to only have the methods in the ServiceNetwork class and not in 
     return new ImportedService(scope, id, { serviceArn: arn });
   }
 
-3. 
+3. Do we prefer default AuthType in Service and ServiceNetwork to be AWS_IAM or NONE?
+
+
 
