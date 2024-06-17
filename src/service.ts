@@ -232,14 +232,13 @@ export class Service extends ServiceBase {
    * @param principals
    */
   public grantAccess(principals: iam.IPrincipal[]): void {
-    let policyStatement: iam.PolicyStatement = new iam.PolicyStatement();
-    principals.forEach(principal => {
-      policyStatement.addPrincipals(principal);
+    let policyStatement: iam.PolicyStatement = new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      actions: ['vpc-lattice-svcs:Invoke'],
+      //TODO: check if possible to add the service arn and still have the policy work
+      resources: ['*'],
+      principals: principals
     });
-    policyStatement.addActions('vpc-lattice-svcs:Invoke');
-    policyStatement.addResources('*'); //TODO: check if possible to add the service arn and still have the policy work
-    policyStatement.effect = iam.Effect.ALLOW;
-
     this.authPolicy.addStatements(policyStatement);
   }
 
