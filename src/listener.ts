@@ -187,9 +187,9 @@ export interface ListenerProps {
   readonly protocol?: Protocol;
 
   /**
-  * Optional port number for the listener. If not supplied, will default to 80 or 443, depending on the Protocol.
-  * @default - 80 or 443 depending on the Protocol
-  */
+   * Optional port number for the listener. If not supplied, will default to 80 or 443, depending on the Protocol.
+   * @default - 80 or 443 depending on the Protocol
+   */
   readonly port?: number;
 
   /**
@@ -282,38 +282,66 @@ export interface RuleProp {
  *
  */
 export class Listener extends core.Resource implements IListener {
+  // ------------------------------------------------------
+  // Validation
+  // ------------------------------------------------------
+  /**
+   * Must be between 3-40 characters. Lowercase letters, numbers, and hyphens are accepted.
+   * Must begin and end with a letter or number. No consecutive hyphens.
+   */
+  public static validateListenerName(name: string) {
+    const pattern = /^(?!listener-)(?!-)(?!.*-$)(?!.*--)[a-z0-9-]+$/;
+    const validationSucceeded = name.length >= 3 && name.length <= 63 && pattern.test(name);
+    if (!validationSucceeded) {
+      throw new Error(
+        `Invalid Listener Name: ${name} (must be between 3-63 characters. The name can only contain  lower case alphanumeric characters and hyphens. The name must be unique to the account.)`,
+      );
+    }
+  }
+  // -----------
+
   /**
    *  The Id of the Listener
    */
-  readonly listenerId: string;
+  public readonly listenerId: string;
   /**
    * THe Arn of the Listener
    */
-  readonly listenerArn: string;
+  public readonly listenerArn: string;
+  /*
+   * The created CfnListener resource
+   */
+  private readonly _resource: generated.CfnListener;
   /**
    * A list of priorities, to check for duplicates
    */
-  listenerPriorities: number[] = [];
+  public listenerPriorities: number[] = [];
   /**
    * The service this listener is attached to
    */
-  service: Service;
+  public service: Service;
   /**
-   * Service auth Policy
-   * @default none.
+   * The default action for the listener
    */
+  public defaultAction: generated.CfnListener.DefaultActionProperty;
 
+  /**
+   * The protocol for the listener
+   */
+  public port: number;
+
+  // ------------------------------------------------------
+  // Construct
+  // ------------------------------------------------------
   constructor(scope: Construct, id: string, props: ListenerProps) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.name,
+    });
 
-    // the default action is a not provided, it will be set to NOT_FOUND
-    // let defaultAction: generated.CfnListener.DefaultActionProperty = props.defaultAction ?? {
-    //   fixedResponse: {
-    //     statusCode: FixedResponse.NOT_FOUND,
-    //   },
-    // };
+    if (props.name) {
+      Listener.validateListenerName(props.name);
+    }
 
-    let defaultAction: generated.CfnListener.DefaultActionProperty;
     if (props.defaultAction) {
       // throw an error if both props.defaultAction.fixedaction and props.defaultAction.forward are set
       if (props.defaultAction.fixedResponse && props.defaultAction.forward) {
@@ -326,18 +354,18 @@ export class Listener extends core.Resource implements IListener {
 
       // set the default action to the fixedResponse
       if (props.defaultAction.fixedResponse) {
-        defaultAction = {
+        this.defaultAction = {
           fixedResponse: {
             statusCode: props.defaultAction.fixedResponse,
           },
         };
       } else {
         // set the default action to the foward
-        defaultAction = {
+        this.defaultAction = {
           forward: {
             targetGroups: [
               {
-                targetGroupIdentifier: props.defaultAction.forward?.targetGroup.targetGroupId as string,
+                targetGroupIdentifier: props.defaultAction.forward!.targetGroup.targetGroupId,
                 // the properties below are optional
                 weight: props.defaultAction.forward?.weight,
               },
@@ -346,51 +374,44 @@ export class Listener extends core.Resource implements IListener {
         };
       }
     } else {
-      defaultAction = {
+      // If the default action is not provided, it will be set to NOT_FOUND
+      this.defaultAction = {
         fixedResponse: {
           statusCode: FixedResponse.NOT_FOUND,
         },
       };
     }
 
-    // default to using HTTPS
+    // Determine the protocol. Default to HTTPS
     let protocol = props.protocol ?? Protocol.HTTPS;
 
-    // check the the port is in range if it is specificed
+    // Check the the port is in range if it is specificed
     if (props.port) {
       if (props.port < 0 || props.port > 65535) {
         throw new Error('Port out of range');
       }
     }
 
-    // if its not specified, set it to the default port based on the protcol
-    let port: number;
+    // If port is not specified, set it to the default port based on the protocol
     if (protocol === Protocol.HTTP) {
-      port = props.port ?? 80;
+      this.port = props.port ?? 80;
     } else if (protocol === Protocol.HTTPS) {
-      port = props.port ?? 443;
+      this.port = props.port ?? 443;
     } else {
       throw new Error('Protocol not supported');
     }
 
-    if (props.name !== undefined) {
-      if (props.name.match(/^[a-z0-9\-]{3,63}$/) === null) {
-        throw new Error(
-          'The listener name must be between 3 and 63 characters long. The name can only contain  lower case alphanumeric characters and hyphens. The name must be unique to the account.',
-        );
-      }
-    }
-
-    const listener = new generated.CfnListener(this, 'Resource', {
+    const resource = new generated.CfnListener(this, 'Resource', {
       name: props.name,
-      defaultAction: defaultAction,
+      defaultAction: this.defaultAction,
       protocol: protocol,
-      port: port,
+      port: this.port,
       serviceIdentifier: props.service.serviceId,
     });
+    this._resource = resource;
 
-    this.listenerId = listener.attrId;
-    this.listenerArn = listener.attrArn;
+    this.listenerId = this._resource.attrId;
+    this.listenerArn = this._resource.attrArn;
     this.service = props.service;
 
     if (props.rules) {
