@@ -1,6 +1,6 @@
 import * as core from 'aws-cdk-lib';
 
-import { aws_vpclattice } from 'aws-cdk-lib';
+import * as generated from 'aws-cdk-lib/aws-vpclattice';
 
 import * as constructs from 'constructs';
 
@@ -51,7 +51,7 @@ export class TargetGroup extends core.Resource implements ITargetGroup {
   constructor(scope: constructs.Construct, id: string, props: TargetGroupProps) {
     super(scope, id);
 
-    const targetGroup = new aws_vpclattice.CfnTargetGroup(this, 'Resource', {
+    const targetGroup = new generated.CfnTargetGroup(this, 'Resource', {
       type: props.target.type,
       name: props.name,
       config: props.target.config,

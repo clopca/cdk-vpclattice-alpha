@@ -271,9 +271,9 @@ export class Listener extends core.Resource implements IListener {
    */
   readonly listenerArn: string;
   /**
-   * A list of prioritys, to check for duplicates
+   * A list of priorities, to check for duplicates
    */
-  listenerPrioritys: number[] = [];
+  listenerPriorities: number[] = [];
   /**
    * The service this listener is attached to
    */
@@ -462,10 +462,10 @@ export class Listener extends core.Resource implements IListener {
     /**
      * Validate the priority is not already in use.
      */
-    if (priority in this.listenerPrioritys) {
+    if (priority in this.listenerPriorities) {
       throw new Error('Priority is already in use, ensure all listerner rules have unique prioritys');
     }
-    this.listenerPrioritys.push(priority);
+    this.listenerPriorities.push(priority);
     // check to see if priority is between 1 and 100
     if (priority < 1 || priority > 100) {
       throw new Error('Priority must be between 1 and 100');
