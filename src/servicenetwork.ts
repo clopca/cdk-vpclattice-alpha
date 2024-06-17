@@ -118,10 +118,10 @@ export interface AssociateVPCProps {
    */
   readonly securityGroups?: ec2.SecurityGroup[];
 }
+
 /**
  * Properties to add a logging Destination
  */
-
 export interface AddloggingDestinationProps {
   /**
    * The logging destination
@@ -147,8 +147,9 @@ export interface ServiceNetworkProps {
   readonly authType?: AuthType;
 
   /**
-   * Logging destinations
-   * @default: no logging
+   * Where to send access logs. Access log entries represent traffic 
+   * originated from VPCs associated with that network.
+   * @default - No logging
    */
   readonly loggingDestinations?: LoggingDestination[];
 

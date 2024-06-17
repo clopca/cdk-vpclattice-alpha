@@ -1,4 +1,5 @@
-import { aws_vpclattice } from 'aws-cdk-lib';
+
+import * as vpc_lattice from 'aws-cdk-lib/aws-vpclattice';
 
 export interface ITarget {
   /**
@@ -9,10 +10,10 @@ export interface ITarget {
   /**
    * References to the targets, ids or Arns
    */
-  readonly targets: aws_vpclattice.CfnTargetGroup.TargetProperty[];
+  readonly targets: vpc_lattice.CfnTargetGroup.TargetProperty[];
 
   /**
    * Configuration for the TargetGroup, if it is not a lambda
    */
-  readonly config?: aws_vpclattice.CfnTargetGroup.TargetGroupConfigProperty;
+  readonly config?: vpc_lattice.CfnTargetGroup.TargetGroupConfigProperty;
 }

@@ -1,7 +1,11 @@
 import { aws_s3 as s3, aws_logs as logs, aws_kinesis as kinesis } from 'aws-cdk-lib';
 
 /**
- * Logging options
+ * Enables access logs to be sent to Amazon CloudWatch, Amazon S3, 
+ * and/or Amazon Kinesis Data Firehose. The service network owner can 
+ * use the access logs to audit the services in the network. 
+ * @see https://docs.aws.amazon.com/vpc-lattice/latest/ug/monitoring-access-logs.html
+ * 
  */
 export abstract class LoggingDestination {
   // ------------------------------------------------------
@@ -19,7 +23,7 @@ export abstract class LoggingDestination {
     };
   }
   /**
-   * Send logs to Amazon CloudWatch
+   * Send logs to Amazon CloudWatch.
    * @param logGroup the log group in CloudWatch Logs to use
    */
   public static cloudwatch(logGroup: logs.ILogGroup): LoggingDestination {

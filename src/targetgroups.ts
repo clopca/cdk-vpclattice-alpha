@@ -79,11 +79,12 @@ export class TargetGroup extends core.Resource implements ITargetGroup {
       physicalName: props.name,
     });
 
-    // validate name
+    // Validate name
     if (props.name) {
       TargetGroup.validateTargetGroupName(props.name);
     }
 
+    // Create nested L1
     this._resource = new generated.CfnTargetGroup(this, 'Resource', {
       type: props.target.type,
       name: props.name,

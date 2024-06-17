@@ -10,46 +10,55 @@ export interface TargetGroupHealthCheckProps {
    * @default true
    */
   readonly enabled?: boolean;
+
   /**
    * Health Check Interval
    * @default 30 seconds
    */
   readonly healthCheckInterval?: core.Duration;
+
   /**
    * TimeOut Period
    * @default 5 seconds
    */
   readonly healthCheckTimeout?: core.Duration;
+
   /**
    * Number of Healthy Responses before Target is considered healthy
    * @default 2
    */
   readonly healthyThresholdCount?: number;
+
   /**
    * Check based on Response from target
    * @default 200 OK
    */
   readonly matcher?: FixedResponse;
+
   /**
    * Path to use for Health Check
    * @default '/'
    */
   readonly path?: string;
+
   /**
    * Port to use for Health Check
    * @default 443
    */
   readonly port?: number;
+
   /**
    * Protocol to use for Health Check
    * @default HTTPS
    */
   readonly protocol?: Protocol;
+
   /**
    * Protocol to use for Health Check
    * @default HTTP2
    */
   readonly protocolVersion?: ProtocolVersion;
+
   /**
    * Number of unhealty events before Target is considered unhealthy
    * @default 1
@@ -168,5 +177,5 @@ export abstract class HealthCheck {
    */
   public abstract readonly healthyThresholdCount: number;
 
-  protected constructor() {}
+  protected constructor() { }
 }

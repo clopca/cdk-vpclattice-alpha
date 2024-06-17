@@ -2,7 +2,7 @@ import * as core from 'aws-cdk-lib';
 import { aws_iam as iam } from 'aws-cdk-lib';
 import * as generated from 'aws-cdk-lib/aws-vpclattice';
 import { Construct } from 'constructs';
-import { IServiceNetwork, AuthType } from './index';
+import { IServiceNetwork, AuthType, LoggingDestination, AddloggingDestinationProps } from './index';
 
 /**
  * Represents a Vpc Lattice Service.
@@ -65,21 +65,31 @@ export interface ServiceProps {
    * @default no custom certificate is used
    */
   readonly certificateArn?: string;
+
   /**
    * A customDomainName used by the service
    * @default no custom domain name is used
    */
   readonly customDomainName?: string;
+
   /**
    * A custom DNS entry
    * @default no custom DNS entry is used
    */
   readonly dnsEntry?: generated.CfnService.DnsEntryProperty;
+
   /**
    * ServiceNetwork to associate with.
    * @default will not assocaite with any serviceNetwork.
    */
   readonly serviceNetwork?: IServiceNetwork;
+
+  /**
+   * Where to send access logs. Access log entries represent traffic 
+   * originated from VPCs associated with that network.
+   * @default - No logging
+   */
+  readonly loggingDestinations?: LoggingDestination[];
 }
 
 /**
@@ -90,6 +100,7 @@ export interface ServiceNetworkAssociationProps {
    * lattice Service
    */
   readonly serviceNetwork: IServiceNetwork;
+
   /**
    * Lattice ServiceId
    */
@@ -198,6 +209,15 @@ export class Service extends ServiceBase {
     if (props.serviceNetwork) {
       this.associateWithServiceNetwork(props.serviceNetwork);
     }
+
+    // Define logging destinations if provided
+    if (props.loggingDestinations) {
+      props.loggingDestinations.forEach(destination => {
+        this.addloggingDestination({
+          destination: destination,
+        });
+      });
+    }
   }
 
   // ------------------------------------------------------
@@ -224,6 +244,16 @@ export class Service extends ServiceBase {
   }
 
   /**
+   * Send logs to a destination
+   */
+  public addloggingDestination(props: AddloggingDestinationProps): void {
+    new generated.CfnAccessLogSubscription(this, `AccessLogSubscription${props.destination.addr}`, {
+      destinationArn: props.destination.arn,
+      resourceIdentifier: this.serviceArn,
+    });
+  }
+
+  /**
    * Apply the AuthPolicy to the Service
    */
   public applyAuthPolicy() {
@@ -243,8 +273,8 @@ export class Service extends ServiceBase {
 }
 
 /**
- * Creates an Association Between a Lattice Service and a Service Network
- * consider using .associateWithServiceNetwork
+ * Creates an Association Between a Lattice Service and a Service Network.
+ * Consider using `.associateWithServiceNetwork` of the Service construct
  */
 export class ServiceNetworkAssociation extends core.Resource {
   constructor(scope: Construct, id: string, props: ServiceNetworkAssociationProps) {
