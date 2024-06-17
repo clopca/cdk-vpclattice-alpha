@@ -42,6 +42,24 @@ export interface TargetGroupProps {
  * @see https://docs.aws.amazon.com/vpc-lattice/latest/ug/target-groups.html
  */
 export class TargetGroup extends core.Resource implements ITargetGroup {
+  // ------------------------------------------------------
+  // Validation
+  // ------------------------------------------------------
+  /**
+   * Must be between 3-128 characters. The name must be unique within the account.
+   * The valid characters are a-z, 0-9, and hyphens (-). You can't use a hyphen as
+   * the first or last character, or immediately after another hyphen.
+   */
+  public static validateTargetGroupName(name: string) {
+    const pattern = /^(?!tg-)(?!-)(?!.*-$)(?!.*--)[a-z0-9-]+$/;
+    const validationSucceeded = name.length >= 3 && name.length <= 128 && pattern.test(name);
+    if (!validationSucceeded) {
+      throw new Error(`Invalid Target Group Name: ${name} (must be between 3-128 characters, and must be a valid name)`);
+    }
+  }
+
+  // ------------------------------------------------------
+
   /*
    * The Id of the target group
    **/
@@ -54,22 +72,6 @@ export class TargetGroup extends core.Resource implements ITargetGroup {
 
   //--
   private readonly _resource: generated.CfnTargetGroup;
-
-  // ------------------------------------------------------
-  // Validation
-  // ------------------------------------------------------
-  /**
-   * Must be between 3-128 characters. The name must be unique within the account. 
-   * The valid characters are a-z, 0-9, and hyphens (-). You can't use a hyphen as 
-   * the first or last character, or immediately after another hyphen.
-   */
-  public static validateTargetGroupName(name: string) {
-    const pattern = /^(?!tg-)(?![-])(?!.*[-]$)(?!.*[-]{2})[a-z0-9-]+$/;
-    const validationSucceeded = name.length >= 3 && name.length <= 128 && pattern.test(name);
-    if (!validationSucceeded) {
-      throw new Error(`Invalid Target Group Name: ${name} (must be between 3-128 characters, and must be a valid name)`);
-    }
-  }
 
   // ------------------------------------------------------
   // Constructor

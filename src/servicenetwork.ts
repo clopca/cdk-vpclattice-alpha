@@ -10,9 +10,9 @@ import { IService, AuthType, LoggingDestination } from './index';
 export enum ServiceNetworkAccessMode {
   /**
    * Allows for Unauthenticated (Anonymous) Access to the Service Network.
-   * Anonymous principals are callers that don't sign their AWS requests 
-   * with Signature Version 4 (SigV4), and are within a VPC that is connected 
-   * to the service network. 
+   * Anonymous principals are callers that don't sign their AWS requests
+   * with Signature Version 4 (SigV4), and are within a VPC that is connected
+   * to the service network.
    */
   UNAUTHENTICATED = 'UNAUTHENTICATED',
 
