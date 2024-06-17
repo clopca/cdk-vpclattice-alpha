@@ -49,6 +49,15 @@ junit.xml
 .jsii
 tsconfig.json
 !/API.md
+test/.tmp
+test/service.integ.snapshot/asset.*
+test/service.integ.snapshot/**/asset.*
+test/service.integ.snapshot/cdk.out
+test/service.integ.snapshot/**/cdk.out
+test/service.integ.snapshot/manifest.json
+test/service.integ.snapshot/**/manifest.json
+test/service.integ.snapshot/tree.json
+test/service.integ.snapshot/**/tree.json
 cdk.out
 cdk.context.json
 !/.projenrc.ts

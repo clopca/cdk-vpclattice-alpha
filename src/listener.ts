@@ -1,6 +1,6 @@
 import * as core from 'aws-cdk-lib';
-import * as generated from 'aws-cdk-lib/aws-vpclattice';
 import { aws_iam as iam } from 'aws-cdk-lib';
+import * as generated from 'aws-cdk-lib/aws-vpclattice';
 import { Construct } from 'constructs';
 import { WeightedTargetGroup, HTTPMatch, Service } from './index';
 
@@ -273,13 +273,13 @@ export interface RuleProp {
 }
 
 /**
- *  A listener is a process that checks for connection requests, using the protocol 
- *  and port that you configure. The rules that you define for a listener determine 
+ *  A listener is a process that checks for connection requests, using the protocol
+ *  and port that you configure. The rules that you define for a listener determine
  *  how the service routes requests to its registered targets.
- * 
+ *
  *  **This class should not be called directly**.
  *  Use the `.addListener()` method on an instance of a Service construct.
- *  
+ *
  */
 export class Listener extends core.Resource implements IListener {
   /**

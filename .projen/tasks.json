@@ -149,6 +149,78 @@
         }
       ]
     },
+    "integ:service:assert": {
+      "name": "integ:service:assert",
+      "description": "assert the snapshot of integration test 'service'",
+      "steps": [
+        {
+          "exec": "[ -d \"test/service.integ.snapshot\" ] || (echo \"No snapshot available for integration test 'service'. Run 'projen integ:service:deploy' to capture.\" && exit 1)"
+        },
+        {
+          "exec": "cdk synth --app \"ts-node -P tsconfig.dev.json test/service.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata -o test/.tmp/service.integ/assert.cdk.out > /dev/null"
+        },
+        {
+          "exec": "diff -r -x asset.* -x cdk.out -x manifest.json -x tree.json test/service.integ.snapshot/ test/.tmp/service.integ/assert.cdk.out/"
+        }
+      ]
+    },
+    "integ:service:deploy": {
+      "name": "integ:service:deploy",
+      "description": "deploy integration test 'service' and capture snapshot",
+      "steps": [
+        {
+          "exec": "rm -fr test/.tmp/service.integ/deploy.cdk.out"
+        },
+        {
+          "exec": "cdk deploy --app \"ts-node -P tsconfig.dev.json test/service.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata '**' --require-approval=never -o test/.tmp/service.integ/deploy.cdk.out"
+        },
+        {
+          "exec": "rm -fr test/service.integ.snapshot"
+        },
+        {
+          "exec": "mv test/.tmp/service.integ/deploy.cdk.out test/service.integ.snapshot"
+        },
+        {
+          "spawn": "integ:service:destroy"
+        }
+      ]
+    },
+    "integ:service:destroy": {
+      "name": "integ:service:destroy",
+      "description": "destroy integration test 'service'",
+      "steps": [
+        {
+          "exec": "cdk destroy --app test/service.integ.snapshot '**' --no-version-reporting"
+        }
+      ]
+    },
+    "integ:service:snapshot": {
+      "name": "integ:service:snapshot",
+      "description": "update snapshot for integration test \"service\"",
+      "steps": [
+        {
+          "exec": "cdk synth --app \"ts-node -P tsconfig.dev.json test/service.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata -o test/service.integ.snapshot > /dev/null"
+        }
+      ]
+    },
+    "integ:service:watch": {
+      "name": "integ:service:watch",
+      "description": "watch integration test 'service' (without updating snapshots)",
+      "steps": [
+        {
+          "exec": "cdk watch --app \"ts-node -P tsconfig.dev.json test/service.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata '**' -o test/.tmp/service.integ/deploy.cdk.out"
+        }
+      ]
+    },
+    "integ:snapshot-all": {
+      "name": "integ:snapshot-all",
+      "description": "update snapshot for all integration tests",
+      "steps": [
+        {
+          "spawn": "integ:service:snapshot"
+        }
+      ]
+    },
     "package": {
       "name": "package",
       "description": "Creates the distribution package",
@@ -227,6 +299,9 @@
         },
         {
           "spawn": "eslint"
+        },
+        {
+          "spawn": "integ:service:assert"
         }
       ]
     },
@@ -269,7 +344,7 @@
           "exec": "yarn install --check-files"
         },
         {
-          "exec": "yarn upgrade @types/jest @types/node @typescript-eslint/eslint-plugin @typescript-eslint/parser aws-cdk-lib eslint-import-resolver-typescript eslint-plugin-import eslint jest jest-junit jsii-diff jsii-docgen jsii-pacmak jsii-rosetta jsii projen standard-version ts-jest ts-node typescript constructs"
+          "exec": "yarn upgrade @types/jest @types/node @typescript-eslint/eslint-plugin @typescript-eslint/parser aws-cdk-lib aws-cdk eslint-import-resolver-typescript eslint-plugin-import eslint jest jest-junit jsii-diff jsii-docgen jsii-pacmak jsii-rosetta jsii projen standard-version ts-jest ts-node typescript constructs"
         },
         {
           "exec": "npx projen"

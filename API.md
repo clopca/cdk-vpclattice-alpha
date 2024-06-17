@@ -4,7 +4,7 @@
 
 ### AssociateVpc <a name="AssociateVpc" id="cdk-vpclattice-alpha.AssociateVpc"></a>
 
-Associate a VPO with Lattice Service Network.
+Associate a VPC with Lattice Service Network.
 
 #### Initializers <a name="Initializers" id="cdk-vpclattice-alpha.AssociateVpc.Initializer"></a>
 
@@ -197,10 +197,13 @@ The stack in which this resource is defined.
 
 - *Implements:* <a href="#cdk-vpclattice-alpha.IListener">IListener</a>
 
-This class should not be called directly.
+A listener is a process that checks for connection requests, using the protocol and port that you configure.
 
-Use the .addListener() Method on an instance of LatticeService
-Creates a vpcLattice Listener
+The rules that you define for a listener determine
+how the service routes requests to its registered targets.
+
+**This class should not be called directly**.
+Use the `.addListener()` method on an instance of a Service construct.
 
 #### Initializers <a name="Initializers" id="cdk-vpclattice-alpha.Listener.Initializer"></a>
 
@@ -361,7 +364,7 @@ Check whether the given construct is a Resource.
 | <code><a href="#cdk-vpclattice-alpha.Listener.property.stack">stack</a></code> | <code>aws-cdk-lib.Stack</code> | The stack in which this resource is defined. |
 | <code><a href="#cdk-vpclattice-alpha.Listener.property.listenerArn">listenerArn</a></code> | <code>string</code> | THe Arn of the Listener. |
 | <code><a href="#cdk-vpclattice-alpha.Listener.property.listenerId">listenerId</a></code> | <code>string</code> | The Id of the Listener. |
-| <code><a href="#cdk-vpclattice-alpha.Listener.property.listenerPrioritys">listenerPrioritys</a></code> | <code>number[]</code> | A list of prioritys, to check for duplicates. |
+| <code><a href="#cdk-vpclattice-alpha.Listener.property.listenerPriorities">listenerPriorities</a></code> | <code>number[]</code> | A list of priorities, to check for duplicates. |
 | <code><a href="#cdk-vpclattice-alpha.Listener.property.service">service</a></code> | <code><a href="#cdk-vpclattice-alpha.Service">Service</a></code> | The service this listener is attached to. |
 
 ---
@@ -433,15 +436,15 @@ The Id of the Listener.
 
 ---
 
-##### `listenerPrioritys`<sup>Required</sup> <a name="listenerPrioritys" id="cdk-vpclattice-alpha.Listener.property.listenerPrioritys"></a>
+##### `listenerPriorities`<sup>Required</sup> <a name="listenerPriorities" id="cdk-vpclattice-alpha.Listener.property.listenerPriorities"></a>
 
 ```typescript
-public readonly listenerPrioritys: number[];
+public readonly listenerPriorities: number[];
 ```
 
 - *Type:* number[]
 
-A list of prioritys, to check for duplicates.
+A list of priorities, to check for duplicates.
 
 ---
 
@@ -504,6 +507,7 @@ new Service(scope: Construct, id: string, props: ServiceProps)
 | --- | --- |
 | <code><a href="#cdk-vpclattice-alpha.Service.toString">toString</a></code> | Returns a string representation of this construct. |
 | <code><a href="#cdk-vpclattice-alpha.Service.applyRemovalPolicy">applyRemovalPolicy</a></code> | Apply the given removal policy to this resource. |
+| <code><a href="#cdk-vpclattice-alpha.Service.addloggingDestination">addloggingDestination</a></code> | Send logs to a destination. |
 | <code><a href="#cdk-vpclattice-alpha.Service.applyAuthPolicy">applyAuthPolicy</a></code> | Apply the AuthPolicy to the Service. |
 | <code><a href="#cdk-vpclattice-alpha.Service.associateWithServiceNetwork">associateWithServiceNetwork</a></code> | Associate the service with a Service Network. |
 | <code><a href="#cdk-vpclattice-alpha.Service.grantAccess">grantAccess</a></code> | .grantAccess on a lattice service, will permit the principals to access all of the service. Consider using more granual permissions at the rule level. |
@@ -537,6 +541,20 @@ account for data recovery and cleanup later (`RemovalPolicy.RETAIN`).
 ###### `policy`<sup>Required</sup> <a name="policy" id="cdk-vpclattice-alpha.Service.applyRemovalPolicy.parameter.policy"></a>
 
 - *Type:* aws-cdk-lib.RemovalPolicy
+
+---
+
+##### `addloggingDestination` <a name="addloggingDestination" id="cdk-vpclattice-alpha.Service.addloggingDestination"></a>
+
+```typescript
+public addloggingDestination(props: AddloggingDestinationProps): void
+```
+
+Send logs to a destination.
+
+###### `props`<sup>Required</sup> <a name="props" id="cdk-vpclattice-alpha.Service.addloggingDestination.parameter.props"></a>
+
+- *Type:* <a href="#cdk-vpclattice-alpha.AddloggingDestinationProps">AddloggingDestinationProps</a>
 
 ---
 
@@ -826,6 +844,8 @@ public readonly authType: AuthType;
 ### ServiceAssociation <a name="ServiceAssociation" id="cdk-vpclattice-alpha.ServiceAssociation"></a>
 
 Creates an Association Between a Lattice Service and a Service Network.
+
+Consider using `.addService` of the ServiceNetwork construct
 
 #### Initializers <a name="Initializers" id="cdk-vpclattice-alpha.ServiceAssociation.Initializer"></a>
 
@@ -1430,7 +1450,9 @@ public readonly authType: AuthType;
 
 ### ServiceNetworkAssociation <a name="ServiceNetworkAssociation" id="cdk-vpclattice-alpha.ServiceNetworkAssociation"></a>
 
-Creates an Association Between a Lattice Service and a Service Network consider using .associateWithServiceNetwork.
+Creates an Association Between a Lattice Service and a Service Network.
+
+Consider using `.associateWithServiceNetwork` of the Service construct
 
 #### Initializers <a name="Initializers" id="cdk-vpclattice-alpha.ServiceNetworkAssociation.Initializer"></a>
 
@@ -1623,7 +1645,9 @@ The stack in which this resource is defined.
 
 - *Implements:* <a href="#cdk-vpclattice-alpha.ITargetGroup">ITargetGroup</a>
 
-Create a vpc lattice TargetGroup.
+Creates a VPC Lattice Target Group.
+
+> [https://docs.aws.amazon.com/vpc-lattice/latest/ug/target-groups.html](https://docs.aws.amazon.com/vpc-lattice/latest/ug/target-groups.html)
 
 #### Initializers <a name="Initializers" id="cdk-vpclattice-alpha.TargetGroup.Initializer"></a>
 
@@ -1705,6 +1729,7 @@ account for data recovery and cleanup later (`RemovalPolicy.RETAIN`).
 | <code><a href="#cdk-vpclattice-alpha.TargetGroup.isConstruct">isConstruct</a></code> | Checks if `x` is a construct. |
 | <code><a href="#cdk-vpclattice-alpha.TargetGroup.isOwnedResource">isOwnedResource</a></code> | Returns true if the construct was created by CDK, and false otherwise. |
 | <code><a href="#cdk-vpclattice-alpha.TargetGroup.isResource">isResource</a></code> | Check whether the given construct is a Resource. |
+| <code><a href="#cdk-vpclattice-alpha.TargetGroup.validateTargetGroupName">validateTargetGroupName</a></code> | Must be between 3-128 characters. |
 
 ---
 
@@ -1758,6 +1783,26 @@ Check whether the given construct is a Resource.
 
 ---
 
+##### `validateTargetGroupName` <a name="validateTargetGroupName" id="cdk-vpclattice-alpha.TargetGroup.validateTargetGroupName"></a>
+
+```typescript
+import { TargetGroup } from 'cdk-vpclattice-alpha'
+
+TargetGroup.validateTargetGroupName(name: string)
+```
+
+Must be between 3-128 characters.
+
+The name must be unique within the account.
+The valid characters are a-z, 0-9, and hyphens (-). You can't use a hyphen as
+the first or last character, or immediately after another hyphen.
+
+###### `name`<sup>Required</sup> <a name="name" id="cdk-vpclattice-alpha.TargetGroup.validateTargetGroupName.parameter.name"></a>
+
+- *Type:* string
+
+---
+
 #### Properties <a name="Properties" id="Properties"></a>
 
 | **Name** | **Type** | **Description** |
@@ -1765,7 +1810,7 @@ Check whether the given construct is a Resource.
 | <code><a href="#cdk-vpclattice-alpha.TargetGroup.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
 | <code><a href="#cdk-vpclattice-alpha.TargetGroup.property.env">env</a></code> | <code>aws-cdk-lib.ResourceEnvironment</code> | The environment this resource belongs to. |
 | <code><a href="#cdk-vpclattice-alpha.TargetGroup.property.stack">stack</a></code> | <code>aws-cdk-lib.Stack</code> | The stack in which this resource is defined. |
-| <code><a href="#cdk-vpclattice-alpha.TargetGroup.property.targetGroupArn">targetGroupArn</a></code> | <code>string</code> | The Arn of the targetGroup. |
+| <code><a href="#cdk-vpclattice-alpha.TargetGroup.property.targetGroupArn">targetGroupArn</a></code> | <code>string</code> | The Arn of the target group. |
 | <code><a href="#cdk-vpclattice-alpha.TargetGroup.property.targetGroupId">targetGroupId</a></code> | <code>string</code> | The id of the target group. |
 
 ---
@@ -1821,7 +1866,7 @@ public readonly targetGroupArn: string;
 
 - *Type:* string
 
-The Arn of the targetGroup.
+The Arn of the target group.
 
 ---
 
@@ -1995,7 +2040,7 @@ const defaultListenerAction: DefaultListenerAction = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#cdk-vpclattice-alpha.DefaultListenerAction.property.fixedResponse">fixedResponse</a></code> | <code><a href="#cdk-vpclattice-alpha.FixedResponse">FixedResponse</a></code> | Provide a fixed Response. |
+| <code><a href="#cdk-vpclattice-alpha.DefaultListenerAction.property.fixedResponse">fixedResponse</a></code> | <code><a href="#cdk-vpclattice-alpha.FixedResponse">FixedResponse</a></code> | Drop client requests and return a custom HTTP response. |
 | <code><a href="#cdk-vpclattice-alpha.DefaultListenerAction.property.forward">forward</a></code> | <code><a href="#cdk-vpclattice-alpha.WeightedTargetGroup">WeightedTargetGroup</a></code> | Forward to a target group. |
 
 ---
@@ -2007,9 +2052,9 @@ public readonly fixedResponse: FixedResponse;
 ```
 
 - *Type:* <a href="#cdk-vpclattice-alpha.FixedResponse">FixedResponse</a>
-- *Default:* none
+- *Default:* None
 
-Provide a fixed Response.
+Drop client requests and return a custom HTTP response.
 
 ---
 
@@ -2020,7 +2065,7 @@ public readonly forward: WeightedTargetGroup;
 ```
 
 - *Type:* <a href="#cdk-vpclattice-alpha.WeightedTargetGroup">WeightedTargetGroup</a>
-- *Default:* none
+- *Default:* None
 
 Forward to a target group.
 
@@ -2042,10 +2087,10 @@ const headerMatch: HeaderMatch = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#cdk-vpclattice-alpha.HeaderMatch.property.headername">headername</a></code> | <code>string</code> | the name of the header to match. |
+| <code><a href="#cdk-vpclattice-alpha.HeaderMatch.property.headername">headername</a></code> | <code>string</code> | The name of the header to match. |
 | <code><a href="#cdk-vpclattice-alpha.HeaderMatch.property.matchOperator">matchOperator</a></code> | <code><a href="#cdk-vpclattice-alpha.MatchOperator">MatchOperator</a></code> | Type of match to make. |
 | <code><a href="#cdk-vpclattice-alpha.HeaderMatch.property.matchValue">matchValue</a></code> | <code>string</code> | Value to match against. |
-| <code><a href="#cdk-vpclattice-alpha.HeaderMatch.property.caseSensitive">caseSensitive</a></code> | <code>boolean</code> | Should the match be case sensitive? |
+| <code><a href="#cdk-vpclattice-alpha.HeaderMatch.property.caseSensitive">caseSensitive</a></code> | <code>boolean</code> | Whether the match should be case sensitive or not. |
 
 ---
 
@@ -2057,7 +2102,7 @@ public readonly headername: string;
 
 - *Type:* string
 
-the name of the header to match.
+The name of the header to match.
 
 ---
 
@@ -2094,7 +2139,7 @@ public readonly caseSensitive: boolean;
 - *Type:* boolean
 - *Default:* true
 
-Should the match be case sensitive?
+Whether the match should be case sensitive or not.
 
 ---
 
@@ -2127,7 +2172,7 @@ public readonly headerMatches: HeaderMatch[];
 ```
 
 - *Type:* <a href="#cdk-vpclattice-alpha.HeaderMatch">HeaderMatch</a>[]
-- *Default:* no header match
+- *Default:* No header match
 
 Properties to Create A HeaderMatch.
 
@@ -2140,7 +2185,7 @@ public readonly method: HTTPMethods;
 ```
 
 - *Type:* <a href="#cdk-vpclattice-alpha.HTTPMethods">HTTPMethods</a>
-- *Default:* no header match
+- *Default:* No header match
 
 Method to match against.
 
@@ -2153,7 +2198,7 @@ public readonly pathMatches: PathMatch;
 ```
 
 - *Type:* <a href="#cdk-vpclattice-alpha.PathMatch">PathMatch</a>
-- *Default:* no path match
+- *Default:* No path match
 
 Properties to Create A PathMatch.
 
@@ -2203,7 +2248,7 @@ public readonly defaultAction: DefaultListenerAction;
 ```
 
 - *Type:* <a href="#cdk-vpclattice-alpha.DefaultListenerAction">DefaultListenerAction</a>
-- *Default:* 404 NOT Found
+- *Default:* FixedResponse.NOT_FOUND
 
 * A default action that will be taken if no rules match.
 
@@ -2233,7 +2278,7 @@ public readonly port: number;
 
 Optional port number for the listener.
 
-If not supplied, will default to 80 or 443, depending on the Protocol
+If not supplied, will default to 80 or 443, depending on the Protocol.
 
 ---
 
@@ -2279,7 +2324,7 @@ const pathMatch: PathMatch = { ... }
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
 | <code><a href="#cdk-vpclattice-alpha.PathMatch.property.path">path</a></code> | <code>string</code> | Value to match against. |
-| <code><a href="#cdk-vpclattice-alpha.PathMatch.property.caseSensitive">caseSensitive</a></code> | <code>boolean</code> | Should the match be case sensitive? |
+| <code><a href="#cdk-vpclattice-alpha.PathMatch.property.caseSensitive">caseSensitive</a></code> | <code>boolean</code> | Whether the match should be case sensitive or not. |
 | <code><a href="#cdk-vpclattice-alpha.PathMatch.property.pathMatchType">pathMatchType</a></code> | <code><a href="#cdk-vpclattice-alpha.PathMatchType">PathMatchType</a></code> | Type of match to make. |
 
 ---
@@ -2305,7 +2350,7 @@ public readonly caseSensitive: boolean;
 - *Type:* boolean
 - *Default:* true
 
-Should the match be case sensitive?
+Whether the match should be case sensitive or not.
 
 ---
 
@@ -2548,7 +2593,7 @@ const serviceNetworkProps: ServiceNetworkProps = { ... }
 | <code><a href="#cdk-vpclattice-alpha.ServiceNetworkProps.property.accessmode">accessmode</a></code> | <code><a href="#cdk-vpclattice-alpha.ServiceNetworkAccessMode">ServiceNetworkAccessMode</a></code> | Allow external principals. |
 | <code><a href="#cdk-vpclattice-alpha.ServiceNetworkProps.property.authStatements">authStatements</a></code> | <code>aws-cdk-lib.aws_iam.PolicyStatement[]</code> | Additional AuthStatments:. |
 | <code><a href="#cdk-vpclattice-alpha.ServiceNetworkProps.property.authType">authType</a></code> | <code><a href="#cdk-vpclattice-alpha.AuthType">AuthType</a></code> | The type of  authentication to use with the Service Network. |
-| <code><a href="#cdk-vpclattice-alpha.ServiceNetworkProps.property.loggingDestinations">loggingDestinations</a></code> | <code><a href="#cdk-vpclattice-alpha.LoggingDestination">LoggingDestination</a>[]</code> | Logging destinations. |
+| <code><a href="#cdk-vpclattice-alpha.ServiceNetworkProps.property.loggingDestinations">loggingDestinations</a></code> | <code><a href="#cdk-vpclattice-alpha.LoggingDestination">LoggingDestination</a>[]</code> | Where to send access logs. |
 | <code><a href="#cdk-vpclattice-alpha.ServiceNetworkProps.property.name">name</a></code> | <code>string</code> | The name of the Service Network. |
 | <code><a href="#cdk-vpclattice-alpha.ServiceNetworkProps.property.services">services</a></code> | <code><a href="#cdk-vpclattice-alpha.IService">IService</a>[]</code> | Lattice Services that are assocaited with this Service Network. |
 | <code><a href="#cdk-vpclattice-alpha.ServiceNetworkProps.property.vpcs">vpcs</a></code> | <code>aws-cdk-lib.aws_ec2.IVpc[]</code> | Vpcs that are associated with this Service Network. |
@@ -2600,9 +2645,12 @@ public readonly loggingDestinations: LoggingDestination[];
 ```
 
 - *Type:* <a href="#cdk-vpclattice-alpha.LoggingDestination">LoggingDestination</a>[]
-- *Default:* : no logging
+- *Default:* No logging
 
-Logging destinations.
+Where to send access logs.
+
+Access log entries represent traffic
+originated from VPCs associated with that network.
 
 ---
 
@@ -2613,11 +2661,11 @@ public readonly name: string;
 ```
 
 - *Type:* string
-- *Default:* cloudformation generated name
+- *Default:* CloudFormation generated name
 
 The name of the Service Network.
 
-If not provided Cloudformation will provide a name
+If not provided CloudFormation will provide a name
 
 ---
 
@@ -2667,6 +2715,7 @@ const serviceProps: ServiceProps = { ... }
 | <code><a href="#cdk-vpclattice-alpha.ServiceProps.property.certificateArn">certificateArn</a></code> | <code>string</code> | A certificate that may be used by the service. |
 | <code><a href="#cdk-vpclattice-alpha.ServiceProps.property.customDomainName">customDomainName</a></code> | <code>string</code> | A customDomainName used by the service. |
 | <code><a href="#cdk-vpclattice-alpha.ServiceProps.property.dnsEntry">dnsEntry</a></code> | <code>aws-cdk-lib.aws_vpclattice.CfnService.DnsEntryProperty</code> | A custom DNS entry. |
+| <code><a href="#cdk-vpclattice-alpha.ServiceProps.property.loggingDestinations">loggingDestinations</a></code> | <code><a href="#cdk-vpclattice-alpha.LoggingDestination">LoggingDestination</a>[]</code> | Where to send access logs. |
 | <code><a href="#cdk-vpclattice-alpha.ServiceProps.property.removalPolicy">removalPolicy</a></code> | <code>aws-cdk-lib.RemovalPolicy</code> | Determine what happens to the repository when the resource/stack is deleted. |
 | <code><a href="#cdk-vpclattice-alpha.ServiceProps.property.serviceName">serviceName</a></code> | <code>string</code> | The name to assign to the service. |
 | <code><a href="#cdk-vpclattice-alpha.ServiceProps.property.serviceNetwork">serviceNetwork</a></code> | <code><a href="#cdk-vpclattice-alpha.IServiceNetwork">IServiceNetwork</a></code> | ServiceNetwork to associate with. |
@@ -2722,6 +2771,22 @@ public readonly dnsEntry: DnsEntryProperty;
 - *Default:* no custom DNS entry is used
 
 A custom DNS entry.
+
+---
+
+##### `loggingDestinations`<sup>Optional</sup> <a name="loggingDestinations" id="cdk-vpclattice-alpha.ServiceProps.property.loggingDestinations"></a>
+
+```typescript
+public readonly loggingDestinations: LoggingDestination[];
+```
+
+- *Type:* <a href="#cdk-vpclattice-alpha.LoggingDestination">LoggingDestination</a>[]
+- *Default:* No logging
+
+Where to send access logs.
+
+Access log entries represent traffic
+originated from VPCs associated with that network.
 
 ---
 
@@ -2978,7 +3043,12 @@ A weight for the target group.
 
 ### LoggingDestination <a name="LoggingDestination" id="cdk-vpclattice-alpha.LoggingDestination"></a>
 
-Logging options.
+Enables access logs to be sent to Amazon CloudWatch, Amazon S3, and/or Amazon Kinesis Data Firehose.
+
+The service network owner can
+use the access logs to audit the services in the network.
+
+> [https://docs.aws.amazon.com/vpc-lattice/latest/ug/monitoring-access-logs.html](https://docs.aws.amazon.com/vpc-lattice/latest/ug/monitoring-access-logs.html)
 
 #### Initializers <a name="Initializers" id="cdk-vpclattice-alpha.LoggingDestination.Initializer"></a>
 
@@ -2998,9 +3068,9 @@ new LoggingDestination()
 
 | **Name** | **Description** |
 | --- | --- |
-| <code><a href="#cdk-vpclattice-alpha.LoggingDestination.cloudwatch">cloudwatch</a></code> | Send to CLoudwatch. |
-| <code><a href="#cdk-vpclattice-alpha.LoggingDestination.kinesis">kinesis</a></code> | Stream to Kinesis. |
-| <code><a href="#cdk-vpclattice-alpha.LoggingDestination.s3">s3</a></code> | Construct a logging destination for a S3 Bucket. |
+| <code><a href="#cdk-vpclattice-alpha.LoggingDestination.cloudwatch">cloudwatch</a></code> | Send logs to Amazon CloudWatch. |
+| <code><a href="#cdk-vpclattice-alpha.LoggingDestination.kinesis">kinesis</a></code> | Stream logs to Kinesis. |
+| <code><a href="#cdk-vpclattice-alpha.LoggingDestination.s3">s3</a></code> | Send logs to Amazon S3. |
 
 ---
 
@@ -3012,11 +3082,13 @@ import { LoggingDestination } from 'cdk-vpclattice-alpha'
 LoggingDestination.cloudwatch(logGroup: ILogGroup)
 ```
 
-Send to CLoudwatch.
+Send logs to Amazon CloudWatch.
 
 ###### `logGroup`<sup>Required</sup> <a name="logGroup" id="cdk-vpclattice-alpha.LoggingDestination.cloudwatch.parameter.logGroup"></a>
 
 - *Type:* aws-cdk-lib.aws_logs.ILogGroup
+
+the log group in CloudWatch Logs to use.
 
 ---
 
@@ -3028,7 +3100,7 @@ import { LoggingDestination } from 'cdk-vpclattice-alpha'
 LoggingDestination.kinesis(stream: IStream)
 ```
 
-Stream to Kinesis.
+Stream logs to Kinesis.
 
 ###### `stream`<sup>Required</sup> <a name="stream" id="cdk-vpclattice-alpha.LoggingDestination.kinesis.parameter.stream"></a>
 
@@ -3044,13 +3116,13 @@ import { LoggingDestination } from 'cdk-vpclattice-alpha'
 LoggingDestination.s3(bucket: IBucket)
 ```
 
-Construct a logging destination for a S3 Bucket.
+Send logs to Amazon S3.
 
 ###### `bucket`<sup>Required</sup> <a name="bucket" id="cdk-vpclattice-alpha.LoggingDestination.s3.parameter.bucket"></a>
 
 - *Type:* aws-cdk-lib.aws_s3.IBucket
 
-an s3 bucket.
+the S3 bucket where to send logs.
 
 ---
 
@@ -3109,9 +3181,11 @@ A name of the destination.
 
 - *Implemented By:* <a href="#cdk-vpclattice-alpha.Listener">Listener</a>, <a href="#cdk-vpclattice-alpha.IListener">IListener</a>
 
-Create a vpcLattice Listener.
+Create a VPC Lattice Listener.
 
 Implemented by `Listener`.
+
+> [https://docs.aws.amazon.com/vpc-lattice/latest/ug/listeners.html](https://docs.aws.amazon.com/vpc-lattice/latest/ug/listeners.html)
 
 #### Methods <a name="Methods" id="Methods"></a>
 
@@ -3623,7 +3697,7 @@ Use IAM Policy as.
 
 ### FixedResponse <a name="FixedResponse" id="cdk-vpclattice-alpha.FixedResponse"></a>
 
-Fixed response codes.
+This enum maps friendly names to respond codes.
 
 #### Members <a name="Members" id="Members"></a>
 
@@ -3693,7 +3767,7 @@ Delete Method.
 
 ### MatchOperator <a name="MatchOperator" id="cdk-vpclattice-alpha.MatchOperator"></a>
 
-Operators for Matches.
+Rule Contitions can leverage different operators for Matches.
 
 #### Members <a name="Members" id="Members"></a>
 
@@ -3770,12 +3844,16 @@ HTTP/HTTPS methods.
 
 HTTP Protocol.
 
+> [https://docs.aws.amazon.com/vpc-lattice/latest/ug/http-listeners.html](https://docs.aws.amazon.com/vpc-lattice/latest/ug/http-listeners.html)
+
 ---
 
 
 ##### `HTTPS` <a name="HTTPS" id="cdk-vpclattice-alpha.Protocol.HTTPS"></a>
 
 HTTPS Protocol.
+
+> [https://docs.aws.amazon.com/vpc-lattice/latest/ug/https-listeners.html](https://docs.aws.amazon.com/vpc-lattice/latest/ug/https-listeners.html)
 
 ---
 
@@ -3831,7 +3909,7 @@ AccesModes for the Service Network.
 
 | **Name** | **Description** |
 | --- | --- |
-| <code><a href="#cdk-vpclattice-alpha.ServiceNetworkAccessMode.UNAUTHENTICATED">UNAUTHENTICATED</a></code> | Unauthenticated Access to the Service Network. |
+| <code><a href="#cdk-vpclattice-alpha.ServiceNetworkAccessMode.UNAUTHENTICATED">UNAUTHENTICATED</a></code> | Allows for Unauthenticated (Anonymous) Access to the Service Network. |
 | <code><a href="#cdk-vpclattice-alpha.ServiceNetworkAccessMode.AUTHENTICATED_ONLY">AUTHENTICATED_ONLY</a></code> | Authenticated Access to the Service Network. |
 | <code><a href="#cdk-vpclattice-alpha.ServiceNetworkAccessMode.ORG_ONLY">ORG_ONLY</a></code> | Only principals from this Org can access the Service Network. |
 
@@ -3839,7 +3917,11 @@ AccesModes for the Service Network.
 
 ##### `UNAUTHENTICATED` <a name="UNAUTHENTICATED" id="cdk-vpclattice-alpha.ServiceNetworkAccessMode.UNAUTHENTICATED"></a>
 
-Unauthenticated Access to the Service Network.
+Allows for Unauthenticated (Anonymous) Access to the Service Network.
+
+Anonymous principals are callers that don't sign their AWS requests
+with Signature Version 4 (SigV4), and are within a VPC that is connected
+to the service network.
 
 ---
 

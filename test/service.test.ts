@@ -1,0 +1,69 @@
+import * as cdk from 'aws-cdk-lib';
+import { Template } from 'aws-cdk-lib/assertions';
+
+import { LogGroup } from 'aws-cdk-lib/aws-logs';
+import { Service, LoggingDestination, AuthType } from '../src';
+
+
+describe('Service', () => {
+  test('DeniesInvalidName', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN & THEN
+    expect(() => {
+      new Service(stack, 'Params', {
+        serviceName: 'svc-adgfwg2', // Invalid service name
+      });
+    }).toThrow();
+
+    expect(() => {
+      new Service(stack, 'Params2', {
+        serviceName: 'SvcName1', // Invalid service name
+      });
+    }).toThrow();
+  });
+
+  test('BasicCreationNoCustomDNSorDomain', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new Service(stack, 'Params', {
+      serviceName: 'mycustomlatticeservicename', // Invalid service name
+      authType: AuthType.AWS_IAM,
+    });
+
+    //THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::VpcLattice::Service', {
+      AuthType: 'AWS_IAM',
+      Name: 'mycustomlatticeservicename',
+    });
+
+  });
+
+  test('BasicServiceLoggingCloudWatch', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const logGroup = new LogGroup(stack, 'LogsTest', {
+      logGroupName: 'vpc-lattice-name',
+    });
+    new Service(stack, 'Params', {
+      serviceName: 'mycustomlatticeservicename', // Invalid service name
+      authType: AuthType.AWS_IAM,
+      loggingDestinations: [
+        LoggingDestination.cloudwatch(logGroup),
+      ],
+    });
+
+    //THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::VpcLattice::Service', {
+      AuthType: 'AWS_IAM',
+      Name: 'mycustomlatticeservicename',
+    });
+    Template.fromStack(stack).hasResource('AWS::VpcLattice::AccessLogSubscription', {});
+
+  });
+});

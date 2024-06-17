@@ -28,12 +28,12 @@ export interface HTTPMatch {
  */
 export interface HeaderMatch {
   /**
-   * the name of the header to match
+   * The name of the header to match
    */
   readonly headername: string;
 
   /**
-   * Should the match be case sensitive?
+   * Whether the match should be case sensitive or not
    * @default true
    */
   readonly caseSensitive?: boolean;
@@ -54,7 +54,7 @@ export interface HeaderMatch {
  */
 export interface PathMatch {
   /**
-   * Should the match be case sensitive?
+   * Whether the match should be case sensitive or not
    * @default true
    */
   readonly caseSensitive?: boolean;

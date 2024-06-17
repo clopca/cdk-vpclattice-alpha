@@ -85,7 +85,7 @@ export interface ServiceProps {
   readonly serviceNetwork?: IServiceNetwork;
 
   /**
-   * Where to send access logs. Access log entries represent traffic 
+   * Where to send access logs. Access log entries represent traffic
    * originated from VPCs associated with that network.
    * @default - No logging
    */
@@ -111,7 +111,14 @@ export interface ServiceNetworkAssociationProps {
  * Base class for Service. Reused between imported and created services.
  */
 abstract class ServiceBase extends core.Resource implements IService {
+  /**
+   * @inheritdoc
+   */
   public abstract readonly serviceArn: string;
+
+  /**
+   * @inheritdoc
+   */
   public abstract readonly serviceId: string;
 
   public associateWithServiceNetwork(serviceNetwork: IServiceNetwork): void {
@@ -205,19 +212,22 @@ export class Service extends ServiceBase {
     this.serviceName = this.physicalName;
     this.authPolicy = new iam.PolicyDocument();
 
-    // associate with serviceNetwork if provided
+    // Sssociate with serviceNetwork if provided
     if (props.serviceNetwork) {
       this.associateWithServiceNetwork(props.serviceNetwork);
     }
 
     // Define logging destinations if provided
-    if (props.loggingDestinations) {
+    if (props.loggingDestinations?.length) {
       props.loggingDestinations.forEach(destination => {
         this.addloggingDestination({
           destination: destination,
         });
       });
     }
+
+    // Apply the specified removal policy (what happens on delete)
+    this._resource.applyRemovalPolicy(props.removalPolicy);
   }
 
   // ------------------------------------------------------
@@ -237,7 +247,7 @@ export class Service extends ServiceBase {
       actions: ['vpc-lattice-svcs:Invoke'],
       //TODO: check if possible to add the service arn and still have the policy work
       resources: ['*'],
-      principals: principals
+      principals: principals,
     });
     this.authPolicy.addStatements(policyStatement);
   }

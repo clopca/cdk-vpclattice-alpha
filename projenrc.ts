@@ -6,6 +6,8 @@ const project = new awscdk.AwsCdkConstructLibrary({
   keywords: ['aws-cdk', 'cdk', 'vpclattice'],
   defaultReleaseBranch: 'main',
   jsiiVersion: '~5.4.0',
+  jest: true,
+  integrationTestAutoDiscover: true,
   name: 'cdk-vpclattice-alpha',
   projenrcTs: true,
   repositoryUrl: 'https://github.com/clopca/cdk-vpclattice-alpha.git',
@@ -15,5 +17,11 @@ const project = new awscdk.AwsCdkConstructLibrary({
   },
   stability: 'experimental',
   docgen: true,
+  // Integration Tests within Projen
+  devDeps: [
+    '@aws-cdk/integ-tests-alpha'
+  ]
 });
+
+
 project.synth();

@@ -22,6 +22,8 @@ dist
 tsconfig.tsbuildinfo
 /.eslintrc.json
 !.jsii
+test/.tmp
+test/service.integ.snapshot
 cdk.out
 cdk.context.json
 /.gitattributes

@@ -1,11 +1,12 @@
 import { aws_s3 as s3, aws_logs as logs, aws_kinesis as kinesis } from 'aws-cdk-lib';
 
 /**
- * Enables access logs to be sent to Amazon CloudWatch, Amazon S3, 
- * and/or Amazon Kinesis Data Firehose. The service network owner can 
- * use the access logs to audit the services in the network. 
+ * Enables access logs to be sent to Amazon CloudWatch, Amazon S3,
+ * and/or Amazon Kinesis Data Firehose. The service network owner can
+ * use the access logs to audit the services in the network.
+ * At most one destination per destination type.
  * @see https://docs.aws.amazon.com/vpc-lattice/latest/ug/monitoring-access-logs.html
- * 
+ *
  */
 export abstract class LoggingDestination {
   // ------------------------------------------------------
@@ -13,7 +14,7 @@ export abstract class LoggingDestination {
   // ------------------------------------------------------
   /**
    * Send logs to Amazon S3
-   * @param bucket the S3 bucket where to send logs
+   * @param bucket the S3 bucket to send logs to
    */
   public static s3(bucket: s3.IBucket): LoggingDestination {
     return {
@@ -35,8 +36,10 @@ export abstract class LoggingDestination {
   }
 
   /**
-   * Stream logs to Kinesis
-   * @param stream
+   * Use Amazon Kinesis Data Firehose for delivering real-time streaming data
+   * to destinations such as Amazon S3, Amazon Redshift, Amazon OpenSearch,
+   * or any custom HTTP endpoint.
+   * @param stream the delivery stream to send logs to
    */
   public static kinesis(stream: kinesis.IStream): LoggingDestination {
     return {

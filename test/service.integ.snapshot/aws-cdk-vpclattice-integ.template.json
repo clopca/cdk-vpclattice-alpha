@@ -1,0 +1,73 @@
+{
+ "Resources": {
+  "LogsTest58DCB617": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": "vpc-lattice-service-1",
+    "RetentionInDays": 30
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ServiceDBC79909": {
+   "Type": "AWS::VpcLattice::Service",
+   "Properties": {
+    "AuthType": "AWS_IAM",
+    "Name": "my-custom-name"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ServiceAccessLogSubscriptionc890cdceb0985247c877eee6296f51d14b5a5eb88e4AE21BD3": {
+   "Type": "AWS::VpcLattice::AccessLogSubscription",
+   "Properties": {
+    "DestinationArn": {
+     "Fn::GetAtt": [
+      "LogsTest58DCB617",
+      "Arn"
+     ]
+    },
+    "ResourceIdentifier": {
+     "Fn::GetAtt": [
+      "ServiceDBC79909",
+      "Arn"
+     ]
+    }
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
