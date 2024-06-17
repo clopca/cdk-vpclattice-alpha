@@ -9,13 +9,18 @@ import { IService, AuthType, LoggingDestination } from './index';
  */
 export enum ServiceNetworkAccessMode {
   /**
-   * Unauthenticated Access to the Service Network.
+   * Allows for Unauthenticated (Anonymous) Access to the Service Network.
+   * Anonymous principals are callers that don't sign their AWS requests 
+   * with Signature Version 4 (SigV4), and are within a VPC that is connected 
+   * to the service network. 
    */
   UNAUTHENTICATED = 'UNAUTHENTICATED',
+
   /**
    * Authenticated Access to the Service Network.
    */
   AUTHENTICATED_ONLY = 'AUTHENTICATED',
+
   /**
    * Only principals from this Org can access the Service Network.
    */
@@ -32,15 +37,18 @@ export interface IServiceNetwork extends core.IResource {
    * @attribute
    */
   readonly serviceNetworkArn: string;
+
   /**
    * The Id of the Service Network
    * @attribute
    */
   readonly serviceNetworkId: string;
+
   /**
    * Add Lattice Service to the Service Network
    */
   addService(service: IService): void;
+
   /**
    * Associate a VPC with the Service Network
    * This provides an opinionated default of adding a security group to allow inbound 443
@@ -56,37 +64,45 @@ export interface ShareServiceNetworkProps {
    * The name of the share.
    */
   readonly name: string;
+
   /**
    * Whether external principals are allowed.
    * @default false;
    */
   readonly allowExternalPrincipals?: boolean;
+
   /**
    * Principals to share the Service Network with
    * @default none
    */
   readonly accounts: string[];
+
   /**
    * disable discovery
    * @default false
    */
   readonly disableDiscovery?: boolean;
+
   /**
    * The access mode for the Service Network
    * @default 'UNAUTHENTICATED'
    */
   readonly accessMode?: ServiceNetworkAccessMode;
+
   /**
    * The description of the Service Network
    * @default none
    */
   readonly description?: string;
+
   /**
    * The tags to apply to the Service Network
    * @default none
    */
   readonly tags?: { [key: string]: string };
+
 }
+
 /**
  * Properties to associate a VPC with a Service Network
  */
@@ -95,9 +111,10 @@ export interface AssociateVPCProps {
    * The VPC to associate with the Service Network
    */
   readonly vpc: ec2.IVpc;
+
   /**
    * The security groups to associate with the Service Network
-   * @default a security group that allows inbound 443 will be permitted.
+   * @default - a security group that allows inbound 443 will be permitted.
    */
   readonly securityGroups?: ec2.SecurityGroup[];
 }
@@ -118,8 +135,8 @@ export interface AddloggingDestinationProps {
 export interface ServiceNetworkProps {
   /**
    * The name of the Service Network.
-   * If not provided Cloudformation will provide a name
-   * @default cloudformation generated name
+   * If not provided CloudFormation will provide a name
+   * @default - CloudFormation generated name
    */
   readonly name?: string;
 
@@ -146,11 +163,13 @@ export interface ServiceNetworkProps {
    * @default no vpcs are associated
    */
   readonly vpcs?: ec2.IVpc[];
+
   /**
    * Allow external principals
    * @default false
    */
   readonly accessmode?: ServiceNetworkAccessMode;
+
   /**
    * Additional AuthStatments:
    */
@@ -401,13 +420,15 @@ export class ServiceNetwork extends ServiceNetworkBase {
 export interface AssociateVpcProps {
   /**
    * security groups for the lattice endpoint
-   * @default a security group that will permit inbound 443
+   * @default - a security group that will permit inbound 443
    */
   readonly securityGroups?: ec2.ISecurityGroup[];
+
   /**
    * The VPC to associate with
    */
   readonly vpc: ec2.IVpc;
+
   /**
    * Service Network Identifier
    */
@@ -415,7 +436,7 @@ export interface AssociateVpcProps {
 }
 
 /**
- * Associate a VPO with Lattice Service Network
+ * Associate a VPC with Lattice Service Network
  */
 export class AssociateVpc extends core.Resource {
   constructor(scope: Construct, id: string, props: AssociateVpcProps) {
@@ -457,7 +478,8 @@ export interface ServiceAssociationProps {
 }
 
 /**
- * Creates an Association Between a Lattice Service and a Service Network
+ * Creates an Association Between a Lattice Service and a Service Network.
+ * Consider using `.addService` of the ServiceNetwork construct
  */
 export class ServiceAssociation extends core.Resource {
   constructor(scope: Construct, id: string, props: ServiceAssociationProps) {

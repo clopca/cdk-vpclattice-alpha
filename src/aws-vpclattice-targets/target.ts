@@ -10,6 +10,7 @@ export enum Protocol {
    * HTTP Protocol
    */
   HTTP = 'HTTP',
+
   /**
    * HTTPS Protocol
    */
@@ -24,31 +25,38 @@ export interface TargetConfig {
    * VPC where the target(s) are located
    */
   readonly vpc: ec2.IVpc;
+
   /**
    * HealthCheckParameters - Can supply for IpAddress and ALB targets only.
-   * @default No HealthCheck
+   * @default - No HealthCheck
    */
   readonly healthcheck?: HealthCheck;
+
   /**
-   * IpAddressType
-   * @default IPv4
+   * The type of IP Addresss Protocol to use
+   * @default IpAddressType.IPv4
    */
   readonly ipAddressType?: IpAddressType;
+
   /**
-   * Protocol
+   * The application layer protocol to use
    * @default HTTPS
    */
   readonly protocol?: Protocol;
-  /**
-   * Port
-   * @default Defaults to port 80 for HTTP, or 443 for HTTPS and GRPC
-   */
-  readonly port?: number;
+
   /**
    * ProtocolVersion
    * @default HTTP1
    */
   readonly protocolVersion?: ProtocolVersion;
+
+  /**
+   * Port
+   * @default Defaults to port 80 for HTTP, or 443 for HTTPS and GRPC
+   */
+  readonly port?: number;
+
+
 }
 
 /**
@@ -59,14 +67,17 @@ export enum TargetType {
    * Lambda Target
    */
   LAMBDA = 'LAMBDA',
+
   /**
    * IP Address Target
    */
   IP = 'IP',
+
   /**
    * EC2 Instance Targets
    */
   INSTANCE = 'INSTANCE',
+
   /**
    * Application Load Balancer Target
    */
@@ -74,15 +85,16 @@ export enum TargetType {
 }
 
 /**
- * IpAddressType
+ * The type of IP Addresss Protocol
  */
 export enum IpAddressType {
   /**
-   * ipv4
+   * IPv4 (Internet Protocol version 4)
    */
   IPV4 = 'IPV4',
+
   /**
-   * Ipv6
+   * IPv6 (Internet Protocol version 6)
    */
   IPV6 = 'IPV6',
 }

@@ -1,10 +1,9 @@
 import * as core from 'aws-cdk-lib';
 import * as generated from 'aws-cdk-lib/aws-vpclattice';
-
 import { aws_iam as iam } from 'aws-cdk-lib';
-
 import { Construct } from 'constructs';
 import { WeightedTargetGroup, HTTPMatch, Service } from './index';
+
 /**
  * AuthTypes
  */
@@ -13,6 +12,7 @@ export enum AuthType {
    * No Authorization
    */
   NONE = 'NONE',
+
   /**
    * Use IAM Policy as
    */
@@ -25,22 +25,26 @@ export enum AuthType {
 export enum Protocol {
   /**
    * HTTP Protocol
+   * @see https://docs.aws.amazon.com/vpc-lattice/latest/ug/http-listeners.html
    */
   HTTP = 'HTTP',
+
   /**
    * HTTPS Protocol
+   * @see https://docs.aws.amazon.com/vpc-lattice/latest/ug/https-listeners.html
    */
   HTTPS = 'HTTPS',
 }
 
 /**
- * Fixed response codes
+ * This enum maps friendly names to respond codes.
  */
 export enum FixedResponse {
   /**
    * Not Found 404
    */
   NOT_FOUND = 404,
+
   /**
    * OK 200
    */
@@ -55,14 +59,17 @@ export enum HTTPMethods {
    * GET Method
    */
   GET = 'GET',
+
   /**
    * POST Method
    */
   POST = 'POST',
+
   /**
    * PUT Method
    */
   PUT = 'PUT',
+
   /**
    * Delete Method
    */
@@ -70,17 +77,19 @@ export enum HTTPMethods {
 }
 
 /**
- * Operators for Matches
+ * Rule Contitions can leverage different operators for Matches
  */
 export enum MatchOperator {
   /**
    * Contains Match
    */
   CONTAINS = 'CONTAINS',
+
   /**
    * Exact Match
    */
   EXACT = 'EXACT',
+
   /**
    * Prefix Match
    */
@@ -150,13 +159,13 @@ interface IHttpMatchProperty {
  */
 export interface DefaultListenerAction {
   /**
-   * Provide a fixed Response
-   * @default none
+   * Drop client requests and return a custom HTTP response
+   * @default - None
    */
   readonly fixedResponse?: FixedResponse;
   /**
    * Forward to a target group
-   * @default none
+   * @default - None
    */
   readonly forward?: WeightedTargetGroup;
 }
@@ -167,29 +176,33 @@ export interface DefaultListenerAction {
 export interface ListenerProps {
   /**
    *  * A default action that will be taken if no rules match.
-   *  @default 404 NOT Found
+   *  @default FixedResponse.NOT_FOUND
    */
   readonly defaultAction?: DefaultListenerAction;
+
   /**
    * protocol that the listener will listen on
    * @default HTTPS
    */
   readonly protocol?: Protocol;
-  /**
-  * Optional port number for the listener. If not supplied, will default to 80 or 443, depending on the Protocol
-  * @default 80 or 443 depending on the Protocol
 
+  /**
+  * Optional port number for the listener. If not supplied, will default to 80 or 443, depending on the Protocol.
+  * @default - 80 or 443 depending on the Protocol
   */
   readonly port?: number;
+
   /**
    * The Name of the service.
    * @default CloudFormation provided name.
    */
   readonly name?: string;
+
   /**
    * The Id of the service that this listener is associated with.
    */
   readonly service: Service;
+
   /**
    * rules for the listener
    */
@@ -197,14 +210,16 @@ export interface ListenerProps {
 }
 
 /**
- * Create a vpcLattice Listener.
+ * Create a VPC Lattice Listener.
  * Implemented by `Listener`.
+ * @see https://docs.aws.amazon.com/vpc-lattice/latest/ug/listeners.html
  */
 export interface IListener extends core.IResource {
   /**
    * The Amazon Resource Name (ARN) of the service.
    */
   readonly listenerArn: string;
+
   /**
    * The Id of the Service Network
    */
@@ -258,9 +273,13 @@ export interface RuleProp {
 }
 
 /**
- *  This class should not be called directly.
- *  Use the .addListener() Method on an instance of LatticeService
- *  Creates a vpcLattice Listener
+ *  A listener is a process that checks for connection requests, using the protocol 
+ *  and port that you configure. The rules that you define for a listener determine 
+ *  how the service routes requests to its registered targets.
+ * 
+ *  **This class should not be called directly**.
+ *  Use the `.addListener()` method on an instance of a Service construct.
+ *  
  */
 export class Listener extends core.Resource implements IListener {
   /**

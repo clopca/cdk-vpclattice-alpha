@@ -6,17 +6,19 @@ import { MatchOperator, PathMatchType, HTTPMethods } from './index';
 export interface HTTPMatch {
   /**
    * Properties to Create A HeaderMatch
-   * @default no header match
+   * @default - No header match
    */
   readonly headerMatches?: HeaderMatch[];
+
   /**
    * Method to match against
-   * @default no header match
+   * @default - No header match
    */
   readonly method?: HTTPMethods;
+
   /**
    * Properties to Create A PathMatch
-   * @default no path match
+   * @default - No path match
    */
   readonly pathMatches?: PathMatch;
 }
@@ -29,15 +31,18 @@ export interface HeaderMatch {
    * the name of the header to match
    */
   readonly headername: string;
+
   /**
    * Should the match be case sensitive?
    * @default true
    */
   readonly caseSensitive?: boolean;
+
   /**
    * Type of match to make
    */
   readonly matchOperator: MatchOperator;
+
   /**
    * Value to match against
    */
@@ -53,11 +58,13 @@ export interface PathMatch {
    * @default true
    */
   readonly caseSensitive?: boolean;
+
   /**
    * Type of match to make
    * @default PathMatchType.EXACT
    */
   readonly pathMatchType?: PathMatchType;
+
   /**
    * Value to match against
    */

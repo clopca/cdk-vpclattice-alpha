@@ -3,11 +3,13 @@ import { aws_s3 as s3, aws_logs as logs, aws_kinesis as kinesis } from 'aws-cdk-
 /**
  * Logging options
  */
-
 export abstract class LoggingDestination {
+  // ------------------------------------------------------
+  // Static constructor
+  // ------------------------------------------------------
   /**
-   * Construct a logging destination for a S3 Bucket
-   * @param bucket an s3 bucket
+   * Send logs to Amazon S3
+   * @param bucket the S3 bucket where to send logs
    */
   public static s3(bucket: s3.IBucket): LoggingDestination {
     return {
@@ -17,8 +19,8 @@ export abstract class LoggingDestination {
     };
   }
   /**
-   * Send to CLoudwatch
-   * @param logGroup
+   * Send logs to Amazon CloudWatch
+   * @param logGroup the log group in CloudWatch Logs to use
    */
   public static cloudwatch(logGroup: logs.ILogGroup): LoggingDestination {
     return {
@@ -29,7 +31,7 @@ export abstract class LoggingDestination {
   }
 
   /**
-   * Stream to Kinesis
+   * Stream logs to Kinesis
    * @param stream
    */
   public static kinesis(stream: kinesis.IStream): LoggingDestination {
@@ -40,18 +42,23 @@ export abstract class LoggingDestination {
     };
   }
 
+  // ------------------------------------------------------
+  // Properties
+  // ------------------------------------------------------
   /**
    * A name of the destination
    */
   public abstract readonly name: string;
+
   /**
    * An Arn of the destination
    */
   public abstract readonly arn: string;
+
   /**
    * unique addr of the destination
    */
   public abstract readonly addr: string;
 
-  protected constructor() {}
+  protected constructor() { }
 }
