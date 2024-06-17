@@ -52,12 +52,14 @@ export class TargetGroup extends core.Resource implements ITargetGroup {
    * the first or last character, or immediately after another hyphen.
    */
   public static validateTargetGroupName(name: string) {
-    const pattern = /^(?!tg-)(?![-])(?!.*[-]$)(?!.*[-]{2})[a-z0-9-]+$/;
+    const pattern = /^(?!tg-)(?!-)(?!.*-$)(?!.*--)[a-z0-9-]+$/;
     const validationSucceeded = name.length >= 3 && name.length <= 128 && pattern.test(name);
     if (!validationSucceeded) {
       throw new Error(`Invalid Target Group Name: ${name} (must be between 3-128 characters, and must be a valid name)`);
     }
   }
+
+  // ------------------------------------------------------
 
   /*
    * The Id of the target group
