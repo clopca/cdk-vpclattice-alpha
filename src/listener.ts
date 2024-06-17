@@ -1,6 +1,7 @@
 import * as core from 'aws-cdk-lib';
+import * as generated from 'aws-cdk-lib/aws-vpclattice';
 
-import { aws_vpclattice, aws_iam as iam } from 'aws-cdk-lib';
+import { aws_iam as iam } from 'aws-cdk-lib';
 
 import { Construct } from 'constructs';
 import { WeightedTargetGroup, HTTPMatch, Service } from './index';
@@ -128,7 +129,7 @@ interface IHttpMatchProperty {
    *
    * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-vpclattice-rule-httpmatch.html#cfn-vpclattice-rule-httpmatch-headermatches
    */
-  headerMatches?: Array<aws_vpclattice.CfnRule.HeaderMatchProperty | core.IResolvable> | core.IResolvable;
+  headerMatches?: Array<generated.CfnRule.HeaderMatchProperty | core.IResolvable> | core.IResolvable;
   /**
    * The HTTP method type.
    *
@@ -140,7 +141,7 @@ interface IHttpMatchProperty {
    *
    * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-vpclattice-rule-httpmatch.html#cfn-vpclattice-rule-httpmatch-pathmatch
    */
-  pathMatch?: aws_vpclattice.CfnRule.PathMatchProperty | core.IResolvable;
+  pathMatch?: generated.CfnRule.PathMatchProperty | core.IResolvable;
 }
 
 /**
@@ -287,13 +288,13 @@ export class Listener extends core.Resource implements IListener {
     super(scope, id);
 
     // the default action is a not provided, it will be set to NOT_FOUND
-    // let defaultAction: aws_vpclattice.CfnListener.DefaultActionProperty = props.defaultAction ?? {
+    // let defaultAction: generated.CfnListener.DefaultActionProperty = props.defaultAction ?? {
     //   fixedResponse: {
     //     statusCode: FixedResponse.NOT_FOUND,
     //   },
     // };
 
-    let defaultAction: aws_vpclattice.CfnListener.DefaultActionProperty;
+    let defaultAction: generated.CfnListener.DefaultActionProperty;
     if (props.defaultAction) {
       // throw an error if both props.defaultAction.fixedaction and props.defaultAction.forward are set
       if (props.defaultAction.fixedResponse && props.defaultAction.forward) {
@@ -361,7 +362,7 @@ export class Listener extends core.Resource implements IListener {
       }
     }
 
-    const listener = new aws_vpclattice.CfnListener(this, 'Resource', {
+    const listener = new generated.CfnListener(this, 'Resource', {
       name: props.name,
       defaultAction: defaultAction,
       protocol: protocol,
@@ -426,7 +427,7 @@ export class Listener extends core.Resource implements IListener {
     /**
      * Create the Action for the Rule
      */
-    let action: aws_vpclattice.CfnRule.ActionProperty;
+    let action: generated.CfnRule.ActionProperty;
 
     // if priority is undefined set it to 50.  This should only be used if there is a single rule
     const priority = props.priority ?? 50;
@@ -441,7 +442,7 @@ export class Listener extends core.Resource implements IListener {
     } else {
       // this is a forwarding action
 
-      let targetGroups: aws_vpclattice.CfnRule.WeightedTargetGroupProperty[] = [];
+      let targetGroups: generated.CfnRule.WeightedTargetGroupProperty[] = [];
 
       // loop through the action to build a set of target groups
       props.action.forEach(targetGroup => {
@@ -515,7 +516,7 @@ export class Listener extends core.Resource implements IListener {
     }
     // header Match
     if (props.httpMatch.headerMatches) {
-      let headerMatches: aws_vpclattice.CfnRule.HeaderMatchProperty[] = [];
+      let headerMatches: generated.CfnRule.HeaderMatchProperty[] = [];
 
       props.httpMatch.headerMatches.forEach(headerMatch => {
         const matchOperator = headerMatch.matchOperator ?? MatchOperator.EXACT;
@@ -561,7 +562,7 @@ export class Listener extends core.Resource implements IListener {
     }
 
     // finally create a rule
-    new aws_vpclattice.CfnRule(this, `${props.name}-Rule`, {
+    new generated.CfnRule(this, `${props.name}-Rule`, {
       action: action,
       match: {
         httpMatch: match,
