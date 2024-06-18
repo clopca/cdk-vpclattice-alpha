@@ -30,7 +30,7 @@ describe('Service', () => {
 
     // WHEN
     new Service(stack, 'Params', {
-      serviceName: 'mycustomlatticeservicename', // Invalid service name
+      serviceName: 'mycustomlatticeservicename',
       authType: AuthType.AWS_IAM,
     });
 
@@ -51,7 +51,7 @@ describe('Service', () => {
       logGroupName: 'vpc-lattice-name',
     });
     new Service(stack, 'Params', {
-      serviceName: 'mycustomlatticeservicename', // Invalid service name
+      serviceName: 'mycustomlatticeservicename',
       authType: AuthType.AWS_IAM,
       loggingDestinations: [
         LoggingDestination.cloudwatch(logGroup),
@@ -66,4 +66,33 @@ describe('Service', () => {
     Template.fromStack(stack).hasResource('AWS::VpcLattice::AccessLogSubscription', {});
 
   });
+
+  test('NoDuplicateLoggingDestinationType', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const logGroup1 = new LogGroup(stack, 'LogsTest1', {
+      logGroupName: 'vpc-lattice-name-1',
+    });
+    const logGroup2 = new LogGroup(stack, 'LogsTest2', {
+      logGroupName: 'vpc-lattice-name-2',
+    });
+
+    //THEN
+    expect(() => {
+      new Service(stack, 'Params', {
+        serviceName: 'mycustomlatticeservicename',
+        authType: AuthType.AWS_IAM,
+        loggingDestinations: [
+          LoggingDestination.cloudwatch(logGroup1),
+          LoggingDestination.cloudwatch(logGroup2),
+        ],
+      });
+    }).toThrow();
+
+
+  });
+
+
 });

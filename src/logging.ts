@@ -1,5 +1,11 @@
 import { aws_s3 as s3, aws_logs as logs, aws_kinesis as kinesis } from 'aws-cdk-lib';
 
+export enum LoggingDestinationType {
+  S3 = 'S3',
+  CLOUDWATCH_LOGS = 'CLOUDWATCH_LOGS',
+  KINESIS_DATA_STREAM = 'KINESIS_DATA_STREAM'
+}
+
 /**
  * Enables access logs to be sent to Amazon CloudWatch, Amazon S3,
  * and/or Amazon Kinesis Data Firehose. The service network owner can
@@ -21,6 +27,7 @@ export abstract class LoggingDestination {
       name: bucket.bucketName,
       arn: bucket.bucketArn,
       addr: bucket.node.addr,
+      destinationType: LoggingDestinationType.S3,
     };
   }
   /**
@@ -32,6 +39,7 @@ export abstract class LoggingDestination {
       name: logGroup.logGroupName,
       arn: logGroup.logGroupArn,
       addr: logGroup.node.addr,
+      destinationType: LoggingDestinationType.CLOUDWATCH_LOGS,
     };
   }
 
@@ -46,6 +54,7 @@ export abstract class LoggingDestination {
       name: stream.streamName,
       arn: stream.streamArn,
       addr: stream.node.addr,
+      destinationType: LoggingDestinationType.KINESIS_DATA_STREAM,
     };
   }
 
@@ -66,6 +75,11 @@ export abstract class LoggingDestination {
    * unique addr of the destination
    */
   public abstract readonly addr: string;
+
+  /**
+   * Type of the destination
+   */
+  public abstract readonly destinationType: LoggingDestinationType;
 
   protected constructor() { }
 }

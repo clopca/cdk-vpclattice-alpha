@@ -189,15 +189,16 @@ export class Service extends ServiceBase {
   // Construct
   // ------------------------------------------------------
   constructor(scope: Construct, id: string, props: ServiceProps) {
-    super(scope, id, {
-      physicalName: props.serviceName,
-    });
+    super(scope, id, { physicalName: props.serviceName });
 
     if (props.serviceName) {
       Service.validateServiceName(props.serviceName);
     }
     this.authType = props.authType ?? AuthType.NONE;
 
+    // ------------------------------------------------------
+    // L1 Instantiation
+    // ------------------------------------------------------
     const resource = new generated.CfnService(this, 'Resource', {
       authType: this.authType,
       certificateArn: props.certificateArn,
@@ -205,29 +206,45 @@ export class Service extends ServiceBase {
       dnsEntry: props.dnsEntry,
       name: this.physicalName,
     });
+
+    // ------------------------------------------------------
+    // Logging Configuration
+    // ------------------------------------------------------
+
     this._resource = resource;
+    // Apply the specified removal policy (what happens on delete)
+    this._resource.applyRemovalPolicy(props.removalPolicy);
 
     this.serviceArn = this._resource.attrArn;
     this.serviceId = this._resource.attrId;
     this.serviceName = this.physicalName;
     this.authPolicy = new iam.PolicyDocument();
 
-    // Sssociate with serviceNetwork if provided
+    // ------------------------------------------------------
+    // Service Network Association
+    // ------------------------------------------------------
     if (props.serviceNetwork) {
       this.associateWithServiceNetwork(props.serviceNetwork);
     }
 
-    // Define logging destinations if provided
+    // ------------------------------------------------------
+    // Logging Configuration
+    // ------------------------------------------------------
     if (props.loggingDestinations?.length) {
+
+      // Validate there is at most only one destination per destination type
+      const destinationTypes = props.loggingDestinations.map(destination => destination.destinationType);
+      if (new Set(destinationTypes).size !== destinationTypes.length) {
+        throw new Error('A service can only have one logging destination per destination type.');
+      }
+
+      // Add the logging destination
       props.loggingDestinations.forEach(destination => {
         this.addloggingDestination({
           destination: destination,
         });
       });
     }
-
-    // Apply the specified removal policy (what happens on delete)
-    this._resource.applyRemovalPolicy(props.removalPolicy);
   }
 
   // ------------------------------------------------------

@@ -12,6 +12,7 @@ const logGroup = new LogGroup(stack, 'LogsTest', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
+
 new Service(stack, 'Service', {
   authType: AuthType.AWS_IAM,
   serviceName: 'my-custom-name',
