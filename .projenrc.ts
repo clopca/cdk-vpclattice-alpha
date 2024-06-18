@@ -8,6 +8,7 @@ const project = new awscdk.AwsCdkConstructLibrary({
   jsiiVersion: '~5.4.0',
   name: 'cdk-vpclattice-alpha',
   projenrcTs: true,
+  integrationTestAutoDiscover: true,
   repositoryUrl: 'git@github.com:clopca/cdk-vpclattice-alpha.git',
   stability: 'experimental',
   license: 'Apache-2.0',
@@ -16,6 +17,7 @@ const project = new awscdk.AwsCdkConstructLibrary({
     'ts-node',
     'aws-cdk-lib@2.146.0', // Exact version as dev dependency
     'constructs@10.0.5', // Exact version as dev dependency
+    '@aws-cdk/integ-tests-alpha@2.146.0-alpha.0',
   ],
   peerDeps: ['aws-cdk-lib@^2.146.0', 'constructs@^10.0.5'],
   // deps: ['aws-cdk-lib@^2.146.0', 'constructs@^10.0.5'],

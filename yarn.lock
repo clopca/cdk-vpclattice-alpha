@@ -25,7 +25,7 @@
   resolved "https://registry.npmjs.org/@aws-cdk/asset-node-proxy-agent-v6/-/asset-node-proxy-agent-v6-2.0.3.tgz"
   integrity sha512-twhuEG+JPOYCYPx/xy5uH2+VUsIEhPTzDY0F1KuB+ocjWWB/KEDiOVL19nHvbPCB6fhWnkykXEMJ4HHcKvjtvg==
 
-"@aws-cdk/integ-tests-alpha@^2.146.0-alpha.0":
+"@aws-cdk/integ-tests-alpha@2.146.0-alpha.0":
   version "2.146.0-alpha.0"
   resolved "https://registry.yarnpkg.com/@aws-cdk/integ-tests-alpha/-/integ-tests-alpha-2.146.0-alpha.0.tgz#5bf428f195d52959880871a4f354b15f7551e749"
   integrity sha512-Obtu0l4PqOR3VWafoIUz8b52E/Qm6tlCbx+8sjhZObGosLid72EkbsK8v/L6Usrp4EhswKrLuDFHNpLgLFpLiA==

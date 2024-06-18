@@ -507,7 +507,7 @@ new Service(scope: Construct, id: string, props: ServiceProps)
 | --- | --- |
 | <code><a href="#cdk-vpclattice-alpha.Service.toString">toString</a></code> | Returns a string representation of this construct. |
 | <code><a href="#cdk-vpclattice-alpha.Service.applyRemovalPolicy">applyRemovalPolicy</a></code> | Apply the given removal policy to this resource. |
-| <code><a href="#cdk-vpclattice-alpha.Service.addloggingDestination">addloggingDestination</a></code> | Send logs to a destination. |
+| <code><a href="#cdk-vpclattice-alpha.Service.addLoggingDestination">addLoggingDestination</a></code> | Send logs to a destination. |
 | <code><a href="#cdk-vpclattice-alpha.Service.applyAuthPolicy">applyAuthPolicy</a></code> | Apply the AuthPolicy to the Service. |
 | <code><a href="#cdk-vpclattice-alpha.Service.associateWithServiceNetwork">associateWithServiceNetwork</a></code> | Associate the service with a Service Network. |
 | <code><a href="#cdk-vpclattice-alpha.Service.grantAccess">grantAccess</a></code> | .grantAccess on a lattice service, will permit the principals to access all of the service. Consider using more granual permissions at the rule level. |
@@ -544,17 +544,17 @@ account for data recovery and cleanup later (`RemovalPolicy.RETAIN`).
 
 ---
 
-##### `addloggingDestination` <a name="addloggingDestination" id="cdk-vpclattice-alpha.Service.addloggingDestination"></a>
+##### `addLoggingDestination` <a name="addLoggingDestination" id="cdk-vpclattice-alpha.Service.addLoggingDestination"></a>
 
 ```typescript
-public addloggingDestination(props: AddloggingDestinationProps): void
+public addLoggingDestination(destination: LoggingDestination): void
 ```
 
 Send logs to a destination.
 
-###### `props`<sup>Required</sup> <a name="props" id="cdk-vpclattice-alpha.Service.addloggingDestination.parameter.props"></a>
+###### `destination`<sup>Required</sup> <a name="destination" id="cdk-vpclattice-alpha.Service.addLoggingDestination.parameter.destination"></a>
 
-- *Type:* <a href="#cdk-vpclattice-alpha.AddloggingDestinationProps">AddloggingDestinationProps</a>
+- *Type:* <a href="#cdk-vpclattice-alpha.LoggingDestination">LoggingDestination</a>
 
 ---
 
@@ -592,6 +592,8 @@ public grantAccess(principals: IPrincipal[]): void
 
 - *Type:* aws-cdk-lib.aws_iam.IPrincipal[]
 
+a list of IAM principals to grant access.
+
 ---
 
 #### Static Functions <a name="Static Functions" id="Static Functions"></a>
@@ -603,7 +605,6 @@ public grantAccess(principals: IPrincipal[]): void
 | <code><a href="#cdk-vpclattice-alpha.Service.isResource">isResource</a></code> | Check whether the given construct is a Resource. |
 | <code><a href="#cdk-vpclattice-alpha.Service.fromServiceArn">fromServiceArn</a></code> | *No description.* |
 | <code><a href="#cdk-vpclattice-alpha.Service.fromServiceId">fromServiceId</a></code> | *No description.* |
-| <code><a href="#cdk-vpclattice-alpha.Service.validateServiceName">validateServiceName</a></code> | Must be between 3-40 characters. |
 
 ---
 
@@ -704,25 +705,6 @@ Service.fromServiceId(scope: Construct, id: string, serviceId: string)
 ---
 
 ###### `serviceId`<sup>Required</sup> <a name="serviceId" id="cdk-vpclattice-alpha.Service.fromServiceId.parameter.serviceId"></a>
-
-- *Type:* string
-
----
-
-##### `validateServiceName` <a name="validateServiceName" id="cdk-vpclattice-alpha.Service.validateServiceName"></a>
-
-```typescript
-import { Service } from 'cdk-vpclattice-alpha'
-
-Service.validateServiceName(name: string)
-```
-
-Must be between 3-40 characters.
-
-Lowercase letters, numbers, and hyphens are accepted.
-Must begin and end with a letter or number. No consecutive hyphens.
-
-###### `name`<sup>Required</sup> <a name="name" id="cdk-vpclattice-alpha.Service.validateServiceName.parameter.name"></a>
 
 - *Type:* string
 
@@ -1085,7 +1067,7 @@ new ServiceNetwork(scope: Construct, id: string, props: ServiceNetworkProps)
 | <code><a href="#cdk-vpclattice-alpha.ServiceNetwork.addStatementToAuthPolicy">addStatementToAuthPolicy</a></code> | Add a Policy Statement to the Auth Policy. |
 | <code><a href="#cdk-vpclattice-alpha.ServiceNetwork.applyAuthPolicyToServiceNetwork">applyAuthPolicyToServiceNetwork</a></code> | Apply the AuthPolicy to a Service Network. |
 | <code><a href="#cdk-vpclattice-alpha.ServiceNetwork.associateVPC">associateVPC</a></code> | Apply the AuthPolicy to the Service Network. |
-| <code><a href="#cdk-vpclattice-alpha.ServiceNetwork.share">share</a></code> | Share the The Service network using RAM. |
+| <code><a href="#cdk-vpclattice-alpha.ServiceNetwork.shareResource">shareResource</a></code> | Amazon VPC Lattice integrates with AWS Resource Access Manager (AWS RAM) to enable resource sharing across AWS accounts or through AWS Organizations. |
 
 ---
 
@@ -1122,14 +1104,14 @@ account for data recovery and cleanup later (`RemovalPolicy.RETAIN`).
 ##### `addloggingDestination` <a name="addloggingDestination" id="cdk-vpclattice-alpha.ServiceNetwork.addloggingDestination"></a>
 
 ```typescript
-public addloggingDestination(props: AddloggingDestinationProps): void
+public addloggingDestination(destination: LoggingDestination): void
 ```
 
 Send logs to a destination.
 
-###### `props`<sup>Required</sup> <a name="props" id="cdk-vpclattice-alpha.ServiceNetwork.addloggingDestination.parameter.props"></a>
+###### `destination`<sup>Required</sup> <a name="destination" id="cdk-vpclattice-alpha.ServiceNetwork.addloggingDestination.parameter.destination"></a>
 
-- *Type:* <a href="#cdk-vpclattice-alpha.AddloggingDestinationProps">AddloggingDestinationProps</a>
+- *Type:* <a href="#cdk-vpclattice-alpha.LoggingDestination">LoggingDestination</a>
 
 ---
 
@@ -1183,15 +1165,15 @@ Apply the AuthPolicy to the Service Network.
 
 ---
 
-##### `share` <a name="share" id="cdk-vpclattice-alpha.ServiceNetwork.share"></a>
+##### `shareResource` <a name="shareResource" id="cdk-vpclattice-alpha.ServiceNetwork.shareResource"></a>
 
 ```typescript
-public share(props: ShareServiceNetworkProps): void
+public shareResource(props: ShareServiceNetworkProps): void
 ```
 
-Share the The Service network using RAM.
+Amazon VPC Lattice integrates with AWS Resource Access Manager (AWS RAM) to enable resource sharing across AWS accounts or through AWS Organizations.
 
-###### `props`<sup>Required</sup> <a name="props" id="cdk-vpclattice-alpha.ServiceNetwork.share.parameter.props"></a>
+###### `props`<sup>Required</sup> <a name="props" id="cdk-vpclattice-alpha.ServiceNetwork.shareResource.parameter.props"></a>
 
 - *Type:* <a href="#cdk-vpclattice-alpha.ShareServiceNetworkProps">ShareServiceNetworkProps</a>
 
@@ -1206,7 +1188,6 @@ Share the The Service network using RAM.
 | <code><a href="#cdk-vpclattice-alpha.ServiceNetwork.isResource">isResource</a></code> | Check whether the given construct is a Resource. |
 | <code><a href="#cdk-vpclattice-alpha.ServiceNetwork.fromArn">fromArn</a></code> | Import a Service Network by Arn. |
 | <code><a href="#cdk-vpclattice-alpha.ServiceNetwork.fromId">fromId</a></code> | Import a Service Network by Id. |
-| <code><a href="#cdk-vpclattice-alpha.ServiceNetwork.validateServiceNetworkName">validateServiceNetworkName</a></code> | Must be between 3-63 characters. |
 
 ---
 
@@ -1311,25 +1292,6 @@ Import a Service Network by Id.
 ---
 
 ###### `serviceNetworkId`<sup>Required</sup> <a name="serviceNetworkId" id="cdk-vpclattice-alpha.ServiceNetwork.fromId.parameter.serviceNetworkId"></a>
-
-- *Type:* string
-
----
-
-##### `validateServiceNetworkName` <a name="validateServiceNetworkName" id="cdk-vpclattice-alpha.ServiceNetwork.validateServiceNetworkName"></a>
-
-```typescript
-import { ServiceNetwork } from 'cdk-vpclattice-alpha'
-
-ServiceNetwork.validateServiceNetworkName(name: string)
-```
-
-Must be between 3-63 characters.
-
-Lowercase letters, numbers, and hyphens are accepted.
-Must begin and end with a letter or number. No consecutive hyphens.
-
-###### `name`<sup>Required</sup> <a name="name" id="cdk-vpclattice-alpha.ServiceNetwork.validateServiceNetworkName.parameter.name"></a>
 
 - *Type:* string
 
@@ -1884,38 +1846,6 @@ The id of the target group.
 
 
 ## Structs <a name="Structs" id="Structs"></a>
-
-### AddloggingDestinationProps <a name="AddloggingDestinationProps" id="cdk-vpclattice-alpha.AddloggingDestinationProps"></a>
-
-Properties to add a logging Destination.
-
-#### Initializer <a name="Initializer" id="cdk-vpclattice-alpha.AddloggingDestinationProps.Initializer"></a>
-
-```typescript
-import { AddloggingDestinationProps } from 'cdk-vpclattice-alpha'
-
-const addloggingDestinationProps: AddloggingDestinationProps = { ... }
-```
-
-#### Properties <a name="Properties" id="Properties"></a>
-
-| **Name** | **Type** | **Description** |
-| --- | --- | --- |
-| <code><a href="#cdk-vpclattice-alpha.AddloggingDestinationProps.property.destination">destination</a></code> | <code><a href="#cdk-vpclattice-alpha.LoggingDestination">LoggingDestination</a></code> | The logging destination. |
-
----
-
-##### `destination`<sup>Required</sup> <a name="destination" id="cdk-vpclattice-alpha.AddloggingDestinationProps.property.destination"></a>
-
-```typescript
-public readonly destination: LoggingDestination;
-```
-
-- *Type:* <a href="#cdk-vpclattice-alpha.LoggingDestination">LoggingDestination</a>
-
-The logging destination.
-
----
 
 ### AssociateVpcProps <a name="AssociateVpcProps" id="cdk-vpclattice-alpha.AssociateVpcProps"></a>
 
@@ -2590,20 +2520,21 @@ const serviceNetworkProps: ServiceNetworkProps = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#cdk-vpclattice-alpha.ServiceNetworkProps.property.accessmode">accessmode</a></code> | <code><a href="#cdk-vpclattice-alpha.ServiceNetworkAccessMode">ServiceNetworkAccessMode</a></code> | Allow external principals. |
+| <code><a href="#cdk-vpclattice-alpha.ServiceNetworkProps.property.accessMode">accessMode</a></code> | <code><a href="#cdk-vpclattice-alpha.ServiceNetworkAccessMode">ServiceNetworkAccessMode</a></code> | Allow external principals. |
 | <code><a href="#cdk-vpclattice-alpha.ServiceNetworkProps.property.authStatements">authStatements</a></code> | <code>aws-cdk-lib.aws_iam.PolicyStatement[]</code> | Additional AuthStatments:. |
-| <code><a href="#cdk-vpclattice-alpha.ServiceNetworkProps.property.authType">authType</a></code> | <code><a href="#cdk-vpclattice-alpha.AuthType">AuthType</a></code> | The type of  authentication to use with the Service Network. |
+| <code><a href="#cdk-vpclattice-alpha.ServiceNetworkProps.property.authType">authType</a></code> | <code><a href="#cdk-vpclattice-alpha.AuthType">AuthType</a></code> | The type of authentication to use with the Service Network. |
 | <code><a href="#cdk-vpclattice-alpha.ServiceNetworkProps.property.loggingDestinations">loggingDestinations</a></code> | <code><a href="#cdk-vpclattice-alpha.LoggingDestination">LoggingDestination</a>[]</code> | Where to send access logs. |
 | <code><a href="#cdk-vpclattice-alpha.ServiceNetworkProps.property.name">name</a></code> | <code>string</code> | The name of the Service Network. |
+| <code><a href="#cdk-vpclattice-alpha.ServiceNetworkProps.property.removalPolicy">removalPolicy</a></code> | <code>aws-cdk-lib.RemovalPolicy</code> | Determine what happens to the repository when the resource/stack is deleted. |
 | <code><a href="#cdk-vpclattice-alpha.ServiceNetworkProps.property.services">services</a></code> | <code><a href="#cdk-vpclattice-alpha.IService">IService</a>[]</code> | Lattice Services that are assocaited with this Service Network. |
-| <code><a href="#cdk-vpclattice-alpha.ServiceNetworkProps.property.vpcs">vpcs</a></code> | <code>aws-cdk-lib.aws_ec2.IVpc[]</code> | Vpcs that are associated with this Service Network. |
+| <code><a href="#cdk-vpclattice-alpha.ServiceNetworkProps.property.vpcs">vpcs</a></code> | <code>aws-cdk-lib.aws_ec2.IVpc[]</code> | You can associate VPCs to your service network at or after network creation. |
 
 ---
 
-##### `accessmode`<sup>Optional</sup> <a name="accessmode" id="cdk-vpclattice-alpha.ServiceNetworkProps.property.accessmode"></a>
+##### `accessMode`<sup>Optional</sup> <a name="accessMode" id="cdk-vpclattice-alpha.ServiceNetworkProps.property.accessMode"></a>
 
 ```typescript
-public readonly accessmode: ServiceNetworkAccessMode;
+public readonly accessMode: ServiceNetworkAccessMode;
 ```
 
 - *Type:* <a href="#cdk-vpclattice-alpha.ServiceNetworkAccessMode">ServiceNetworkAccessMode</a>
@@ -2632,9 +2563,9 @@ public readonly authType: AuthType;
 ```
 
 - *Type:* <a href="#cdk-vpclattice-alpha.AuthType">AuthType</a>
-- *Default:* 'NONE'
+- *Default:* AuthType.NONE
 
-The type of  authentication to use with the Service Network.
+The type of authentication to use with the Service Network.
 
 ---
 
@@ -2665,7 +2596,21 @@ public readonly name: string;
 
 The name of the Service Network.
 
-If not provided CloudFormation will provide a name
+If not provided,
+CloudFormation will generate a name.
+
+---
+
+##### `removalPolicy`<sup>Optional</sup> <a name="removalPolicy" id="cdk-vpclattice-alpha.ServiceNetworkProps.property.removalPolicy"></a>
+
+```typescript
+public readonly removalPolicy: RemovalPolicy;
+```
+
+- *Type:* aws-cdk-lib.RemovalPolicy
+- *Default:* RemovalPolicy.RETAIN
+
+Determine what happens to the repository when the resource/stack is deleted.
 
 ---
 
@@ -2689,9 +2634,13 @@ public readonly vpcs: IVpc[];
 ```
 
 - *Type:* aws-cdk-lib.aws_ec2.IVpc[]
-- *Default:* no vpcs are associated
+- *Default:* no VPCs are associated
 
-Vpcs that are associated with this Service Network.
+You can associate VPCs to your service network at or after network creation.
+
+After association, services within the VPC can make calls to services in the
+service network. Any VPC owner with access to the service network can associate
+their VPCs to it.
 
 ---
 
@@ -2713,11 +2662,11 @@ const serviceProps: ServiceProps = { ... }
 | --- | --- | --- |
 | <code><a href="#cdk-vpclattice-alpha.ServiceProps.property.authType">authType</a></code> | <code><a href="#cdk-vpclattice-alpha.AuthType">AuthType</a></code> | The authType of the Service. |
 | <code><a href="#cdk-vpclattice-alpha.ServiceProps.property.certificateArn">certificateArn</a></code> | <code>string</code> | A certificate that may be used by the service. |
-| <code><a href="#cdk-vpclattice-alpha.ServiceProps.property.customDomainName">customDomainName</a></code> | <code>string</code> | A customDomainName used by the service. |
+| <code><a href="#cdk-vpclattice-alpha.ServiceProps.property.customDomainName">customDomainName</a></code> | <code>string</code> | A registered custom domain name for your service. |
 | <code><a href="#cdk-vpclattice-alpha.ServiceProps.property.dnsEntry">dnsEntry</a></code> | <code>aws-cdk-lib.aws_vpclattice.CfnService.DnsEntryProperty</code> | A custom DNS entry. |
 | <code><a href="#cdk-vpclattice-alpha.ServiceProps.property.loggingDestinations">loggingDestinations</a></code> | <code><a href="#cdk-vpclattice-alpha.LoggingDestination">LoggingDestination</a>[]</code> | Where to send access logs. |
+| <code><a href="#cdk-vpclattice-alpha.ServiceProps.property.name">name</a></code> | <code>string</code> | The name to assign to the service. |
 | <code><a href="#cdk-vpclattice-alpha.ServiceProps.property.removalPolicy">removalPolicy</a></code> | <code>aws-cdk-lib.RemovalPolicy</code> | Determine what happens to the repository when the resource/stack is deleted. |
-| <code><a href="#cdk-vpclattice-alpha.ServiceProps.property.serviceName">serviceName</a></code> | <code>string</code> | The name to assign to the service. |
 | <code><a href="#cdk-vpclattice-alpha.ServiceProps.property.serviceNetwork">serviceNetwork</a></code> | <code><a href="#cdk-vpclattice-alpha.IServiceNetwork">IServiceNetwork</a></code> | ServiceNetwork to associate with. |
 
 ---
@@ -2755,9 +2704,14 @@ public readonly customDomainName: string;
 ```
 
 - *Type:* string
-- *Default:* no custom domain name is used
+- *Default:* Your service will be reachable only by the domain name that VPC Lattice generates
 
-A customDomainName used by the service.
+A registered custom domain name for your service.
+
+Requests to the custom
+domain are resolved by the DNS server to the VPC Lattice generated domain name.
+
+> [https://docs.aws.amazon.com/vpc-lattice/latest/ug/service-custom-domain-name.html](https://docs.aws.amazon.com/vpc-lattice/latest/ug/service-custom-domain-name.html)
 
 ---
 
@@ -2790,23 +2744,10 @@ originated from VPCs associated with that network.
 
 ---
 
-##### `removalPolicy`<sup>Optional</sup> <a name="removalPolicy" id="cdk-vpclattice-alpha.ServiceProps.property.removalPolicy"></a>
+##### `name`<sup>Optional</sup> <a name="name" id="cdk-vpclattice-alpha.ServiceProps.property.name"></a>
 
 ```typescript
-public readonly removalPolicy: RemovalPolicy;
-```
-
-- *Type:* aws-cdk-lib.RemovalPolicy
-- *Default:* RemovalPolicy.RETAIN
-
-Determine what happens to the repository when the resource/stack is deleted.
-
----
-
-##### `serviceName`<sup>Optional</sup> <a name="serviceName" id="cdk-vpclattice-alpha.ServiceProps.property.serviceName"></a>
-
-```typescript
-public readonly serviceName: string;
+public readonly name: string;
 ```
 
 - *Type:* string
@@ -2818,6 +2759,19 @@ Note: It must be unique within your AWS account and this name will become part o
 the service DNS and can't be changed after the VPC Lattice service is created.
 
 > [https://docs.aws.amazon.com/vpc-lattice/latest/ug/services.html](https://docs.aws.amazon.com/vpc-lattice/latest/ug/services.html)
+
+---
+
+##### `removalPolicy`<sup>Optional</sup> <a name="removalPolicy" id="cdk-vpclattice-alpha.ServiceProps.property.removalPolicy"></a>
+
+```typescript
+public readonly removalPolicy: RemovalPolicy;
+```
+
+- *Type:* aws-cdk-lib.RemovalPolicy
+- *Default:* RemovalPolicy.RETAIN
+
+Determine what happens to the repository when the resource/stack is deleted.
 
 ---
 
@@ -2892,7 +2846,7 @@ public readonly accessMode: ServiceNetworkAccessMode;
 ```
 
 - *Type:* <a href="#cdk-vpclattice-alpha.ServiceNetworkAccessMode">ServiceNetworkAccessMode</a>
-- *Default:* 'UNAUTHENTICATED'
+- *Default:* ServiceNetworkAccessMode.UNAUTHENTICATED
 
 The access mode for the Service Network.
 
@@ -3047,6 +3001,7 @@ Enables access logs to be sent to Amazon CloudWatch, Amazon S3, and/or Amazon Ki
 
 The service network owner can
 use the access logs to audit the services in the network.
+At most one destination per destination type.
 
 > [https://docs.aws.amazon.com/vpc-lattice/latest/ug/monitoring-access-logs.html](https://docs.aws.amazon.com/vpc-lattice/latest/ug/monitoring-access-logs.html)
 
@@ -3069,7 +3024,7 @@ new LoggingDestination()
 | **Name** | **Description** |
 | --- | --- |
 | <code><a href="#cdk-vpclattice-alpha.LoggingDestination.cloudwatch">cloudwatch</a></code> | Send logs to Amazon CloudWatch. |
-| <code><a href="#cdk-vpclattice-alpha.LoggingDestination.kinesis">kinesis</a></code> | Stream logs to Kinesis. |
+| <code><a href="#cdk-vpclattice-alpha.LoggingDestination.kinesis">kinesis</a></code> | Use Amazon Kinesis Data Firehose for delivering real-time streaming data to destinations such as Amazon S3, Amazon Redshift, Amazon OpenSearch, or any custom HTTP endpoint. |
 | <code><a href="#cdk-vpclattice-alpha.LoggingDestination.s3">s3</a></code> | Send logs to Amazon S3. |
 
 ---
@@ -3100,11 +3055,13 @@ import { LoggingDestination } from 'cdk-vpclattice-alpha'
 LoggingDestination.kinesis(stream: IStream)
 ```
 
-Stream logs to Kinesis.
+Use Amazon Kinesis Data Firehose for delivering real-time streaming data to destinations such as Amazon S3, Amazon Redshift, Amazon OpenSearch, or any custom HTTP endpoint.
 
 ###### `stream`<sup>Required</sup> <a name="stream" id="cdk-vpclattice-alpha.LoggingDestination.kinesis.parameter.stream"></a>
 
 - *Type:* aws-cdk-lib.aws_kinesis.IStream
+
+the delivery stream to send logs to.
 
 ---
 
@@ -3122,7 +3079,7 @@ Send logs to Amazon S3.
 
 - *Type:* aws-cdk-lib.aws_s3.IBucket
 
-the S3 bucket where to send logs.
+the S3 bucket to send logs to.
 
 ---
 
@@ -3132,6 +3089,7 @@ the S3 bucket where to send logs.
 | --- | --- | --- |
 | <code><a href="#cdk-vpclattice-alpha.LoggingDestination.property.addr">addr</a></code> | <code>string</code> | unique addr of the destination. |
 | <code><a href="#cdk-vpclattice-alpha.LoggingDestination.property.arn">arn</a></code> | <code>string</code> | An Arn of the destination. |
+| <code><a href="#cdk-vpclattice-alpha.LoggingDestination.property.destinationType">destinationType</a></code> | <code><a href="#cdk-vpclattice-alpha.LoggingDestinationType">LoggingDestinationType</a></code> | Type of the destination. |
 | <code><a href="#cdk-vpclattice-alpha.LoggingDestination.property.name">name</a></code> | <code>string</code> | A name of the destination. |
 
 ---
@@ -3157,6 +3115,18 @@ public readonly arn: string;
 - *Type:* string
 
 An Arn of the destination.
+
+---
+
+##### `destinationType`<sup>Required</sup> <a name="destinationType" id="cdk-vpclattice-alpha.LoggingDestination.property.destinationType"></a>
+
+```typescript
+public readonly destinationType: LoggingDestinationType;
+```
+
+- *Type:* <a href="#cdk-vpclattice-alpha.LoggingDestinationType">LoggingDestinationType</a>
+
+Type of the destination.
 
 ---
 
@@ -3761,6 +3731,33 @@ PUT Method.
 ##### `DELETE` <a name="DELETE" id="cdk-vpclattice-alpha.HTTPMethods.DELETE"></a>
 
 Delete Method.
+
+---
+
+
+### LoggingDestinationType <a name="LoggingDestinationType" id="cdk-vpclattice-alpha.LoggingDestinationType"></a>
+
+#### Members <a name="Members" id="Members"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#cdk-vpclattice-alpha.LoggingDestinationType.S3">S3</a></code> | *No description.* |
+| <code><a href="#cdk-vpclattice-alpha.LoggingDestinationType.CLOUDWATCH_LOGS">CLOUDWATCH_LOGS</a></code> | *No description.* |
+| <code><a href="#cdk-vpclattice-alpha.LoggingDestinationType.KINESIS_DATA_STREAM">KINESIS_DATA_STREAM</a></code> | *No description.* |
+
+---
+
+##### `S3` <a name="S3" id="cdk-vpclattice-alpha.LoggingDestinationType.S3"></a>
+
+---
+
+
+##### `CLOUDWATCH_LOGS` <a name="CLOUDWATCH_LOGS" id="cdk-vpclattice-alpha.LoggingDestinationType.CLOUDWATCH_LOGS"></a>
+
+---
+
+
+##### `KINESIS_DATA_STREAM` <a name="KINESIS_DATA_STREAM" id="cdk-vpclattice-alpha.LoggingDestinationType.KINESIS_DATA_STREAM"></a>
 
 ---
 
