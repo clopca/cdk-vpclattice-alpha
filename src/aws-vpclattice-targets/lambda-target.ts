@@ -1,7 +1,7 @@
 import { aws_lambda as lambda } from 'aws-cdk-lib';
 import * as aws_vpclattice from 'aws-cdk-lib/aws-vpclattice';
 import * as constructs from 'constructs';
-import { IpAddressType, LambdaEventStructureVersion, Protocol, ProtocolVersion, TargetType } from '.';
+import { LambdaEventStructureVersion, TargetType } from '.';
 import { TargetGroupBase } from '../';
 
 export interface LambdaTargetGroupProps {
