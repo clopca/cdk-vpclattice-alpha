@@ -1,5 +1,26 @@
 import * as core from 'aws-cdk-lib';
-import { TargetType } from './aws-vpclattice-targets';
+
+export enum TargetType {
+  /**
+   * Lambda Target
+   */
+  LAMBDA = 'LAMBDA',
+
+  /**
+   * IP Address Target
+   */
+  IP = 'IP',
+
+  /**
+   * EC2 Instance Targets
+   */
+  INSTANCE = 'INSTANCE',
+
+  /**
+   * Application Load Balancer Target
+   */
+  ALB = 'ALB',
+}
 
 /**
  * Basic properties for a Target Group

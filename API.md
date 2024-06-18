@@ -1603,45 +1603,43 @@ The stack in which this resource is defined.
 ---
 
 
-### TargetGroup <a name="TargetGroup" id="cdk-vpclattice-alpha.TargetGroup"></a>
+### TargetGroupBase <a name="TargetGroupBase" id="cdk-vpclattice-alpha.TargetGroupBase"></a>
 
 - *Implements:* <a href="#cdk-vpclattice-alpha.ITargetGroup">ITargetGroup</a>
 
-Creates a VPC Lattice Target Group.
+Properties for a Target Group, Only supply one of instancetargets, lambdaTargets, albTargets, ipTargets.
 
-> [https://docs.aws.amazon.com/vpc-lattice/latest/ug/target-groups.html](https://docs.aws.amazon.com/vpc-lattice/latest/ug/target-groups.html)
-
-#### Initializers <a name="Initializers" id="cdk-vpclattice-alpha.TargetGroup.Initializer"></a>
+#### Initializers <a name="Initializers" id="cdk-vpclattice-alpha.TargetGroupBase.Initializer"></a>
 
 ```typescript
-import { TargetGroup } from 'cdk-vpclattice-alpha'
+import { TargetGroupBase } from 'cdk-vpclattice-alpha'
 
-new TargetGroup(scope: Construct, id: string, props: TargetGroupProps)
+new TargetGroupBase(scope: Construct, id: string, props?: ResourceProps)
 ```
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#cdk-vpclattice-alpha.TargetGroup.Initializer.parameter.scope">scope</a></code> | <code>constructs.Construct</code> | *No description.* |
-| <code><a href="#cdk-vpclattice-alpha.TargetGroup.Initializer.parameter.id">id</a></code> | <code>string</code> | *No description.* |
-| <code><a href="#cdk-vpclattice-alpha.TargetGroup.Initializer.parameter.props">props</a></code> | <code><a href="#cdk-vpclattice-alpha.TargetGroupProps">TargetGroupProps</a></code> | *No description.* |
+| <code><a href="#cdk-vpclattice-alpha.TargetGroupBase.Initializer.parameter.scope">scope</a></code> | <code>constructs.Construct</code> | *No description.* |
+| <code><a href="#cdk-vpclattice-alpha.TargetGroupBase.Initializer.parameter.id">id</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#cdk-vpclattice-alpha.TargetGroupBase.Initializer.parameter.props">props</a></code> | <code>aws-cdk-lib.ResourceProps</code> | *No description.* |
 
 ---
 
-##### `scope`<sup>Required</sup> <a name="scope" id="cdk-vpclattice-alpha.TargetGroup.Initializer.parameter.scope"></a>
+##### `scope`<sup>Required</sup> <a name="scope" id="cdk-vpclattice-alpha.TargetGroupBase.Initializer.parameter.scope"></a>
 
 - *Type:* constructs.Construct
 
 ---
 
-##### `id`<sup>Required</sup> <a name="id" id="cdk-vpclattice-alpha.TargetGroup.Initializer.parameter.id"></a>
+##### `id`<sup>Required</sup> <a name="id" id="cdk-vpclattice-alpha.TargetGroupBase.Initializer.parameter.id"></a>
 
 - *Type:* string
 
 ---
 
-##### `props`<sup>Required</sup> <a name="props" id="cdk-vpclattice-alpha.TargetGroup.Initializer.parameter.props"></a>
+##### `props`<sup>Optional</sup> <a name="props" id="cdk-vpclattice-alpha.TargetGroupBase.Initializer.parameter.props"></a>
 
-- *Type:* <a href="#cdk-vpclattice-alpha.TargetGroupProps">TargetGroupProps</a>
+- *Type:* aws-cdk-lib.ResourceProps
 
 ---
 
@@ -1649,12 +1647,12 @@ new TargetGroup(scope: Construct, id: string, props: TargetGroupProps)
 
 | **Name** | **Description** |
 | --- | --- |
-| <code><a href="#cdk-vpclattice-alpha.TargetGroup.toString">toString</a></code> | Returns a string representation of this construct. |
-| <code><a href="#cdk-vpclattice-alpha.TargetGroup.applyRemovalPolicy">applyRemovalPolicy</a></code> | Apply the given removal policy to this resource. |
+| <code><a href="#cdk-vpclattice-alpha.TargetGroupBase.toString">toString</a></code> | Returns a string representation of this construct. |
+| <code><a href="#cdk-vpclattice-alpha.TargetGroupBase.applyRemovalPolicy">applyRemovalPolicy</a></code> | Apply the given removal policy to this resource. |
 
 ---
 
-##### `toString` <a name="toString" id="cdk-vpclattice-alpha.TargetGroup.toString"></a>
+##### `toString` <a name="toString" id="cdk-vpclattice-alpha.TargetGroupBase.toString"></a>
 
 ```typescript
 public toString(): string
@@ -1662,7 +1660,7 @@ public toString(): string
 
 Returns a string representation of this construct.
 
-##### `applyRemovalPolicy` <a name="applyRemovalPolicy" id="cdk-vpclattice-alpha.TargetGroup.applyRemovalPolicy"></a>
+##### `applyRemovalPolicy` <a name="applyRemovalPolicy" id="cdk-vpclattice-alpha.TargetGroupBase.applyRemovalPolicy"></a>
 
 ```typescript
 public applyRemovalPolicy(policy: RemovalPolicy): void
@@ -1678,7 +1676,7 @@ to be replaced.
 The resource can be deleted (`RemovalPolicy.DESTROY`), or left in your AWS
 account for data recovery and cleanup later (`RemovalPolicy.RETAIN`).
 
-###### `policy`<sup>Required</sup> <a name="policy" id="cdk-vpclattice-alpha.TargetGroup.applyRemovalPolicy.parameter.policy"></a>
+###### `policy`<sup>Required</sup> <a name="policy" id="cdk-vpclattice-alpha.TargetGroupBase.applyRemovalPolicy.parameter.policy"></a>
 
 - *Type:* aws-cdk-lib.RemovalPolicy
 
@@ -1688,24 +1686,24 @@ account for data recovery and cleanup later (`RemovalPolicy.RETAIN`).
 
 | **Name** | **Description** |
 | --- | --- |
-| <code><a href="#cdk-vpclattice-alpha.TargetGroup.isConstruct">isConstruct</a></code> | Checks if `x` is a construct. |
-| <code><a href="#cdk-vpclattice-alpha.TargetGroup.isOwnedResource">isOwnedResource</a></code> | Returns true if the construct was created by CDK, and false otherwise. |
-| <code><a href="#cdk-vpclattice-alpha.TargetGroup.isResource">isResource</a></code> | Check whether the given construct is a Resource. |
-| <code><a href="#cdk-vpclattice-alpha.TargetGroup.validateTargetGroupName">validateTargetGroupName</a></code> | Must be between 3-128 characters. |
+| <code><a href="#cdk-vpclattice-alpha.TargetGroupBase.isConstruct">isConstruct</a></code> | Checks if `x` is a construct. |
+| <code><a href="#cdk-vpclattice-alpha.TargetGroupBase.isOwnedResource">isOwnedResource</a></code> | Returns true if the construct was created by CDK, and false otherwise. |
+| <code><a href="#cdk-vpclattice-alpha.TargetGroupBase.isResource">isResource</a></code> | Check whether the given construct is a Resource. |
+| <code><a href="#cdk-vpclattice-alpha.TargetGroupBase.validateTargetGroupName">validateTargetGroupName</a></code> | Must be between 3-128 characters. |
 
 ---
 
-##### ~~`isConstruct`~~ <a name="isConstruct" id="cdk-vpclattice-alpha.TargetGroup.isConstruct"></a>
+##### ~~`isConstruct`~~ <a name="isConstruct" id="cdk-vpclattice-alpha.TargetGroupBase.isConstruct"></a>
 
 ```typescript
-import { TargetGroup } from 'cdk-vpclattice-alpha'
+import { TargetGroupBase } from 'cdk-vpclattice-alpha'
 
-TargetGroup.isConstruct(x: any)
+TargetGroupBase.isConstruct(x: any)
 ```
 
 Checks if `x` is a construct.
 
-###### `x`<sup>Required</sup> <a name="x" id="cdk-vpclattice-alpha.TargetGroup.isConstruct.parameter.x"></a>
+###### `x`<sup>Required</sup> <a name="x" id="cdk-vpclattice-alpha.TargetGroupBase.isConstruct.parameter.x"></a>
 
 - *Type:* any
 
@@ -1713,44 +1711,44 @@ Any object.
 
 ---
 
-##### `isOwnedResource` <a name="isOwnedResource" id="cdk-vpclattice-alpha.TargetGroup.isOwnedResource"></a>
+##### `isOwnedResource` <a name="isOwnedResource" id="cdk-vpclattice-alpha.TargetGroupBase.isOwnedResource"></a>
 
 ```typescript
-import { TargetGroup } from 'cdk-vpclattice-alpha'
+import { TargetGroupBase } from 'cdk-vpclattice-alpha'
 
-TargetGroup.isOwnedResource(construct: IConstruct)
+TargetGroupBase.isOwnedResource(construct: IConstruct)
 ```
 
 Returns true if the construct was created by CDK, and false otherwise.
 
-###### `construct`<sup>Required</sup> <a name="construct" id="cdk-vpclattice-alpha.TargetGroup.isOwnedResource.parameter.construct"></a>
+###### `construct`<sup>Required</sup> <a name="construct" id="cdk-vpclattice-alpha.TargetGroupBase.isOwnedResource.parameter.construct"></a>
 
 - *Type:* constructs.IConstruct
 
 ---
 
-##### `isResource` <a name="isResource" id="cdk-vpclattice-alpha.TargetGroup.isResource"></a>
+##### `isResource` <a name="isResource" id="cdk-vpclattice-alpha.TargetGroupBase.isResource"></a>
 
 ```typescript
-import { TargetGroup } from 'cdk-vpclattice-alpha'
+import { TargetGroupBase } from 'cdk-vpclattice-alpha'
 
-TargetGroup.isResource(construct: IConstruct)
+TargetGroupBase.isResource(construct: IConstruct)
 ```
 
 Check whether the given construct is a Resource.
 
-###### `construct`<sup>Required</sup> <a name="construct" id="cdk-vpclattice-alpha.TargetGroup.isResource.parameter.construct"></a>
+###### `construct`<sup>Required</sup> <a name="construct" id="cdk-vpclattice-alpha.TargetGroupBase.isResource.parameter.construct"></a>
 
 - *Type:* constructs.IConstruct
 
 ---
 
-##### `validateTargetGroupName` <a name="validateTargetGroupName" id="cdk-vpclattice-alpha.TargetGroup.validateTargetGroupName"></a>
+##### `validateTargetGroupName` <a name="validateTargetGroupName" id="cdk-vpclattice-alpha.TargetGroupBase.validateTargetGroupName"></a>
 
 ```typescript
-import { TargetGroup } from 'cdk-vpclattice-alpha'
+import { TargetGroupBase } from 'cdk-vpclattice-alpha'
 
-TargetGroup.validateTargetGroupName(name: string)
+TargetGroupBase.validateTargetGroupName(name: string)
 ```
 
 Must be between 3-128 characters.
@@ -1759,7 +1757,7 @@ The name must be unique within the account.
 The valid characters are a-z, 0-9, and hyphens (-). You can't use a hyphen as
 the first or last character, or immediately after another hyphen.
 
-###### `name`<sup>Required</sup> <a name="name" id="cdk-vpclattice-alpha.TargetGroup.validateTargetGroupName.parameter.name"></a>
+###### `name`<sup>Required</sup> <a name="name" id="cdk-vpclattice-alpha.TargetGroupBase.validateTargetGroupName.parameter.name"></a>
 
 - *Type:* string
 
@@ -1769,15 +1767,17 @@ the first or last character, or immediately after another hyphen.
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#cdk-vpclattice-alpha.TargetGroup.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
-| <code><a href="#cdk-vpclattice-alpha.TargetGroup.property.env">env</a></code> | <code>aws-cdk-lib.ResourceEnvironment</code> | The environment this resource belongs to. |
-| <code><a href="#cdk-vpclattice-alpha.TargetGroup.property.stack">stack</a></code> | <code>aws-cdk-lib.Stack</code> | The stack in which this resource is defined. |
-| <code><a href="#cdk-vpclattice-alpha.TargetGroup.property.targetGroupArn">targetGroupArn</a></code> | <code>string</code> | The Arn of the target group. |
-| <code><a href="#cdk-vpclattice-alpha.TargetGroup.property.targetGroupId">targetGroupId</a></code> | <code>string</code> | The id of the target group. |
+| <code><a href="#cdk-vpclattice-alpha.TargetGroupBase.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
+| <code><a href="#cdk-vpclattice-alpha.TargetGroupBase.property.env">env</a></code> | <code>aws-cdk-lib.ResourceEnvironment</code> | The environment this resource belongs to. |
+| <code><a href="#cdk-vpclattice-alpha.TargetGroupBase.property.stack">stack</a></code> | <code>aws-cdk-lib.Stack</code> | The stack in which this resource is defined. |
+| <code><a href="#cdk-vpclattice-alpha.TargetGroupBase.property.name">name</a></code> | <code>string</code> | The name of the target group. |
+| <code><a href="#cdk-vpclattice-alpha.TargetGroupBase.property.targetGroupArn">targetGroupArn</a></code> | <code>string</code> | The Arn of the target group. |
+| <code><a href="#cdk-vpclattice-alpha.TargetGroupBase.property.targetGroupId">targetGroupId</a></code> | <code>string</code> | The id of the target group. |
+| <code><a href="#cdk-vpclattice-alpha.TargetGroupBase.property.targetType">targetType</a></code> | <code><a href="#cdk-vpclattice-alpha.TargetType">TargetType</a></code> | Targets. |
 
 ---
 
-##### `node`<sup>Required</sup> <a name="node" id="cdk-vpclattice-alpha.TargetGroup.property.node"></a>
+##### `node`<sup>Required</sup> <a name="node" id="cdk-vpclattice-alpha.TargetGroupBase.property.node"></a>
 
 ```typescript
 public readonly node: Node;
@@ -1789,7 +1789,7 @@ The tree node.
 
 ---
 
-##### `env`<sup>Required</sup> <a name="env" id="cdk-vpclattice-alpha.TargetGroup.property.env"></a>
+##### `env`<sup>Required</sup> <a name="env" id="cdk-vpclattice-alpha.TargetGroupBase.property.env"></a>
 
 ```typescript
 public readonly env: ResourceEnvironment;
@@ -1808,7 +1808,7 @@ that might be different than the stack they were imported into.
 
 ---
 
-##### `stack`<sup>Required</sup> <a name="stack" id="cdk-vpclattice-alpha.TargetGroup.property.stack"></a>
+##### `stack`<sup>Required</sup> <a name="stack" id="cdk-vpclattice-alpha.TargetGroupBase.property.stack"></a>
 
 ```typescript
 public readonly stack: Stack;
@@ -1820,7 +1820,19 @@ The stack in which this resource is defined.
 
 ---
 
-##### `targetGroupArn`<sup>Required</sup> <a name="targetGroupArn" id="cdk-vpclattice-alpha.TargetGroup.property.targetGroupArn"></a>
+##### `name`<sup>Required</sup> <a name="name" id="cdk-vpclattice-alpha.TargetGroupBase.property.name"></a>
+
+```typescript
+public readonly name: string;
+```
+
+- *Type:* string
+
+The name of the target group.
+
+---
+
+##### `targetGroupArn`<sup>Required</sup> <a name="targetGroupArn" id="cdk-vpclattice-alpha.TargetGroupBase.property.targetGroupArn"></a>
 
 ```typescript
 public readonly targetGroupArn: string;
@@ -1832,7 +1844,7 @@ The Arn of the target group.
 
 ---
 
-##### `targetGroupId`<sup>Required</sup> <a name="targetGroupId" id="cdk-vpclattice-alpha.TargetGroup.property.targetGroupId"></a>
+##### `targetGroupId`<sup>Required</sup> <a name="targetGroupId" id="cdk-vpclattice-alpha.TargetGroupBase.property.targetGroupId"></a>
 
 ```typescript
 public readonly targetGroupId: string;
@@ -1841,6 +1853,18 @@ public readonly targetGroupId: string;
 - *Type:* string
 
 The id of the target group.
+
+---
+
+##### `targetType`<sup>Required</sup> <a name="targetType" id="cdk-vpclattice-alpha.TargetGroupBase.property.targetType"></a>
+
+```typescript
+public readonly targetType: TargetType;
+```
+
+- *Type:* <a href="#cdk-vpclattice-alpha.TargetType">TargetType</a>
+
+Targets.
 
 ---
 
@@ -1949,6 +1973,61 @@ public readonly securityGroups: SecurityGroup[];
 - *Default:* a security group that allows inbound 443 will be permitted.
 
 The security groups to associate with the Service Network.
+
+---
+
+### BaseTargetGroupProps <a name="BaseTargetGroupProps" id="cdk-vpclattice-alpha.BaseTargetGroupProps"></a>
+
+Basic properties for a Target Group.
+
+#### Initializer <a name="Initializer" id="cdk-vpclattice-alpha.BaseTargetGroupProps.Initializer"></a>
+
+```typescript
+import { BaseTargetGroupProps } from 'cdk-vpclattice-alpha'
+
+const baseTargetGroupProps: BaseTargetGroupProps = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#cdk-vpclattice-alpha.BaseTargetGroupProps.property.targetGroupName">targetGroupName</a></code> | <code>string</code> | The name of the target group. |
+| <code><a href="#cdk-vpclattice-alpha.BaseTargetGroupProps.property.targetType">targetType</a></code> | <code><a href="#cdk-vpclattice-alpha.TargetType">TargetType</a></code> | The type of targets registered to this TargetGroup, either IP or Instance. |
+
+---
+
+##### `targetGroupName`<sup>Optional</sup> <a name="targetGroupName" id="cdk-vpclattice-alpha.BaseTargetGroupProps.property.targetGroupName"></a>
+
+```typescript
+public readonly targetGroupName: string;
+```
+
+- *Type:* string
+- *Default:* Automatically generated.
+
+The name of the target group.
+
+Must be between 3-128 characters. The name must be unique within the account.
+The valid characters are a-z, 0-9, and hyphens (-). You can't use a hyphen as
+the first or last character, or immediately after another hyphen.
+
+---
+
+##### `targetType`<sup>Optional</sup> <a name="targetType" id="cdk-vpclattice-alpha.BaseTargetGroupProps.property.targetType"></a>
+
+```typescript
+public readonly targetType: TargetType;
+```
+
+- *Type:* <a href="#cdk-vpclattice-alpha.TargetType">TargetType</a>
+- *Default:* Determined automatically.
+
+The type of targets registered to this TargetGroup, either IP or Instance.
+
+All targets registered into the group must be of this type. If you
+register targets to the TargetGroup in the CDK app, the TargetType is
+determined automatically.
 
 ---
 
@@ -2904,51 +2983,6 @@ The tags to apply to the Service Network.
 
 ---
 
-### TargetGroupProps <a name="TargetGroupProps" id="cdk-vpclattice-alpha.TargetGroupProps"></a>
-
-Properties for a Target Group, Only supply one of instancetargets, lambdaTargets, albTargets, ipTargets.
-
-#### Initializer <a name="Initializer" id="cdk-vpclattice-alpha.TargetGroupProps.Initializer"></a>
-
-```typescript
-import { TargetGroupProps } from 'cdk-vpclattice-alpha'
-
-const targetGroupProps: TargetGroupProps = { ... }
-```
-
-#### Properties <a name="Properties" id="Properties"></a>
-
-| **Name** | **Type** | **Description** |
-| --- | --- | --- |
-| <code><a href="#cdk-vpclattice-alpha.TargetGroupProps.property.name">name</a></code> | <code>string</code> | The name of the target group. |
-| <code><a href="#cdk-vpclattice-alpha.TargetGroupProps.property.target">target</a></code> | <code><a href="#cdk-vpclattice-alpha.ITarget">ITarget</a></code> | Targets. |
-
----
-
-##### `name`<sup>Required</sup> <a name="name" id="cdk-vpclattice-alpha.TargetGroupProps.property.name"></a>
-
-```typescript
-public readonly name: string;
-```
-
-- *Type:* string
-
-The name of the target group.
-
----
-
-##### `target`<sup>Required</sup> <a name="target" id="cdk-vpclattice-alpha.TargetGroupProps.property.target"></a>
-
-```typescript
-public readonly target: ITarget;
-```
-
-- *Type:* <a href="#cdk-vpclattice-alpha.ITarget">ITarget</a>
-
-Targets.
-
----
-
 ### WeightedTargetGroup <a name="WeightedTargetGroup" id="cdk-vpclattice-alpha.WeightedTargetGroup"></a>
 
 #### Initializer <a name="Initializer" id="cdk-vpclattice-alpha.WeightedTargetGroup.Initializer"></a>
@@ -2963,7 +2997,7 @@ const weightedTargetGroup: WeightedTargetGroup = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#cdk-vpclattice-alpha.WeightedTargetGroup.property.targetGroup">targetGroup</a></code> | <code><a href="#cdk-vpclattice-alpha.TargetGroup">TargetGroup</a></code> | A target Group. |
+| <code><a href="#cdk-vpclattice-alpha.WeightedTargetGroup.property.targetGroup">targetGroup</a></code> | <code><a href="#cdk-vpclattice-alpha.ITargetGroup">ITargetGroup</a></code> | A target Group. |
 | <code><a href="#cdk-vpclattice-alpha.WeightedTargetGroup.property.weight">weight</a></code> | <code>number</code> | A weight for the target group. |
 
 ---
@@ -2971,10 +3005,10 @@ const weightedTargetGroup: WeightedTargetGroup = { ... }
 ##### `targetGroup`<sup>Required</sup> <a name="targetGroup" id="cdk-vpclattice-alpha.WeightedTargetGroup.property.targetGroup"></a>
 
 ```typescript
-public readonly targetGroup: TargetGroup;
+public readonly targetGroup: ITargetGroup;
 ```
 
-- *Type:* <a href="#cdk-vpclattice-alpha.TargetGroup">TargetGroup</a>
+- *Type:* <a href="#cdk-vpclattice-alpha.ITargetGroup">ITargetGroup</a>
 
 A target Group.
 
@@ -3495,62 +3529,11 @@ The Id of the Service Network.
 
 ---
 
-### ITarget <a name="ITarget" id="cdk-vpclattice-alpha.ITarget"></a>
-
-- *Implemented By:* <a href="#cdk-vpclattice-alpha.ITarget">ITarget</a>
-
-
-#### Properties <a name="Properties" id="Properties"></a>
-
-| **Name** | **Type** | **Description** |
-| --- | --- | --- |
-| <code><a href="#cdk-vpclattice-alpha.ITarget.property.targets">targets</a></code> | <code>aws-cdk-lib.aws_vpclattice.CfnTargetGroup.TargetProperty[]</code> | References to the targets, ids or Arns. |
-| <code><a href="#cdk-vpclattice-alpha.ITarget.property.type">type</a></code> | <code>string</code> | Target Type. |
-| <code><a href="#cdk-vpclattice-alpha.ITarget.property.config">config</a></code> | <code>aws-cdk-lib.aws_vpclattice.CfnTargetGroup.TargetGroupConfigProperty</code> | Configuration for the TargetGroup, if it is not a lambda. |
-
----
-
-##### `targets`<sup>Required</sup> <a name="targets" id="cdk-vpclattice-alpha.ITarget.property.targets"></a>
-
-```typescript
-public readonly targets: TargetProperty[];
-```
-
-- *Type:* aws-cdk-lib.aws_vpclattice.CfnTargetGroup.TargetProperty[]
-
-References to the targets, ids or Arns.
-
----
-
-##### `type`<sup>Required</sup> <a name="type" id="cdk-vpclattice-alpha.ITarget.property.type"></a>
-
-```typescript
-public readonly type: string;
-```
-
-- *Type:* string
-
-Target Type.
-
----
-
-##### `config`<sup>Optional</sup> <a name="config" id="cdk-vpclattice-alpha.ITarget.property.config"></a>
-
-```typescript
-public readonly config: TargetGroupConfigProperty;
-```
-
-- *Type:* aws-cdk-lib.aws_vpclattice.CfnTargetGroup.TargetGroupConfigProperty
-
-Configuration for the TargetGroup, if it is not a lambda.
-
----
-
 ### ITargetGroup <a name="ITargetGroup" id="cdk-vpclattice-alpha.ITargetGroup"></a>
 
 - *Extends:* aws-cdk-lib.IResource
 
-- *Implemented By:* <a href="#cdk-vpclattice-alpha.TargetGroup">TargetGroup</a>, <a href="#cdk-vpclattice-alpha.ITargetGroup">ITargetGroup</a>
+- *Implemented By:* <a href="#cdk-vpclattice-alpha.TargetGroupBase">TargetGroupBase</a>, <a href="#cdk-vpclattice-alpha.ITargetGroup">ITargetGroup</a>
 
 Create a vpc lattice TargetGroup.
 
@@ -3933,6 +3916,47 @@ Authenticated Access to the Service Network.
 ##### `ORG_ONLY` <a name="ORG_ONLY" id="cdk-vpclattice-alpha.ServiceNetworkAccessMode.ORG_ONLY"></a>
 
 Only principals from this Org can access the Service Network.
+
+---
+
+
+### TargetType <a name="TargetType" id="cdk-vpclattice-alpha.TargetType"></a>
+
+#### Members <a name="Members" id="Members"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#cdk-vpclattice-alpha.TargetType.LAMBDA">LAMBDA</a></code> | Lambda Target. |
+| <code><a href="#cdk-vpclattice-alpha.TargetType.IP">IP</a></code> | IP Address Target. |
+| <code><a href="#cdk-vpclattice-alpha.TargetType.INSTANCE">INSTANCE</a></code> | EC2 Instance Targets. |
+| <code><a href="#cdk-vpclattice-alpha.TargetType.ALB">ALB</a></code> | Application Load Balancer Target. |
+
+---
+
+##### `LAMBDA` <a name="LAMBDA" id="cdk-vpclattice-alpha.TargetType.LAMBDA"></a>
+
+Lambda Target.
+
+---
+
+
+##### `IP` <a name="IP" id="cdk-vpclattice-alpha.TargetType.IP"></a>
+
+IP Address Target.
+
+---
+
+
+##### `INSTANCE` <a name="INSTANCE" id="cdk-vpclattice-alpha.TargetType.INSTANCE"></a>
+
+EC2 Instance Targets.
+
+---
+
+
+##### `ALB` <a name="ALB" id="cdk-vpclattice-alpha.TargetType.ALB"></a>
+
+Application Load Balancer Target.
 
 ---
 

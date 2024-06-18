@@ -1,6 +1,6 @@
 import { aws_ec2 as ec2 } from 'aws-cdk-lib';
 import * as aws_vpclattice from 'aws-cdk-lib/aws-vpclattice';
-import { HealthCheck } from './index';
+import { HealthCheck } from '.';
 
 /**
  * HTTP/HTTPS methods

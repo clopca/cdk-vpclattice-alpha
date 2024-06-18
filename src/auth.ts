@@ -1,23 +1,5 @@
 // import { PolicyDocument } from "aws-cdk-lib/aws-iam";
 
-/**
- * The authentication method used to be used.
- * @enum
- */
-export enum AuthType {
-  /** The service will not authenticate or authorize client access. If an auth policy
-   * is present, it is inactive. Resources within associated VPCs will have access to
-   * services in a service network, unless service-level policies restrict access.
-   */
-  NONE = 'NONE',
-
-  /** Applies an IAM resource policy on the service network. This provides administrators
-   * the ability to enforce authentication and write fine-grained permissions for the
-   * services in the network. When this type is used, an IAM resource policy is required.
-   */
-  AWS_IAM = 'AWS_IAM',
-}
-
 // export interface IAuthPolicyProps {
 // 	/**
 // 	   * The ID or Amazon Resource Name (ARN) of the service network
