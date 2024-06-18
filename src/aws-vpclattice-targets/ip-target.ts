@@ -1,8 +1,8 @@
+import { IVpc, IpAddresses, Ipv6Addresses } from 'aws-cdk-lib/aws-ec2';
 import * as aws_vpclattice from 'aws-cdk-lib/aws-vpclattice';
 import * as constructs from 'constructs';
-import { IpAddressType, Protocol, ProtocolVersion, TargetType } from './target';
+import { IpAddressType, Protocol, ProtocolVersion, TargetType } from '.';
 import { TargetGroupBase } from '../';
-import { IVpc, IpAddresses, Ipv6Addresses } from 'aws-cdk-lib/aws-ec2';
 
 export interface IpTargetGroupProps {
   /**
@@ -63,15 +63,15 @@ export interface IpTargetGroupConfigProps {
    * @default ProtocolVersion.HTTP1
    */
   readonly protocolVersion?: ProtocolVersion;
-
 }
 
 export class IpTargetGroup extends TargetGroupBase {
   public readonly targetGroupArn: string;
   public readonly targetGroupId: string;
   public readonly name: string;
-  public readonly targets: IpTargetGroupTargetProps[];
+  public readonly targets: aws_vpclattice.CfnTargetGroup.TargetProperty[];
   public readonly targetType = TargetType.IP;
+  public readonly config: aws_vpclattice.CfnTargetGroup.TargetGroupConfigProperty;
   private readonly _resource: aws_vpclattice.CfnTargetGroup;
 
   constructor(scope: constructs.Construct, id: string, props: IpTargetGroupProps) {
@@ -82,8 +82,7 @@ export class IpTargetGroup extends TargetGroupBase {
       TargetGroupBase.validateTargetGroupName(props.name);
     }
     this.name = this.physicalName;
-    this.targets = props.targets;
-    let config: aws_vpclattice.CfnTargetGroup.TargetGroupConfigProperty = {
+    this.config = {
       vpcIdentifier: props.config.VpcIdentifier.vpcId,
       ipAddressType: props.config.ipAddressType ?? IpAddressType.IPV4,
       protocol: props.config.protocol ?? Protocol.HTTPS,
@@ -91,12 +90,17 @@ export class IpTargetGroup extends TargetGroupBase {
       protocolVersion: props.config.protocolVersion ?? ProtocolVersion.HTTP1,
     };
 
-    let targets: aws_vpclattice.CfnTargetGroup.TargetProperty[] = props.targets.map((t) => { "id": t.ipAddress, "port": t.port })
+    this.targets = props.targets.map(target => {
+      return {
+        id: target.ipAddress.toString(),
+        port: target.port ?? (this.config.protocol === Protocol.HTTP ? 80 : 443),
+      };
+    });
 
     // Validate the port based on the protocol
-    if (config.protocol === Protocol.HTTP && config.port !== 80) {
+    if (this.config.protocol === Protocol.HTTP && this.config.port !== 80) {
       throw new Error('HTTP protocol must use port 80');
-    } else if (config.protocol === Protocol.HTTPS && config.port !== 443) {
+    } else if (this.config.protocol === Protocol.HTTPS && this.config.port !== 443) {
       throw new Error('HTTPS protocol must use port 443');
     }
 
@@ -104,7 +108,7 @@ export class IpTargetGroup extends TargetGroupBase {
       type: TargetType.IP,
       name: this.name,
       targets: this.targets,
-      config,
+      config: this.config,
     });
 
     this.targetGroupId = this._resource.attrId;

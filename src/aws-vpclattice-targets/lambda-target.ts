@@ -1,8 +1,9 @@
+import { IVpc, IpAddresses, Ipv6Addresses } from 'aws-cdk-lib/aws-ec2';
 import * as aws_vpclattice from 'aws-cdk-lib/aws-vpclattice';
 import * as constructs from 'constructs';
-import { TargetType } from './target';
-
+import { IpAddressType, Protocol, ProtocolVersion, TargetType } from '.';
 import { TargetGroupBase } from '../';
+
 export interface LambdaTargetGroupProps {
   /**
    * The name of the target group
@@ -12,19 +13,65 @@ export interface LambdaTargetGroupProps {
   /**
    * Targets
    */
-  readonly targets: aws_vpclattice.CfnTargetGroup.TargetProperty[];
+  readonly targets: LambdaTargetGroupTargetProps[];
 
   /**
    * Configuration for the TargetGroup, if it is not a lambda
    */
-  readonly config?: aws_vpclattice.CfnTargetGroup.TargetGroupConfigProperty;
+  readonly config: LambdaTargetGroupConfigProps;
+}
+
+export interface LambdaTargetGroupTargetProps {
+  /**
+   * The IP Address of the target
+   */
+  readonly ipAddress: Ipv6Addresses | IpAddresses;
+
+  /**
+   * Port
+   * @default - Defaults to port 80 for HTTP, or 443 for HTTPS
+   */
+  readonly port?: number;
+}
+
+export interface LambdaTargetGroupConfigProps {
+  /**
+   * VPC Identifier
+   */
+  readonly VpcIdentifier: IVpc;
+
+  /**
+   * The type of IP Addresss Protocol to use
+   * @default IpAddressType.IPv4
+   */
+  readonly ipAddressType?: IpAddressType;
+
+  /**
+   * Port
+   * @default - Defaults to port 80 for HTTP, or 443 for HTTPS
+   */
+  readonly port?: number;
+
+  /**
+   * The application layer protocol to use
+   * @default Protocol.HTTPS
+   */
+  readonly protocol?: Protocol;
+
+  /**
+   * ProtocolVersion
+   * @default ProtocolVersion.HTTP1
+   */
+  readonly protocolVersion?: ProtocolVersion;
 }
 
 export class LambdaTargetGroup extends TargetGroupBase {
   public readonly targetGroupArn: string;
   public readonly targetGroupId: string;
   public readonly name: string;
-  public readonly targetType = TargetType.LAMBDA;
+  public readonly targets: aws_vpclattice.CfnTargetGroup.TargetProperty[];
+  public readonly targetType = TargetType.IP;
+  public readonly config: aws_vpclattice.CfnTargetGroup.TargetGroupConfigProperty;
   private readonly _resource: aws_vpclattice.CfnTargetGroup;
 
   constructor(scope: constructs.Construct, id: string, props: LambdaTargetGroupProps) {
@@ -35,12 +82,33 @@ export class LambdaTargetGroup extends TargetGroupBase {
       TargetGroupBase.validateTargetGroupName(props.name);
     }
     this.name = this.physicalName;
+    this.config = {
+      vpcIdentifier: props.config.VpcIdentifier.vpcId,
+      ipAddressType: props.config.ipAddressType ?? IpAddressType.IPV4,
+      protocol: props.config.protocol ?? Protocol.HTTPS,
+      port: props.config.port ?? (props.config.protocol === Protocol.HTTP ? 80 : 443),
+      protocolVersion: props.config.protocolVersion ?? ProtocolVersion.HTTP1,
+    };
+
+    this.targets = props.targets.map(target => {
+      return {
+        id: target.ipAddress.toString(),
+        port: target.port ?? (this.config.protocol === Protocol.HTTP ? 80 : 443),
+      };
+    });
+
+    // Validate the port based on the protocol
+    if (this.config.protocol === Protocol.HTTP && this.config.port !== 80) {
+      throw new Error('HTTP protocol must use port 80');
+    } else if (this.config.protocol === Protocol.HTTPS && this.config.port !== 443) {
+      throw new Error('HTTPS protocol must use port 443');
+    }
 
     this._resource = new aws_vpclattice.CfnTargetGroup(this, 'Resource', {
-      type: TargetType.LAMBDA,
+      type: TargetType.IP,
       name: this.name,
-      config: props.config,
-      targets: props.targets,
+      targets: this.targets,
+      config: this.config,
     });
 
     this.targetGroupId = this._resource.attrId;
