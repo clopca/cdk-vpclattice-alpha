@@ -1,11 +1,9 @@
-//TODO: This is the example we were developing. We need to change the name of the class and the file
-
 import { TargetGroupBase } from '../';
 import * as aws_vpclattice from 'aws-cdk-lib/aws-vpclattice';
 import * as constructs from 'constructs';
 import { TargetType } from './target';
 
-export interface InstanceTargetGroupProps {
+export interface IpTargetGroupProps {
   /**
    * The name of the target group
    */
@@ -22,14 +20,14 @@ export interface InstanceTargetGroupProps {
   readonly config?: aws_vpclattice.CfnTargetGroup.TargetGroupConfigProperty;
 }
 
-export class InstanceTargetGroup extends TargetGroupBase {
+export class IpTargetGroup extends TargetGroupBase {
   public readonly targetGroupArn: string;
   public readonly targetGroupId: string;
   public readonly name: string;
-  public readonly targetType = TargetType.INSTANCE;
+  public readonly targetType = TargetType.IP;
   private readonly _resource: aws_vpclattice.CfnTargetGroup;
 
-  constructor(scope: constructs.Construct, id: string, props: InstanceTargetGroupProps) {
+  constructor(scope: constructs.Construct, id: string, props: IpTargetGroupProps) {
     super(scope, id, {
       physicalName: props.name,
     });
@@ -39,7 +37,7 @@ export class InstanceTargetGroup extends TargetGroupBase {
     this.name = this.physicalName;
 
     this._resource = new aws_vpclattice.CfnTargetGroup(this, 'Resource', {
-      type: TargetType.INSTANCE,
+      type: TargetType.IP,
       name: this.name,
       config: props.config,
       targets: props.targets,

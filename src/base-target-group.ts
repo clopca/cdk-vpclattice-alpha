@@ -7,10 +7,9 @@ import { TargetType } from './aws-vpclattice-targets';
 export interface BaseTargetGroupProps {
   /**
    * The name of the target group.
-   *
-   * This name must be unique per region per account, can have a maximum of
-   * 32 characters, must contain only alphanumeric characters or hyphens, and
-   * must not begin or end with a hyphen.
+   * Must be between 3-128 characters. The name must be unique within the account.
+   * The valid characters are a-z, 0-9, and hyphens (-). You can't use a hyphen as
+   * the first or last character, or immediately after another hyphen.
    *
    * @default - Automatically generated.
    */
