@@ -2,7 +2,9 @@ import * as core from 'aws-cdk-lib';
 import { aws_iam as iam } from 'aws-cdk-lib';
 import * as generated from 'aws-cdk-lib/aws-vpclattice';
 import { Construct } from 'constructs';
-import { HTTPMatch, Service, WeightedTargetGroup } from '.';
+import { WeightedTargetGroup } from './base-target-group';
+import { HTTPMatch } from './matches';
+import { Service } from './service';
 
 /**
  * AuthTypes

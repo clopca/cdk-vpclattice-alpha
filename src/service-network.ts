@@ -2,7 +2,9 @@ import { aws_vpclattice, aws_iam as iam, aws_ec2 as ec2, aws_ram as ram, custom_
 import * as core from 'aws-cdk-lib';
 import * as generated from 'aws-cdk-lib/aws-vpclattice';
 import { Construct } from 'constructs';
-import { IService, AuthType, LoggingDestination } from './index';
+import { AuthType } from './listener';
+import { LoggingDestination } from './logging';
+import { IService } from './service';
 import { ServiceNetworkAssociation } from './service-network-association';
 
 /**
@@ -102,7 +104,6 @@ export interface ShareServiceNetworkProps {
    * @default none
    */
   readonly tags?: { [key: string]: string };
-
 }
 
 /**
@@ -284,12 +285,13 @@ export class ServiceNetwork extends ServiceNetworkBase {
       physicalName: props.name,
     });
 
-    if (props.name) { ServiceNetwork.validateServiceNetworkName(props.name); }
+    if (props.name) {
+      ServiceNetwork.validateServiceNetworkName(props.name);
+    }
 
     // Ensure the specified Network Access configuration is valid
     this.authType = props.authType ?? AuthType.NONE;
     ServiceNetwork.validateNetworkAccess(this.authType, props.accessMode);
-
 
     const resource = new generated.CfnServiceNetwork(this, 'Resource', {
       name: this.physicalName,
@@ -353,8 +355,7 @@ export class ServiceNetwork extends ServiceNetworkBase {
       // add the condition that requires that the principal is from this org
       statement.addCondition('StringEquals', { 'aws:PrincipalOrgID': [orgId] });
       statement.addCondition('StringNotEqualsIgnoreCase', { 'aws:PrincipalType': 'anonymous' });
-    }
-    else if (props.accessMode === ServiceNetworkAccessMode.AUTHENTICATED_ONLY) {
+    } else if (props.accessMode === ServiceNetworkAccessMode.AUTHENTICATED_ONLY) {
       // add the condition that requires that the principal is authenticated
       statement.addCondition('StringNotEqualsIgnoreCase', { 'aws:PrincipalType': 'anonymous' });
     }
@@ -367,7 +368,6 @@ export class ServiceNetwork extends ServiceNetworkBase {
       });
     }
     this.applyAuthPolicyToServiceNetwork();
-
   }
 
   // ------------------------------------------------------
