@@ -1,8 +1,8 @@
 import { IVpc, IpAddresses, Ipv6Addresses } from 'aws-cdk-lib/aws-ec2';
 import * as aws_vpclattice from 'aws-cdk-lib/aws-vpclattice';
 import * as constructs from 'constructs';
-import { IpAddressType, Protocol, ProtocolVersion, TargetType } from '.';
-import { TargetGroupBase } from '../';
+import { IpAddressType, Protocol, ProtocolVersion, TargetType } from './target';
+import { TargetGroupBase } from '../base-target-group';
 
 export interface IpTargetGroupProps {
   /**
