@@ -120,16 +120,6 @@ export interface AssociateVPCProps {
 }
 
 /**
- * Properties to add a logging Destination
- */
-export interface AddloggingDestinationProps {
-  /**
-   * The logging destination
-   */
-  readonly destination: LoggingDestination;
-}
-
-/**
  * Properties for defining a VPC Lattice Service Network
  */
 export interface ServiceNetworkProps {
@@ -300,9 +290,7 @@ export class ServiceNetwork extends ServiceNetworkBase {
     // Define logging destinations
     if (props.loggingDestinations !== undefined) {
       props.loggingDestinations.forEach(destination => {
-        this.addloggingDestination({
-          destination: destination,
-        });
+        this.addloggingDestination(destination);
       });
     }
 
@@ -395,9 +383,9 @@ export class ServiceNetwork extends ServiceNetworkBase {
   /**
    * Send logs to a destination
    */
-  public addloggingDestination(props: AddloggingDestinationProps): void {
-    new aws_vpclattice.CfnAccessLogSubscription(this, `AccessLogSubscription${props.destination.addr}`, {
-      destinationArn: props.destination.arn,
+  public addloggingDestination(destination: LoggingDestination): void {
+    new aws_vpclattice.CfnAccessLogSubscription(this, `AccessLogSubscription${destination.addr}`, {
+      destinationArn: destination.arn,
       resourceIdentifier: this.serviceNetworkId,
     });
   }

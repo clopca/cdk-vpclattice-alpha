@@ -2,7 +2,7 @@ import * as core from 'aws-cdk-lib';
 import { aws_iam as iam } from 'aws-cdk-lib';
 import * as generated from 'aws-cdk-lib/aws-vpclattice';
 import { Construct } from 'constructs';
-import { IServiceNetwork, AuthType, LoggingDestination, AddloggingDestinationProps } from './index';
+import { IServiceNetwork, AuthType, LoggingDestination } from './index';
 
 /**
  * Represents a Vpc Lattice Service.
@@ -240,9 +240,7 @@ export class Service extends ServiceBase {
 
       // Add the logging destination
       props.loggingDestinations.forEach(destination => {
-        this.addloggingDestination({
-          destination: destination,
-        });
+        this.addLoggingDestination(destination);
       });
     }
   }
@@ -272,9 +270,9 @@ export class Service extends ServiceBase {
   /**
    * Send logs to a destination
    */
-  public addloggingDestination(props: AddloggingDestinationProps): void {
-    new generated.CfnAccessLogSubscription(this, `AccessLogSubscription${props.destination.addr}`, {
-      destinationArn: props.destination.arn,
+  public addLoggingDestination(destination: LoggingDestination): void {
+    new generated.CfnAccessLogSubscription(this, `AccessLogSubscription${destination.addr}`, {
+      destinationArn: destination.arn,
       resourceIdentifier: this.serviceArn,
     });
   }
