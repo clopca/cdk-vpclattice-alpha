@@ -17,6 +17,18 @@ export enum Protocol {
   HTTPS = 'HTTPS',
 }
 
+export enum LambdaEventStructureVersion {
+  /**
+   * Version 1.0
+   */
+  V1 = 'V1',
+
+  /**
+   * Version 2.0
+   */
+  V2 = 'V2',
+}
+
 /**
  * TargetConfiguration
  */
@@ -128,7 +140,6 @@ export enum FixedResponse {
    */
   OK = 200,
 }
-
 
 export interface TargetGroup {
   /**
