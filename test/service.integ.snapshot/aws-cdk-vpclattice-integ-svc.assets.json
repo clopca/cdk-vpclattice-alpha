@@ -1,15 +1,15 @@
 {
   "version": "36.0.0",
   "files": {
-    "18bc9f447f0bc9db54d5b31a93dc9fe27c6a8f49c7edc47b948a10aa18a6ca87": {
+    "ddbc441989befc6dc8d4c9ed88a68c5032313368eeb93eb8416b94660d60d124": {
       "source": {
-        "path": "aws-cdk-vpclattice-integ.template.json",
+        "path": "aws-cdk-vpclattice-integ-svc.template.json",
         "packaging": "file"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "18bc9f447f0bc9db54d5b31a93dc9fe27c6a8f49c7edc47b948a10aa18a6ca87.json",
+          "objectKey": "ddbc441989befc6dc8d4c9ed88a68c5032313368eeb93eb8416b94660d60d124.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

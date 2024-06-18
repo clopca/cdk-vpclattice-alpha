@@ -22,6 +22,7 @@ dist
 tsconfig.tsbuildinfo
 /.eslintrc.json
 !.jsii
+test/service-network.integ.snapshot
 test/.tmp
 test/service.integ.snapshot
 cdk.out

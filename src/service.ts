@@ -39,7 +39,7 @@ export interface ServiceProps {
    * @see https://docs.aws.amazon.com/vpc-lattice/latest/ug/services.html
    * @default - a CloudFormation generated name
    */
-  readonly serviceName?: string;
+  readonly name?: string;
 
   /**
    * Determine what happens to the repository when the resource/stack is deleted.
@@ -67,8 +67,10 @@ export interface ServiceProps {
   readonly certificateArn?: string;
 
   /**
-   * A customDomainName used by the service
-   * @default no custom domain name is used
+   * A registered custom domain name for your service. Requests to the custom
+   * domain are resolved by the DNS server to the VPC Lattice generated domain name.
+   * @default - Your service will be reachable only by the domain name that VPC Lattice generates
+   * @see https://docs.aws.amazon.com/vpc-lattice/latest/ug/service-custom-domain-name.html
    */
   readonly customDomainName?: string;
 
@@ -135,20 +137,6 @@ abstract class ServiceBase extends core.Resource implements IService {
  * @resource AWS::VpcLattice::Service
  */
 export class Service extends ServiceBase {
-  // ------------------------------------------------------
-  // Validation
-  // ------------------------------------------------------
-  /**
-   * Must be between 3-40 characters. Lowercase letters, numbers, and hyphens are accepted.
-   * Must begin and end with a letter or number. No consecutive hyphens.
-   */
-  public static validateServiceName(name: string) {
-    const pattern = /^(?!svc-)(?!-)(?!.*-$)(?!.*--)[a-z0-9-]+$/;
-    const validationSucceeded = name.length >= 3 && name.length <= 40 && pattern.test(name);
-    if (!validationSucceeded) {
-      throw new Error(`Invalid Service Name: ${name} (must be between 3-40 characters, and must be a valid DNS name)`);
-    }
-  }
 
   // ------------------------------------------------------
   // Imports
@@ -175,8 +163,49 @@ export class Service extends ServiceBase {
     }
     return new Import(scope, id);
   }
-  // -----------
 
+  // ------------------------------------------------------
+  // Validation
+  // ------------------------------------------------------
+  /**
+   * Must be between 3-40 characters. Lowercase letters, numbers, and hyphens are accepted.
+   * Must begin and end with a letter or number. No consecutive hyphens.
+   */
+  protected static validateServiceName(name: string) {
+    const pattern = /^(?!svc-)(?!-)(?!.*-$)(?!.*--)[a-z0-9-]+$/;
+    const validationSucceeded = name.length >= 3 && name.length <= 40 && pattern.test(name);
+    if (!validationSucceeded) {
+      throw new Error(`Invalid Service Name: ${name} (must be between 3-40 characters, and must be a valid DNS name)`);
+    }
+  }
+
+  /**
+   * Must specify at most only one destination per destination type
+   */
+  protected static validateLoggingDestinations(loggingDestinations?: LoggingDestination[]) {
+    if (loggingDestinations?.length) {
+      const destinationTypes = loggingDestinations.map(destination => destination.destinationType);
+      if (new Set(destinationTypes).size !== destinationTypes.length) {
+        throw new Error('A service can only have one logging destination per destination type.');
+      }
+    }
+  }
+
+  /**
+   * Must ensure Service has the correct AuthType and policy is a
+   * valid IAM Resource-based Policy
+   */
+  protected static validateAuthPolicy(authType: AuthType, authPolicy: iam.PolicyDocument) {
+    if (authType !== AuthType.AWS_IAM) {
+      throw new Error('Cannot apply a policy when authType is not equal to AWS_IAM');
+    } else {
+      if (authPolicy.validateForResourcePolicy().length > 0) {
+        throw new Error(`The following errors were found in the policy: \n${authPolicy.validateForResourcePolicy()} \n ${authPolicy}`);
+      }
+    }
+  }
+
+  // -----------
   public readonly serviceArn: string;
   public readonly serviceId: string;
   // variables specific to the non-imported Service
@@ -189,10 +218,10 @@ export class Service extends ServiceBase {
   // Construct
   // ------------------------------------------------------
   constructor(scope: Construct, id: string, props: ServiceProps) {
-    super(scope, id, { physicalName: props.serviceName });
+    super(scope, id, { physicalName: props.name });
 
-    if (props.serviceName) {
-      Service.validateServiceName(props.serviceName);
+    if (props.name) {
+      Service.validateServiceName(props.name);
     }
     this.authType = props.authType ?? AuthType.NONE;
 
@@ -208,13 +237,11 @@ export class Service extends ServiceBase {
     });
 
     // ------------------------------------------------------
-    // Logging Configuration
+    // Construct properties
     // ------------------------------------------------------
-
     this._resource = resource;
     // Apply the specified removal policy (what happens on delete)
     this._resource.applyRemovalPolicy(props.removalPolicy);
-
     this.serviceArn = this._resource.attrArn;
     this.serviceId = this._resource.attrId;
     this.serviceName = this.physicalName;
@@ -231,12 +258,7 @@ export class Service extends ServiceBase {
     // Logging Configuration
     // ------------------------------------------------------
     if (props.loggingDestinations?.length) {
-
-      // Validate there is at most only one destination per destination type
-      const destinationTypes = props.loggingDestinations.map(destination => destination.destinationType);
-      if (new Set(destinationTypes).size !== destinationTypes.length) {
-        throw new Error('A service can only have one logging destination per destination type.');
-      }
+      Service.validateLoggingDestinations(props.loggingDestinations);
 
       // Add the logging destination
       props.loggingDestinations.forEach(destination => {
@@ -254,7 +276,7 @@ export class Service extends ServiceBase {
    * access all of the service. Consider using more granual permissions
    * at the rule level.
    *
-   * @param principals
+   * @param principals a list of IAM principals to grant access.
    */
   public grantAccess(principals: iam.IPrincipal[]): void {
     let policyStatement: iam.PolicyStatement = new iam.PolicyStatement({
@@ -281,18 +303,14 @@ export class Service extends ServiceBase {
    * Apply the AuthPolicy to the Service
    */
   public applyAuthPolicy() {
-    if (this.authType != AuthType.AWS_IAM) {
-      throw new Error('Cannot apply a policy when authType is not equal to AWS_IAM');
-    } else {
-      if (this.authPolicy.validateForResourcePolicy().length > 0) {
-        throw new Error(`The following errors were found in the policy: \n${this.authPolicy.validateForResourcePolicy()} \n ${this.authPolicy}`);
-      }
-      new generated.CfnAuthPolicy(this, 'ServiceAuthPolicy', {
-        policy: this.authPolicy.toJSON(),
-        resourceIdentifier: this.serviceId,
-      });
-      return this.authPolicy;
-    }
+    Service.validateAuthPolicy(this.authType, this.authPolicy);
+
+    // Create an AuthPolicy
+    new generated.CfnAuthPolicy(this, 'ServiceAuthPolicy', {
+      policy: this.authPolicy.toJSON(),
+      resourceIdentifier: this.serviceId,
+    });
+    return this.authPolicy;
   }
 }
 

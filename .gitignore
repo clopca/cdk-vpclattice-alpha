@@ -49,6 +49,14 @@ junit.xml
 .jsii
 tsconfig.json
 !/API.md
+test/service-network.integ.snapshot/asset.*
+test/service-network.integ.snapshot/**/asset.*
+test/service-network.integ.snapshot/cdk.out
+test/service-network.integ.snapshot/**/cdk.out
+test/service-network.integ.snapshot/manifest.json
+test/service-network.integ.snapshot/**/manifest.json
+test/service-network.integ.snapshot/tree.json
+test/service-network.integ.snapshot/**/tree.json
 test/.tmp
 test/service.integ.snapshot/asset.*
 test/service.integ.snapshot/**/asset.*

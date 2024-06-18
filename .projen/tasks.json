@@ -149,6 +149,69 @@
         }
       ]
     },
+    "integ:service-network:assert": {
+      "name": "integ:service-network:assert",
+      "description": "assert the snapshot of integration test 'service-network'",
+      "steps": [
+        {
+          "exec": "[ -d \"test/service-network.integ.snapshot\" ] || (echo \"No snapshot available for integration test 'service-network'. Run 'projen integ:service-network:deploy' to capture.\" && exit 1)"
+        },
+        {
+          "exec": "cdk synth --app \"ts-node -P tsconfig.dev.json test/service-network.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata -o test/.tmp/service-network.integ/assert.cdk.out > /dev/null"
+        },
+        {
+          "exec": "diff -r -x asset.* -x cdk.out -x manifest.json -x tree.json test/service-network.integ.snapshot/ test/.tmp/service-network.integ/assert.cdk.out/"
+        }
+      ]
+    },
+    "integ:service-network:deploy": {
+      "name": "integ:service-network:deploy",
+      "description": "deploy integration test 'service-network' and capture snapshot",
+      "steps": [
+        {
+          "exec": "rm -fr test/.tmp/service-network.integ/deploy.cdk.out"
+        },
+        {
+          "exec": "cdk deploy --app \"ts-node -P tsconfig.dev.json test/service-network.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata '**' --require-approval=never -o test/.tmp/service-network.integ/deploy.cdk.out"
+        },
+        {
+          "exec": "rm -fr test/service-network.integ.snapshot"
+        },
+        {
+          "exec": "mv test/.tmp/service-network.integ/deploy.cdk.out test/service-network.integ.snapshot"
+        },
+        {
+          "spawn": "integ:service-network:destroy"
+        }
+      ]
+    },
+    "integ:service-network:destroy": {
+      "name": "integ:service-network:destroy",
+      "description": "destroy integration test 'service-network'",
+      "steps": [
+        {
+          "exec": "cdk destroy --app test/service-network.integ.snapshot '**' --no-version-reporting"
+        }
+      ]
+    },
+    "integ:service-network:snapshot": {
+      "name": "integ:service-network:snapshot",
+      "description": "update snapshot for integration test \"service-network\"",
+      "steps": [
+        {
+          "exec": "cdk synth --app \"ts-node -P tsconfig.dev.json test/service-network.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata -o test/service-network.integ.snapshot > /dev/null"
+        }
+      ]
+    },
+    "integ:service-network:watch": {
+      "name": "integ:service-network:watch",
+      "description": "watch integration test 'service-network' (without updating snapshots)",
+      "steps": [
+        {
+          "exec": "cdk watch --app \"ts-node -P tsconfig.dev.json test/service-network.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata '**' -o test/.tmp/service-network.integ/deploy.cdk.out"
+        }
+      ]
+    },
     "integ:service:assert": {
       "name": "integ:service:assert",
       "description": "assert the snapshot of integration test 'service'",
@@ -216,6 +279,9 @@
       "name": "integ:snapshot-all",
       "description": "update snapshot for all integration tests",
       "steps": [
+        {
+          "spawn": "integ:service-network:snapshot"
+        },
         {
           "spawn": "integ:service:snapshot"
         }
@@ -299,6 +365,9 @@
         },
         {
           "spawn": "eslint"
+        },
+        {
+          "spawn": "integ:service-network:assert"
         },
         {
           "spawn": "integ:service:assert"

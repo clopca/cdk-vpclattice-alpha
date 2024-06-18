@@ -1,11 +1,11 @@
 import * as vpc_lattice from 'aws-cdk-lib/aws-vpclattice';
-import { TargetType } from './aws-vpclattice-targets';
+import * as targets from './aws-vpclattice-targets';
 
 export interface ITarget {
   /**
    * Target Type
    */
-  readonly type: TargetType;
+  readonly type: targets.TargetType;
 
   /**
    * References to the targets, ids or Arns

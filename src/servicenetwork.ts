@@ -6,6 +6,7 @@ import { IService, AuthType, LoggingDestination } from './index';
 
 /**
  * AccesModes for the Service Network.
+ * @enum
  */
 export enum ServiceNetworkAccessMode {
   /**
@@ -85,7 +86,7 @@ export interface ShareServiceNetworkProps {
 
   /**
    * The access mode for the Service Network
-   * @default 'UNAUTHENTICATED'
+   * @default ServiceNetworkAccessMode.UNAUTHENTICATED
    */
   readonly accessMode?: ServiceNetworkAccessMode;
 
@@ -124,15 +125,15 @@ export interface AssociateVPCProps {
  */
 export interface ServiceNetworkProps {
   /**
-   * The name of the Service Network.
-   * If not provided CloudFormation will provide a name
+   * The name of the Service Network. If not provided,
+   * CloudFormation will generate a name.
    * @default - CloudFormation generated name
    */
   readonly name?: string;
 
   /**
-   * The type of  authentication to use with the Service Network
-   * @default 'NONE'
+   * The type of authentication to use with the Service Network
+   * @default AuthType.NONE
    */
   readonly authType?: AuthType;
 
@@ -145,13 +146,16 @@ export interface ServiceNetworkProps {
 
   /**
    * Lattice Services that are assocaited with this Service Network
-   * @default no services are associated with the service network
+   * @default - no services are associated with the service network
    */
   readonly services?: IService[];
 
   /**
-   * Vpcs that are associated with this Service Network
-   * @default no vpcs are associated
+   * You can associate VPCs to your service network at or after network creation.
+   * After association, services within the VPC can make calls to services in the
+   * service network. Any VPC owner with access to the service network can associate
+   * their VPCs to it.
+   * @default - no VPCs are associated
    */
   readonly vpcs?: ec2.IVpc[];
 
@@ -159,12 +163,19 @@ export interface ServiceNetworkProps {
    * Allow external principals
    * @default false
    */
-  readonly accessmode?: ServiceNetworkAccessMode;
+  readonly accessMode?: ServiceNetworkAccessMode;
 
   /**
    * Additional AuthStatments:
    */
   readonly authStatements?: iam.PolicyStatement[];
+
+  /**
+   * Determine what happens to the repository when the resource/stack is deleted.
+   *
+   * @default RemovalPolicy.RETAIN
+   */
+  readonly removalPolicy?: core.RemovalPolicy;
 }
 
 /**
@@ -201,24 +212,8 @@ abstract class ServiceNetworkBase extends core.Resource implements IServiceNetwo
  */
 export class ServiceNetwork extends ServiceNetworkBase {
   // ------------------------------------------------------
-  // Validation
-  // ------------------------------------------------------
-  /**
-   * Must be between 3-63 characters. Lowercase letters, numbers, and hyphens are accepted.
-   * Must begin and end with a letter or number. No consecutive hyphens.
-   */
-  public static validateServiceNetworkName(name: string) {
-    const pattern = /^(?!servicenetwork-)(?!-)(?!.*-$)(?!.*--)[a-z0-9-]+$/;
-    const validationSucceeded = name.length >= 3 && name.length <= 63 && pattern.test(name);
-    if (!validationSucceeded) {
-      throw new Error(`Invalid Service Network Name: ${name} (must be between 3-63 characters, and must be a valid name)`);
-    }
-  }
-
-  // ------------------------------------------------------
   // Imports
   // ------------------------------------------------------
-
   /**
    * Import a Service Network by Arn
    */
@@ -247,7 +242,32 @@ export class ServiceNetwork extends ServiceNetworkBase {
     }
     return new Import(scope, id);
   }
-  // -----------
+
+  // ------------------------------------------------------
+  // Validation
+  // ------------------------------------------------------
+  /**
+   * Must be between 3-63 characters. Lowercase letters, numbers, and hyphens are accepted.
+   * Must begin and end with a letter or number. No consecutive hyphens.
+   */
+  protected static validateServiceNetworkName(name: string) {
+    const pattern = /^(?!servicenetwork-)(?!-)(?!.*-$)(?!.*--)[a-z0-9-]+$/;
+    const validationSucceeded = name.length >= 3 && name.length <= 63 && pattern.test(name);
+    if (!validationSucceeded) {
+      throw new Error(`Invalid Service Network Name: ${name} (must be between 3-63 characters, and must be a valid name)`);
+    }
+  }
+
+  /**
+   * Ensure network access properties are properly configured
+   */
+  protected static validateNetworkAccess(authType: AuthType, accessMode?: ServiceNetworkAccessMode) {
+    if (authType === AuthType.NONE && accessMode) {
+      throw new Error('AccessMode can not be set if AuthType is not set to AWS_IAM');
+    } else if (authType === AuthType.AWS_IAM && !accessMode) {
+      throw new Error('AccessMode can not be set if AuthType is set to AWS_IAM');
+    }
+  }
 
   public readonly serviceNetworkArn: string;
   public readonly serviceNetworkId: string;
@@ -265,36 +285,36 @@ export class ServiceNetwork extends ServiceNetworkBase {
       physicalName: props.name,
     });
 
-    if (props.name) {
-      ServiceNetwork.validateServiceNetworkName(props.name);
-    }
+    if (props.name) { ServiceNetwork.validateServiceNetworkName(props.name); }
 
+    // Ensure the specified Network Access configuration is valid
     this.authType = props.authType ?? AuthType.NONE;
+    ServiceNetwork.validateNetworkAccess(this.authType, props.accessMode);
 
-    // Throw an error if authType and access mode are set
-    if (props.accessmode && this.authType === AuthType.NONE) {
-      throw new Error('AccessMode can not be set if AuthType is not set to AWS_IAM');
-    }
 
     const resource = new generated.CfnServiceNetwork(this, 'Resource', {
       name: this.physicalName,
       authType: this.authType,
     });
     this._resource = resource;
-
+    this._resource.applyRemovalPolicy(props.removalPolicy);
     this.serviceNetworkArn = this._resource.attrArn;
     this.serviceNetworkId = this._resource.attrId;
     this.name = this.physicalName;
     this.authPolicy = new iam.PolicyDocument();
 
-    // Define logging destinations
+    // ------------------------------------------------------
+    // Logging Configuration
+    // ------------------------------------------------------
     if (props.loggingDestinations !== undefined) {
       props.loggingDestinations.forEach(destination => {
         this.addloggingDestination(destination);
       });
     }
 
-    // Associate VPCs
+    // ------------------------------------------------------
+    // VPC Association
+    // ------------------------------------------------------
     if (props.vpcs) {
       props.vpcs.forEach(vpc => {
         this.associateVPC({ vpc: vpc });
@@ -317,7 +337,7 @@ export class ServiceNetwork extends ServiceNetworkBase {
       principals: [new iam.StarPrincipal()],
     });
 
-    if (props.accessmode === ServiceNetworkAccessMode.ORG_ONLY) {
+    if (props.accessMode === ServiceNetworkAccessMode.ORG_ONLY) {
       const orgIdCr = new cr.AwsCustomResource(this, 'getOrgId', {
         onCreate: {
           region: 'us-east-1',
@@ -333,10 +353,10 @@ export class ServiceNetwork extends ServiceNetworkBase {
 
       // add the condition that requires that the principal is from this org
       statement.addCondition('StringEquals', { 'aws:PrincipalOrgID': [orgId] });
-      statement.addCondition('StringNotEqualsIgnoreCase', { 'aws:PrincipalType': 'Anonymous' });
-    } else if (props.accessmode === ServiceNetworkAccessMode.AUTHENTICATED_ONLY) {
+      statement.addCondition('StringNotEqualsIgnoreCase', { 'aws:PrincipalType': 'anonymous' });
+    } else if (props.accessMode === ServiceNetworkAccessMode.AUTHENTICATED_ONLY) {
       // add the condition that requires that the principal is authenticated
-      statement.addCondition('StringNotEqualsIgnoreCase', { 'aws:PrincipalType': 'Anonymous' });
+      statement.addCondition('StringNotEqualsIgnoreCase', { 'aws:PrincipalType': 'anonymous' });
     }
 
     this.authPolicy.addStatements(statement);
@@ -391,9 +411,10 @@ export class ServiceNetwork extends ServiceNetworkBase {
   }
 
   /**
-   * Share the The Service network using RAM
+   * Amazon VPC Lattice integrates with AWS Resource Access Manager (AWS RAM) to enable
+   * resource sharing across AWS accounts or through AWS Organizations.
    */
-  public share(props: ShareServiceNetworkProps): void {
+  public shareResource(props: ShareServiceNetworkProps): void {
     new ram.CfnResourceShare(this, 'ServiceNetworkShare', {
       name: props.name,
       resourceArns: [this.serviceNetworkArn],

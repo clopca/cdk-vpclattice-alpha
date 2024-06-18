@@ -13,13 +13,13 @@ describe('Service', () => {
     // WHEN & THEN
     expect(() => {
       new Service(stack, 'Params', {
-        serviceName: 'svc-adgfwg2', // Invalid service name
+        name: 'svc-adgfwg2', // Invalid service name
       });
     }).toThrow();
 
     expect(() => {
       new Service(stack, 'Params2', {
-        serviceName: 'SvcName1', // Invalid service name
+        name: 'SvcName1', // Invalid service name
       });
     }).toThrow();
   });
@@ -30,7 +30,7 @@ describe('Service', () => {
 
     // WHEN
     new Service(stack, 'Params', {
-      serviceName: 'mycustomlatticeservicename',
+      name: 'mycustomlatticeservicename',
       authType: AuthType.AWS_IAM,
     });
 
@@ -51,7 +51,7 @@ describe('Service', () => {
       logGroupName: 'vpc-lattice-name',
     });
     new Service(stack, 'Params', {
-      serviceName: 'mycustomlatticeservicename',
+      name: 'mycustomlatticeservicename',
       authType: AuthType.AWS_IAM,
       loggingDestinations: [
         LoggingDestination.cloudwatch(logGroup),
@@ -82,7 +82,7 @@ describe('Service', () => {
     //THEN
     expect(() => {
       new Service(stack, 'Params', {
-        serviceName: 'mycustomlatticeservicename',
+        name: 'mycustomlatticeservicename',
         authType: AuthType.AWS_IAM,
         loggingDestinations: [
           LoggingDestination.cloudwatch(logGroup1),

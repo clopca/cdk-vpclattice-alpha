@@ -118,14 +118,17 @@ export enum RuleAccessMode {
    * Unauthenticated Access
    */
   UNAUTHENTICATED = 'UNAUTHENTICATED',
+
   /**
    * Unauthenticated Access
    */
   AUTHENTICATED_ONLY = 'AUTHENTICATED',
+
   /**
    * THIS Org only
    */
   ORG_ONLY = 'ORG_ONLY',
+
   /**
    * Do not create a statement
    */
@@ -187,9 +190,9 @@ export interface ListenerProps {
   readonly protocol?: Protocol;
 
   /**
-   * Optional port number for the listener. If not supplied, will default to 80 or 443, depending on the Protocol.
-   * @default - 80 or 443 depending on the Protocol
-   */
+  * Optional port number for the listener. If not supplied, will default to 80 or 443, depending on the Protocol.
+  * @default - 80 or 443 depending on the Protocol
+  */
   readonly port?: number;
 
   /**
@@ -222,6 +225,7 @@ export interface IListener extends core.IResource {
 
   /**
    * The Id of the Service Network
+   * @attribute
    */
   readonly listenerId: string;
 
@@ -282,66 +286,38 @@ export interface RuleProp {
  *
  */
 export class Listener extends core.Resource implements IListener {
-  // ------------------------------------------------------
-  // Validation
-  // ------------------------------------------------------
-  /**
-   * Must be between 3-40 characters. Lowercase letters, numbers, and hyphens are accepted.
-   * Must begin and end with a letter or number. No consecutive hyphens.
-   */
-  public static validateListenerName(name: string) {
-    const pattern = /^(?!listener-)(?!-)(?!.*-$)(?!.*--)[a-z0-9-]+$/;
-    const validationSucceeded = name.length >= 3 && name.length <= 63 && pattern.test(name);
-    if (!validationSucceeded) {
-      throw new Error(
-        `Invalid Listener Name: ${name} (must be between 3-63 characters. The name can only contain  lower case alphanumeric characters and hyphens. The name must be unique to the account.)`,
-      );
-    }
-  }
-  // -----------
-
   /**
    *  The Id of the Listener
    */
-  public readonly listenerId: string;
+  readonly listenerId: string;
   /**
    * THe Arn of the Listener
    */
-  public readonly listenerArn: string;
-  /*
-   * The created CfnListener resource
-   */
-  private readonly _resource: generated.CfnListener;
+  readonly listenerArn: string;
   /**
    * A list of priorities, to check for duplicates
    */
-  public listenerPriorities: number[] = [];
+  listenerPriorities: number[] = [];
   /**
    * The service this listener is attached to
    */
-  public service: Service;
+  service: Service;
   /**
-   * The default action for the listener
+   * Service auth Policy
+   * @default none.
    */
-  public defaultAction: generated.CfnListener.DefaultActionProperty;
 
-  /**
-   * The protocol for the listener
-   */
-  public port: number;
-
-  // ------------------------------------------------------
-  // Construct
-  // ------------------------------------------------------
   constructor(scope: Construct, id: string, props: ListenerProps) {
-    super(scope, id, {
-      physicalName: props.name,
-    });
+    super(scope, id);
 
-    if (props.name) {
-      Listener.validateListenerName(props.name);
-    }
+    // the default action is a not provided, it will be set to NOT_FOUND
+    // let defaultAction: generated.CfnListener.DefaultActionProperty = props.defaultAction ?? {
+    //   fixedResponse: {
+    //     statusCode: FixedResponse.NOT_FOUND,
+    //   },
+    // };
 
+    let defaultAction: generated.CfnListener.DefaultActionProperty;
     if (props.defaultAction) {
       // throw an error if both props.defaultAction.fixedaction and props.defaultAction.forward are set
       if (props.defaultAction.fixedResponse && props.defaultAction.forward) {
@@ -354,18 +330,18 @@ export class Listener extends core.Resource implements IListener {
 
       // set the default action to the fixedResponse
       if (props.defaultAction.fixedResponse) {
-        this.defaultAction = {
+        defaultAction = {
           fixedResponse: {
             statusCode: props.defaultAction.fixedResponse,
           },
         };
       } else {
         // set the default action to the foward
-        this.defaultAction = {
+        defaultAction = {
           forward: {
             targetGroups: [
               {
-                targetGroupIdentifier: props.defaultAction.forward!.targetGroup.targetGroupId,
+                targetGroupIdentifier: props.defaultAction.forward?.targetGroup.targetGroupId as string,
                 // the properties below are optional
                 weight: props.defaultAction.forward?.weight,
               },
@@ -374,44 +350,51 @@ export class Listener extends core.Resource implements IListener {
         };
       }
     } else {
-      // If the default action is not provided, it will be set to NOT_FOUND
-      this.defaultAction = {
+      defaultAction = {
         fixedResponse: {
           statusCode: FixedResponse.NOT_FOUND,
         },
       };
     }
 
-    // Determine the protocol. Default to HTTPS
+    // default to using HTTPS
     let protocol = props.protocol ?? Protocol.HTTPS;
 
-    // Check the the port is in range if it is specificed
+    // check the the port is in range if it is specificed
     if (props.port) {
       if (props.port < 0 || props.port > 65535) {
         throw new Error('Port out of range');
       }
     }
 
-    // If port is not specified, set it to the default port based on the protocol
+    // if its not specified, set it to the default port based on the protcol
+    let port: number;
     if (protocol === Protocol.HTTP) {
-      this.port = props.port ?? 80;
+      port = props.port ?? 80;
     } else if (protocol === Protocol.HTTPS) {
-      this.port = props.port ?? 443;
+      port = props.port ?? 443;
     } else {
       throw new Error('Protocol not supported');
     }
 
-    const resource = new generated.CfnListener(this, 'Resource', {
+    if (props.name !== undefined) {
+      if (props.name.match(/^[a-z0-9\-]{3,63}$/) === null) {
+        throw new Error(
+          'The listener name must be between 3 and 63 characters long. The name can only contain  lower case alphanumeric characters and hyphens. The name must be unique to the account.',
+        );
+      }
+    }
+
+    const listener = new generated.CfnListener(this, 'Resource', {
       name: props.name,
-      defaultAction: this.defaultAction,
+      defaultAction: defaultAction,
       protocol: protocol,
-      port: this.port,
+      port: port,
       serviceIdentifier: props.service.serviceId,
     });
-    this._resource = resource;
 
-    this.listenerId = this._resource.attrId;
-    this.listenerArn = this._resource.attrArn;
+    this.listenerId = listener.attrId;
+    this.listenerArn = listener.attrArn;
     this.service = props.service;
 
     if (props.rules) {

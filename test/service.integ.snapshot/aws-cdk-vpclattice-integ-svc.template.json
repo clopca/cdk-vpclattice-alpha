@@ -9,6 +9,11 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
+  "LogsBucket9C4D8843": {
+   "Type": "AWS::S3::Bucket",
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
   "ServiceDBC79909": {
    "Type": "AWS::VpcLattice::Service",
    "Properties": {
@@ -18,12 +23,29 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "ServiceAccessLogSubscriptionc890cdceb0985247c877eee6296f51d14b5a5eb88e4AE21BD3": {
+  "ServiceAccessLogSubscriptionc8974a3db413d9161a847a680d280b7e8ea7344c98675103EA": {
    "Type": "AWS::VpcLattice::AccessLogSubscription",
    "Properties": {
     "DestinationArn": {
      "Fn::GetAtt": [
       "LogsTest58DCB617",
+      "Arn"
+     ]
+    },
+    "ResourceIdentifier": {
+     "Fn::GetAtt": [
+      "ServiceDBC79909",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "ServiceAccessLogSubscriptionc8a569a006874c77c21508f42344d757aac7b4874410C50DF3": {
+   "Type": "AWS::VpcLattice::AccessLogSubscription",
+   "Properties": {
+    "DestinationArn": {
+     "Fn::GetAtt": [
+      "LogsBucket9C4D8843",
       "Arn"
      ]
     },
