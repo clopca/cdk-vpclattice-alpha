@@ -419,8 +419,8 @@
    "Properties": {
     "AuthType": "NONE"
    },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "ServiceAccessLogSubscriptionc8dd9f3e425641057824d00376fb948bc29ad2d31696DC2BE0": {
    "Type": "AWS::VpcLattice::AccessLogSubscription",

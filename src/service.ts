@@ -137,7 +137,6 @@ abstract class ServiceBase extends core.Resource implements IService {
  * @resource AWS::VpcLattice::Service
  */
 export class Service extends ServiceBase {
-
   // ------------------------------------------------------
   // Imports
   // ------------------------------------------------------
@@ -228,7 +227,7 @@ export class Service extends ServiceBase {
     // ------------------------------------------------------
     // L1 Instantiation
     // ------------------------------------------------------
-    const resource = new generated.CfnService(this, 'Resource', {
+    this._resource = new generated.CfnService(this, 'Resource', {
       authType: this.authType,
       certificateArn: props.certificateArn,
       customDomainName: props.customDomainName,
@@ -239,7 +238,6 @@ export class Service extends ServiceBase {
     // ------------------------------------------------------
     // Construct properties
     // ------------------------------------------------------
-    this._resource = resource;
     // Apply the specified removal policy (what happens on delete)
     this._resource.applyRemovalPolicy(props.removalPolicy);
     this.serviceArn = this._resource.attrArn;

@@ -1,10 +1,32 @@
 import * as core from 'aws-cdk-lib';
+import { TargetType } from './aws-vpclattice-targets';
 
-import * as generated from 'aws-cdk-lib/aws-vpclattice';
+/**
+ * Basic properties for a Target Group
+ */
+export interface BaseTargetGroupProps {
+  /**
+   * The name of the target group.
+   *
+   * This name must be unique per region per account, can have a maximum of
+   * 32 characters, must contain only alphanumeric characters or hyphens, and
+   * must not begin or end with a hyphen.
+   *
+   * @default - Automatically generated.
+   */
+  readonly targetGroupName?: string;
 
-import * as constructs from 'constructs';
-
-import { ITarget } from './index';
+  /**
+   * The type of targets registered to this TargetGroup, either IP or Instance.
+   *
+   * All targets registered into the group must be of this type. If you
+   * register targets to the TargetGroup in the CDK app, the TargetType is
+   * determined automatically.
+   *
+   * @default - Determined automatically.
+   */
+  readonly targetType?: TargetType;
+}
 
 /**
  * Create a vpc lattice TargetGroup.
@@ -15,7 +37,6 @@ export interface ITargetGroup extends core.IResource {
    * The id of the target group
    */
   readonly targetGroupId: string;
-
   /**
    * The Arn of the target group
    */
@@ -25,24 +46,7 @@ export interface ITargetGroup extends core.IResource {
 /**
  * Properties for a Target Group, Only supply one of instancetargets, lambdaTargets, albTargets, ipTargets
  */
-export interface TargetGroupProps {
-  /**
-   * The name of the target group
-   */
-  readonly name: string;
-
-  /**
-   * Targets
-   */
-  readonly target: ITarget;
-}
-
-/**
- * Creates a VPC Lattice Target Group
- * @resource AWS::VpcLattice::TargetGroup
- * @see https://docs.aws.amazon.com/vpc-lattice/latest/ug/target-groups.html
- */
-export class TargetGroup extends core.Resource implements ITargetGroup {
+export abstract class TargetGroupBase extends core.Resource implements ITargetGroup {
   // ------------------------------------------------------
   // Validation
   // ------------------------------------------------------
@@ -58,53 +62,31 @@ export class TargetGroup extends core.Resource implements ITargetGroup {
       throw new Error(`Invalid Target Group Name: ${name} (must be between 3-128 characters, and must be a valid name)`);
     }
   }
-
   // ------------------------------------------------------
-
-  /*
-   * The Id of the target group
-   **/
-  readonly targetGroupId: string;
-
+  /**
+   * The id of the target group
+   */
+  public abstract readonly targetGroupId: string;
   /**
    * The Arn of the target group
    */
-  readonly targetGroupArn: string;
+  public abstract readonly targetGroupArn: string;
 
-  //--
-  private readonly _resource: generated.CfnTargetGroup;
-
-  // ------------------------------------------------------
-  // Constructor
-  // ------------------------------------------------------
-  constructor(scope: constructs.Construct, id: string, props: TargetGroupProps) {
-    super(scope, id, {
-      physicalName: props.name,
-    });
-
-    // Validate name
-    if (props.name) {
-      TargetGroup.validateTargetGroupName(props.name);
-    }
-
-    // Create nested L1
-    this._resource = new generated.CfnTargetGroup(this, 'Resource', {
-      type: props.target.type,
-      name: props.name,
-      config: props.target.config,
-      targets: props.target.targets,
-    });
-
-    this.targetGroupId = this._resource.attrId;
-    this.targetGroupArn = this._resource.attrArn;
-  }
+  /**
+   * The name of the target group
+   */
+  public abstract readonly name: string;
+  /**
+   * Targets
+   */
+  public abstract readonly targetType: TargetType;
 }
 
 export interface WeightedTargetGroup {
   /**
    * A target Group
    */
-  readonly targetGroup: TargetGroup;
+  readonly targetGroup: ITargetGroup;
 
   /**
    * A weight for the target group.
