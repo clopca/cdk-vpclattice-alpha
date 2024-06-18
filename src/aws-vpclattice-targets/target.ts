@@ -1,5 +1,5 @@
 import { aws_ec2 as ec2 } from 'aws-cdk-lib';
-
+import * as aws_vpclattice from 'aws-cdk-lib/aws-vpclattice';
 import { HealthCheck } from './index';
 
 /**
@@ -55,8 +55,6 @@ export interface TargetConfig {
    * @default Defaults to port 80 for HTTP, or 443 for HTTPS and GRPC
    */
   readonly port?: number;
-
-
 }
 
 /**
@@ -129,4 +127,22 @@ export enum FixedResponse {
    * OK 200
    */
   OK = 200,
+}
+
+
+export interface TargetGroup {
+  /**
+   * Target Type
+   */
+  readonly type: string;
+
+  /**
+   * References to the targets, ids or Arns
+   */
+  readonly targets: aws_vpclattice.CfnTargetGroup.TargetProperty[];
+
+  /**
+   * Configuration for the TargetGroup, if it is not a lambda
+   */
+  readonly config?: aws_vpclattice.CfnTargetGroup.TargetGroupConfigProperty;
 }

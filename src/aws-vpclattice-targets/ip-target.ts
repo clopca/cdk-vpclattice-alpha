@@ -2,7 +2,7 @@ import * as aws_vpclattice from 'aws-cdk-lib/aws-vpclattice';
 import * as constructs from 'constructs';
 import { IpAddressType, Protocol, ProtocolVersion, TargetType } from './target';
 import { TargetGroupBase } from '../';
-import { IVpc } from 'aws-cdk-lib/aws-ec2';
+import { IVpc, IpAddresses, Ipv6Addresses } from 'aws-cdk-lib/aws-ec2';
 
 export interface IpTargetGroupProps {
   /**
@@ -18,24 +18,28 @@ export interface IpTargetGroupProps {
   /**
    * Configuration for the TargetGroup, if it is not a lambda
    */
-  readonly config?: IpTargetGroupConfigProps;
+  readonly config: IpTargetGroupConfigProps;
 }
 
 export interface IpTargetGroupTargetProps {
   /**
    * The IP Address of the target
    */
-  //IP type
-  readonly id: string;
+  readonly ipAddress: Ipv6Addresses | IpAddresses;
 
   /**
    * Port
-   * @default Defaults to port 80 for HTTP, or 443 for HTTPS
+   * @default - Defaults to port 80 for HTTP, or 443 for HTTPS
    */
   readonly port?: number;
 }
 
 export interface IpTargetGroupConfigProps {
+  /**
+   * VPC Identifier
+   */
+  readonly VpcIdentifier: IVpc;
+
   /**
    * The type of IP Addresss Protocol to use
    * @default IpAddressType.IPv4
@@ -44,58 +48,22 @@ export interface IpTargetGroupConfigProps {
 
   /**
    * Port
-   * @default Defaults to port 80 for HTTP, or 443 for HTTPS
+   * @default - Defaults to port 80 for HTTP, or 443 for HTTPS
    */
   readonly port?: number;
 
   /**
    * The application layer protocol to use
-   * @default HTTPS
+   * @default Protocol.HTTPS
    */
   readonly protocol?: Protocol;
 
   /**
    * ProtocolVersion
-   * @default HTTP1
+   * @default ProtocolVersion.HTTP1
    */
   readonly protocolVersion?: ProtocolVersion;
 
-  /**
-   * VPC Identifier
-   * @default - No VPC
-   */
-  readonly VpcIdentifier?: IVpc;
-}
-
-export interface IpTargetGroupConfig {
-  /**
-   *
-   * @default IPV4
-   *
-   */
-  readonly ipAddressType: IpAddressType;
-  /**
-   * Port
-   * @default - Port 80 for HTTP, Port 443 for HTTPS
-   *
-   */
-  readonly port?: number;
-  /**
-   * Protocol
-   * @default - HTTPS
-   */
-  readonly protocol?: Protocol;
-  /**
-   * ProtocolVersion
-   * @default - HTTP1
-   */
-  readonly protocolVersion: ProtocolVersion;
-  /**
-   * VPC Identifier
-   * @default - No VPC
-   * @example vpc-123456
-   */
-  readonly VpcIdentifier?: IVpc;
 }
 
 export class IpTargetGroup extends TargetGroupBase {
@@ -103,7 +71,6 @@ export class IpTargetGroup extends TargetGroupBase {
   public readonly targetGroupId: string;
   public readonly name: string;
   public readonly targets: IpTargetGroupTargetProps[];
-  public readonly config: IpTargetGroupConfig;
   public readonly targetType = TargetType.IP;
   private readonly _resource: aws_vpclattice.CfnTargetGroup;
 
@@ -116,26 +83,28 @@ export class IpTargetGroup extends TargetGroupBase {
     }
     this.name = this.physicalName;
     this.targets = props.targets;
-    this.config = {
-      ipAddressType: props.config?.ipAddressType ?? IpAddressType.IPV4,
-      protocol: props.config?.protocol ?? Protocol.HTTPS,
-      port: props.config?.port ?? (props.config?.protocol === Protocol.HTTP ? 80 : 443),
-      protocolVersion: props.config?.protocolVersion ?? ProtocolVersion.HTTP1,
-      VpcIdentifier: props.config?.VpcIdentifier,
+    let config: aws_vpclattice.CfnTargetGroup.TargetGroupConfigProperty = {
+      vpcIdentifier: props.config.VpcIdentifier.vpcId,
+      ipAddressType: props.config.ipAddressType ?? IpAddressType.IPV4,
+      protocol: props.config.protocol ?? Protocol.HTTPS,
+      port: props.config.port ?? (props.config.protocol === Protocol.HTTP ? 80 : 443),
+      protocolVersion: props.config.protocolVersion ?? ProtocolVersion.HTTP1,
     };
 
+    let targets: aws_vpclattice.CfnTargetGroup.TargetProperty[] = props.targets.map((t) => { "id": t.ipAddress, "port": t.port })
+
     // Validate the port based on the protocol
-    if (this.config.protocol === Protocol.HTTP && this.config.port !== 80) {
+    if (config.protocol === Protocol.HTTP && config.port !== 80) {
       throw new Error('HTTP protocol must use port 80');
-    } else if (this.config.protocol === Protocol.HTTPS && this.config.port !== 443) {
+    } else if (config.protocol === Protocol.HTTPS && config.port !== 443) {
       throw new Error('HTTPS protocol must use port 443');
     }
 
     this._resource = new aws_vpclattice.CfnTargetGroup(this, 'Resource', {
       type: TargetType.IP,
       name: this.name,
-      config: this.config,
       targets: this.targets,
+      config,
     });
 
     this.targetGroupId = this._resource.attrId;

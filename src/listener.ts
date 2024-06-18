@@ -2,7 +2,7 @@ import * as core from 'aws-cdk-lib';
 import { aws_iam as iam } from 'aws-cdk-lib';
 import * as generated from 'aws-cdk-lib/aws-vpclattice';
 import { Construct } from 'constructs';
-import { WeightedTargetGroup, HTTPMatch, Service } from './index';
+import { HTTPMatch, Service, ITargetGroup } from './index';
 
 /**
  * AuthTypes
@@ -595,4 +595,17 @@ export class Listener extends core.Resource implements IListener {
       serviceIdentifier: this.service.serviceId,
     });
   }
+}
+
+export interface WeightedTargetGroup {
+  /**
+   * A target Group
+   */
+  readonly targetGroup: ITargetGroup;
+
+  /**
+   * A weight for the target group.
+   * @default 100
+   */
+  readonly weight?: number;
 }
