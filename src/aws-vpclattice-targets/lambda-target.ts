@@ -1,8 +1,8 @@
-import { TargetGroupBase } from '../';
 import * as aws_vpclattice from 'aws-cdk-lib/aws-vpclattice';
 import * as constructs from 'constructs';
 import { TargetType } from './target';
 
+import { TargetGroupBase } from '../';
 export interface LambdaTargetGroupProps {
   /**
    * The name of the target group
