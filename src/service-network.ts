@@ -399,7 +399,9 @@ export class ServiceNetwork extends ServiceNetworkBase {
 
     // attach the AuthPolicy to the Service Network
     new aws_vpclattice.CfnAuthPolicy(this, 'AuthPolicy', {
-      policy: this.authPolicy.toJSON(),
+      policy: core.Lazy.any({
+        produce: () => this.authPolicy.toJSON(),
+      }),
       resourceIdentifier: this.serviceNetworkArn,
     });
   }
@@ -409,9 +411,10 @@ export class ServiceNetwork extends ServiceNetworkBase {
   // ------------------------------------------------------
 
   /**
-   * Add a Policy Statement to the Auth Policy
+   * Add a statement to the auth policy
+   * @param statement - The Policy Statement to add
    */
-  public addStatementToAuthPolicy(statement: iam.PolicyStatement): void {
+  public addAuthPolicyStatement(statement: iam.PolicyStatement): void {
     this.authPolicy.addStatements(statement);
     ServiceNetwork.validateAuthPolicy(this.authPolicy);
   }
