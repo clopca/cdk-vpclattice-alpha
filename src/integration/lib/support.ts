@@ -8,7 +8,9 @@ export class SupportResources extends Construct {
   public helloWorld: aws_lambda.Function;
   public goodbyeWorld: aws_lambda.Function;
   public vpc1: ec2.Vpc;
-  public ec2instance: ec2.Instance;
+  public helloRole: iam.Role;
+  public goodbyeRole: iam.Role;
+  // public ec2instance: ec2.Instance;
 
   constructor(scope: Construct, id: string) {
     super(scope, id);
@@ -21,21 +23,21 @@ export class SupportResources extends Construct {
       natGateways: 0,
     });
 
-    // add endpoints in the vpc, so, we can get to an instance via ssm
-    this.vpc1.addInterfaceEndpoint('ssm', {
-      service: ec2.InterfaceVpcEndpointAwsService.SSM,
-    });
+    // // add endpoints in the vpc, so, we can get to an instance via ssm
+    // this.vpc1.addInterfaceEndpoint('ssm', {
+    //   service: ec2.InterfaceVpcEndpointAwsService.SSM,
+    // });
 
-    this.vpc1.addInterfaceEndpoint('ssm_mewssages', {
-      service: ec2.InterfaceVpcEndpointAwsService.SSM_MESSAGES,
-    });
+    // this.vpc1.addInterfaceEndpoint('ssm_mewssages', {
+    //   service: ec2.InterfaceVpcEndpointAwsService.SSM_MESSAGES,
+    // });
 
     // give the hello lambda a role and permissions
-    const helloRole = new iam.Role(this, 'helloRole', {
+    this.helloRole = new iam.Role(this, 'helloRole', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
     });
 
-    helloRole.addToPolicy(
+    this.helloRole.addToPolicy(
       new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,
         resources: ['*'],
@@ -44,11 +46,11 @@ export class SupportResources extends Construct {
     );
 
     // give the goodbye lambda a role and permissions
-    const goodbyeRole = new iam.Role(this, 'checkRole', {
+    this.goodbyeRole = new iam.Role(this, 'checkRole', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
     });
 
-    goodbyeRole.addToPolicy(
+    this.goodbyeRole.addToPolicy(
       new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,
         resources: ['*'],
@@ -61,7 +63,7 @@ export class SupportResources extends Construct {
       handler: 'helloworld.lambda_handler',
       code: aws_lambda.Code.fromAsset(path.join(__dirname, './lambda')),
       timeout: core.Duration.seconds(15),
-      role: helloRole,
+      role: this.helloRole,
     });
 
     // create the goodbye world lambda
@@ -70,25 +72,25 @@ export class SupportResources extends Construct {
       handler: 'goodbyeworld.lambda_handler',
       code: aws_lambda.Code.fromAsset(path.join(__dirname, './lambda')),
       timeout: core.Duration.seconds(15),
-      role: goodbyeRole,
+      role: this.goodbyeRole,
     });
 
-    // create an ec2instance which will be where we can consume the lattive service from
-    this.ec2instance = new ec2.Instance(this, 'demoEC2instance', {
-      machineImage: ec2.MachineImage.latestAmazonLinux2023(),
-      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MICRO),
-      vpc: this.vpc1,
-      allowAllOutbound: true,
-      ssmSessionPermissions: true,
-      requireImdsv2: true,
-    });
+    // // create an ec2instance which will be where we can consume the lattive service from
+    // this.ec2instance = new ec2.Instance(this, 'demoEC2instance', {
+    //   machineImage: ec2.MachineImage.latestAmazonLinux2023(),
+    //   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MICRO),
+    //   vpc: this.vpc1,
+    //   allowAllOutbound: true,
+    //   ssmSessionPermissions: true,
+    //   requireImdsv2: true,
+    // });
 
-    this.ec2instance.addToRolePolicy(
-      new iam.PolicyStatement({
-        effect: iam.Effect.ALLOW,
-        actions: ['vpc-lattice-svcs:Invoke'],
-        resources: ['*'],
-      }),
-    );
+    // this.ec2instance.addToRolePolicy(
+    //   new iam.PolicyStatement({
+    //     effect: iam.Effect.ALLOW,
+    //     actions: ['vpc-lattice-svcs:Invoke'],
+    //     resources: ['*'],
+    //   }),
+    // );
   }
 }

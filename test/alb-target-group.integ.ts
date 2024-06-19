@@ -23,7 +23,7 @@ const albSvc = new ApplicationLoadBalancedFargateService(stack, 'Service', {
 
 new AlbTargetGroup(stack, 'ALBTG', {
 	vpc,
-	loadBalancer: albSvc.loadBalancer
+	loadBalancer: albSvc.loadBalancer,
 });
 
 new integ.IntegTest(app, 'ServiceTest', {

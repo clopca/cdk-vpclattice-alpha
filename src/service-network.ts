@@ -167,16 +167,22 @@ export interface ServiceNetworkProps {
   readonly accessMode?: ServiceNetworkAccessMode;
 
   /**
-   * Additional AuthStatments:
-   */
-  readonly authStatements?: iam.PolicyStatement[];
-
-  /**
    * Determine what happens to the repository when the resource/stack is deleted.
    *
    * @default RemovalPolicy.RETAIN
    */
   readonly removalPolicy?: core.RemovalPolicy;
+
+  /**
+   * Additional AuthStatments:
+   */
+  readonly authStatements?: iam.PolicyStatement[];
+
+  /**
+   * Policy to apply to the service network
+   * @default - No policy is applied
+   */
+  readonly authPolicy?: iam.PolicyDocument;
 }
 
 /**
@@ -268,13 +274,23 @@ export class ServiceNetwork extends ServiceNetworkBase {
   }
 
   /**
-   * Ensure network access properties are properly configured
+   * Must ensure Service has the correct AuthType and policy is a
+   * valid IAM Resource-based Policy
    */
-  protected static validateNetworkAccess(authType: AuthType, accessMode?: ServiceNetworkAccessMode) {
-    if (authType === AuthType.NONE && accessMode) {
-      throw new Error('AccessMode can not be set if AuthType is not set to AWS_IAM');
+  protected static validateAuthPolicy(authPolicy: iam.PolicyDocument) {
+    if (authPolicy.validateForResourcePolicy().length > 0) {
+      throw new Error(`The following errors were found in the policy: \n${authPolicy.validateForResourcePolicy()} \n ${authPolicy}`);
     }
   }
+
+  /**
+   * Ensure network access properties are properly configured
+   */
+  // protected static validateNetworkAccess(authType: AuthType, accessMode?: ServiceNetworkAccessMode) {
+  //   if (authType === AuthType.NONE && accessMode) {
+  //     throw new Error('AccessMode can not be set if AuthType is not set to AWS_IAM');
+  //   }
+  // }
 
   public readonly serviceNetworkArn: string;
   public readonly serviceNetworkId: string;
@@ -298,7 +314,7 @@ export class ServiceNetwork extends ServiceNetworkBase {
 
     // Ensure the specified Network Access configuration is valid
     this.authType = props.authType ?? AuthType.NONE;
-    ServiceNetwork.validateNetworkAccess(this.authType, props.accessMode);
+    // ServiceNetwork.validateNetworkAccess(this.authType, props.accessMode);
 
     const resource = new generated.CfnServiceNetwork(this, 'Resource', {
       name: this.physicalName,
@@ -309,7 +325,7 @@ export class ServiceNetwork extends ServiceNetworkBase {
     this.serviceNetworkArn = this._resource.attrArn;
     this.serviceNetworkId = this._resource.attrId;
     this.name = this.physicalName;
-    this.authPolicy = new iam.PolicyDocument();
+    this.authPolicy = props.authPolicy ?? new iam.PolicyDocument();
 
     // ------------------------------------------------------
     // Logging Configuration
@@ -335,6 +351,10 @@ export class ServiceNetwork extends ServiceNetworkBase {
         this.associateService(service);
       });
     }
+
+    // ------------------------------------------------------
+    // Auth Policy
+    // ------------------------------------------------------
 
     // Create a Policy for the Service Network
     // Start with the default policy allowing unauthenticated access
@@ -374,7 +394,16 @@ export class ServiceNetwork extends ServiceNetworkBase {
         this.authPolicy.addStatements(propstatement);
       });
     }
-    this.applyAuthPolicyToServiceNetwork();
+
+    ServiceNetwork.validateAuthPolicy(this.authPolicy);
+
+    // attach the AuthPolicy to the Service Network
+    new aws_vpclattice.CfnAuthPolicy(this, 'AuthPolicy', {
+      policy: core.Lazy.any({
+        produce: () => this.authPolicy.toJSON(),
+      }),
+      resourceIdentifier: this.serviceNetworkArn,
+    });
   }
 
   // ------------------------------------------------------
@@ -382,30 +411,12 @@ export class ServiceNetwork extends ServiceNetworkBase {
   // ------------------------------------------------------
 
   /**
-   * Add a Policy Statement to the Auth Policy
+   * Add a statement to the auth policy
+   * @param statement - The Policy Statement to add
    */
-  public addStatementToAuthPolicy(statement: iam.PolicyStatement): void {
+  public addAuthPolicyStatement(statement: iam.PolicyStatement): void {
     this.authPolicy.addStatements(statement);
-  }
-
-  /**
-   * Apply the AuthPolicy to the Service Network
-   */
-  public applyAuthPolicyToServiceNetwork(): void {
-    // check to see if the AuthType is AWS_IAM
-    if (this.authType !== AuthType.AWS_IAM) {
-      throw new Error(`AuthType must be ${AuthType.AWS_IAM} to add an Auth Policy`);
-    }
-    // check to see if there are any errors with the auth policy
-    if (this.authPolicy.validateForResourcePolicy().length > 0) {
-      throw new Error(`The following errors were found in the policy: \n${this.authPolicy.validateForResourcePolicy()} \n ${this.authPolicy}`);
-    }
-
-    // attach the AuthPolicy to the Service Network
-    new aws_vpclattice.CfnAuthPolicy(this, 'AuthPolicy', {
-      policy: this.authPolicy.toJSON(),
-      resourceIdentifier: this.serviceNetworkId,
-    });
+    ServiceNetwork.validateAuthPolicy(this.authPolicy);
   }
 
   /**
