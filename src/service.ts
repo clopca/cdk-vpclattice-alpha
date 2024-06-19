@@ -284,14 +284,17 @@ export class Service extends ServiceBase {
       });
     }
 
-    Service.validateAuthPolicy(this.authPolicy);
-
-    // Create an AuthPolicy
-    new generated.CfnAuthPolicy(this, 'ServiceAuthPolicy', {
-      policy: core.Lazy.any({
-        produce: () => this.authPolicy.toJSON(),
-      }),
-      resourceIdentifier: this.serviceId,
+    core.Lazy.any({
+      produce: () => {
+        if (!this.authPolicy.isEmpty) {
+          Service.validateAuthPolicy(this.authPolicy);
+          new generated.CfnAuthPolicy(this, 'ServiceAuthPolicy', {
+            policy: this.authPolicy.toJSON(),
+            resourceIdentifier: this.serviceId,
+          });
+        }
+        return undefined;
+      },
     });
   }
 
