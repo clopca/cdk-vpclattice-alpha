@@ -2,8 +2,8 @@ import { IApplicationLoadBalancer } from "aws-cdk-lib/aws-elasticloadbalancingv2
 import { Protocol, ProtocolVersion, TargetType } from "./target";
 import { IVpc } from "aws-cdk-lib/aws-ec2";
 import { Construct } from "constructs";
-import { TargetGroupBase } from "../base-target-group";
 import { aws_vpclattice } from "aws-cdk-lib";
+import { TargetGroupBase } from "./base-target-group";
 
 export interface AlbTargetGroupProps {
     /**
@@ -60,6 +60,9 @@ export class AlbTargetGroup extends TargetGroupBase {
         });
         if (props.name) {
             TargetGroupBase.validateTargetGroupName(props.name);
+        }
+        if (props.protocol) {
+            TargetGroupBase.validateProtocol(props.protocol, this.targetType)
         }
         this.name = this.physicalName;
         this.loadBalancer = props.loadBalancer;

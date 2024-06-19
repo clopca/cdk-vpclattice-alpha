@@ -1,5 +1,23 @@
 import * as core from 'aws-cdk-lib';
 
+/**
+ * ProtocolVersion
+ */
+export enum ProtocolVersion {
+  /**
+   * Http1
+   */
+  HTTP1 = 'HTTP1',
+  /**
+   * Http2
+   */
+  HTTP2 = 'HTTP2',
+  /**
+   * GRPC
+   */
+  GRPC = 'GRPC',
+}
+
 export enum TargetType {
   /**
    * Lambda Target
@@ -20,6 +38,26 @@ export enum TargetType {
    * Application Load Balancer Target
    */
   ALB = 'ALB',
+}
+
+/**
+ * HTTP/HTTPS methods
+ */
+export enum Protocol {
+  /**
+   * HTTP Protocol (Unencrypted traffic)
+   */
+  HTTP = 'HTTP',
+
+  /**
+   * HTTPS Protocol (Encrypted traffic - TLS termination)
+   */
+  HTTPS = 'HTTPS',
+
+  /**
+   * TCP Protocol (Encrypted traffic - TLS passthrough)
+   */
+  TCP = 'TCP',
 }
 
 /**
@@ -80,6 +118,25 @@ export abstract class TargetGroupBase extends core.Resource implements ITargetGr
     const validationSucceeded = name.length >= 3 && name.length <= 128 && pattern.test(name);
     if (!validationSucceeded) {
       throw new Error(`Invalid Target Group Name: ${name} (must be between 3-128 characters, and must be a valid name)`);
+    }
+  }
+  /**
+   * Verifies a valid protocol / target Type combination
+   */
+  public static validateProtocol(protocol: Protocol, targetType: TargetType) {
+    // Ensure that protocol is not set to TCP if targetType is ALB
+    if (protocol === Protocol.TCP && targetType === TargetType.ALB) {
+      throw new Error(`Invalid Protocol: ${protocol} (must be HTTP or HTTPS if targetType is ALB)`);
+    }
+  }
+
+  /**
+   * Verifies a valid protocol / protocol version combination
+   */
+  public static validateProtocolVersion(protocol: Protocol, protocolVersion: ProtocolVersion) {
+    // Ensure that protocol version is undefine if protocol is TCP
+    if (protocol === Protocol.TCP && protocolVersion) {
+      throw new Error(`Invalid Protocol Version: ${protocolVersion} (must not be set if protocol is TCP)`);
     }
   }
   // ------------------------------------------------------

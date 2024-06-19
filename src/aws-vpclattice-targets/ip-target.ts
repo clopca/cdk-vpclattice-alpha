@@ -2,7 +2,7 @@ import { IVpc, IpAddresses, Ipv6Addresses } from 'aws-cdk-lib/aws-ec2';
 import * as aws_vpclattice from 'aws-cdk-lib/aws-vpclattice';
 import * as constructs from 'constructs';
 import { IpAddressType, Protocol, ProtocolVersion, TargetType } from './target';
-import { TargetGroupBase } from '../base-target-group';
+import { TargetGroupBase } from './base-target-group';
 
 export interface IpTargetGroupProps {
   /**
@@ -112,7 +112,7 @@ export class IpTargetGroup extends TargetGroupBase {
       config: this.config,
     });
 
-    this.targetGroupId = "a" //this._resource.attrId;
-    this.targetGroupArn = "b" //this._resource.attrArn;
+    this.targetGroupId = this._resource.attrId;
+    this.targetGroupArn = this._resource.attrArn;
   }
 }

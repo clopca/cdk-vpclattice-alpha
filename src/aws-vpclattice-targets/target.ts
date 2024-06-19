@@ -22,15 +22,21 @@ export interface ITarget {
  */
 export enum Protocol {
   /**
-   * HTTP Protocol
+   * HTTP Protocol (Unencrypted traffic)
    */
   HTTP = 'HTTP',
 
   /**
-   * HTTPS Protocol
+   * HTTPS Protocol (Encrypted traffic - TLS termination)
    */
   HTTPS = 'HTTPS',
+
+  /**
+   * TCP Protocol (Encrypted traffic - TLS passthrough)
+   */
+  TCP = 'TCP',
 }
+
 
 export enum LambdaEventStructureVersion {
   /**

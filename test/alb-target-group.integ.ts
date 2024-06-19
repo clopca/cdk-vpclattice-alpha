@@ -15,6 +15,7 @@ const albSvc = new ApplicationLoadBalancedFargateService(stack, 'Service', {
 	cpu: 512,
 	taskImageOptions: {
 		image: cdk.aws_ecs.ContainerImage.fromRegistry('public.ecr.aws/bitnami/lamp:8.1'),
+		containerPort: 80
 	},
 	publicLoadBalancer: false,
 

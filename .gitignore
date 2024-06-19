@@ -65,6 +65,7 @@ test/service-network.integ.snapshot/manifest.json
 test/service-network.integ.snapshot/**/manifest.json
 test/service-network.integ.snapshot/tree.json
 test/service-network.integ.snapshot/**/tree.json
+test/.tmp
 test/service.integ.snapshot/asset.*
 test/service.integ.snapshot/**/asset.*
 test/service.integ.snapshot/cdk.out
@@ -73,15 +74,6 @@ test/service.integ.snapshot/manifest.json
 test/service.integ.snapshot/**/manifest.json
 test/service.integ.snapshot/tree.json
 test/service.integ.snapshot/**/tree.json
-test/.tmp
-test/target-group.integ.snapshot/asset.*
-test/target-group.integ.snapshot/**/asset.*
-test/target-group.integ.snapshot/cdk.out
-test/target-group.integ.snapshot/**/cdk.out
-test/target-group.integ.snapshot/manifest.json
-test/target-group.integ.snapshot/**/manifest.json
-test/target-group.integ.snapshot/tree.json
-test/target-group.integ.snapshot/**/tree.json
 cdk.out
 cdk.context.json
 !/.projenrc.ts

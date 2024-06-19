@@ -24,9 +24,8 @@ tsconfig.tsbuildinfo
 !.jsii
 test/alb-target-group.integ.snapshot
 test/service-network.integ.snapshot
-test/service.integ.snapshot
 test/.tmp
-test/target-group.integ.snapshot
+test/service.integ.snapshot
 cdk.out
 cdk.context.json
 /.gitattributes

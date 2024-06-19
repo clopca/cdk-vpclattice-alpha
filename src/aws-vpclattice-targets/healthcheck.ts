@@ -1,6 +1,7 @@
 import * as core from 'aws-cdk-lib';
 import { aws_vpclattice } from 'aws-cdk-lib';
-import { FixedResponse, Protocol, ProtocolVersion } from './target';
+import { FixedResponse } from './target';
+import { Protocol, ProtocolVersion } from './base-target-group';
 
 export interface TargetGroupHealthCheckProps {
   /**
@@ -175,5 +176,5 @@ export abstract class HealthCheck {
    */
   public abstract readonly healthyThresholdCount: number;
 
-  protected constructor() {}
+  protected constructor() { }
 }
