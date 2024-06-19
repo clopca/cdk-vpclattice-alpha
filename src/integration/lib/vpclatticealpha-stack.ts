@@ -1,6 +1,6 @@
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-// import { SupportResources } from './support';
+import { SupportResources } from './support';
 import * as vpclattice from '../..';
 // import * as targets from '../../aws-vpclattice-targets';
 // import { aws_iam as iam } from 'aws-cdk-lib';
@@ -9,15 +9,15 @@ export class VpclatticealphaStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    // const support = new SupportResources(this, 'SupportResources');
+    const support = new SupportResources(this, 'SupportResources');
 
     // create a vpc lattice service, and associate it with the service network
     // the listener use defaults of HTTPS, on port 443, and have a default action of 404 NOT FOUND
-    new vpclattice.Service(this, 'LatticeService', {
+    const myLatticeService = new vpclattice.Service(this, 'LatticeService', {
       authType: vpclattice.AuthType.AWS_IAM,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       // allowedPrincipals: [new iam.ArnPrincipal('arn:aws:iam::123456789012:role/helloRole')],
-      // allowedPrincipals: [support.helloRole],
+      allowedPrincipals: [support.helloRole],
     });
 
     // // add a listener to the service
@@ -74,13 +74,13 @@ export class VpclatticealphaStack extends cdk.Stack {
     // Overide the default option to allow unauthenticated/signed requests
     // associate the vpcs
     // assocaite the services with the servicenetwork
-    // new vpclattice.ServiceNetwork(this, 'ServiceNetwork', {
-    //   accessMode: vpclattice.ServiceNetworkAccessMode.UNAUTHENTICATED,
-    //   // authType: vpclattice.AuthType.NONE,
-    //   vpcs: [support.vpc1],
-    //   services: [myLatticeService],
-    //   removalPolicy: cdk.RemovalPolicy.DESTROY,
-    // });
+    new vpclattice.ServiceNetwork(this, 'ServiceNetwork', {
+      accessMode: vpclattice.ServiceNetworkAccessMode.UNAUTHENTICATED,
+      // authType: vpclattice.AuthType.NONE,
+      vpcs: [support.vpc1],
+      services: [myLatticeService],
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
 
     // myLatticeService.associateWithServiceNetwork(serviceNetwork);
   }

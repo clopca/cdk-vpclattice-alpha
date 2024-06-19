@@ -1,5 +1,5 @@
+import { aws_iam as iam, aws_ram as ram } from 'aws-cdk-lib';
 import * as core from 'aws-cdk-lib';
-import { aws_iam as iam } from 'aws-cdk-lib';
 import * as generated from 'aws-cdk-lib/aws-vpclattice';
 import { Construct } from 'constructs';
 import { AuthType } from './listener';
@@ -28,6 +28,32 @@ export interface IService extends core.IResource {
    * Associate the service with a Service Network.
    */
   associateWithServiceNetwork(serviceNetwork: IServiceNetwork): void;
+}
+
+export interface ShareServiceProps {
+  /**
+   * The name of the share.
+   */
+  readonly name: string;
+
+  /**
+   * Whether external principals are allowed.
+   * @default false;
+   */
+  readonly allowExternalPrincipals?: boolean;
+
+  //Principals
+  /**
+   * Principals to share the Service Network with
+   * @default none
+   */
+  readonly principals?: string[];
+
+  /**
+   * Resources to share the Service Network with
+   * @default none
+   */
+  readonly resourceArns?: string[];
 }
 
 /**
@@ -213,7 +239,7 @@ export class Service extends ServiceBase {
   public readonly serviceId: string;
   // variables specific to the non-imported Service
   public readonly serviceName: string;
-  public authType: AuthType;
+  public readonly authType: AuthType;
   private readonly _resource: generated.CfnService;
   public readonly allowedPrincipals: iam.IPrincipal[];
   public readonly loggingDestinations: LoggingDestination[];
@@ -265,7 +291,6 @@ export class Service extends ServiceBase {
     // ------------------------------------------------------
     if (this.loggingDestinations.length) {
       Service.validateLoggingDestinations(this.loggingDestinations);
-      // Add the logging destination
       this.loggingDestinations.forEach(destination => {
         this.addLoggingDestination(destination);
       });
@@ -336,6 +361,19 @@ export class Service extends ServiceBase {
     new generated.CfnAccessLogSubscription(this, `AccessLogSubscription${destination.addr}`, {
       destinationArn: destination.arn,
       resourceIdentifier: this.serviceArn,
+    });
+  }
+
+  /**
+   * Amazon VPC Lattice integrates with AWS Resource Access Manager (AWS RAM) to enable
+   * resource sharing across AWS accounts or through AWS Organizations.
+   */
+  public shareResource(props: ShareServiceProps): void {
+    new ram.CfnResourceShare(this, 'ServiceShare', {
+      name: props.name,
+      resourceArns: [this.serviceArn],
+      allowExternalPrincipals: props.allowExternalPrincipals,
+      principals: props.principals,
     });
   }
 }
