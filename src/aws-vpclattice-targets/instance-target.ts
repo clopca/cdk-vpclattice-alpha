@@ -2,6 +2,7 @@ import { IInstance, IVpc } from 'aws-cdk-lib/aws-ec2';
 import { Construct } from 'constructs';
 import { Protocol, ProtocolVersion } from './target';
 import { TargetGroupBase, TargetType } from './base-target-group';
+import { Lazy, aws_vpclattice } from 'aws-cdk-lib';
 
 
 export interface InstanceTarget {
@@ -68,21 +69,62 @@ export class InstanceTargetGroup extends TargetGroupBase {
   public readonly protocolVersion: ProtocolVersion;
   public readonly targetGroupArn: string;
   public readonly targetGroupId: string;
+  public readonly port: number;
+  public readonly vpc: IVpc;
+  public readonly targets: InstanceTarget[];
+  private readonly _resource: aws_vpclattice.CfnTargetGroup;
+
+  /**
+   * Adds a target to the target Group
+   * @param target 
+   */
+  public addTarget(target: InstanceTarget) {
+    this.targets.push(target)
+  }
+
   constructor(scope: Construct, id: string, props: InstanceTargetGroupProps) {
     super(scope, id, {
       physicalName: props.name,
     });
-
+    
+    // ------------------------------------------------------
+    // Set properties or defaults
+    // ------------------------------------------------------
+    this.vpc = props.vpc
     this.name = this.physicalName;
     this.protocol = props.protocol ?? Protocol.HTTPS
     this.protocolVersion = props.protocolVersion ?? ProtocolVersion.HTTP1
+    this.port = props.port ?? (props.protocol === Protocol.HTTP ? 80 : 443)
+    this.targets = props.targets ?? []
 
-
-    TargetGroupBase.validateTargetGroupName(this.name);
+    // ------------------------------------------------------
+    // Validation
+    // ------------------------------------------------------
+    if (props.name) { TargetGroupBase.validateTargetGroupName(this.name) }
     TargetGroupBase.validateProtocol(this.protocol, this.targetType)
     TargetGroupBase.validateProtocolVersion(this.protocol, this.protocolVersion)
 
-    this.targetGroupArn = "a";
-    this.targetGroupId = "b";
+    // ------------------------------------------------------
+    // L1 Instantiation
+    // ------------------------------------------------------
+    let config: aws_vpclattice.CfnTargetGroup.TargetGroupConfigProperty = {
+      vpcIdentifier: this.vpc.vpcId,
+      protocol: this.protocol,
+      port: this.port,
+      protocolVersion: this.protocolVersion,
+    };
+
+    this._resource = new aws_vpclattice.CfnTargetGroup(this, 'Resource', {
+      type: this.targetType,
+      name: this.name,
+      // Lazy basically processes this line at synthesis time, making additions after instantiation possible
+      targets: Lazy.any({
+        produce: () => this.targets.map(target => ({ id: target.instance.instanceId, port: target.port })),
+      }),
+      config,
+    });
+
+    this.targetGroupId = this._resource.attrId;
+    this.targetGroupArn = this._resource.attrArn;
   }
 }

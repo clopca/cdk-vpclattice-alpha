@@ -57,6 +57,14 @@ test/alb-target-group.integ.snapshot/manifest.json
 test/alb-target-group.integ.snapshot/**/manifest.json
 test/alb-target-group.integ.snapshot/tree.json
 test/alb-target-group.integ.snapshot/**/tree.json
+test/instance-target-group.integ.snapshot/asset.*
+test/instance-target-group.integ.snapshot/**/asset.*
+test/instance-target-group.integ.snapshot/cdk.out
+test/instance-target-group.integ.snapshot/**/cdk.out
+test/instance-target-group.integ.snapshot/manifest.json
+test/instance-target-group.integ.snapshot/**/manifest.json
+test/instance-target-group.integ.snapshot/tree.json
+test/instance-target-group.integ.snapshot/**/tree.json
 test/service-network.integ.snapshot/asset.*
 test/service-network.integ.snapshot/**/asset.*
 test/service-network.integ.snapshot/cdk.out

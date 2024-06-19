@@ -23,6 +23,7 @@ tsconfig.tsbuildinfo
 /.eslintrc.json
 !.jsii
 test/alb-target-group.integ.snapshot
+test/instance-target-group.integ.snapshot
 test/service-network.integ.snapshot
 test/.tmp
 test/service.integ.snapshot

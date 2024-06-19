@@ -1,5 +1,5 @@
 //export * from './target';
-export * from './healthcheck';
+export * from './health-check';
 export * from './alb-target';
 export * from './lambda-target';
 export * from './instance-target';
