@@ -103,6 +103,11 @@ export interface ServiceProps {
   readonly allowedPrincipals?: iam.IPrincipal[];
 
   /**
+   * Additional AuthStatments:
+   */
+  readonly authStatements?: iam.PolicyStatement[];
+
+  /**
    * Policy to apply to the service
    * @default - No policy is applied
    */
@@ -197,10 +202,8 @@ export class Service extends ServiceBase {
    * Must ensure Service has the correct AuthType and policy is a
    * valid IAM Resource-based Policy
    */
-  protected static validateAuthPolicy(authType: AuthType, authPolicy: iam.PolicyDocument) {
-    if (authType !== AuthType.AWS_IAM) {
-      throw new Error('Cannot apply a policy when authType is not equal to AWS_IAM');
-    } else if (authPolicy.validateForResourcePolicy().length > 0) {
+  protected static validateAuthPolicy(authPolicy: iam.PolicyDocument) {
+    if (authPolicy.validateForResourcePolicy().length > 0) {
       throw new Error(`The following errors were found in the policy: \n${authPolicy.validateForResourcePolicy()} \n ${authPolicy}`);
     }
   }
@@ -271,9 +274,25 @@ export class Service extends ServiceBase {
     // ------------------------------------------------------
     // Auth Policy
     // ------------------------------------------------------
-    if (this.allowedPrincipals.length) this.grantAccess(this.allowedPrincipals);
+    if (this.allowedPrincipals.length) {
+      this.grantAccess(this.allowedPrincipals);
+    }
 
-    this.applyAuthPolicyToService();
+    if (props.authStatements) {
+      props.authStatements.forEach(propstatement => {
+        this.authPolicy.addStatements(propstatement);
+      });
+    }
+
+    Service.validateAuthPolicy(this.authPolicy);
+
+    // Create an AuthPolicy
+    new generated.CfnAuthPolicy(this, 'ServiceAuthPolicy', {
+      policy: core.Lazy.any({
+        produce: () => this.authPolicy.toJSON(),
+      }),
+      resourceIdentifier: this.serviceId,
+    });
   }
 
   // ------------------------------------------------------
@@ -291,11 +310,11 @@ export class Service extends ServiceBase {
     let policyStatement: iam.PolicyStatement = new iam.PolicyStatement({
       effect: iam.Effect.ALLOW,
       actions: ['vpc-lattice-svcs:Invoke'],
-      //TODO: check if possible to add the service arn and still have the policy work
       resources: ['*'],
       principals: principals,
     });
     this.authPolicy.addStatements(policyStatement);
+    Service.validateAuthPolicy(this.authPolicy);
   }
 
   /**
@@ -304,6 +323,7 @@ export class Service extends ServiceBase {
    */
   public addAuthPolicyStatement(statement: iam.PolicyStatement): void {
     this.authPolicy.addStatements(statement);
+    Service.validateAuthPolicy(this.authPolicy);
   }
 
   /**
@@ -313,19 +333,6 @@ export class Service extends ServiceBase {
     new generated.CfnAccessLogSubscription(this, `AccessLogSubscription${destination.addr}`, {
       destinationArn: destination.arn,
       resourceIdentifier: this.serviceArn,
-    });
-  }
-
-  /**
-   * Apply the AuthPolicy to the Service
-   */
-  private applyAuthPolicyToService() {
-    Service.validateAuthPolicy(this.authType, this.authPolicy);
-
-    // Create an AuthPolicy
-    new generated.CfnAuthPolicy(this, 'ServiceAuthPolicy', {
-      policy: core.Lazy.any({ produce: () => this.authPolicy.toJSON() }),
-      resourceIdentifier: this.serviceId,
     });
   }
 }

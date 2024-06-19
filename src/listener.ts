@@ -418,17 +418,19 @@ export class Listener extends core.Resource implements IListener {
     policyStatement.addActions('vpc-lattice-svcs:Invoke');
 
     if (props.accessMode === RuleAccessMode.UNAUTHENTICATED) {
-      policyStatement.addPrincipals(new iam.StarPrincipal());
       if (props.allowedPrincipals) {
         throw new Error('An unauthenticated rule cannot have allowedPrincipals');
       }
+      policyStatement.addPrincipals(new iam.StarPrincipal());
     }
 
     if (props.accessMode === RuleAccessMode.AUTHENTICATED_ONLY) {
+      policyStatement.addPrincipals(new iam.StarPrincipal());
       policyStatement.addCondition('StringNotEqualsIgnoreCase', { 'aws:PrincipalType': 'Anonymous' });
     }
 
     if (props.accessMode === RuleAccessMode.ORG_ONLY) {
+      policyStatement.addPrincipals(new iam.StarPrincipal());
       // policyStatement.addCondition('StringEquals', { 'aws:PrincipalOrgID': [this.service.orgId] }); // TODO: add orgId to the auth policy
       policyStatement.addCondition('StringNotEqualsIgnoreCase', { 'aws:PrincipalType': 'Anonymous' });
     }

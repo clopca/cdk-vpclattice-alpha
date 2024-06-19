@@ -2,7 +2,7 @@ import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { SupportResources } from './support';
 import * as vpclattice from '../..';
-// import * as targets from '../../aws-vpclattice-targets';
+import * as targets from '../../aws-vpclattice-targets';
 // import { aws_iam as iam } from 'aws-cdk-lib';
 
 export class VpclatticealphaStack extends cdk.Stack {
@@ -13,33 +13,41 @@ export class VpclatticealphaStack extends cdk.Stack {
 
     // create a vpc lattice service, and associate it with the service network
     // the listener use defaults of HTTPS, on port 443, and have a default action of 404 NOT FOUND
-    const myLatticeService = new vpclattice.Service(this, 'LatticeService', {});
+    const myLatticeService = new vpclattice.Service(this, 'LatticeService', {
+      authType: vpclattice.AuthType.AWS_IAM,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      allowedPrincipals: [support.helloRole],
+    });
 
-    // // add a listener to the service
-    // const listener = new vpclattice.Listener(this, 'Listener', {
-    //   service: myLatticeService,
-    // });
+    // add a listener to the service
+    const listener = new vpclattice.Listener(this, 'Listener', {
+      service: myLatticeService,
+    });
+    console.log('listener', listener);
+
+    const lambdatb = new targets.LambdaTargetGroup(this, 'lambdatargetgroup', {
+      name: 'helloworld',
+      targets: [support.helloWorld],
+    });
+    console.log('lambdatb', lambdatb);
 
     // // add a listenerRule that will use the helloworld lambda as a Target
-    // listener.addListenerRule({
-    //   name: 'helloworld',
-    //   priority: 10,
-    //   action: [
-    //     {
-    //       targetGroup: new vpclattice.TargetGroup(this, 'hellolambdatargets', {
-    //         name: 'hellowworld',
-    //         target: new targets.LambdaTarget(this, 'helloworld', { lambda: [support.helloWorld] }),
-    //         // vpclattice.Target.lambda([support.helloWorld]),
-    //       }),
-    //     },
-    //   ],
-
-    //   httpMatch: {
-    //     pathMatches: { path: '/hello' },
-    //   },
-    //   // we will only allow access to this service from the ec2 instance
-    //   accessMode: vpclattice.RuleAccessMode.UNAUTHENTICATED,
-    // });
+    listener.addListenerRule({
+      name: 'helloworld',
+      priority: 10,
+      accessMode: vpclattice.RuleAccessMode.UNAUTHENTICATED,
+      action: [
+        {
+          targetGroup: lambdatb,
+          weight: 100,
+        },
+      ],
+      httpMatch: {
+        pathMatches: { path: '/hello' },
+      },
+      // we will only allow access to this service from the ec2 instance
+      // accessMode: vpclattice.RuleAccessMode.UNAUTHENTICATED,
+    });
 
     // //add a listenerRule that will use the goodbyeworld lambda as a Target
     // listener.addListenerRule({
@@ -67,16 +75,14 @@ export class VpclatticealphaStack extends cdk.Stack {
     // Overide the default option to allow unauthenticated/signed requests
     // associate the vpcs
     // assocaite the services with the servicenetwork
-    new vpclattice.ServiceNetwork(this, 'ServiceNetwork', {
-      accessMode: vpclattice.ServiceNetworkAccessMode.UNAUTHENTICATED,
-      vpcs: [support.vpc1],
-      services: [myLatticeService],
-    });
+    // new vpclattice.ServiceNetwork(this, 'ServiceNetwork', {
+    //   accessMode: vpclattice.ServiceNetworkAccessMode.UNAUTHENTICATED,
+    //   // authType: vpclattice.AuthType.NONE,
+    //   vpcs: [support.vpc1],
+    //   services: [myLatticeService],
+    //   removalPolicy: cdk.RemovalPolicy.DESTROY,
+    // });
 
     // myLatticeService.associateWithServiceNetwork(serviceNetwork);
-
-    // // after adding rules, apply the auth policy to the service and Service Network
-    // myLatticeService.applyAuthPolicy();
-    // serviceNetwork.applyAuthPolicyToServiceNetwork();
   }
 }

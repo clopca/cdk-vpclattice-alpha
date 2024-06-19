@@ -18,7 +18,7 @@ export interface LambdaTargetGroupProps {
   /**
    * Configuration for the TargetGroup, if it is not a lambda
    */
-  readonly config: LambdaTargetGroupConfigProps;
+  readonly config?: LambdaTargetGroupConfigProps;
 }
 
 export interface LambdaTargetGroupConfigProps {
@@ -47,7 +47,7 @@ export class LambdaTargetGroup extends TargetGroupBase {
     }
     this.name = this.physicalName;
     this.config = {
-      lambdaEventStructureVersion: props.config.lambdaEventStructureVersion,
+      lambdaEventStructureVersion: props.config?.lambdaEventStructureVersion,
     };
 
     this.targets = props.targets.map(target => {

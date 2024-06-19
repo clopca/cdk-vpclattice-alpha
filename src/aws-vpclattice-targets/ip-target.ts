@@ -112,7 +112,7 @@ export class IpTargetGroup extends TargetGroupBase {
       config: this.config,
     });
 
-    this.targetGroupId = "a" //this._resource.attrId;
-    this.targetGroupArn = "b" //this._resource.attrArn;
+    this.targetGroupId = this._resource.attrId;
+    this.targetGroupArn = this._resource.attrArn;
   }
 }

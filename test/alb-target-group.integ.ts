@@ -10,23 +10,22 @@ const stack = new cdk.Stack(app, 'aws-cdk-vpclattice-integ-target-group');
 const vpc = new Vpc(stack, 'VPC', {});
 
 const albSvc = new ApplicationLoadBalancedFargateService(stack, 'Service', {
-	vpc,
-	memoryLimitMiB: 1024,
-	cpu: 512,
-	taskImageOptions: {
-		image: cdk.aws_ecs.ContainerImage.fromRegistry('public.ecr.aws/bitnami/lamp:8.1'),
-	},
-	publicLoadBalancer: false,
-
+  vpc,
+  memoryLimitMiB: 1024,
+  cpu: 512,
+  taskImageOptions: {
+    image: cdk.aws_ecs.ContainerImage.fromRegistry('public.ecr.aws/bitnami/lamp:8.1'),
+  },
+  publicLoadBalancer: false,
 });
 
 new AlbTargetGroup(stack, 'ALBTG', {
-	vpc,
-	loadBalancer: albSvc.loadBalancer
+  vpc,
+  loadBalancer: albSvc.loadBalancer,
 });
 
 new integ.IntegTest(app, 'ServiceTest', {
-	testCases: [stack],
+  testCases: [stack],
 });
 
 app.synth();
