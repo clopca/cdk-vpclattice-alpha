@@ -70,7 +70,6 @@ export abstract class TargetGroupBase extends core.Resource implements ITargetGr
    * The Arn of the target group
    */
   public abstract readonly targetGroupArn: string;
-
   /**
    * The name of the target group
    */
@@ -81,15 +80,3 @@ export abstract class TargetGroupBase extends core.Resource implements ITargetGr
   public abstract readonly targetType: TargetType;
 }
 
-export interface WeightedTargetGroup {
-  /**
-   * A target Group
-   */
-  readonly targetGroup: ITargetGroup;
-
-  /**
-   * A weight for the target group.
-   * @default 100
-   */
-  readonly weight?: number;
-}

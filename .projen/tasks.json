@@ -149,6 +149,69 @@
         }
       ]
     },
+    "integ:alb-target-group:assert": {
+      "name": "integ:alb-target-group:assert",
+      "description": "assert the snapshot of integration test 'alb-target-group'",
+      "steps": [
+        {
+          "exec": "[ -d \"test/alb-target-group.integ.snapshot\" ] || (echo \"No snapshot available for integration test 'alb-target-group'. Run 'projen integ:alb-target-group:deploy' to capture.\" && exit 1)"
+        },
+        {
+          "exec": "cdk synth --app \"ts-node -P tsconfig.dev.json test/alb-target-group.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata -o test/.tmp/alb-target-group.integ/assert.cdk.out > /dev/null"
+        },
+        {
+          "exec": "diff -r -x asset.* -x cdk.out -x manifest.json -x tree.json test/alb-target-group.integ.snapshot/ test/.tmp/alb-target-group.integ/assert.cdk.out/"
+        }
+      ]
+    },
+    "integ:alb-target-group:deploy": {
+      "name": "integ:alb-target-group:deploy",
+      "description": "deploy integration test 'alb-target-group' and capture snapshot",
+      "steps": [
+        {
+          "exec": "rm -fr test/.tmp/alb-target-group.integ/deploy.cdk.out"
+        },
+        {
+          "exec": "cdk deploy --app \"ts-node -P tsconfig.dev.json test/alb-target-group.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata '**' --require-approval=never -o test/.tmp/alb-target-group.integ/deploy.cdk.out"
+        },
+        {
+          "exec": "rm -fr test/alb-target-group.integ.snapshot"
+        },
+        {
+          "exec": "mv test/.tmp/alb-target-group.integ/deploy.cdk.out test/alb-target-group.integ.snapshot"
+        },
+        {
+          "spawn": "integ:alb-target-group:destroy"
+        }
+      ]
+    },
+    "integ:alb-target-group:destroy": {
+      "name": "integ:alb-target-group:destroy",
+      "description": "destroy integration test 'alb-target-group'",
+      "steps": [
+        {
+          "exec": "cdk destroy --app test/alb-target-group.integ.snapshot '**' --no-version-reporting"
+        }
+      ]
+    },
+    "integ:alb-target-group:snapshot": {
+      "name": "integ:alb-target-group:snapshot",
+      "description": "update snapshot for integration test \"alb-target-group\"",
+      "steps": [
+        {
+          "exec": "cdk synth --app \"ts-node -P tsconfig.dev.json test/alb-target-group.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata -o test/alb-target-group.integ.snapshot > /dev/null"
+        }
+      ]
+    },
+    "integ:alb-target-group:watch": {
+      "name": "integ:alb-target-group:watch",
+      "description": "watch integration test 'alb-target-group' (without updating snapshots)",
+      "steps": [
+        {
+          "exec": "cdk watch --app \"ts-node -P tsconfig.dev.json test/alb-target-group.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata '**' -o test/.tmp/alb-target-group.integ/deploy.cdk.out"
+        }
+      ]
+    },
     "integ:service-network:assert": {
       "name": "integ:service-network:assert",
       "description": "assert the snapshot of integration test 'service-network'",
@@ -280,6 +343,9 @@
       "description": "update snapshot for all integration tests",
       "steps": [
         {
+          "spawn": "integ:alb-target-group:snapshot"
+        },
+        {
           "spawn": "integ:service-network:snapshot"
         },
         {
@@ -365,6 +431,9 @@
         },
         {
           "spawn": "eslint"
+        },
+        {
+          "spawn": "integ:alb-target-group:assert"
         },
         {
           "spawn": "integ:service-network:assert"

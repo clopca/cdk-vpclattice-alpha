@@ -49,6 +49,14 @@ junit.xml
 .jsii
 tsconfig.json
 !/API.md
+test/alb-target-group.integ.snapshot/asset.*
+test/alb-target-group.integ.snapshot/**/asset.*
+test/alb-target-group.integ.snapshot/cdk.out
+test/alb-target-group.integ.snapshot/**/cdk.out
+test/alb-target-group.integ.snapshot/manifest.json
+test/alb-target-group.integ.snapshot/**/manifest.json
+test/alb-target-group.integ.snapshot/tree.json
+test/alb-target-group.integ.snapshot/**/tree.json
 test/service-network.integ.snapshot/asset.*
 test/service-network.integ.snapshot/**/asset.*
 test/service-network.integ.snapshot/cdk.out
