@@ -2,7 +2,9 @@ import * as core from 'aws-cdk-lib';
 import { aws_iam as iam } from 'aws-cdk-lib';
 import * as generated from 'aws-cdk-lib/aws-vpclattice';
 import { Construct } from 'constructs';
-import { IServiceNetwork, AuthType, LoggingDestination } from './index';
+import { AuthType } from './listener';
+import { LoggingDestination } from './logging';
+import { IServiceNetwork } from './service-network';
 
 /**
  * Represents a Vpc Lattice Service.

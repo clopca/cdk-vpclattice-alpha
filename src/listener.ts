@@ -2,7 +2,9 @@ import * as core from 'aws-cdk-lib';
 import { aws_iam as iam } from 'aws-cdk-lib';
 import * as generated from 'aws-cdk-lib/aws-vpclattice';
 import { Construct } from 'constructs';
-import { HTTPMatch, Service, ITargetGroup } from './index';
+import { WeightedTargetGroup } from './base-target-group';
+import { HTTPMatch } from './matches';
+import { Service } from './service';
 
 /**
  * AuthTypes
@@ -190,9 +192,9 @@ export interface ListenerProps {
   readonly protocol?: Protocol;
 
   /**
-  * Optional port number for the listener. If not supplied, will default to 80 or 443, depending on the Protocol.
-  * @default - 80 or 443 depending on the Protocol
-  */
+   * Optional port number for the listener. If not supplied, will default to 80 or 443, depending on the Protocol.
+   * @default - 80 or 443 depending on the Protocol
+   */
   readonly port?: number;
 
   /**
@@ -595,17 +597,4 @@ export class Listener extends core.Resource implements IListener {
       serviceIdentifier: this.service.serviceId,
     });
   }
-}
-
-export interface WeightedTargetGroup {
-  /**
-   * A target Group
-   */
-  readonly targetGroup: ITargetGroup;
-
-  /**
-   * A weight for the target group.
-   * @default 100
-   */
-  readonly weight?: number;
 }

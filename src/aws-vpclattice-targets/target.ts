@@ -1,6 +1,21 @@
 import { aws_ec2 as ec2 } from 'aws-cdk-lib';
 import * as aws_vpclattice from 'aws-cdk-lib/aws-vpclattice';
-import { HealthCheck } from './index';
+import { HealthCheck } from './healthcheck';
+
+export interface ITarget {
+  /**
+   * Target Type
+   */
+  readonly type: TargetType;
+  /**
+   * References to the targets, ids or Arns
+   */
+  readonly targets: aws_vpclattice.CfnTargetGroup.TargetProperty[];
+  /**
+   * Configuration for the TargetGroup, if it is not a lambda
+   */
+  readonly config?: aws_vpclattice.CfnTargetGroup.TargetGroupConfigProperty;
+}
 
 /**
  * HTTP/HTTPS methods
@@ -15,6 +30,18 @@ export enum Protocol {
    * HTTPS Protocol
    */
   HTTPS = 'HTTPS',
+}
+
+export enum LambdaEventStructureVersion {
+  /**
+   * Version 1.0
+   */
+  V1 = 'V1',
+
+  /**
+   * Version 2.0
+   */
+  V2 = 'V2',
 }
 
 /**
@@ -128,7 +155,6 @@ export enum FixedResponse {
    */
   OK = 200,
 }
-
 
 export interface TargetGroup {
   /**

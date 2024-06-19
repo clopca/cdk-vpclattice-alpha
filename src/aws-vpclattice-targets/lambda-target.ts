@@ -1,8 +1,9 @@
+import { aws_lambda as lambda } from 'aws-cdk-lib';
 import * as aws_vpclattice from 'aws-cdk-lib/aws-vpclattice';
 import * as constructs from 'constructs';
-import { TargetType } from './target';
+import { LambdaEventStructureVersion, TargetType } from './target';
+import { TargetGroupBase } from '../base-target-group';
 
-import { TargetGroupBase } from '../';
 export interface LambdaTargetGroupProps {
   /**
    * The name of the target group
@@ -10,21 +11,31 @@ export interface LambdaTargetGroupProps {
   readonly name: string;
 
   /**
-   * Targets
+   * Targets (Lambda Functions)
    */
-  readonly targets: aws_vpclattice.CfnTargetGroup.TargetProperty[];
+  readonly targets: lambda.Function[];
 
   /**
    * Configuration for the TargetGroup, if it is not a lambda
    */
-  readonly config?: aws_vpclattice.CfnTargetGroup.TargetGroupConfigProperty;
+  readonly config: LambdaTargetGroupConfigProps;
+}
+
+export interface LambdaTargetGroupConfigProps {
+  /**
+   * The version of the event structure that Lambda function receives
+   * @default LambdaEventStructureVersion.V1
+   */
+  readonly lambdaEventStructureVersion: LambdaEventStructureVersion;
 }
 
 export class LambdaTargetGroup extends TargetGroupBase {
   public readonly targetGroupArn: string;
   public readonly targetGroupId: string;
   public readonly name: string;
-  public readonly targetType = TargetType.LAMBDA;
+  public readonly targets: aws_vpclattice.CfnTargetGroup.TargetProperty[];
+  public readonly targetType = TargetType.IP;
+  public readonly config: aws_vpclattice.CfnTargetGroup.TargetGroupConfigProperty;
   private readonly _resource: aws_vpclattice.CfnTargetGroup;
 
   constructor(scope: constructs.Construct, id: string, props: LambdaTargetGroupProps) {
@@ -35,12 +46,21 @@ export class LambdaTargetGroup extends TargetGroupBase {
       TargetGroupBase.validateTargetGroupName(props.name);
     }
     this.name = this.physicalName;
+    this.config = {
+      lambdaEventStructureVersion: props.config.lambdaEventStructureVersion,
+    };
+
+    this.targets = props.targets.map(target => {
+      return {
+        id: target.functionArn,
+      };
+    });
 
     this._resource = new aws_vpclattice.CfnTargetGroup(this, 'Resource', {
       type: TargetType.LAMBDA,
       name: this.name,
-      config: props.config,
-      targets: props.targets,
+      targets: this.targets,
+      config: this.config,
     });
 
     this.targetGroupId = this._resource.attrId;

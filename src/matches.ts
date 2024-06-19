@@ -1,4 +1,5 @@
-import { MatchOperator, PathMatchType, HTTPMethods } from './index';
+import { HTTPMethods, MatchOperator, PathMatchType } from './listener';
+
 /**
  * An HTTPMatch for creating rules
  * At least one of headermatch, method or patchmatches must be created

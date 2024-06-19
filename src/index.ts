@@ -7,5 +7,3 @@ export * from './listener';
 export * from './matches';
 export * from './logging';
 export * from './base-target-group';
-
-//export * from './auth';

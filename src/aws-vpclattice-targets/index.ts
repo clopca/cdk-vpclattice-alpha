@@ -1,4 +1,3 @@
-export * from './targets';
 export * from './target';
 export * from './healthcheck';
 export * from './alb-target';
