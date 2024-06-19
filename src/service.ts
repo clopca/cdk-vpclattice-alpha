@@ -5,6 +5,7 @@ import { Construct } from 'constructs';
 import { AuthType } from './listener';
 import { LoggingDestination } from './logging';
 import { IServiceNetwork } from './service-network';
+import { ServiceNetworkAssociation } from './service-network-association';
 
 /**
  * Represents a Vpc Lattice Service.
@@ -52,7 +53,7 @@ export interface ServiceProps {
 
   /**
    * The authType of the Service
-   * @default AuthType.AWS_IAM
+   * @default AuthType.NONE
    */
   readonly authType?: AuthType;
 
@@ -94,21 +95,18 @@ export interface ServiceProps {
    * @default - No logging
    */
   readonly loggingDestinations?: LoggingDestination[];
-}
-
-/**
- * Properties for associating a VPC with a Service Network
- */
-export interface ServiceNetworkAssociationProps {
-  /**
-   * lattice Service
-   */
-  readonly serviceNetwork: IServiceNetwork;
 
   /**
-   * Lattice ServiceId
+   * Allowed principals to access the service
+   * @default - No principals are allowed
    */
-  readonly serviceId: string;
+  readonly allowedPrincipals?: iam.IPrincipal[];
+
+  /**
+   * Policy to apply to the service
+   * @default - No policy is applied
+   */
+  readonly authPolicy?: iam.PolicyDocument;
 }
 
 /**
@@ -125,10 +123,13 @@ abstract class ServiceBase extends core.Resource implements IService {
    */
   public abstract readonly serviceId: string;
 
+  /**
+   * Associate a Lattice Service with a Service Network
+   */
   public associateWithServiceNetwork(serviceNetwork: IServiceNetwork): void {
-    new ServiceNetworkAssociation(this, `ServiceNetworkAssociation${serviceNetwork.node.addr}`, {
+    new ServiceNetworkAssociation(this, `ServiceAssociation${serviceNetwork.node.addr}`, {
+      service: this,
       serviceNetwork: serviceNetwork,
-      serviceId: this.serviceId,
     });
   }
 }
@@ -183,8 +184,8 @@ export class Service extends ServiceBase {
   /**
    * Must specify at most only one destination per destination type
    */
-  protected static validateLoggingDestinations(loggingDestinations?: LoggingDestination[]) {
-    if (loggingDestinations?.length) {
+  protected static validateLoggingDestinations(loggingDestinations: LoggingDestination[]) {
+    if (loggingDestinations.length) {
       const destinationTypes = loggingDestinations.map(destination => destination.destinationType);
       if (new Set(destinationTypes).size !== destinationTypes.length) {
         throw new Error('A service can only have one logging destination per destination type.');
@@ -199,10 +200,8 @@ export class Service extends ServiceBase {
   protected static validateAuthPolicy(authType: AuthType, authPolicy: iam.PolicyDocument) {
     if (authType !== AuthType.AWS_IAM) {
       throw new Error('Cannot apply a policy when authType is not equal to AWS_IAM');
-    } else {
-      if (authPolicy.validateForResourcePolicy().length > 0) {
-        throw new Error(`The following errors were found in the policy: \n${authPolicy.validateForResourcePolicy()} \n ${authPolicy}`);
-      }
+    } else if (authPolicy.validateForResourcePolicy().length > 0) {
+      throw new Error(`The following errors were found in the policy: \n${authPolicy.validateForResourcePolicy()} \n ${authPolicy}`);
     }
   }
 
@@ -213,6 +212,8 @@ export class Service extends ServiceBase {
   public readonly serviceName: string;
   public authType: AuthType;
   private readonly _resource: generated.CfnService;
+  public readonly allowedPrincipals: iam.IPrincipal[];
+  public readonly loggingDestinations: LoggingDestination[];
   public readonly authPolicy: iam.PolicyDocument;
 
   // ------------------------------------------------------
@@ -245,7 +246,9 @@ export class Service extends ServiceBase {
     this.serviceArn = this._resource.attrArn;
     this.serviceId = this._resource.attrId;
     this.serviceName = this.physicalName;
-    this.authPolicy = new iam.PolicyDocument();
+    this.allowedPrincipals = props.allowedPrincipals ?? [];
+    this.loggingDestinations = props.loggingDestinations ?? [];
+    this.authPolicy = props.authPolicy ?? new iam.PolicyDocument();
 
     // ------------------------------------------------------
     // Service Network Association
@@ -257,14 +260,20 @@ export class Service extends ServiceBase {
     // ------------------------------------------------------
     // Logging Configuration
     // ------------------------------------------------------
-    if (props.loggingDestinations?.length) {
-      Service.validateLoggingDestinations(props.loggingDestinations);
-
+    if (this.loggingDestinations.length) {
+      Service.validateLoggingDestinations(this.loggingDestinations);
       // Add the logging destination
-      props.loggingDestinations.forEach(destination => {
+      this.loggingDestinations.forEach(destination => {
         this.addLoggingDestination(destination);
       });
     }
+
+    // ------------------------------------------------------
+    // Auth Policy
+    // ------------------------------------------------------
+    if (this.allowedPrincipals.length) this.grantAccess(this.allowedPrincipals);
+
+    this.applyAuthPolicyToService();
   }
 
   // ------------------------------------------------------
@@ -290,9 +299,17 @@ export class Service extends ServiceBase {
   }
 
   /**
+   * Add a statement to the auth policy
+   * @param statement - The Policy Statement to add
+   */
+  public addAuthPolicyStatement(statement: iam.PolicyStatement): void {
+    this.authPolicy.addStatements(statement);
+  }
+
+  /**
    * Send logs to a destination
    */
-  public addLoggingDestination(destination: LoggingDestination): void {
+  private addLoggingDestination(destination: LoggingDestination): void {
     new generated.CfnAccessLogSubscription(this, `AccessLogSubscription${destination.addr}`, {
       destinationArn: destination.arn,
       resourceIdentifier: this.serviceArn,
@@ -302,29 +319,13 @@ export class Service extends ServiceBase {
   /**
    * Apply the AuthPolicy to the Service
    */
-  public applyAuthPolicy() {
+  private applyAuthPolicyToService() {
     Service.validateAuthPolicy(this.authType, this.authPolicy);
 
     // Create an AuthPolicy
     new generated.CfnAuthPolicy(this, 'ServiceAuthPolicy', {
-      policy: this.authPolicy.toJSON(),
+      policy: core.Lazy.any({ produce: () => this.authPolicy.toJSON() }),
       resourceIdentifier: this.serviceId,
-    });
-    return this.authPolicy;
-  }
-}
-
-/**
- * Creates an Association Between a Lattice Service and a Service Network.
- * Consider using `.associateWithServiceNetwork` of the Service construct
- */
-export class ServiceNetworkAssociation extends core.Resource {
-  constructor(scope: Construct, id: string, props: ServiceNetworkAssociationProps) {
-    super(scope, id);
-
-    new generated.CfnServiceNetworkServiceAssociation(this, `ServiceNetworkServiceAssociation${this.node.addr}`, {
-      serviceIdentifier: props.serviceId,
-      serviceNetworkIdentifier: props.serviceNetwork.serviceNetworkId,
     });
   }
 }

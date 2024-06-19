@@ -101,3 +101,14 @@ export abstract class TargetGroupBase extends core.Resource implements ITargetGr
   public abstract readonly targetType: TargetType;
 }
 
+export interface WeightedTargetGroup {
+  /**
+   * A target Group
+   */
+  readonly targetGroup: ITargetGroup;
+  /**
+   * A weight for the target group.
+   * @default 100
+   */
+  readonly weight?: number;
+}

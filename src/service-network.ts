@@ -49,13 +49,12 @@ export interface IServiceNetwork extends core.IResource {
   readonly serviceNetworkId: string;
 
   /**
-   * Add Lattice Service to the Service Network
+   * Associate a Lattice Service to the Service Network
    */
-  addService(service: IService): void;
+  associateService(service: IService): void;
 
   /**
    * Associate a VPC with the Service Network
-   * This provides an opinionated default of adding a security group to allow inbound 443
    */
   associateVPC(props: AssociateVPCProps): void;
 }
@@ -184,12 +183,20 @@ export interface ServiceNetworkProps {
  * Base class for Service Network. Reused between imported and created service networks.
  */
 abstract class ServiceNetworkBase extends core.Resource implements IServiceNetwork {
-  public abstract readonly serviceNetworkArn: string;
-  public abstract readonly serviceNetworkId: string;
   /**
-   * Add A lattice service to the Service Network
+   * @inheritdoc
    */
-  public addService(service: IService): void {
+  public abstract readonly serviceNetworkArn: string;
+
+  /**
+   * @inheritdoc
+   */
+  public abstract readonly serviceNetworkId: string;
+
+  /**
+   * Associate a Lattice Service with a Service Network
+   */
+  public associateService(service: IService): void {
     new ServiceNetworkAssociation(this, `ServiceAssociation${service.node.addr}`, {
       service: service,
       serviceNetwork: this,
@@ -325,7 +332,7 @@ export class ServiceNetwork extends ServiceNetworkBase {
     // Associate Services
     if (props.services) {
       props.services.forEach(service => {
-        this.addService(service);
+        this.associateService(service);
       });
     }
 
@@ -382,22 +389,22 @@ export class ServiceNetwork extends ServiceNetworkBase {
   }
 
   /**
-   * Apply the AuthPolicy to a Service Network
+   * Apply the AuthPolicy to the Service Network
    */
   public applyAuthPolicyToServiceNetwork(): void {
-    // check to see if there are any errors with the auth policy
-    if (this.authPolicy.validateForResourcePolicy().length > 0) {
-      throw new Error(`The following errors were found in the policy: \n${this.authPolicy.validateForResourcePolicy()} \n ${this.authPolicy}`);
-    }
     // check to see if the AuthType is AWS_IAM
     if (this.authType !== AuthType.AWS_IAM) {
       throw new Error(`AuthType must be ${AuthType.AWS_IAM} to add an Auth Policy`);
+    }
+    // check to see if there are any errors with the auth policy
+    if (this.authPolicy.validateForResourcePolicy().length > 0) {
+      throw new Error(`The following errors were found in the policy: \n${this.authPolicy.validateForResourcePolicy()} \n ${this.authPolicy}`);
     }
 
     // attach the AuthPolicy to the Service Network
     new aws_vpclattice.CfnAuthPolicy(this, 'AuthPolicy', {
       policy: this.authPolicy.toJSON(),
-      resourceIdentifier: this.serviceNetworkArn,
+      resourceIdentifier: this.serviceNetworkId,
     });
   }
 
@@ -454,16 +461,10 @@ export class AssociateVpc extends core.Resource {
     super(scope, id);
 
     const securityGroupIds: string[] = [];
-
-    if (props.securityGroups === undefined) {
-      const securityGroup = new ec2.SecurityGroup(this, `ServiceNetworkSecurityGroup${this.node.addr}`, {
-        vpc: props.vpc,
-        allowAllOutbound: true,
-        description: 'ServiceNetworkSecurityGroup',
+    if (props.securityGroups) {
+      props.securityGroups.forEach(sg => {
+        securityGroupIds.push(sg.securityGroupId);
       });
-
-      securityGroup.addIngressRule(ec2.Peer.ipv4(props.vpc.vpcCidrBlock), ec2.Port.tcp(443));
-      securityGroupIds.push(securityGroup.securityGroupId);
     }
 
     new aws_vpclattice.CfnServiceNetworkVpcAssociation(this, `VpcAssociation${this.node.addr}`, {

@@ -403,7 +403,7 @@ export class Listener extends core.Resource implements IListener {
       props.rules.forEach(rule => {
         this.addListenerRule(rule);
       });
-      this.service.applyAuthPolicy();
+      // this.service.applyAuthPolicy(); // Unnecessary, as the auth policy is updated and applied to the service in synth time
     }
   }
 
@@ -583,7 +583,7 @@ export class Listener extends core.Resource implements IListener {
     }
 
     if (props.accessMode !== RuleAccessMode.NO_STATEMENT) {
-      this.service.authPolicy.addStatements(policyStatement);
+      this.service.addAuthPolicyStatement(policyStatement);
     }
 
     // finally create a rule

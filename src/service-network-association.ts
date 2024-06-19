@@ -28,7 +28,6 @@ export interface ServiceNetworkAssociationProps {
 export class ServiceNetworkAssociation extends core.Resource {
   constructor(scope: Construct, id: string, props: ServiceNetworkAssociationProps) {
     super(scope, id);
-
     new aws_vpclattice.CfnServiceNetworkServiceAssociation(this, `LatticeAssociation${this.node.addr}`, {
       serviceIdentifier: props.service.serviceId,
       serviceNetworkIdentifier: props.serviceNetwork.serviceNetworkId,
