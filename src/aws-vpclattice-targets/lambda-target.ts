@@ -1,8 +1,8 @@
 import { aws_lambda as lambda } from 'aws-cdk-lib';
 import * as aws_vpclattice from 'aws-cdk-lib/aws-vpclattice';
 import * as constructs from 'constructs';
-import { LambdaEventStructureVersion, TargetType } from './target';
 import { TargetGroupBase } from './base-target-group';
+import { LambdaEventStructureVersion, TargetType } from './target';
 
 export interface LambdaTargetGroupProps {
   /**
@@ -21,7 +21,6 @@ export interface LambdaTargetGroupProps {
    */
   readonly lambdaEventStructureVersion?: LambdaEventStructureVersion;
 }
-
 
 export class LambdaTargetGroup extends TargetGroupBase {
   public readonly targetGroupArn: string;
@@ -44,7 +43,7 @@ export class LambdaTargetGroup extends TargetGroupBase {
     // ------------------------------------------------------
     this.name = this.physicalName;
     this.target = props.target;
-    this.lambdaEventStructureVersion = props.lambdaEventStructureVersion ?? LambdaEventStructureVersion.V1
+    this.lambdaEventStructureVersion = props.lambdaEventStructureVersion ?? LambdaEventStructureVersion.V1;
 
     // ------------------------------------------------------
     // L1 Instantiation
@@ -52,9 +51,11 @@ export class LambdaTargetGroup extends TargetGroupBase {
     this._resource = new aws_vpclattice.CfnTargetGroup(this, 'Resource', {
       type: TargetType.LAMBDA,
       name: this.name,
-      targets: [{
-        id: this.target.functionArn,
-      }],
+      targets: [
+        {
+          id: this.target.functionArn,
+        },
+      ],
       config: {
         lambdaEventStructureVersion: this.lambdaEventStructureVersion,
       },
