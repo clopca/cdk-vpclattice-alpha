@@ -276,6 +276,13 @@ export interface RuleProp {
    * @default RuleAccessMode.NO_STATEMENT
    */
   readonly accessMode?: RuleAccessMode;
+
+  /**
+   * Organization ID to allow access to the Service Network
+   * @default - no org id is used
+   * @example 'o-1234567890'
+   */
+  readonly orgId?: string;
 }
 
 /**
@@ -403,7 +410,6 @@ export class Listener extends core.Resource implements IListener {
       props.rules.forEach(rule => {
         this.addListenerRule(rule);
       });
-      // this.service.applyAuthPolicy(); // Unnecessary, as the auth policy is updated and applied to the service in synth time
     }
   }
 
@@ -431,8 +437,12 @@ export class Listener extends core.Resource implements IListener {
     }
 
     if (accessMode === RuleAccessMode.ORG_ONLY) {
+      if (!props.orgId) {
+        throw new Error('orgId is required when accessMode is set to ORG_ONLY');
+      }
+      const orgId = props.orgId;
       policyStatement.addPrincipals(new iam.StarPrincipal());
-      // policyStatement.addCondition('StringEquals', { 'aws:PrincipalOrgID': [this.service.orgId] }); // TODO: add orgId to the auth policy
+      policyStatement.addCondition('StringEquals', { 'aws:PrincipalOrgID': [orgId] });
       policyStatement.addCondition('StringNotEqualsIgnoreCase', { 'aws:PrincipalType': 'Anonymous' });
     }
 

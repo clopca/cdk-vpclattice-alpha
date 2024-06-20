@@ -3,10 +3,9 @@ import { Construct } from 'constructs';
 import { Protocol, ProtocolVersion } from './target';
 import { TargetGroupBase, TargetType } from './base-target-group';
 
-
 export interface InstanceTarget {
   /**
-   * The EC2 Instance 
+   * The EC2 Instance
    */
   readonly instance: IInstance;
 
@@ -42,20 +41,18 @@ export interface InstanceTargetGroupProps {
   readonly protocol?: Protocol;
 
   /**
-   * Choose the protocol version for requests to be sent to targets. 
-   * The protocol version you choose must support the request protocols 
+   * Choose the protocol version for requests to be sent to targets.
+   * The protocol version you choose must support the request protocols
    * from clients.
    * @default - Protocol.HTTP1 if HTTP or HTTPS is selected
    */
   readonly protocolVersion?: ProtocolVersion;
 
   /**
-   * 
+   *
    * @default - Defaults to port 80 for HTTP, or 443 for HTTPS
    */
   readonly port?: number;
-
-
 }
 
 /**
@@ -74,15 +71,14 @@ export class InstanceTargetGroup extends TargetGroupBase {
     });
 
     this.name = this.physicalName;
-    this.protocol = props.protocol ?? Protocol.HTTPS
-    this.protocolVersion = props.protocolVersion ?? ProtocolVersion.HTTP1
-
+    this.protocol = props.protocol ?? Protocol.HTTPS;
+    this.protocolVersion = props.protocolVersion ?? ProtocolVersion.HTTP1;
 
     TargetGroupBase.validateTargetGroupName(this.name);
-    TargetGroupBase.validateProtocol(this.protocol, this.targetType)
-    TargetGroupBase.validateProtocolVersion(this.protocol, this.protocolVersion)
+    TargetGroupBase.validateProtocol(this.protocol, this.targetType);
+    TargetGroupBase.validateProtocolVersion(this.protocol, this.protocolVersion);
 
-    this.targetGroupArn = "a";
-    this.targetGroupId = "b";
+    this.targetGroupArn = 'a';
+    this.targetGroupId = 'b';
   }
 }
