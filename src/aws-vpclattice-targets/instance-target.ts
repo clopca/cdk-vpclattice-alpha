@@ -1,8 +1,8 @@
+import { Lazy, aws_vpclattice } from 'aws-cdk-lib';
 import { IInstance, IVpc } from 'aws-cdk-lib/aws-ec2';
 import { Construct } from 'constructs';
-import { Protocol, ProtocolVersion } from './target';
 import { TargetGroupBase, TargetType } from './base-target-group';
-import { Lazy, aws_vpclattice } from 'aws-cdk-lib';
+import { Protocol, ProtocolVersion } from './target';
 
 export interface InstanceTarget {
   /**
@@ -71,14 +71,6 @@ export class InstanceTargetGroup extends TargetGroupBase {
   public readonly targets: InstanceTarget[];
   private readonly _resource: aws_vpclattice.CfnTargetGroup;
 
-  /**
-   * Adds a target to the target Group
-   * @param target 
-   */
-  public addTarget(target: InstanceTarget) {
-    this.targets.push(target)
-  }
-
   constructor(scope: Construct, id: string, props: InstanceTargetGroupProps) {
     super(scope, id, {
       physicalName: props.name,
@@ -87,19 +79,21 @@ export class InstanceTargetGroup extends TargetGroupBase {
     // ------------------------------------------------------
     // Set properties or defaults
     // ------------------------------------------------------
-    this.vpc = props.vpc
+    this.vpc = props.vpc;
     this.name = this.physicalName;
-    this.protocol = props.protocol ?? Protocol.HTTPS
-    this.protocolVersion = props.protocolVersion ?? ProtocolVersion.HTTP1
-    this.port = props.port ?? (props.protocol === Protocol.HTTP ? 80 : 443)
-    this.targets = props.targets ?? []
+    this.protocol = props.protocol ?? Protocol.HTTPS;
+    this.protocolVersion = props.protocolVersion ?? ProtocolVersion.HTTP1;
+    this.port = props.port ?? (props.protocol === Protocol.HTTP ? 80 : 443);
+    this.targets = props.targets ?? [];
 
     // ------------------------------------------------------
     // Validation
     // ------------------------------------------------------
-    if (props.name) { TargetGroupBase.validateTargetGroupName(this.name) }
-    TargetGroupBase.validateProtocol(this.protocol, this.targetType)
-    TargetGroupBase.validateProtocolVersion(this.protocol, this.protocolVersion)
+    if (props.name) {
+      TargetGroupBase.validateTargetGroupName(this.name);
+    }
+    TargetGroupBase.validateProtocol(this.protocol, this.targetType);
+    TargetGroupBase.validateProtocolVersion(this.protocol, this.protocolVersion);
 
     // ------------------------------------------------------
     // L1 Instantiation
@@ -123,5 +117,13 @@ export class InstanceTargetGroup extends TargetGroupBase {
 
     this.targetGroupId = this._resource.attrId;
     this.targetGroupArn = this._resource.attrArn;
+  }
+
+  /**
+   * Adds a target to the target Group
+   * @param target
+   */
+  public addTarget(target: InstanceTarget) {
+    this.targets.push(target);
   }
 }
