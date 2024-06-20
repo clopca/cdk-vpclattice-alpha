@@ -1,4 +1,4 @@
-import { aws_vpclattice, aws_iam as iam, aws_ec2 as ec2, aws_ram as ram, custom_resources as cr } from 'aws-cdk-lib';
+import { aws_iam as iam, aws_ec2 as ec2, aws_ram as ram } from 'aws-cdk-lib';
 import * as core from 'aws-cdk-lib';
 import * as generated from 'aws-cdk-lib/aws-vpclattice';
 import { Construct } from 'constructs';
@@ -74,35 +74,18 @@ export interface ShareServiceNetworkProps {
    */
   readonly allowExternalPrincipals?: boolean;
 
+  //Principals
   /**
    * Principals to share the Service Network with
    * @default none
    */
-  readonly accounts: string[];
+  readonly principals?: string[];
 
   /**
-   * disable discovery
-   * @default false
-   */
-  readonly disableDiscovery?: boolean;
-
-  /**
-   * The access mode for the Service Network
-   * @default ServiceNetworkAccessMode.UNAUTHENTICATED
-   */
-  readonly accessMode?: ServiceNetworkAccessMode;
-
-  /**
-   * The description of the Service Network
+   * Resources to share the Service Network with
    * @default none
    */
-  readonly description?: string;
-
-  /**
-   * The tags to apply to the Service Network
-   * @default none
-   */
-  readonly tags?: { [key: string]: string };
+  readonly resourceArns?: string[];
 }
 
 /**
@@ -162,7 +145,7 @@ export interface ServiceNetworkProps {
 
   /**
    * Allow external principals
-   * @default false
+   * @default ServiceNetworkAccessMode.NO_STATEMENT
    */
   readonly accessMode?: ServiceNetworkAccessMode;
 
@@ -174,6 +157,12 @@ export interface ServiceNetworkProps {
   readonly removalPolicy?: core.RemovalPolicy;
 
   /**
+   * Allowed principals to access the service network
+   * @default - No principals are allowed
+   */
+  readonly allowedPrincipals?: iam.IPrincipal[];
+
+  /**
    * Additional AuthStatments:
    */
   readonly authStatements?: iam.PolicyStatement[];
@@ -183,6 +172,13 @@ export interface ServiceNetworkProps {
    * @default - No policy is applied
    */
   readonly authPolicy?: iam.PolicyDocument;
+
+  /**
+   * Organization ID to allow access to the Service Network
+   * @default - no org id is used
+   * @example 'o-1234567890'
+   */
+  readonly orgId?: string;
 }
 
 /**
@@ -274,8 +270,7 @@ export class ServiceNetwork extends ServiceNetworkBase {
   }
 
   /**
-   * Must ensure Service has the correct AuthType and policy is a
-   * valid IAM Resource-based Policy
+   * Must ensure policy is a valid IAM Resource-based Policy
    */
   protected static validateAuthPolicy(authPolicy: iam.PolicyDocument) {
     if (authPolicy.validateForResourcePolicy().length > 0) {
@@ -283,21 +278,15 @@ export class ServiceNetwork extends ServiceNetworkBase {
     }
   }
 
-  /**
-   * Ensure network access properties are properly configured
-   */
-  // protected static validateNetworkAccess(authType: AuthType, accessMode?: ServiceNetworkAccessMode) {
-  //   if (authType === AuthType.NONE && accessMode) {
-  //     throw new Error('AccessMode can not be set if AuthType is not set to AWS_IAM');
-  //   }
-  // }
-
   public readonly serviceNetworkArn: string;
   public readonly serviceNetworkId: string;
   // variables specific to the non-imported Service Network
   public readonly name: string;
-  public authType: AuthType;
+  public readonly authType: AuthType;
   private readonly _resource: generated.CfnServiceNetwork;
+  public readonly allowedPrincipals: iam.IPrincipal[];
+  public readonly accessMode?: ServiceNetworkAccessMode;
+  public readonly loggingDestinations: LoggingDestination[];
   public readonly authPolicy: iam.PolicyDocument;
 
   // ------------------------------------------------------
@@ -312,32 +301,31 @@ export class ServiceNetwork extends ServiceNetworkBase {
       ServiceNetwork.validateServiceNetworkName(props.name);
     }
 
-    // Ensure the specified Network Access configuration is valid
     this.authType = props.authType ?? AuthType.NONE;
-    // ServiceNetwork.validateNetworkAccess(this.authType, props.accessMode);
+    this.accessMode = props.accessMode;
 
-    const resource = new generated.CfnServiceNetwork(this, 'Resource', {
+    // ------------------------------------------------------
+    // L1 Instantiation
+    // ------------------------------------------------------
+    this._resource = new generated.CfnServiceNetwork(this, 'Resource', {
       name: this.physicalName,
       authType: this.authType,
     });
-    this._resource = resource;
+
+    // ------------------------------------------------------
+    // Construct properties
+    // ------------------------------------------------------
+    // Apply the specified removal policy (what happens on delete)
     this._resource.applyRemovalPolicy(props.removalPolicy);
     this.serviceNetworkArn = this._resource.attrArn;
     this.serviceNetworkId = this._resource.attrId;
     this.name = this.physicalName;
+    this.allowedPrincipals = props.allowedPrincipals ?? [];
+    this.loggingDestinations = props.loggingDestinations ?? [];
     this.authPolicy = props.authPolicy ?? new iam.PolicyDocument();
 
     // ------------------------------------------------------
-    // Logging Configuration
-    // ------------------------------------------------------
-    if (props.loggingDestinations !== undefined) {
-      props.loggingDestinations.forEach(destination => {
-        this.addloggingDestination(destination);
-      });
-    }
-
-    // ------------------------------------------------------
-    // VPC Association
+    // VPC & Service Association
     // ------------------------------------------------------
     if (props.vpcs) {
       props.vpcs.forEach(vpc => {
@@ -345,7 +333,6 @@ export class ServiceNetwork extends ServiceNetworkBase {
       });
     }
 
-    // Associate Services
     if (props.services) {
       props.services.forEach(service => {
         this.associateService(service);
@@ -353,41 +340,20 @@ export class ServiceNetwork extends ServiceNetworkBase {
     }
 
     // ------------------------------------------------------
-    // Auth Policy
+    // Logging Configuration
     // ------------------------------------------------------
-
-    // Create a Policy for the Service Network
-    // Start with the default policy allowing unauthenticated access
-    const statement = new iam.PolicyStatement({
-      effect: iam.Effect.ALLOW,
-      actions: ['vpc-lattice-svcs:Invoke'],
-      resources: ['*'],
-      principals: [new iam.StarPrincipal()],
-    });
-
-    if (props.accessMode === ServiceNetworkAccessMode.ORG_ONLY) {
-      const orgIdCr = new cr.AwsCustomResource(this, 'getOrgId', {
-        onCreate: {
-          region: 'us-east-1',
-          service: 'Organizations',
-          action: 'describeOrganization',
-          physicalResourceId: cr.PhysicalResourceId.of('orgId'),
-        },
-        policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
-          resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE,
-        }),
+    if (this.loggingDestinations.length) {
+      this.loggingDestinations.forEach(destination => {
+        this.addloggingDestination(destination);
       });
-      const orgId = orgIdCr.getResponseField('Organization.Id');
-
-      // add the condition that requires that the principal is from this org
-      statement.addCondition('StringEquals', { 'aws:PrincipalOrgID': [orgId] });
-      statement.addCondition('StringNotEqualsIgnoreCase', { 'aws:PrincipalType': 'anonymous' });
-    } else if (props.accessMode === ServiceNetworkAccessMode.AUTHENTICATED_ONLY) {
-      // add the condition that requires that the principal is authenticated
-      statement.addCondition('StringNotEqualsIgnoreCase', { 'aws:PrincipalType': 'anonymous' });
     }
 
-    this.authPolicy.addStatements(statement);
+    // ------------------------------------------------------
+    // Auth Policy
+    // ------------------------------------------------------
+    if (this.allowedPrincipals.length) {
+      this.grantAccess(this.allowedPrincipals);
+    }
 
     if (props.authStatements) {
       props.authStatements.forEach(propstatement => {
@@ -395,20 +361,74 @@ export class ServiceNetwork extends ServiceNetworkBase {
       });
     }
 
-    ServiceNetwork.validateAuthPolicy(this.authPolicy);
+    if (this.accessMode) {
+      const statement = new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        actions: ['vpc-lattice-svcs:Invoke'],
+        resources: ['*'],
+        principals: [new iam.StarPrincipal()],
+      });
+      if (props.accessMode === ServiceNetworkAccessMode.ORG_ONLY) {
+        if (!props.orgId) {
+          throw new Error('orgId is required when accessMode is set to ORG_ONLY');
+        }
+        const orgId = props.orgId;
+        // const orgIdCr = new cr.AwsCustomResource(this, 'getOrgId', {
+        //   onCreate: {
+        //     region: 'us-east-1',
+        //     service: 'Organizations',
+        //     action: 'describeOrganization',
+        //     physicalResourceId: cr.PhysicalResourceId.of('orgId'),
+        //   },
+        //   policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
+        //     resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE,
+        //   }),
+        // });
+        // const orgId = orgIdCr.getResponseField('Organization.Id');
 
-    // attach the AuthPolicy to the Service Network
-    new aws_vpclattice.CfnAuthPolicy(this, 'AuthPolicy', {
-      policy: core.Lazy.any({
-        produce: () => this.authPolicy.toJSON(),
-      }),
-      resourceIdentifier: this.serviceNetworkArn,
+        statement.addCondition('StringEquals', { 'aws:PrincipalOrgID': [orgId] });
+        statement.addCondition('StringNotEqualsIgnoreCase', { 'aws:PrincipalType': 'anonymous' });
+      } else if (props.accessMode === ServiceNetworkAccessMode.AUTHENTICATED_ONLY) {
+        statement.addCondition('StringNotEqualsIgnoreCase', { 'aws:PrincipalType': 'anonymous' });
+      }
+      this.authPolicy.addStatements(statement);
+    }
+
+    core.Lazy.any({
+      produce: () => {
+        if (!this.authPolicy.isEmpty) {
+          ServiceNetwork.validateAuthPolicy(this.authPolicy);
+          new generated.CfnAuthPolicy(this, 'ServiceAuthPolicy', {
+            policy: this.authPolicy.toJSON(),
+            resourceIdentifier: this.serviceNetworkArn,
+          });
+        }
+        return undefined;
+      },
     });
   }
 
   // ------------------------------------------------------
   // Methods
   // ------------------------------------------------------
+
+  /**
+   * .grantAccess on a lattice service, will permit the principals to
+   * access all of the service. Consider using more granual permissions
+   * at the rule level.
+   *
+   * @param principals a list of IAM principals to grant access.
+   */
+  public grantAccess(principals: iam.IPrincipal[]): void {
+    let policyStatement: iam.PolicyStatement = new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      actions: ['vpc-lattice-svcs:Invoke'],
+      resources: ['*'],
+      principals: principals,
+    });
+    this.authPolicy.addStatements(policyStatement);
+    ServiceNetwork.validateAuthPolicy(this.authPolicy);
+  }
 
   /**
    * Add a statement to the auth policy
@@ -423,7 +443,7 @@ export class ServiceNetwork extends ServiceNetworkBase {
    * Send logs to a destination
    */
   public addloggingDestination(destination: LoggingDestination): void {
-    new aws_vpclattice.CfnAccessLogSubscription(this, `AccessLogSubscription${destination.addr}`, {
+    new generated.CfnAccessLogSubscription(this, `AccessLogSubscription${destination.addr}`, {
       destinationArn: destination.arn,
       resourceIdentifier: this.serviceNetworkId,
     });
@@ -438,7 +458,7 @@ export class ServiceNetwork extends ServiceNetworkBase {
       name: props.name,
       resourceArns: [this.serviceNetworkArn],
       allowExternalPrincipals: props.allowExternalPrincipals,
-      principals: props.accounts,
+      principals: props.principals,
     });
   }
 }
@@ -478,7 +498,7 @@ export class AssociateVpc extends core.Resource {
       });
     }
 
-    new aws_vpclattice.CfnServiceNetworkVpcAssociation(this, `VpcAssociation${this.node.addr}`, {
+    new generated.CfnServiceNetworkVpcAssociation(this, `VpcAssociation${this.node.addr}`, {
       securityGroupIds: securityGroupIds,
       serviceNetworkIdentifier: props.serviceNetworkId,
       vpcIdentifier: props.vpc.vpcId,

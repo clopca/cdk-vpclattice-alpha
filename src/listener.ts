@@ -273,9 +273,16 @@ export interface RuleProp {
   readonly allowedPrincipalArn?: string[];
   /**
    * Set an access mode.
-   * @default false
+   * @default RuleAccessMode.NO_STATEMENT
    */
   readonly accessMode?: RuleAccessMode;
+
+  /**
+   * Organization ID to allow access to the Service Network
+   * @default - no org id is used
+   * @example 'o-1234567890'
+   */
+  readonly orgId?: string;
 }
 
 /**
@@ -403,7 +410,6 @@ export class Listener extends core.Resource implements IListener {
       props.rules.forEach(rule => {
         this.addListenerRule(rule);
       });
-      // this.service.applyAuthPolicy(); // Unnecessary, as the auth policy is updated and applied to the service in synth time
     }
   }
 
@@ -413,25 +419,30 @@ export class Listener extends core.Resource implements IListener {
    */
   addListenerRule(props: RuleProp): void {
     let policyStatement: iam.PolicyStatement = new iam.PolicyStatement();
+    let accessMode = props.accessMode ?? RuleAccessMode.NO_STATEMENT;
 
     // add the action for the statement. There is only one permissiable action
     policyStatement.addActions('vpc-lattice-svcs:Invoke');
 
-    if (props.accessMode === RuleAccessMode.UNAUTHENTICATED) {
+    if (accessMode === RuleAccessMode.UNAUTHENTICATED) {
       if (props.allowedPrincipals) {
         throw new Error('An unauthenticated rule cannot have allowedPrincipals');
       }
       policyStatement.addPrincipals(new iam.StarPrincipal());
     }
 
-    if (props.accessMode === RuleAccessMode.AUTHENTICATED_ONLY) {
+    if (accessMode === RuleAccessMode.AUTHENTICATED_ONLY) {
       policyStatement.addPrincipals(new iam.StarPrincipal());
       policyStatement.addCondition('StringNotEqualsIgnoreCase', { 'aws:PrincipalType': 'Anonymous' });
     }
 
-    if (props.accessMode === RuleAccessMode.ORG_ONLY) {
+    if (accessMode === RuleAccessMode.ORG_ONLY) {
+      if (!props.orgId) {
+        throw new Error('orgId is required when accessMode is set to ORG_ONLY');
+      }
+      const orgId = props.orgId;
       policyStatement.addPrincipals(new iam.StarPrincipal());
-      // policyStatement.addCondition('StringEquals', { 'aws:PrincipalOrgID': [this.service.orgId] }); // TODO: add orgId to the auth policy
+      policyStatement.addCondition('StringEquals', { 'aws:PrincipalOrgID': [orgId] });
       policyStatement.addCondition('StringNotEqualsIgnoreCase', { 'aws:PrincipalType': 'Anonymous' });
     }
 
@@ -584,7 +595,7 @@ export class Listener extends core.Resource implements IListener {
       match.headerMatches = headerMatches;
     }
 
-    if (props.accessMode !== RuleAccessMode.NO_STATEMENT) {
+    if (accessMode !== RuleAccessMode.NO_STATEMENT) {
       this.service.addAuthPolicyStatement(policyStatement);
     }
 
