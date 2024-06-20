@@ -2,7 +2,7 @@ import { aws_vpclattice } from 'aws-cdk-lib';
 import { IVpc } from 'aws-cdk-lib/aws-ec2';
 import { IApplicationLoadBalancer } from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 import { Construct } from 'constructs';
-import { TargetGroupBase } from './base-target-group';
+import { RequestProtocol, RequestProtocolVersion, TargetGroupBase } from './base-target-group';
 import { Protocol, ProtocolVersion, TargetType } from './target';
 
 export interface AlbTargetGroupProps {
@@ -26,7 +26,7 @@ export interface AlbTargetGroupProps {
    * Can't be changed after creation.
    * @default Protocol.HTTPS
    */
-  readonly protocol?: Protocol;
+  readonly protocol?: RequestProtocol;
 
   /**
    * Choose the protocol version for requests to be sent to targets.
@@ -34,7 +34,7 @@ export interface AlbTargetGroupProps {
    * from clients.
    * @default Protocol.HTTP1
    */
-  readonly protocolVersion?: ProtocolVersion;
+  readonly protocolVersion?: RequestProtocolVersion;
 
   /**
    * The port on which the target will listen. It should match the port
@@ -65,7 +65,7 @@ export class AlbTargetGroup extends TargetGroupBase {
     }
     this.name = this.physicalName;
     this.loadBalancer = props.loadBalancer;
-    this.port = props.port ?? (props.protocol === Protocol.HTTP ? 80 : 443);
+    this.port = props.port ?? (props.protocol === RequestProtocol.HTTP ? 80 : 443);
 
     if (this.loadBalancer.vpc) {
       if (this.loadBalancer.vpc.vpcId != props.vpc.vpcId) {

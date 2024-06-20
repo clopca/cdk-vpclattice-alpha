@@ -71,14 +71,13 @@ export class IpTargetGroup extends TargetGroupBase {
   public readonly targetGroupId: string;
   public readonly name: string;
   public readonly targets: IpTargetGroupTargetProps[];
-  public readonly targetType = TargetType.IP;
   public readonly port: number;
   public readonly protocol: Protocol;
   public readonly ipAddressType: IpAddressType;
   public readonly protocolVersion: ProtocolVersion;
   public readonly vpc: IVpc;
-
   public readonly config: aws_vpclattice.CfnTargetGroup.TargetGroupConfigProperty;
+  public readonly targetType = TargetType.IP;
   private readonly _resource: aws_vpclattice.CfnTargetGroup;
 
   constructor(scope: constructs.Construct, id: string, props: IpTargetGroupProps) {
@@ -126,7 +125,7 @@ export class IpTargetGroup extends TargetGroupBase {
       type: TargetType.IP,
       name: this.name,
       targets: Lazy.any({
-        produce: () => this.targets.map(target => ({ id: target.ipAddress.toString(), port: target.port })),
+        produce: () => this.targets.map(target => ({ id: target.ipAddress.toString(), port: target.port ?? this.port })),
       }),
       config: this.config,
     });

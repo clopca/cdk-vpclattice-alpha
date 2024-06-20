@@ -1,15 +1,15 @@
 {
   "version": "36.0.0",
   "files": {
-    "b8e3ee109d428eefeb49358a70903e0e533fba9e1db891a2d92fa7b235336bcb": {
+    "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22": {
       "source": {
-        "path": "aws-cdk-vpclattice-integ-target-group.template.json",
+        "path": "LambdaTGTestDefaultTestDeployAssertF13B08A0.template.json",
         "packaging": "file"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "b8e3ee109d428eefeb49358a70903e0e533fba9e1db891a2d92fa7b235336bcb.json",
+          "objectKey": "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

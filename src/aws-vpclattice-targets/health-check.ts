@@ -1,72 +1,99 @@
-import * as core from 'aws-cdk-lib';
-import { aws_vpclattice } from 'aws-cdk-lib';
-import { Protocol, ProtocolVersion } from './base-target-group';
+
+import { Duration, aws_vpclattice } from 'aws-cdk-lib';
 import { FixedResponse } from './target';
+
+export enum HealthCheckProtocol {
+  HTTP = 'HTTP',
+  HTTPS = 'HTTPS'
+}
+
+export enum HealthCheckProtocolVersion {
+  /**
+   * Send requests to targets using HTTP/1.1. 
+   * Supported when the request protocol is HTTP/1.1 or HTTP/2.
+   */
+  HTTP1 = 'HTTP1',
+
+  /**
+   * Send requests to targets using HTTP/2. Supported when the request 
+   * protocol is HTTP/2 or gRPC, but gRPC-specific features are not available.
+   */
+  HTTP2 = 'HTTP2'
+}
 
 export interface TargetGroupHealthCheckProps {
   /**
-   * Enable this Health Check
-   * @default true
+   * Whether to enable health checks for the target group
+   * @default - true if protocol version is HTTP1, false if protocol version is HTTP2,
    */
   readonly enabled?: boolean;
 
   /**
-   * Health Check Interval
-   * @default 30 seconds
+   * The approximate amount of time, in seconds, between health checks 
+   * of an individual target. The range is 5–300 seconds.
+   * @default Duration.seconds(30)
    */
-  readonly healthCheckInterval?: core.Duration;
+  readonly healthCheckInterval?: Duration;
 
   /**
-   * TimeOut Period
-   * @default 5 seconds
+   * The amount of time, in seconds, during which no response from a target 
+   * means a failed health check. The range is 1–120 seconds. 
+   * @default Duration.seconds(5)
    */
-  readonly healthCheckTimeout?: core.Duration;
+  readonly healthCheckTimeout?: Duration;
 
   /**
-   * Number of Healthy Responses before Target is considered healthy
-   * @default 2
+   * The number of consecutive successful health checks required before an 
+   * unhealthy target is considered healthy. The range is 2–10.
+   * @default 5
    */
   readonly healthyThresholdCount?: number;
 
   /**
-   * Check based on Response from target
-   * @default 200 OK
+   * The number of consecutive health check failures required 
+   * before considering a target unhealthy. The range is 2–10.
+   * @default 2
    */
-  readonly matcher?: FixedResponse;
+  readonly unhealthyThresholdCount?: number;
 
   /**
-   * Path to use for Health Check
-   * @default '/'
+   * The codes to use when checking for a successful response from a target. 
+   * These are called Success codes in the AWS Console. You can specify multiple 
+   * values (for example, "200,202") or a range of values (for example, "200-299").
+   * 
+   * @default FixedResponse.OK
+   */
+  readonly matchers?: FixedResponse | string;
+
+  /**
+   * The ping path to the destination on the targets for health checks.
+   * @default '/' (ping to the root domain)
    */
   readonly path?: string;
 
   /**
-   * Port to use for Health Check
+   * The port the service uses when performing health checks on targets.
    * @default 443
    */
   readonly port?: number;
 
   /**
-   * Protocol to use for Health Check
-   * @default HTTPS
+   * The protocol the service uses when performing health checks on targets.
+   * Health checks do not support gRPC target group protocol versions. 
+   * @default HealthCheckProtocol.HTTP
    */
-  readonly protocol?: Protocol;
+  readonly protocol?: HealthCheckProtocol;
 
   /**
-   * Protocol to use for Health Check
-   * @default HTTP2
+   * Protocol Version to use for Health Check
+   * @default HealthCheckProtocolVersion.HTTP1
    */
-  readonly protocolVersion?: ProtocolVersion;
-
-  /**
-   * Number of unhealty events before Target is considered unhealthy
-   * @default 1
-   */
-  readonly unhealthyThresholdCount?: number;
+  readonly protocolVersion?: HealthCheckProtocolVersion;
 }
 
 /**
  * Create a Health Check for a target
+ * @see https://docs.aws.amazon.com/vpc-lattice/latest/ug/target-group-health-checks.html
  */
 export abstract class HealthCheck {
   /**
@@ -74,8 +101,7 @@ export abstract class HealthCheck {
    * @param props
    * @returns HealthCheck
    */
-  public static check(props: TargetGroupHealthCheckProps): HealthCheck {
-    // validate the ranges for the health check
+  public static validateProperties(props: TargetGroupHealthCheckProps): HealthCheck {
     if (props.healthCheckInterval) {
       if (props.healthCheckInterval.toSeconds() < 5 || props.healthCheckInterval.toSeconds() > 300) {
         throw new Error('HealthCheckInterval must be between 5 and 300 seconds');
@@ -94,12 +120,6 @@ export abstract class HealthCheck {
       }
     }
 
-    if (props.protocolVersion) {
-      if (props.protocolVersion === ProtocolVersion.GRPC) {
-        throw new Error('GRPC is not supported');
-      }
-    }
-
     if (props.unhealthyThresholdCount) {
       if (props.unhealthyThresholdCount < 2 || props.unhealthyThresholdCount > 10) {
         throw new Error('UnhealthyThresholdCount must be between 2 and 10');
@@ -109,26 +129,26 @@ export abstract class HealthCheck {
     var port: number;
     if (props.port) {
       port = props.port;
-    } else if (props.protocol === Protocol.HTTP) {
+    } else if (props.protocol === HealthCheckProtocol.HTTP) {
       port = 80;
     } else {
       port = 443;
     }
 
     let matcher: aws_vpclattice.CfnTargetGroup.MatcherProperty | undefined = undefined;
-    if (props.matcher) {
-      const codeAsString = props.matcher.toString();
+    if (props.matchers) {
+      const codeAsString = props.matchers.toString();
       matcher = { httpCode: codeAsString };
     }
 
     return {
       enabled: props.enabled ?? true,
-      healthCheckInterval: props.healthCheckInterval ?? core.Duration.seconds(30),
-      healthCheckTimeout: props.healthCheckTimeout ?? core.Duration.seconds(5),
+      healthCheckInterval: props.healthCheckInterval ?? Duration.seconds(30),
+      healthCheckTimeout: props.healthCheckTimeout ?? Duration.seconds(5),
       path: props.path ?? '/',
-      protocol: props.protocol ?? 'HTTPS',
+      protocol: props.protocol ?? HealthCheckProtocol.HTTPS,
       port: port,
-      protocolVersion: props.protocolVersion ?? 'HTTP1',
+      protocolVersion: props.protocolVersion ?? HealthCheckProtocolVersion.HTTP1,
       unhealthyThresholdCount: props.unhealthyThresholdCount ?? 2,
       healthyThresholdCount: props.healthyThresholdCount ?? 5,
       matcher: matcher,
@@ -142,11 +162,11 @@ export abstract class HealthCheck {
   /**
    * healthCheck Interval
    */
-  public abstract readonly healthCheckInterval: core.Duration;
+  public abstract readonly healthCheckInterval: Duration;
   /**
    * HealthCheck Timeout
    */
-  public abstract readonly healthCheckTimeout: core.Duration;
+  public abstract readonly healthCheckTimeout: Duration;
   /**
    * Target Match reponse
    */
@@ -159,14 +179,14 @@ export abstract class HealthCheck {
    * Port to check
    */
   public abstract readonly port: number;
-  /** Protocol
-   *
+  /** 
+   * Protocol to use
    */
-  public abstract readonly protocol: string;
+  public abstract readonly protocol: HealthCheckProtocol;
   /**
    * HTTP Protocol Version
    */
-  public abstract readonly protocolVersion: string;
+  public abstract readonly protocolVersion: HealthCheckProtocolVersion;
   /**
    * Unhealthy Threshold Count
    */
@@ -176,5 +196,5 @@ export abstract class HealthCheck {
    */
   public abstract readonly healthyThresholdCount: number;
 
-  protected constructor() {}
+  protected constructor() { }
 }

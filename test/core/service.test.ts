@@ -1,7 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { LogGroup } from 'aws-cdk-lib/aws-logs';
-import { Service, LoggingDestination, AuthType } from '../src';
+import { Service, LoggingDestination, AuthType } from '../../src';
 
 describe('Service', () => {
   test('DeniesInvalidName', () => {

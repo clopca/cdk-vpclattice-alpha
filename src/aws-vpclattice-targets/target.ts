@@ -153,13 +153,36 @@ export enum ProtocolVersion {
  */
 export enum FixedResponse {
   /**
-   * Not Found 404
-   */
-  NOT_FOUND = 404,
-  /**
    * OK 200
    */
   OK = 200,
+
+  /**
+   * Created 201
+   */
+  CREATED = 201,
+
+  /**
+   * Accepted
+   */
+  ACCEPTED = 202,
+
+  /**
+   * No Content 204
+   */
+  NO_CONTENT = 204,
+
+
+
+  /**
+   * Permanent Redirect 301
+   * 
+
+
+  /**
+   * Not Found 404
+   */
+  NOT_FOUND = 404,
 }
 
 export interface TargetGroup {

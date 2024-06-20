@@ -1,8 +1,7 @@
 import { Lazy, aws_vpclattice } from 'aws-cdk-lib';
 import { IInstance, IVpc } from 'aws-cdk-lib/aws-ec2';
 import { Construct } from 'constructs';
-import { TargetGroupBase, TargetType } from './base-target-group';
-import { Protocol, ProtocolVersion } from './target';
+import { RequestProtocol, RequestProtocolVersion, TargetGroupBase, TargetType } from './base-target-group';
 
 export interface InstanceTarget {
   /**
@@ -39,7 +38,7 @@ export interface InstanceTargetGroupProps {
    * Can't be changed after creation.
    * @default Protocol.HTTPS
    */
-  readonly protocol?: Protocol;
+  readonly protocol?: RequestProtocol;
 
   /**
    * Choose the protocol version for requests to be sent to targets.
@@ -47,7 +46,7 @@ export interface InstanceTargetGroupProps {
    * from clients.
    * @default - Protocol.HTTP1 if HTTP or HTTPS is selected
    */
-  readonly protocolVersion?: ProtocolVersion;
+  readonly protocolVersion?: RequestProtocolVersion;
 
   /**
    *
@@ -62,8 +61,8 @@ export interface InstanceTargetGroupProps {
 export class InstanceTargetGroup extends TargetGroupBase {
   public readonly name: string;
   public readonly targetType = TargetType.INSTANCE;
-  public readonly protocol: Protocol;
-  public readonly protocolVersion: ProtocolVersion;
+  public readonly protocol: RequestProtocol;
+  public readonly protocolVersion: RequestProtocolVersion;
   public readonly targetGroupArn: string;
   public readonly targetGroupId: string;
   public readonly port: number;
@@ -81,9 +80,9 @@ export class InstanceTargetGroup extends TargetGroupBase {
     // ------------------------------------------------------
     this.vpc = props.vpc;
     this.name = this.physicalName;
-    this.protocol = props.protocol ?? Protocol.HTTPS;
-    this.protocolVersion = props.protocolVersion ?? ProtocolVersion.HTTP1;
-    this.port = props.port ?? (props.protocol === Protocol.HTTP ? 80 : 443);
+    this.protocol = props.protocol ?? RequestProtocol.HTTPS;
+    this.protocolVersion = props.protocolVersion ?? RequestProtocolVersion.HTTP1;
+    this.port = props.port ?? (props.protocol === RequestProtocol.HTTP ? 80 : 443);
     this.targets = props.targets ?? [];
 
     // ------------------------------------------------------
@@ -110,7 +109,7 @@ export class InstanceTargetGroup extends TargetGroupBase {
       name: this.name,
       // Lazy basically processes this line at synthesis time, making additions after instantiation possible
       targets: Lazy.any({
-        produce: () => this.targets.map(target => ({ id: target.instance.instanceId, port: target.port })),
+        produce: () => this.targets.map(target => ({ id: target.instance.instanceId, port: target.port ?? this.port })),
       }),
       config,
     });

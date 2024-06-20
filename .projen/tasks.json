@@ -154,13 +154,13 @@
       "description": "assert the snapshot of integration test 'alb-target-group'",
       "steps": [
         {
-          "exec": "[ -d \"test/alb-target-group.integ.snapshot\" ] || (echo \"No snapshot available for integration test 'alb-target-group'. Run 'projen integ:alb-target-group:deploy' to capture.\" && exit 1)"
+          "exec": "[ -d \"test/target-groups/integ/alb-target-group.integ.snapshot\" ] || (echo \"No snapshot available for integration test 'alb-target-group'. Run 'projen integ:alb-target-group:deploy' to capture.\" && exit 1)"
         },
         {
-          "exec": "cdk synth --app \"ts-node -P tsconfig.dev.json test/alb-target-group.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata -o test/.tmp/alb-target-group.integ/assert.cdk.out > /dev/null"
+          "exec": "cdk synth --app \"ts-node -P tsconfig.dev.json test/target-groups/integ/alb-target-group.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata -o test/target-groups/integ/.tmp/alb-target-group.integ/assert.cdk.out > /dev/null"
         },
         {
-          "exec": "diff -r -x asset.* -x cdk.out -x manifest.json -x tree.json test/alb-target-group.integ.snapshot/ test/.tmp/alb-target-group.integ/assert.cdk.out/"
+          "exec": "diff -r -x asset.* -x cdk.out -x manifest.json -x tree.json test/target-groups/integ/alb-target-group.integ.snapshot/ test/target-groups/integ/.tmp/alb-target-group.integ/assert.cdk.out/"
         }
       ]
     },
@@ -169,16 +169,16 @@
       "description": "deploy integration test 'alb-target-group' and capture snapshot",
       "steps": [
         {
-          "exec": "rm -fr test/.tmp/alb-target-group.integ/deploy.cdk.out"
+          "exec": "rm -fr test/target-groups/integ/.tmp/alb-target-group.integ/deploy.cdk.out"
         },
         {
-          "exec": "cdk deploy --app \"ts-node -P tsconfig.dev.json test/alb-target-group.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata '**' --require-approval=never -o test/.tmp/alb-target-group.integ/deploy.cdk.out"
+          "exec": "cdk deploy --app \"ts-node -P tsconfig.dev.json test/target-groups/integ/alb-target-group.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata '**' --require-approval=never -o test/target-groups/integ/.tmp/alb-target-group.integ/deploy.cdk.out"
         },
         {
-          "exec": "rm -fr test/alb-target-group.integ.snapshot"
+          "exec": "rm -fr test/target-groups/integ/alb-target-group.integ.snapshot"
         },
         {
-          "exec": "mv test/.tmp/alb-target-group.integ/deploy.cdk.out test/alb-target-group.integ.snapshot"
+          "exec": "mv test/target-groups/integ/.tmp/alb-target-group.integ/deploy.cdk.out test/target-groups/integ/alb-target-group.integ.snapshot"
         },
         {
           "spawn": "integ:alb-target-group:destroy"
@@ -190,7 +190,7 @@
       "description": "destroy integration test 'alb-target-group'",
       "steps": [
         {
-          "exec": "cdk destroy --app test/alb-target-group.integ.snapshot '**' --no-version-reporting"
+          "exec": "cdk destroy --app test/target-groups/integ/alb-target-group.integ.snapshot '**' --no-version-reporting"
         }
       ]
     },
@@ -199,7 +199,7 @@
       "description": "update snapshot for integration test \"alb-target-group\"",
       "steps": [
         {
-          "exec": "cdk synth --app \"ts-node -P tsconfig.dev.json test/alb-target-group.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata -o test/alb-target-group.integ.snapshot > /dev/null"
+          "exec": "cdk synth --app \"ts-node -P tsconfig.dev.json test/target-groups/integ/alb-target-group.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata -o test/target-groups/integ/alb-target-group.integ.snapshot > /dev/null"
         }
       ]
     },
@@ -208,7 +208,7 @@
       "description": "watch integration test 'alb-target-group' (without updating snapshots)",
       "steps": [
         {
-          "exec": "cdk watch --app \"ts-node -P tsconfig.dev.json test/alb-target-group.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata '**' -o test/.tmp/alb-target-group.integ/deploy.cdk.out"
+          "exec": "cdk watch --app \"ts-node -P tsconfig.dev.json test/target-groups/integ/alb-target-group.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata '**' -o test/target-groups/integ/.tmp/alb-target-group.integ/deploy.cdk.out"
         }
       ]
     },
@@ -217,13 +217,13 @@
       "description": "assert the snapshot of integration test 'instance-target-group'",
       "steps": [
         {
-          "exec": "[ -d \"test/instance-target-group.integ.snapshot\" ] || (echo \"No snapshot available for integration test 'instance-target-group'. Run 'projen integ:instance-target-group:deploy' to capture.\" && exit 1)"
+          "exec": "[ -d \"test/target-groups/integ/instance-target-group.integ.snapshot\" ] || (echo \"No snapshot available for integration test 'instance-target-group'. Run 'projen integ:instance-target-group:deploy' to capture.\" && exit 1)"
         },
         {
-          "exec": "cdk synth --app \"ts-node -P tsconfig.dev.json test/instance-target-group.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata -o test/.tmp/instance-target-group.integ/assert.cdk.out > /dev/null"
+          "exec": "cdk synth --app \"ts-node -P tsconfig.dev.json test/target-groups/integ/instance-target-group.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata -o test/target-groups/integ/.tmp/instance-target-group.integ/assert.cdk.out > /dev/null"
         },
         {
-          "exec": "diff -r -x asset.* -x cdk.out -x manifest.json -x tree.json test/instance-target-group.integ.snapshot/ test/.tmp/instance-target-group.integ/assert.cdk.out/"
+          "exec": "diff -r -x asset.* -x cdk.out -x manifest.json -x tree.json test/target-groups/integ/instance-target-group.integ.snapshot/ test/target-groups/integ/.tmp/instance-target-group.integ/assert.cdk.out/"
         }
       ]
     },
@@ -232,16 +232,16 @@
       "description": "deploy integration test 'instance-target-group' and capture snapshot",
       "steps": [
         {
-          "exec": "rm -fr test/.tmp/instance-target-group.integ/deploy.cdk.out"
+          "exec": "rm -fr test/target-groups/integ/.tmp/instance-target-group.integ/deploy.cdk.out"
         },
         {
-          "exec": "cdk deploy --app \"ts-node -P tsconfig.dev.json test/instance-target-group.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata '**' --require-approval=never -o test/.tmp/instance-target-group.integ/deploy.cdk.out"
+          "exec": "cdk deploy --app \"ts-node -P tsconfig.dev.json test/target-groups/integ/instance-target-group.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata '**' --require-approval=never -o test/target-groups/integ/.tmp/instance-target-group.integ/deploy.cdk.out"
         },
         {
-          "exec": "rm -fr test/instance-target-group.integ.snapshot"
+          "exec": "rm -fr test/target-groups/integ/instance-target-group.integ.snapshot"
         },
         {
-          "exec": "mv test/.tmp/instance-target-group.integ/deploy.cdk.out test/instance-target-group.integ.snapshot"
+          "exec": "mv test/target-groups/integ/.tmp/instance-target-group.integ/deploy.cdk.out test/target-groups/integ/instance-target-group.integ.snapshot"
         },
         {
           "spawn": "integ:instance-target-group:destroy"
@@ -253,7 +253,7 @@
       "description": "destroy integration test 'instance-target-group'",
       "steps": [
         {
-          "exec": "cdk destroy --app test/instance-target-group.integ.snapshot '**' --no-version-reporting"
+          "exec": "cdk destroy --app test/target-groups/integ/instance-target-group.integ.snapshot '**' --no-version-reporting"
         }
       ]
     },
@@ -262,7 +262,7 @@
       "description": "update snapshot for integration test \"instance-target-group\"",
       "steps": [
         {
-          "exec": "cdk synth --app \"ts-node -P tsconfig.dev.json test/instance-target-group.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata -o test/instance-target-group.integ.snapshot > /dev/null"
+          "exec": "cdk synth --app \"ts-node -P tsconfig.dev.json test/target-groups/integ/instance-target-group.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata -o test/target-groups/integ/instance-target-group.integ.snapshot > /dev/null"
         }
       ]
     },
@@ -271,7 +271,133 @@
       "description": "watch integration test 'instance-target-group' (without updating snapshots)",
       "steps": [
         {
-          "exec": "cdk watch --app \"ts-node -P tsconfig.dev.json test/instance-target-group.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata '**' -o test/.tmp/instance-target-group.integ/deploy.cdk.out"
+          "exec": "cdk watch --app \"ts-node -P tsconfig.dev.json test/target-groups/integ/instance-target-group.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata '**' -o test/target-groups/integ/.tmp/instance-target-group.integ/deploy.cdk.out"
+        }
+      ]
+    },
+    "integ:ip-target-group:assert": {
+      "name": "integ:ip-target-group:assert",
+      "description": "assert the snapshot of integration test 'ip-target-group'",
+      "steps": [
+        {
+          "exec": "[ -d \"test/target-groups/integ/ip-target-group.integ.snapshot\" ] || (echo \"No snapshot available for integration test 'ip-target-group'. Run 'projen integ:ip-target-group:deploy' to capture.\" && exit 1)"
+        },
+        {
+          "exec": "cdk synth --app \"ts-node -P tsconfig.dev.json test/target-groups/integ/ip-target-group.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata -o test/target-groups/integ/.tmp/ip-target-group.integ/assert.cdk.out > /dev/null"
+        },
+        {
+          "exec": "diff -r -x asset.* -x cdk.out -x manifest.json -x tree.json test/target-groups/integ/ip-target-group.integ.snapshot/ test/target-groups/integ/.tmp/ip-target-group.integ/assert.cdk.out/"
+        }
+      ]
+    },
+    "integ:ip-target-group:deploy": {
+      "name": "integ:ip-target-group:deploy",
+      "description": "deploy integration test 'ip-target-group' and capture snapshot",
+      "steps": [
+        {
+          "exec": "rm -fr test/target-groups/integ/.tmp/ip-target-group.integ/deploy.cdk.out"
+        },
+        {
+          "exec": "cdk deploy --app \"ts-node -P tsconfig.dev.json test/target-groups/integ/ip-target-group.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata '**' --require-approval=never -o test/target-groups/integ/.tmp/ip-target-group.integ/deploy.cdk.out"
+        },
+        {
+          "exec": "rm -fr test/target-groups/integ/ip-target-group.integ.snapshot"
+        },
+        {
+          "exec": "mv test/target-groups/integ/.tmp/ip-target-group.integ/deploy.cdk.out test/target-groups/integ/ip-target-group.integ.snapshot"
+        },
+        {
+          "spawn": "integ:ip-target-group:destroy"
+        }
+      ]
+    },
+    "integ:ip-target-group:destroy": {
+      "name": "integ:ip-target-group:destroy",
+      "description": "destroy integration test 'ip-target-group'",
+      "steps": [
+        {
+          "exec": "cdk destroy --app test/target-groups/integ/ip-target-group.integ.snapshot '**' --no-version-reporting"
+        }
+      ]
+    },
+    "integ:ip-target-group:snapshot": {
+      "name": "integ:ip-target-group:snapshot",
+      "description": "update snapshot for integration test \"ip-target-group\"",
+      "steps": [
+        {
+          "exec": "cdk synth --app \"ts-node -P tsconfig.dev.json test/target-groups/integ/ip-target-group.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata -o test/target-groups/integ/ip-target-group.integ.snapshot > /dev/null"
+        }
+      ]
+    },
+    "integ:ip-target-group:watch": {
+      "name": "integ:ip-target-group:watch",
+      "description": "watch integration test 'ip-target-group' (without updating snapshots)",
+      "steps": [
+        {
+          "exec": "cdk watch --app \"ts-node -P tsconfig.dev.json test/target-groups/integ/ip-target-group.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata '**' -o test/target-groups/integ/.tmp/ip-target-group.integ/deploy.cdk.out"
+        }
+      ]
+    },
+    "integ:lambda-target-group:assert": {
+      "name": "integ:lambda-target-group:assert",
+      "description": "assert the snapshot of integration test 'lambda-target-group'",
+      "steps": [
+        {
+          "exec": "[ -d \"test/target-groups/integ/lambda-target-group.integ.snapshot\" ] || (echo \"No snapshot available for integration test 'lambda-target-group'. Run 'projen integ:lambda-target-group:deploy' to capture.\" && exit 1)"
+        },
+        {
+          "exec": "cdk synth --app \"ts-node -P tsconfig.dev.json test/target-groups/integ/lambda-target-group.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata -o test/target-groups/integ/.tmp/lambda-target-group.integ/assert.cdk.out > /dev/null"
+        },
+        {
+          "exec": "diff -r -x asset.* -x cdk.out -x manifest.json -x tree.json test/target-groups/integ/lambda-target-group.integ.snapshot/ test/target-groups/integ/.tmp/lambda-target-group.integ/assert.cdk.out/"
+        }
+      ]
+    },
+    "integ:lambda-target-group:deploy": {
+      "name": "integ:lambda-target-group:deploy",
+      "description": "deploy integration test 'lambda-target-group' and capture snapshot",
+      "steps": [
+        {
+          "exec": "rm -fr test/target-groups/integ/.tmp/lambda-target-group.integ/deploy.cdk.out"
+        },
+        {
+          "exec": "cdk deploy --app \"ts-node -P tsconfig.dev.json test/target-groups/integ/lambda-target-group.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata '**' --require-approval=never -o test/target-groups/integ/.tmp/lambda-target-group.integ/deploy.cdk.out"
+        },
+        {
+          "exec": "rm -fr test/target-groups/integ/lambda-target-group.integ.snapshot"
+        },
+        {
+          "exec": "mv test/target-groups/integ/.tmp/lambda-target-group.integ/deploy.cdk.out test/target-groups/integ/lambda-target-group.integ.snapshot"
+        },
+        {
+          "spawn": "integ:lambda-target-group:destroy"
+        }
+      ]
+    },
+    "integ:lambda-target-group:destroy": {
+      "name": "integ:lambda-target-group:destroy",
+      "description": "destroy integration test 'lambda-target-group'",
+      "steps": [
+        {
+          "exec": "cdk destroy --app test/target-groups/integ/lambda-target-group.integ.snapshot '**' --no-version-reporting"
+        }
+      ]
+    },
+    "integ:lambda-target-group:snapshot": {
+      "name": "integ:lambda-target-group:snapshot",
+      "description": "update snapshot for integration test \"lambda-target-group\"",
+      "steps": [
+        {
+          "exec": "cdk synth --app \"ts-node -P tsconfig.dev.json test/target-groups/integ/lambda-target-group.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata -o test/target-groups/integ/lambda-target-group.integ.snapshot > /dev/null"
+        }
+      ]
+    },
+    "integ:lambda-target-group:watch": {
+      "name": "integ:lambda-target-group:watch",
+      "description": "watch integration test 'lambda-target-group' (without updating snapshots)",
+      "steps": [
+        {
+          "exec": "cdk watch --app \"ts-node -P tsconfig.dev.json test/target-groups/integ/lambda-target-group.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata '**' -o test/target-groups/integ/.tmp/lambda-target-group.integ/deploy.cdk.out"
         }
       ]
     },
@@ -280,13 +406,13 @@
       "description": "assert the snapshot of integration test 'service-network'",
       "steps": [
         {
-          "exec": "[ -d \"test/service-network.integ.snapshot\" ] || (echo \"No snapshot available for integration test 'service-network'. Run 'projen integ:service-network:deploy' to capture.\" && exit 1)"
+          "exec": "[ -d \"test/core/service-network.integ.snapshot\" ] || (echo \"No snapshot available for integration test 'service-network'. Run 'projen integ:service-network:deploy' to capture.\" && exit 1)"
         },
         {
-          "exec": "cdk synth --app \"ts-node -P tsconfig.dev.json test/service-network.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata -o test/.tmp/service-network.integ/assert.cdk.out > /dev/null"
+          "exec": "cdk synth --app \"ts-node -P tsconfig.dev.json test/core/service-network.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata -o test/core/.tmp/service-network.integ/assert.cdk.out > /dev/null"
         },
         {
-          "exec": "diff -r -x asset.* -x cdk.out -x manifest.json -x tree.json test/service-network.integ.snapshot/ test/.tmp/service-network.integ/assert.cdk.out/"
+          "exec": "diff -r -x asset.* -x cdk.out -x manifest.json -x tree.json test/core/service-network.integ.snapshot/ test/core/.tmp/service-network.integ/assert.cdk.out/"
         }
       ]
     },
@@ -295,16 +421,16 @@
       "description": "deploy integration test 'service-network' and capture snapshot",
       "steps": [
         {
-          "exec": "rm -fr test/.tmp/service-network.integ/deploy.cdk.out"
+          "exec": "rm -fr test/core/.tmp/service-network.integ/deploy.cdk.out"
         },
         {
-          "exec": "cdk deploy --app \"ts-node -P tsconfig.dev.json test/service-network.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata '**' --require-approval=never -o test/.tmp/service-network.integ/deploy.cdk.out"
+          "exec": "cdk deploy --app \"ts-node -P tsconfig.dev.json test/core/service-network.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata '**' --require-approval=never -o test/core/.tmp/service-network.integ/deploy.cdk.out"
         },
         {
-          "exec": "rm -fr test/service-network.integ.snapshot"
+          "exec": "rm -fr test/core/service-network.integ.snapshot"
         },
         {
-          "exec": "mv test/.tmp/service-network.integ/deploy.cdk.out test/service-network.integ.snapshot"
+          "exec": "mv test/core/.tmp/service-network.integ/deploy.cdk.out test/core/service-network.integ.snapshot"
         },
         {
           "spawn": "integ:service-network:destroy"
@@ -316,7 +442,7 @@
       "description": "destroy integration test 'service-network'",
       "steps": [
         {
-          "exec": "cdk destroy --app test/service-network.integ.snapshot '**' --no-version-reporting"
+          "exec": "cdk destroy --app test/core/service-network.integ.snapshot '**' --no-version-reporting"
         }
       ]
     },
@@ -325,7 +451,7 @@
       "description": "update snapshot for integration test \"service-network\"",
       "steps": [
         {
-          "exec": "cdk synth --app \"ts-node -P tsconfig.dev.json test/service-network.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata -o test/service-network.integ.snapshot > /dev/null"
+          "exec": "cdk synth --app \"ts-node -P tsconfig.dev.json test/core/service-network.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata -o test/core/service-network.integ.snapshot > /dev/null"
         }
       ]
     },
@@ -334,7 +460,7 @@
       "description": "watch integration test 'service-network' (without updating snapshots)",
       "steps": [
         {
-          "exec": "cdk watch --app \"ts-node -P tsconfig.dev.json test/service-network.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata '**' -o test/.tmp/service-network.integ/deploy.cdk.out"
+          "exec": "cdk watch --app \"ts-node -P tsconfig.dev.json test/core/service-network.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata '**' -o test/core/.tmp/service-network.integ/deploy.cdk.out"
         }
       ]
     },
@@ -343,13 +469,13 @@
       "description": "assert the snapshot of integration test 'service'",
       "steps": [
         {
-          "exec": "[ -d \"test/service.integ.snapshot\" ] || (echo \"No snapshot available for integration test 'service'. Run 'projen integ:service:deploy' to capture.\" && exit 1)"
+          "exec": "[ -d \"test/core/service.integ.snapshot\" ] || (echo \"No snapshot available for integration test 'service'. Run 'projen integ:service:deploy' to capture.\" && exit 1)"
         },
         {
-          "exec": "cdk synth --app \"ts-node -P tsconfig.dev.json test/service.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata -o test/.tmp/service.integ/assert.cdk.out > /dev/null"
+          "exec": "cdk synth --app \"ts-node -P tsconfig.dev.json test/core/service.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata -o test/core/.tmp/service.integ/assert.cdk.out > /dev/null"
         },
         {
-          "exec": "diff -r -x asset.* -x cdk.out -x manifest.json -x tree.json test/service.integ.snapshot/ test/.tmp/service.integ/assert.cdk.out/"
+          "exec": "diff -r -x asset.* -x cdk.out -x manifest.json -x tree.json test/core/service.integ.snapshot/ test/core/.tmp/service.integ/assert.cdk.out/"
         }
       ]
     },
@@ -358,16 +484,16 @@
       "description": "deploy integration test 'service' and capture snapshot",
       "steps": [
         {
-          "exec": "rm -fr test/.tmp/service.integ/deploy.cdk.out"
+          "exec": "rm -fr test/core/.tmp/service.integ/deploy.cdk.out"
         },
         {
-          "exec": "cdk deploy --app \"ts-node -P tsconfig.dev.json test/service.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata '**' --require-approval=never -o test/.tmp/service.integ/deploy.cdk.out"
+          "exec": "cdk deploy --app \"ts-node -P tsconfig.dev.json test/core/service.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata '**' --require-approval=never -o test/core/.tmp/service.integ/deploy.cdk.out"
         },
         {
-          "exec": "rm -fr test/service.integ.snapshot"
+          "exec": "rm -fr test/core/service.integ.snapshot"
         },
         {
-          "exec": "mv test/.tmp/service.integ/deploy.cdk.out test/service.integ.snapshot"
+          "exec": "mv test/core/.tmp/service.integ/deploy.cdk.out test/core/service.integ.snapshot"
         },
         {
           "spawn": "integ:service:destroy"
@@ -379,7 +505,7 @@
       "description": "destroy integration test 'service'",
       "steps": [
         {
-          "exec": "cdk destroy --app test/service.integ.snapshot '**' --no-version-reporting"
+          "exec": "cdk destroy --app test/core/service.integ.snapshot '**' --no-version-reporting"
         }
       ]
     },
@@ -388,7 +514,7 @@
       "description": "update snapshot for integration test \"service\"",
       "steps": [
         {
-          "exec": "cdk synth --app \"ts-node -P tsconfig.dev.json test/service.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata -o test/service.integ.snapshot > /dev/null"
+          "exec": "cdk synth --app \"ts-node -P tsconfig.dev.json test/core/service.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata -o test/core/service.integ.snapshot > /dev/null"
         }
       ]
     },
@@ -397,7 +523,7 @@
       "description": "watch integration test 'service' (without updating snapshots)",
       "steps": [
         {
-          "exec": "cdk watch --app \"ts-node -P tsconfig.dev.json test/service.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata '**' -o test/.tmp/service.integ/deploy.cdk.out"
+          "exec": "cdk watch --app \"ts-node -P tsconfig.dev.json test/core/service.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata '**' -o test/core/.tmp/service.integ/deploy.cdk.out"
         }
       ]
     },
@@ -406,16 +532,22 @@
       "description": "update snapshot for all integration tests",
       "steps": [
         {
+          "spawn": "integ:service-network:snapshot"
+        },
+        {
+          "spawn": "integ:service:snapshot"
+        },
+        {
           "spawn": "integ:alb-target-group:snapshot"
         },
         {
           "spawn": "integ:instance-target-group:snapshot"
         },
         {
-          "spawn": "integ:service-network:snapshot"
+          "spawn": "integ:ip-target-group:snapshot"
         },
         {
-          "spawn": "integ:service:snapshot"
+          "spawn": "integ:lambda-target-group:snapshot"
         }
       ]
     },
@@ -499,16 +631,22 @@
           "spawn": "eslint"
         },
         {
+          "spawn": "integ:service-network:assert"
+        },
+        {
+          "spawn": "integ:service:assert"
+        },
+        {
           "spawn": "integ:alb-target-group:assert"
         },
         {
           "spawn": "integ:instance-target-group:assert"
         },
         {
-          "spawn": "integ:service-network:assert"
+          "spawn": "integ:ip-target-group:assert"
         },
         {
-          "spawn": "integ:service:assert"
+          "spawn": "integ:lambda-target-group:assert"
         }
       ]
     },

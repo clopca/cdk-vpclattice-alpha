@@ -10,7 +10,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-integ-target-group/VPC"
+      "Value": "aws-cdk-vpclattice-integ-target-group-instance/VPC"
      }
     ]
    }
@@ -39,7 +39,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-integ-target-group/VPC/PublicSubnet1"
+      "Value": "aws-cdk-vpclattice-integ-target-group-instance/VPC/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -53,7 +53,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-integ-target-group/VPC/PublicSubnet1"
+      "Value": "aws-cdk-vpclattice-integ-target-group-instance/VPC/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -94,7 +94,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-integ-target-group/VPC/PublicSubnet1"
+      "Value": "aws-cdk-vpclattice-integ-target-group-instance/VPC/PublicSubnet1"
      }
     ]
    }
@@ -114,7 +114,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-integ-target-group/VPC/PublicSubnet1"
+      "Value": "aws-cdk-vpclattice-integ-target-group-instance/VPC/PublicSubnet1"
      }
     ]
    },
@@ -147,7 +147,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-integ-target-group/VPC/PublicSubnet2"
+      "Value": "aws-cdk-vpclattice-integ-target-group-instance/VPC/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -161,7 +161,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-integ-target-group/VPC/PublicSubnet2"
+      "Value": "aws-cdk-vpclattice-integ-target-group-instance/VPC/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -202,7 +202,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-integ-target-group/VPC/PublicSubnet2"
+      "Value": "aws-cdk-vpclattice-integ-target-group-instance/VPC/PublicSubnet2"
      }
     ]
    }
@@ -222,7 +222,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-integ-target-group/VPC/PublicSubnet2"
+      "Value": "aws-cdk-vpclattice-integ-target-group-instance/VPC/PublicSubnet2"
      }
     ]
    },
@@ -255,7 +255,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-integ-target-group/VPC/PrivateSubnet1"
+      "Value": "aws-cdk-vpclattice-integ-target-group-instance/VPC/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -269,7 +269,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-integ-target-group/VPC/PrivateSubnet1"
+      "Value": "aws-cdk-vpclattice-integ-target-group-instance/VPC/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -324,7 +324,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-integ-target-group/VPC/PrivateSubnet2"
+      "Value": "aws-cdk-vpclattice-integ-target-group-instance/VPC/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -338,7 +338,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-integ-target-group/VPC/PrivateSubnet2"
+      "Value": "aws-cdk-vpclattice-integ-target-group-instance/VPC/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -375,7 +375,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-integ-target-group/VPC"
+      "Value": "aws-cdk-vpclattice-integ-target-group-instance/VPC"
      }
     ]
    }
@@ -394,7 +394,7 @@
   "Instance1InstanceSecurityGroup50841F79": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "aws-cdk-vpclattice-integ-target-group/Instance1/InstanceSecurityGroup",
+    "GroupDescription": "aws-cdk-vpclattice-integ-target-group-instance/Instance1/InstanceSecurityGroup",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -405,7 +405,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-integ-target-group/Instance1"
+      "Value": "aws-cdk-vpclattice-integ-target-group-instance/Instance1"
      }
     ],
     "VpcId": {
@@ -431,7 +431,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-integ-target-group/Instance1"
+      "Value": "aws-cdk-vpclattice-integ-target-group-instance/Instance1"
      }
     ]
    }
@@ -478,7 +478,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-integ-target-group/Instance1"
+      "Value": "aws-cdk-vpclattice-integ-target-group-instance/Instance1"
      }
     ],
     "UserData": {
@@ -492,7 +492,7 @@
   "Instance2InstanceSecurityGroupC6129B1D": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "aws-cdk-vpclattice-integ-target-group/Instance2/InstanceSecurityGroup",
+    "GroupDescription": "aws-cdk-vpclattice-integ-target-group-instance/Instance2/InstanceSecurityGroup",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -503,7 +503,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-integ-target-group/Instance2"
+      "Value": "aws-cdk-vpclattice-integ-target-group-instance/Instance2"
      }
     ],
     "VpcId": {
@@ -529,7 +529,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-integ-target-group/Instance2"
+      "Value": "aws-cdk-vpclattice-integ-target-group-instance/Instance2"
      }
     ]
    }
@@ -576,7 +576,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-integ-target-group/Instance2"
+      "Value": "aws-cdk-vpclattice-integ-target-group-instance/Instance2"
      }
     ],
     "UserData": {

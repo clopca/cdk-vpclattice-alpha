@@ -8,7 +8,7 @@ export interface LambdaTargetGroupProps {
   /**
    * The name of the target group
    */
-  readonly name: string;
+  readonly name?: string;
 
   /**
    * Facilitates routing to a **single** Lambda function.

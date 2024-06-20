@@ -4,7 +4,7 @@ import * as core from 'aws-cdk-lib';
 /**
  * ProtocolVersion
  */
-export enum ProtocolVersion {
+export enum RequestProtocolVersion {
   /**
    * Http1
    */
@@ -44,7 +44,7 @@ export enum TargetType {
 /**
  * HTTP/HTTPS methods
  */
-export enum Protocol {
+export enum RequestProtocol {
   /**
    * HTTP Protocol (Unencrypted traffic)
    */
@@ -124,9 +124,9 @@ export abstract class TargetGroupBase extends core.Resource implements ITargetGr
   /**
    * Verifies a valid protocol / target Type combination
    */
-  protected static validateProtocol(protocol: Protocol, targetType: TargetType) {
+  protected static validateProtocol(protocol: RequestProtocol, targetType: TargetType) {
     // Ensure that protocol is not set to TCP if targetType is ALB
-    if (protocol === Protocol.TCP && targetType === TargetType.ALB) {
+    if (protocol === RequestProtocol.TCP && targetType === TargetType.ALB) {
       throw new Error(`Invalid Protocol: ${protocol} (must be HTTP or HTTPS if targetType is ALB)`);
     }
   }
@@ -134,9 +134,9 @@ export abstract class TargetGroupBase extends core.Resource implements ITargetGr
   /**
    * Verifies a valid protocol / protocol version combination
    */
-  protected static validateProtocolVersion(protocol: Protocol, protocolVersion: ProtocolVersion) {
+  protected static validateProtocolVersion(protocol: RequestProtocol, protocolVersion: RequestProtocolVersion) {
     // Ensure that protocol version is undefine if protocol is TCP
-    if (protocol === Protocol.TCP && protocolVersion) {
+    if (protocol === RequestProtocol.TCP && protocolVersion) {
       throw new Error(`Invalid Protocol Version: ${protocolVersion} (must not be set if protocol is TCP)`);
     }
   }

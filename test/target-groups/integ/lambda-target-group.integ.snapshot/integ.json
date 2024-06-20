@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "LambdaTGTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-vpclattice-integ-target-group-lambda"
+      ],
+      "assertionStack": "LambdaTGTest/DefaultTest/DeployAssert",
+      "assertionStackName": "LambdaTGTestDefaultTestDeployAssertF13B08A0"
+    }
+  }
+}
