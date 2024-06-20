@@ -83,13 +83,12 @@ export class InstanceTargetGroup extends TargetGroupBase {
     super(scope, id, {
       physicalName: props.name,
     });
-    
+
     // ------------------------------------------------------
     // Set properties or defaults
     // ------------------------------------------------------
     this.vpc = props.vpc
     this.name = this.physicalName;
-<<<<<<< HEAD
     this.protocol = props.protocol ?? Protocol.HTTPS
     this.protocolVersion = props.protocolVersion ?? ProtocolVersion.HTTP1
     this.port = props.port ?? (props.protocol === Protocol.HTTP ? 80 : 443)
@@ -124,16 +123,5 @@ export class InstanceTargetGroup extends TargetGroupBase {
 
     this.targetGroupId = this._resource.attrId;
     this.targetGroupArn = this._resource.attrArn;
-=======
-    this.protocol = props.protocol ?? Protocol.HTTPS;
-    this.protocolVersion = props.protocolVersion ?? ProtocolVersion.HTTP1;
-
-    TargetGroupBase.validateTargetGroupName(this.name);
-    TargetGroupBase.validateProtocol(this.protocol, this.targetType);
-    TargetGroupBase.validateProtocolVersion(this.protocol, this.protocolVersion);
-
-    this.targetGroupArn = 'a';
-    this.targetGroupId = 'b';
->>>>>>> 10cdfbd8942d286085f3d06bc066f80737f73d9a
   }
 }

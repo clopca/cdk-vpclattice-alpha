@@ -1,4 +1,5 @@
 import * as core from 'aws-cdk-lib';
+//import { InstanceTargetGroup, InstanceTargetGroupProps } from './instance-target';
 
 /**
  * ProtocolVersion
@@ -113,7 +114,7 @@ export abstract class TargetGroupBase extends core.Resource implements ITargetGr
    * The valid characters are a-z, 0-9, and hyphens (-). You can't use a hyphen as
    * the first or last character, or immediately after another hyphen.
    */
-  public static validateTargetGroupName(name: string) {
+  protected static validateTargetGroupName(name: string) {
     const pattern = /^(?!tg-)(?!-)(?!.*-$)(?!.*--)[a-z0-9-]+$/;
     const validationSucceeded = name.length >= 3 && name.length <= 128 && pattern.test(name);
     if (!validationSucceeded) {
@@ -123,7 +124,7 @@ export abstract class TargetGroupBase extends core.Resource implements ITargetGr
   /**
    * Verifies a valid protocol / target Type combination
    */
-  public static validateProtocol(protocol: Protocol, targetType: TargetType) {
+  protected static validateProtocol(protocol: Protocol, targetType: TargetType) {
     // Ensure that protocol is not set to TCP if targetType is ALB
     if (protocol === Protocol.TCP && targetType === TargetType.ALB) {
       throw new Error(`Invalid Protocol: ${protocol} (must be HTTP or HTTPS if targetType is ALB)`);
@@ -133,7 +134,7 @@ export abstract class TargetGroupBase extends core.Resource implements ITargetGr
   /**
    * Verifies a valid protocol / protocol version combination
    */
-  public static validateProtocolVersion(protocol: Protocol, protocolVersion: ProtocolVersion) {
+  protected static validateProtocolVersion(protocol: Protocol, protocolVersion: ProtocolVersion) {
     // Ensure that protocol version is undefine if protocol is TCP
     if (protocol === Protocol.TCP && protocolVersion) {
       throw new Error(`Invalid Protocol Version: ${protocolVersion} (must not be set if protocol is TCP)`);
@@ -169,3 +170,9 @@ export interface WeightedTargetGroup {
    */
   readonly weight?: number;
 }
+
+// export class TargetGroup extends TargetGroupBase {
+//   public static instance(props: InstanceTargetGroupProps) {
+//     return new InstanceTargetGroup(props)
+//   }
+// }
