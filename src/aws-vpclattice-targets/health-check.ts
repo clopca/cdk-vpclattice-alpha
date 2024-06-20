@@ -1,11 +1,12 @@
 
 import { Duration, aws_vpclattice } from 'aws-cdk-lib';
-import { FixedResponse } from './target';
 
 export enum HealthCheckProtocol {
   HTTP = 'HTTP',
   HTTPS = 'HTTPS'
 }
+
+
 
 export enum HealthCheckProtocolVersion {
   /**
@@ -19,6 +20,36 @@ export enum HealthCheckProtocolVersion {
    * protocol is HTTP/2 or gRPC, but gRPC-specific features are not available.
    */
   HTTP2 = 'HTTP2'
+}
+
+/**
+ * Fixed response codes
+ */
+export enum FixedResponse {
+  /**
+   * OK 200
+   */
+  OK = 200,
+
+  /**
+   * Created 201
+   */
+  CREATED = 201,
+
+  /**
+   * Accepted
+   */
+  ACCEPTED = 202,
+
+  /**
+   * No Content 204
+   */
+  NO_CONTENT = 204,
+
+  /**
+   * Not Found 404
+   */
+  NOT_FOUND = 404,
 }
 
 export interface TargetGroupHealthCheckProps {

@@ -1,8 +1,19 @@
 import { aws_lambda as lambda } from 'aws-cdk-lib';
 import * as aws_vpclattice from 'aws-cdk-lib/aws-vpclattice';
 import * as constructs from 'constructs';
-import { TargetGroupBase } from './base-target-group';
-import { LambdaEventStructureVersion, TargetType } from './target';
+import { TargetGroupBase, TargetType } from './base-target-group';
+
+export enum LambdaEventStructureVersion {
+  /**
+   * Version 1.0
+   */
+  V1 = 'V1',
+
+  /**
+   * Version 2.0
+   */
+  V2 = 'V2',
+}
 
 export interface LambdaTargetGroupProps {
   /**

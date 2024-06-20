@@ -2,8 +2,7 @@ import { aws_vpclattice } from 'aws-cdk-lib';
 import { IVpc } from 'aws-cdk-lib/aws-ec2';
 import { IApplicationLoadBalancer } from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 import { Construct } from 'constructs';
-import { RequestProtocol, RequestProtocolVersion, TargetGroupBase } from './base-target-group';
-import { Protocol, ProtocolVersion, TargetType } from './target';
+import { RequestProtocol, RequestProtocolVersion, TargetGroupBase, TargetType } from './base-target-group';
 
 export interface AlbTargetGroupProps {
   /**
@@ -75,9 +74,9 @@ export class AlbTargetGroup extends TargetGroupBase {
 
     let config: aws_vpclattice.CfnTargetGroup.TargetGroupConfigProperty = {
       vpcIdentifier: props.vpc.vpcId,
-      protocol: props.protocol ?? Protocol.HTTPS,
+      protocol: props.protocol ?? RequestProtocol.HTTPS,
       port: this.port,
-      protocolVersion: props.protocolVersion ?? ProtocolVersion.HTTP1,
+      protocolVersion: props.protocolVersion ?? RequestProtocolVersion.HTTP1,
     };
 
     this._resource = new aws_vpclattice.CfnTargetGroup(this, 'Resource', {

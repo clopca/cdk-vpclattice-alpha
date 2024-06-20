@@ -1,9 +1,23 @@
 import { IVpc, IpAddresses, Ipv6Addresses } from 'aws-cdk-lib/aws-ec2';
 import * as aws_vpclattice from 'aws-cdk-lib/aws-vpclattice';
 import * as constructs from 'constructs';
-import { TargetGroupBase } from './base-target-group';
-import { IpAddressType, Protocol, ProtocolVersion, TargetType } from './target';
+import { RequestProtocol, RequestProtocolVersion, TargetGroupBase, TargetType } from './base-target-group';
 import { Lazy } from 'aws-cdk-lib';
+
+/**
+ * The type of IP Addresss Protocol
+ */
+export enum IpAddressType {
+  /**
+   * IPv4 (Internet Protocol version 4)
+   */
+  IPV4 = 'IPV4',
+
+  /**
+   * IPv6 (Internet Protocol version 6)
+   */
+  IPV6 = 'IPV6',
+}
 
 export interface IpTargetGroupProps {
   /**
@@ -55,15 +69,15 @@ export interface IpTargetGroupConfigProps {
 
   /**
    * The application layer protocol to use
-   * @default Protocol.HTTPS
+   * @default RequestProtocol.HTTPS
    */
-  readonly protocol?: Protocol;
+  readonly protocol?: RequestProtocol;
 
   /**
    * ProtocolVersion
-   * @default ProtocolVersion.HTTP1
+   * @default RequestProtocolVersion.HTTP1
    */
-  readonly protocolVersion?: ProtocolVersion;
+  readonly protocolVersion?: RequestProtocolVersion;
 }
 
 export class IpTargetGroup extends TargetGroupBase {
@@ -72,9 +86,9 @@ export class IpTargetGroup extends TargetGroupBase {
   public readonly name: string;
   public readonly targets: IpTargetGroupTargetProps[];
   public readonly port: number;
-  public readonly protocol: Protocol;
+  public readonly protocol: RequestProtocol;
   public readonly ipAddressType: IpAddressType;
-  public readonly protocolVersion: ProtocolVersion;
+  public readonly protocolVersion: RequestProtocolVersion;
   public readonly vpc: IVpc;
   public readonly config: aws_vpclattice.CfnTargetGroup.TargetGroupConfigProperty;
   public readonly targetType = TargetType.IP;
@@ -90,9 +104,9 @@ export class IpTargetGroup extends TargetGroupBase {
     // ------------------------------------------------------
     this.vpc = props.config.vpc
     this.ipAddressType = props.config.ipAddressType ?? IpAddressType.IPV4
-    this.protocol = props.config.protocol ?? Protocol.HTTPS
-    this.port = props.config.port ?? (this.protocol === Protocol.HTTP ? 80 : 443)
-    this.protocolVersion = props.config.protocolVersion ?? ProtocolVersion.HTTP1
+    this.protocol = props.config.protocol ?? RequestProtocol.HTTPS
+    this.port = props.config.port ?? (this.protocol === RequestProtocol.HTTP ? 80 : 443)
+    this.protocolVersion = props.config.protocolVersion ?? RequestProtocolVersion.HTTP1
     this.name = this.physicalName;
     this.targets = props.targets ?? [];
 
@@ -104,9 +118,9 @@ export class IpTargetGroup extends TargetGroupBase {
     }
 
     // Validate the port based on the protocol
-    if (this.protocol === Protocol.HTTP && this.port !== 80) {
+    if (this.protocol === RequestProtocol.HTTP && this.port !== 80) {
       throw new Error('HTTP protocol must use port 80');
-    } else if (this.protocol === Protocol.HTTPS && this.port !== 443) {
+    } else if (this.protocol === RequestProtocol.HTTPS && this.port !== 443) {
       throw new Error('HTTPS protocol must use port 443');
     }
 

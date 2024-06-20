@@ -41,6 +41,37 @@ export enum TargetType {
   ALB = 'ALB',
 }
 
+
+/**
+ * Fixed response codes
+ */
+export enum FixedResponse {
+  /**
+   * OK 200
+   */
+  OK = 200,
+
+  /**
+   * Created 201
+   */
+  CREATED = 201,
+
+  /**
+   * Accepted
+   */
+  ACCEPTED = 202,
+
+  /**
+   * No Content 204
+   */
+  NO_CONTENT = 204,
+
+  /**
+   * Not Found 404
+   */
+  NOT_FOUND = 404,
+}
+
 /**
  * HTTP/HTTPS methods
  */
