@@ -3,6 +3,7 @@ import * as aws_vpclattice from 'aws-cdk-lib/aws-vpclattice';
 import * as constructs from 'constructs';
 import { TargetGroupBase } from './base-target-group';
 import { IpAddressType, Protocol, ProtocolVersion, TargetType } from './target';
+import { Lazy } from 'aws-cdk-lib';
 
 export interface IpTargetGroupProps {
   /**
@@ -13,7 +14,7 @@ export interface IpTargetGroupProps {
   /**
    * Targets
    */
-  readonly targets: IpTargetGroupTargetProps[];
+  readonly targets?: IpTargetGroupTargetProps[];
 
   /**
    * Configuration for the TargetGroup, if it is not a lambda
@@ -38,7 +39,7 @@ export interface IpTargetGroupConfigProps {
   /**
    * VPC Identifier
    */
-  readonly VpcIdentifier: IVpc;
+  readonly vpc: IVpc;
 
   /**
    * The type of IP Addresss Protocol to use
@@ -69,8 +70,13 @@ export class IpTargetGroup extends TargetGroupBase {
   public readonly targetGroupArn: string;
   public readonly targetGroupId: string;
   public readonly name: string;
-  public readonly targets: aws_vpclattice.CfnTargetGroup.TargetProperty[];
+  public readonly targets: IpTargetGroupTargetProps[];
   public readonly targetType = TargetType.IP;
+  public readonly port: number;
+  public readonly protocol: Protocol;
+  public readonly ipAddressType: IpAddressType;
+  public readonly protocolVersion: ProtocolVersion;
+  public readonly vpc: IVpc;
 
   public readonly config: aws_vpclattice.CfnTargetGroup.TargetGroupConfigProperty;
   private readonly _resource: aws_vpclattice.CfnTargetGroup;
@@ -79,40 +85,61 @@ export class IpTargetGroup extends TargetGroupBase {
     super(scope, id, {
       physicalName: props.name,
     });
+
+    // ------------------------------------------------------
+    // Set properties or defaults
+    // ------------------------------------------------------
+    this.vpc = props.config.vpc
+    this.ipAddressType = props.config.ipAddressType ?? IpAddressType.IPV4
+    this.protocol = props.config.protocol ?? Protocol.HTTPS
+    this.port = props.config.port ?? (this.protocol === Protocol.HTTP ? 80 : 443)
+    this.protocolVersion = props.config.protocolVersion ?? ProtocolVersion.HTTP1
+    this.name = this.physicalName;
+    this.targets = props.targets ?? [];
+
+    // ------------------------------------------------------
+    // Validation
+    // ------------------------------------------------------
     if (props.name) {
       TargetGroupBase.validateTargetGroupName(props.name);
     }
-    this.name = this.physicalName;
-    this.config = {
-      vpcIdentifier: props.config.VpcIdentifier.vpcId,
-      ipAddressType: props.config.ipAddressType ?? IpAddressType.IPV4,
-      protocol: props.config.protocol ?? Protocol.HTTPS,
-      port: props.config.port ?? (props.config.protocol === Protocol.HTTP ? 80 : 443),
-      protocolVersion: props.config.protocolVersion ?? ProtocolVersion.HTTP1,
-    };
-
-    this.targets = props.targets.map(target => {
-      return {
-        id: target.ipAddress.toString(),
-        port: target.port ?? (this.config.protocol === Protocol.HTTP ? 80 : 443),
-      };
-    });
 
     // Validate the port based on the protocol
-    if (this.config.protocol === Protocol.HTTP && this.config.port !== 80) {
+    if (this.protocol === Protocol.HTTP && this.port !== 80) {
       throw new Error('HTTP protocol must use port 80');
-    } else if (this.config.protocol === Protocol.HTTPS && this.config.port !== 443) {
+    } else if (this.protocol === Protocol.HTTPS && this.port !== 443) {
       throw new Error('HTTPS protocol must use port 443');
     }
+
+    // ------------------------------------------------------
+    // L1 Instantiation
+    // ------------------------------------------------------
+    this.config = {
+      vpcIdentifier: this.vpc.vpcId,
+      ipAddressType: this.ipAddressType,
+      protocol: this.protocol,
+      port: this.port,
+      protocolVersion: this.protocolVersion,
+    };
 
     this._resource = new aws_vpclattice.CfnTargetGroup(this, 'Resource', {
       type: TargetType.IP,
       name: this.name,
-      targets: this.targets,
+      targets: Lazy.any({
+        produce: () => this.targets.map(target => ({ id: target.ipAddress.toString(), port: target.port })),
+      }),
       config: this.config,
     });
 
     this.targetGroupId = this._resource.attrId;
     this.targetGroupArn = this._resource.attrArn;
+  }
+
+  /**
+   * Adds a target to the target Group
+   * @param target
+   */
+  public addTarget(target: IpTargetGroupTargetProps) {
+    this.targets.push(target);
   }
 }
