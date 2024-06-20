@@ -36,6 +36,5 @@ describe('Service', () => {
       AuthType: 'NONE',
       Name: 'mycustomlatticeservicenetworkname',
     });
-
   });
 });

@@ -39,7 +39,7 @@ const network = new ServiceNetwork(stack, 'ServiceNetwork', {
 });
 
 network.shareResource({
-  accounts: ['851725360407'],
+  principals: ['851725360407'],
   name: 'my-share',
 });
 

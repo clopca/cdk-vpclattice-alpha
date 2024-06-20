@@ -1,9 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
-
 import { LogGroup } from 'aws-cdk-lib/aws-logs';
 import { Service, LoggingDestination, AuthType } from '../src';
-
 
 describe('Service', () => {
   test('DeniesInvalidName', () => {
@@ -39,7 +37,6 @@ describe('Service', () => {
       AuthType: 'AWS_IAM',
       Name: 'mycustomlatticeservicename',
     });
-
   });
 
   test('BasicServiceLoggingCloudWatch', () => {
@@ -53,9 +50,7 @@ describe('Service', () => {
     new Service(stack, 'Params', {
       name: 'mycustomlatticeservicename',
       authType: AuthType.AWS_IAM,
-      loggingDestinations: [
-        LoggingDestination.cloudwatch(logGroup),
-      ],
+      loggingDestinations: [LoggingDestination.cloudwatch(logGroup)],
     });
 
     //THEN
@@ -64,7 +59,6 @@ describe('Service', () => {
       Name: 'mycustomlatticeservicename',
     });
     Template.fromStack(stack).hasResource('AWS::VpcLattice::AccessLogSubscription', {});
-
   });
 
   test('NoDuplicateLoggingDestinationType', () => {
@@ -84,15 +78,8 @@ describe('Service', () => {
       new Service(stack, 'Params', {
         name: 'mycustomlatticeservicename',
         authType: AuthType.AWS_IAM,
-        loggingDestinations: [
-          LoggingDestination.cloudwatch(logGroup1),
-          LoggingDestination.cloudwatch(logGroup2),
-        ],
+        loggingDestinations: [LoggingDestination.cloudwatch(logGroup1), LoggingDestination.cloudwatch(logGroup2)],
       });
     }).toThrow();
-
-
   });
-
-
 });

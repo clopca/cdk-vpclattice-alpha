@@ -14,15 +14,11 @@ const logGroup = new LogGroup(stack, 'LogsTest', {
 });
 const logBucket = new Bucket(stack, 'LogsBucket', {});
 
-
 new Service(stack, 'Service', {
   authType: AuthType.AWS_IAM,
   name: 'my-custom-name',
   removalPolicy: cdk.RemovalPolicy.DESTROY,
-  loggingDestinations: [
-    LoggingDestination.cloudwatch(logGroup),
-    LoggingDestination.s3(logBucket),
-  ],
+  loggingDestinations: [LoggingDestination.cloudwatch(logGroup), LoggingDestination.s3(logBucket)],
 });
 
 new integ.IntegTest(app, 'ServiceTest', {
