@@ -8,7 +8,7 @@ import { IService } from './service';
 import { ServiceNetworkAssociation } from './service-network-association';
 
 /**
- * AccesModes for the Service Network.
+ * AccessModes for the Service Network.
  * @enum
  */
 export enum ServiceNetworkAccessMode {
@@ -129,7 +129,7 @@ export interface ServiceNetworkProps {
   readonly loggingDestinations?: LoggingDestination[];
 
   /**
-   * Lattice Services that are assocaited with this Service Network
+   * Lattice Services that are associated with this Service Network
    * @default - no services are associated with the service network
    */
   readonly services?: IService[];
@@ -163,7 +163,7 @@ export interface ServiceNetworkProps {
   readonly allowedPrincipals?: iam.IPrincipal[];
 
   /**
-   * Additional AuthStatments:
+   * Additional AuthStatements:
    */
   readonly authStatements?: iam.PolicyStatement[];
 
@@ -344,7 +344,7 @@ export class ServiceNetwork extends ServiceNetworkBase {
     // ------------------------------------------------------
     if (this.loggingDestinations.length) {
       this.loggingDestinations.forEach(destination => {
-        this.addloggingDestination(destination);
+        this.addLoggingDestination(destination);
       });
     }
 
@@ -356,8 +356,8 @@ export class ServiceNetwork extends ServiceNetworkBase {
     }
 
     if (props.authStatements) {
-      props.authStatements.forEach(propstatement => {
-        this.authPolicy.addStatements(propstatement);
+      props.authStatements.forEach(propStatement => {
+        this.authPolicy.addStatements(propStatement);
       });
     }
 
@@ -414,7 +414,7 @@ export class ServiceNetwork extends ServiceNetworkBase {
 
   /**
    * .grantAccess on a lattice service, will permit the principals to
-   * access all of the service. Consider using more granual permissions
+   * access all of the service. Consider using more granular permissions
    * at the rule level.
    *
    * @param principals a list of IAM principals to grant access.
@@ -442,7 +442,7 @@ export class ServiceNetwork extends ServiceNetworkBase {
   /**
    * Send logs to a destination
    */
-  public addloggingDestination(destination: LoggingDestination): void {
+  public addLoggingDestination(destination: LoggingDestination): void {
     new generated.CfnAccessLogSubscription(this, `AccessLogSubscription${destination.addr}`, {
       destinationArn: destination.arn,
       resourceIdentifier: this.serviceNetworkId,

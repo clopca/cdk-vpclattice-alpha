@@ -1,3 +1,4 @@
+import { Lazy } from 'aws-cdk-lib';
 import { IVpc, IpAddresses, Ipv6Addresses } from 'aws-cdk-lib/aws-ec2';
 import * as aws_vpclattice from 'aws-cdk-lib/aws-vpclattice';
 import * as constructs from 'constructs';
@@ -6,7 +7,7 @@ import { Lazy } from 'aws-cdk-lib';
 import { HealthCheck } from './health-check';
 
 /**
- * The type of IP Addresss Protocol
+ * The type of IP Address Protocol
  */
 export enum IpAddressType {
   /**
@@ -57,7 +58,7 @@ export interface IpTargetGroupConfigProps {
   readonly vpc: IVpc;
 
   /**
-   * The type of IP Addresss Protocol to use
+   * The type of IP Address Protocol to use
    * @default IpAddressType.IPv4
    */
   readonly ipAddressType?: IpAddressType;
@@ -105,11 +106,11 @@ export class IpTargetGroup extends TargetGroupBase {
     // ------------------------------------------------------
     // Set properties or defaults
     // ------------------------------------------------------
-    this.vpc = props.config.vpc
-    this.ipAddressType = props.config.ipAddressType ?? IpAddressType.IPV4
-    this.protocol = props.config.protocol ?? RequestProtocol.HTTPS
-    this.port = props.config.port ?? (this.protocol === RequestProtocol.HTTP ? 80 : 443)
-    this.protocolVersion = props.config.protocolVersion ?? RequestProtocolVersion.HTTP1
+    this.vpc = props.config.vpc;
+    this.ipAddressType = props.config.ipAddressType ?? IpAddressType.IPV4;
+    this.protocol = props.config.protocol ?? RequestProtocol.HTTPS;
+    this.port = props.config.port ?? (this.protocol === RequestProtocol.HTTP ? 80 : 443);
+    this.protocolVersion = props.config.protocolVersion ?? RequestProtocolVersion.HTTP1;
     this.name = this.physicalName;
     this.targets = props.targets ?? [];
 

@@ -79,7 +79,7 @@ export enum HTTPMethods {
 }
 
 /**
- * Rule Contitions can leverage different operators for Matches
+ * Rule Conditions can leverage different operators for Matches
  */
 export enum MatchOperator {
   /**
@@ -176,7 +176,7 @@ export interface DefaultListenerAction {
 }
 
 /**
- * Propertys to Create a Lattice Listener
+ * Properties to Create a Lattice Listener
  */
 export interface ListenerProps {
   /**
@@ -248,7 +248,7 @@ export interface RuleProp {
    */
   readonly name: string;
   /**
-   * the action for the rule, is either a fixed Reponse, or a being sent to  Weighted TargetGroup
+   * the action for the rule, is either a fixed Response, or a being sent to  Weighted TargetGroup
    */
   readonly action: FixedResponse | WeightedTargetGroup[];
   /**
@@ -328,13 +328,13 @@ export class Listener extends core.Resource implements IListener {
 
     let defaultAction: generated.CfnListener.DefaultActionProperty;
     if (props.defaultAction) {
-      // throw an error if both props.defaultAction.fixedaction and props.defaultAction.forward are set
+      // throw an error if both props.defaultAction.fixed action and props.defaultAction.forward are set
       if (props.defaultAction.fixedResponse && props.defaultAction.forward) {
-        throw new Error('Both fixedResponse and foward are set');
+        throw new Error('Both fixedResponse and forward are set');
       }
-      // throw an error if neither of props.defaultAction.fixedaction and props.defaultAction.forward are set
+      // throw an error if neither of props.defaultAction.fixed action and props.defaultAction.forward are set
       if (!props.defaultAction.fixedResponse && !props.defaultAction.forward) {
-        throw new Error('At least one of fixedResponse or foward must be set');
+        throw new Error('At least one of fixedResponse or forward must be set');
       }
 
       // set the default action to the fixedResponse
@@ -345,7 +345,7 @@ export class Listener extends core.Resource implements IListener {
           },
         };
       } else {
-        // set the default action to the foward
+        // set the default action to the forward
         defaultAction = {
           forward: {
             targetGroups: [
@@ -369,14 +369,14 @@ export class Listener extends core.Resource implements IListener {
     // default to using HTTPS
     let protocol = props.protocol ?? Protocol.HTTPS;
 
-    // check the the port is in range if it is specificed
+    // check the the port is in range if it is specified
     if (props.port) {
       if (props.port < 0 || props.port > 65535) {
         throw new Error('Port out of range');
       }
     }
 
-    // if its not specified, set it to the default port based on the protcol
+    // if its not specified, set it to the default port based on the protocol
     let port: number;
     if (protocol === Protocol.HTTP) {
       port = props.port ?? 80;
@@ -421,7 +421,7 @@ export class Listener extends core.Resource implements IListener {
     let policyStatement: iam.PolicyStatement = new iam.PolicyStatement();
     let accessMode = props.accessMode ?? RuleAccessMode.NO_STATEMENT;
 
-    // add the action for the statement. There is only one permissiable action
+    // add the action for the statement. There is only one permissable action
     policyStatement.addActions('vpc-lattice-svcs:Invoke');
 
     if (accessMode === RuleAccessMode.UNAUTHENTICATED) {
@@ -446,7 +446,7 @@ export class Listener extends core.Resource implements IListener {
       policyStatement.addCondition('StringNotEqualsIgnoreCase', { 'aws:PrincipalType': 'Anonymous' });
     }
 
-    // conditionaly build a policy statement if principals were provided
+    // conditionally build a policy statement if principals were provided
     if (props.allowedPrincipals) {
       // add principals to the statement
       // if needed, explicity permit all principals by using iam.StarPrincipal();
@@ -502,7 +502,7 @@ export class Listener extends core.Resource implements IListener {
      * Validate the priority is not already in use.
      */
     if (priority in this.listenerPriorities) {
-      throw new Error('Priority is already in use, ensure all listerner rules have unique prioritys');
+      throw new Error('Priority is already in use, ensure all listener rules have unique priorities');
     }
     this.listenerPriorities.push(priority);
     // check to see if priority is between 1 and 100
@@ -522,7 +522,7 @@ export class Listener extends core.Resource implements IListener {
       // set the method match for the lattice rule
       match.method = props.httpMatch.method;
 
-      // add a policy statemenet for the Auth Rule
+      // add a policy statement for the Auth Rule
       policyStatement.addCondition('StringEquals', { 'vpc-lattice-svcs:RequestMethod': props.httpMatch.method });
     }
 
@@ -561,34 +561,34 @@ export class Listener extends core.Resource implements IListener {
 
         if (matchOperator === MatchOperator.EXACT) {
           headerMatches.push({
-            name: headerMatch.headername,
+            name: headerMatch.headerName,
             match: {
               exact: headerMatch.matchValue,
             },
             caseSensitive: headerMatch.caseSensitive ?? false,
           });
-          policyStatement.addCondition('StringEquals', { [`vpc-lattice-svcs:RequestHeader/${headerMatch.headername}`]: headerMatch.matchValue });
+          policyStatement.addCondition('StringEquals', { [`vpc-lattice-svcs:RequestHeader/${headerMatch.headerName}`]: headerMatch.matchValue });
         } else if (matchOperator === MatchOperator.CONTAINS) {
           headerMatches.push({
-            name: headerMatch.headername,
+            name: headerMatch.headerName,
             match: {
               contains: headerMatch.matchValue,
             },
             caseSensitive: headerMatch.caseSensitive ?? false,
           });
           policyStatement.addCondition('StringEquals', {
-            [`vpc-lattice-svcs:RequestHeader/${headerMatch.headername}`]: `*${headerMatch.matchValue}*`,
+            [`vpc-lattice-svcs:RequestHeader/${headerMatch.headerName}`]: `*${headerMatch.matchValue}*`,
           });
         } else if (matchOperator === MatchOperator.PREFIX) {
           headerMatches.push({
-            name: headerMatch.headername,
+            name: headerMatch.headerName,
             match: {
               prefix: headerMatch.matchValue,
             },
             caseSensitive: headerMatch.caseSensitive ?? false,
           });
           policyStatement.addCondition('StringEquals', {
-            [`vpc-lattice-svcs:RequestHeader/${headerMatch.headername}`]: `${headerMatch.matchValue}*`,
+            [`vpc-lattice-svcs:RequestHeader/${headerMatch.headerName}`]: `${headerMatch.matchValue}*`,
           });
         }
       });

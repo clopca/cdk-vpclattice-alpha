@@ -2,7 +2,7 @@ import { HTTPMethods, MatchOperator, PathMatchType } from './listener';
 
 /**
  * An HTTPMatch for creating rules
- * At least one of headermatch, method or patchmatches must be created
+ * At least one of headerMatch, method or patchMatches must be created
  */
 export interface HTTPMatch {
   /**
@@ -31,7 +31,7 @@ export interface HeaderMatch {
   /**
    * The name of the header to match
    */
-  readonly headername: string;
+  readonly headerName: string;
 
   /**
    * Whether the match should be case sensitive or not
