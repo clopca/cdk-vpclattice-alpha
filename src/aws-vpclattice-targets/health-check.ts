@@ -1,25 +1,22 @@
-
 import { Duration, aws_vpclattice } from 'aws-cdk-lib';
 
 export enum HealthCheckProtocol {
   HTTP = 'HTTP',
-  HTTPS = 'HTTPS'
+  HTTPS = 'HTTPS',
 }
-
-
 
 export enum HealthCheckProtocolVersion {
   /**
-   * Send requests to targets using HTTP/1.1. 
+   * Send requests to targets using HTTP/1.1.
    * Supported when the request protocol is HTTP/1.1 or HTTP/2.
    */
   HTTP1 = 'HTTP1',
 
   /**
-   * Send requests to targets using HTTP/2. Supported when the request 
+   * Send requests to targets using HTTP/2. Supported when the request
    * protocol is HTTP/2 or gRPC, but gRPC-specific features are not available.
    */
-  HTTP2 = 'HTTP2'
+  HTTP2 = 'HTTP2',
 }
 
 /**
@@ -60,38 +57,38 @@ export interface TargetGroupHealthCheckProps {
   readonly enabled?: boolean;
 
   /**
-   * The approximate amount of time, in seconds, between health checks 
+   * The approximate amount of time, in seconds, between health checks
    * of an individual target. The range is 5–300 seconds.
    * @default Duration.seconds(30)
    */
   readonly healthCheckInterval?: Duration;
 
   /**
-   * The amount of time, in seconds, during which no response from a target 
-   * means a failed health check. The range is 1–120 seconds. 
+   * The amount of time, in seconds, during which no response from a target
+   * means a failed health check. The range is 1–120 seconds.
    * @default Duration.seconds(5)
    */
   readonly healthCheckTimeout?: Duration;
 
   /**
-   * The number of consecutive successful health checks required before an 
+   * The number of consecutive successful health checks required before an
    * unhealthy target is considered healthy. The range is 2–10.
    * @default 5
    */
   readonly healthyThresholdCount?: number;
 
   /**
-   * The number of consecutive health check failures required 
+   * The number of consecutive health check failures required
    * before considering a target unhealthy. The range is 2–10.
    * @default 2
    */
   readonly unhealthyThresholdCount?: number;
 
   /**
-   * The codes to use when checking for a successful response from a target. 
-   * These are called Success codes in the AWS Console. You can specify multiple 
+   * The codes to use when checking for a successful response from a target.
+   * These are called Success codes in the AWS Console. You can specify multiple
    * values (for example, "200,202") or a range of values (for example, "200-299").
-   * 
+   *
    * @default FixedResponse.OK
    */
   readonly matchers?: FixedResponse | string;
@@ -110,7 +107,7 @@ export interface TargetGroupHealthCheckProps {
 
   /**
    * The protocol the service uses when performing health checks on targets.
-   * Health checks do not support gRPC target group protocol versions. 
+   * Health checks do not support gRPC target group protocol versions.
    * @default HealthCheckProtocol.HTTP
    */
   readonly protocol?: HealthCheckProtocol;
@@ -199,7 +196,7 @@ export abstract class HealthCheck {
    */
   public abstract readonly healthCheckTimeout: Duration;
   /**
-   * Target Match reponse
+   * Target Match response
    */
   public abstract readonly matcher: aws_vpclattice.CfnTargetGroup.MatcherProperty | undefined;
   /**
@@ -210,7 +207,7 @@ export abstract class HealthCheck {
    * Port to check
    */
   public abstract readonly port: number;
-  /** 
+  /**
    * Protocol to use
    */
   public abstract readonly protocol: HealthCheckProtocol;
@@ -227,5 +224,5 @@ export abstract class HealthCheck {
    */
   public abstract readonly healthyThresholdCount: number;
 
-  protected constructor() { }
+  protected constructor() {}
 }

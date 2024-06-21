@@ -41,37 +41,6 @@ export enum TargetType {
   ALB = 'ALB',
 }
 
-
-/**
- * Fixed response codes
- */
-export enum FixedResponse {
-  /**
-   * OK 200
-   */
-  OK = 200,
-
-  /**
-   * Created 201
-   */
-  CREATED = 201,
-
-  /**
-   * Accepted
-   */
-  ACCEPTED = 202,
-
-  /**
-   * No Content 204
-   */
-  NO_CONTENT = 204,
-
-  /**
-   * Not Found 404
-   */
-  NOT_FOUND = 404,
-}
-
 /**
  * HTTP/HTTPS methods
  */
@@ -134,7 +103,7 @@ export interface ITargetGroup extends core.IResource {
 }
 
 /**
- * Properties for a Target Group, Only supply one of instancetargets, lambdaTargets, albTargets, ipTargets
+ * Properties for a Target Group, Only supply one of instanceTargets, lambdaTargets, albTargets, ipTargets
  */
 export abstract class TargetGroupBase extends core.Resource implements ITargetGroup {
   // ------------------------------------------------------

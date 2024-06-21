@@ -111,7 +111,7 @@ export interface ServiceProps {
 
   /**
    * ServiceNetwork to associate with.
-   * @default will not assocaite with any serviceNetwork.
+   * @default will not associate with any serviceNetwork.
    */
   readonly serviceNetwork?: IServiceNetwork;
 
@@ -129,7 +129,7 @@ export interface ServiceProps {
   readonly allowedPrincipals?: iam.IPrincipal[];
 
   /**
-   * Additional AuthStatments:
+   * Additional AuthStatements:
    */
   readonly authStatements?: iam.PolicyStatement[];
 
@@ -304,8 +304,8 @@ export class Service extends ServiceBase {
     }
 
     if (props.authStatements) {
-      props.authStatements.forEach(propstatement => {
-        this.authPolicy.addStatements(propstatement);
+      props.authStatements.forEach(propStatement => {
+        this.authPolicy.addStatements(propStatement);
       });
     }
 
@@ -329,7 +329,7 @@ export class Service extends ServiceBase {
 
   /**
    * .grantAccess on a lattice service, will permit the principals to
-   * access all of the service. Consider using more granual permissions
+   * access all of the service. Consider using more granular permissions
    * at the rule level.
    *
    * @param principals a list of IAM principals to grant access.
