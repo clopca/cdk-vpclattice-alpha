@@ -3,6 +3,7 @@ import * as aws_vpclattice from 'aws-cdk-lib/aws-vpclattice';
 import * as constructs from 'constructs';
 import { RequestProtocol, RequestProtocolVersion, TargetGroupBase, TargetType } from './base-target-group';
 import { Lazy } from 'aws-cdk-lib';
+import { HealthCheck } from './health-check';
 
 /**
  * The type of IP Addresss Protocol
@@ -78,6 +79,8 @@ export interface IpTargetGroupConfigProps {
    * @default RequestProtocolVersion.HTTP1
    */
   readonly protocolVersion?: RequestProtocolVersion;
+
+  readonly healthCheck?: HealthCheck;
 }
 
 export class IpTargetGroup extends TargetGroupBase {

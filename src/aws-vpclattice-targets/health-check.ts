@@ -6,8 +6,6 @@ export enum HealthCheckProtocol {
   HTTPS = 'HTTPS'
 }
 
-
-
 export enum HealthCheckProtocolVersion {
   /**
    * Send requests to targets using HTTP/1.1. 

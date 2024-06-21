@@ -2,6 +2,7 @@ import { Lazy, aws_vpclattice } from 'aws-cdk-lib';
 import { IInstance, IVpc } from 'aws-cdk-lib/aws-ec2';
 import { Construct } from 'constructs';
 import { RequestProtocol, RequestProtocolVersion, TargetGroupBase, TargetType } from './base-target-group';
+import { HealthCheck } from './health-check';
 
 export interface InstanceTarget {
   /**
@@ -53,6 +54,11 @@ export interface InstanceTargetGroupProps {
    * @default - Defaults to port 80 for HTTP, or 443 for HTTPS
    */
   readonly port?: number;
+
+  /**
+   * Healthcheck
+   */
+  readonly healthCheck?: HealthCheck;
 }
 
 /**
@@ -102,6 +108,7 @@ export class InstanceTargetGroup extends TargetGroupBase {
       protocol: this.protocol,
       port: this.port,
       protocolVersion: this.protocolVersion,
+      healthCheck: props.healthCheck
     };
 
     this._resource = new aws_vpclattice.CfnTargetGroup(this, 'Resource', {

@@ -1,6 +1,6 @@
 import * as cdk from 'aws-cdk-lib';
 import { Vpc } from 'aws-cdk-lib/aws-ec2';
-import { InstanceTargetGroup, RequestProtocol, ProtocolVersion } from '../../../src/aws-vpclattice-targets';
+import { InstanceTargetGroup, RequestProtocol, RequestProtocolVersion } from '../../../src/aws-vpclattice-targets';
 
 describe('InstanceTG', () => {
     test('DeniesInvalidProtocolVersionCombo', () => {
@@ -13,7 +13,7 @@ describe('InstanceTG', () => {
             new InstanceTargetGroup(stack, 'InstanceTG', {
                 vpc,
                 protocol: RequestProtocol.TCP,
-                protocolVersion: ProtocolVersion.GRPC,
+                protocolVersion: RequestProtocolVersion.GRPC,
             });
         }).toThrow();
     });
