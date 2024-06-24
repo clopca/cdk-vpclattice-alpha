@@ -1,8 +1,8 @@
-import { Lazy, aws_vpclattice } from 'aws-cdk-lib';
+import { Duration, Lazy, aws_vpclattice } from 'aws-cdk-lib';
 import { IInstance, IVpc } from 'aws-cdk-lib/aws-ec2';
 import { Construct } from 'constructs';
 import { RequestProtocol, RequestProtocolVersion, TargetGroupBase, TargetType } from './base-target-group';
-import { HealthCheck } from './health-check';
+import { HTTPFixedResponse, HealthCheck, HealthCheckProtocol, HealthCheckProtocolVersion } from './health-check';
 
 export interface InstanceTarget {
   /**
@@ -65,14 +65,39 @@ export interface InstanceTargetGroupProps {
  * Supports creating a Target group with instances within a specific VPC
  */
 export class InstanceTargetGroup extends TargetGroupBase {
+
+  /**
+   * Validates the HealthCheck
+   */
+  protected validateHealthCheck(): string[] {
+    const errors = new Array<string>();
+    if (this.healthCheck?.healthyThresholdCount && (this.healthCheck.healthyThresholdCount < 1 || this.healthCheck.healthyThresholdCount > 10)) {
+      errors.push('Healthcheck parameter `HealthyThresholdCount` must be between `1` and `10`.');
+    }
+    if (this.healthCheck?.unhealthyThresholdCount && (this.healthCheck.unhealthyThresholdCount < 2 || this.healthCheck.unhealthyThresholdCount > 10)) {
+      errors.push('Healthcheck parameter `HealthyThresholdCount` must be between `2` and `10`.');
+    }
+    if (this.healthCheck?.healthCheckTimeout && (this.healthCheck.healthCheckTimeout.toSeconds() < 1 || this.healthCheck.healthCheckTimeout.toSeconds() > 120)) {
+      errors.push('Healthcheck parameter `HealthCheckTimeout` must be between `1` and `120` seconds.');
+    }
+    if (this.healthCheck?.healthCheckInterval && (this.healthCheck.healthCheckInterval.toSeconds() < 1 || this.healthCheck.healthCheckInterval.toSeconds() > 120)) {
+      errors.push('Healthcheck parameter `HealthCheckInterval` must be between `5` and `300` seconds.');
+    }
+    if (this.healthCheck?.healthCheckTimeout && this.healthCheck?.healthCheckInterval && (this.healthCheck.healthCheckInterval.toSeconds() < this.healthCheck.healthCheckTimeout.toSeconds())) {
+      errors.push(`Healthcheck parameter 'HealthCheckInterval' set to ${this.healthCheck.healthCheckInterval} must be greater than or equal to 'HealthCheckTimeout' which is set to  ${this.healthCheck.healthCheckTimeout} .`);
+    }
+    return errors;
+  }
+
   public readonly name: string;
   public readonly targetType = TargetType.INSTANCE;
   public readonly protocol: RequestProtocol;
-  public readonly protocolVersion: RequestProtocolVersion;
+  public readonly protocolVersion?: RequestProtocolVersion;
   public readonly targetGroupArn: string;
   public readonly targetGroupId: string;
   public readonly port: number;
   public readonly vpc: IVpc;
+  public readonly healthCheck: HealthCheck;
   public readonly targets: InstanceTarget[];
   private readonly _resource: aws_vpclattice.CfnTargetGroup;
 
@@ -87,18 +112,29 @@ export class InstanceTargetGroup extends TargetGroupBase {
     this.vpc = props.vpc;
     this.name = this.physicalName;
     this.protocol = props.protocol ?? RequestProtocol.HTTPS;
-    this.protocolVersion = props.protocolVersion ?? RequestProtocolVersion.HTTP1;
+    this.protocolVersion = props.protocolVersion ?? (props.protocol !== RequestProtocol.TCP ? RequestProtocolVersion.HTTP1 : undefined);
     this.port = props.port ?? (props.protocol === RequestProtocol.HTTP ? 80 : 443);
     this.targets = props.targets ?? [];
+    this.healthCheck = {
+      enabled: props.healthCheck?.enabled ?? true,
+      healthCheckInterval: props.healthCheck?.healthCheckInterval ?? Duration.seconds(30),
+      healthCheckTimeout: props.healthCheck?.healthCheckTimeout ?? Duration.seconds(5),
+      path: props.healthCheck?.path ?? '/',
+      protocol: props.healthCheck?.protocol ?? HealthCheckProtocol.HTTPS,
+      port: props.healthCheck?.port ?? (props.protocol === RequestProtocol.HTTP ? 80 : 443),
+      protocolVersion: props.healthCheck?.protocolVersion ?? HealthCheckProtocolVersion.HTTP1,
+      unhealthyThresholdCount: props.healthCheck?.unhealthyThresholdCount ?? 2,
+      healthyThresholdCount: props.healthCheck?.healthyThresholdCount ?? 5,
+      matchers: props.healthCheck?.matchers ?? HTTPFixedResponse.OK
+    };
 
     // ------------------------------------------------------
     // Validation
     // ------------------------------------------------------
-    if (props.name) {
-      TargetGroupBase.validateTargetGroupName(this.name);
-    }
-    TargetGroupBase.validateProtocol(this.protocol, this.targetType);
-    TargetGroupBase.validateProtocolVersion(this.protocol, this.protocolVersion);
+    if (props.name) { this.node.addValidation({ validate: () => this.validateTargetGroupName(this.name) }) }
+    this.node.addValidation({ validate: () => this.validateProtocol(this.protocol, this.targetType) });
+    this.node.addValidation({ validate: () => this.validateProtocolVersion(this.protocol, this.protocolVersion) })
+    this.node.addValidation({ validate: () => this.validateHealthCheck() });
 
     // ------------------------------------------------------
     // L1 Instantiation
@@ -108,7 +144,21 @@ export class InstanceTargetGroup extends TargetGroupBase {
       protocol: this.protocol,
       port: this.port,
       protocolVersion: this.protocolVersion,
-      healthCheck: props.healthCheck
+      healthCheck: {
+        enabled: this.healthCheck.enabled,
+        healthCheckIntervalSeconds: this.healthCheck.healthCheckInterval?.toSeconds(),
+        healthCheckTimeoutSeconds: this.healthCheck.healthCheckTimeout?.toSeconds(),
+        path: this.healthCheck.path,
+        protocol: this.healthCheck.protocol,
+        port: this.healthCheck.port,
+        protocolVersion: this.healthCheck.protocolVersion,
+        unhealthyThresholdCount: this.healthCheck.unhealthyThresholdCount,
+        healthyThresholdCount: this.healthCheck.healthyThresholdCount,
+        matcher: {
+          httpCode: (this.healthCheck.matchers ?? HTTPFixedResponse.OK).toString(),
+        }
+      }
+
     };
 
     this._resource = new aws_vpclattice.CfnTargetGroup(this, 'Resource', {

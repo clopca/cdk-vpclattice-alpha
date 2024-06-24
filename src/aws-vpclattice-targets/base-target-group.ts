@@ -103,7 +103,7 @@ export interface ITargetGroup extends core.IResource {
 }
 
 /**
- * Properties for a Target Group, Only supply one of instanceTargets, lambdaTargets, albTargets, ipTargets
+ * Properties for a Target Group, Only supply one of instancetargets, lambdaTargets, albTargets, ipTargets
  */
 export abstract class TargetGroupBase extends core.Resource implements ITargetGroup {
   // ------------------------------------------------------
@@ -114,32 +114,52 @@ export abstract class TargetGroupBase extends core.Resource implements ITargetGr
    * The valid characters are a-z, 0-9, and hyphens (-). You can't use a hyphen as
    * the first or last character, or immediately after another hyphen.
    */
-  protected static validateTargetGroupName(name: string) {
+  protected validateTargetGroupName(name: string): string[] {
+    const errors = new Array<string>();
     const pattern = /^(?!tg-)(?!-)(?!.*-$)(?!.*--)[a-z0-9-]+$/;
     const validationSucceeded = name.length >= 3 && name.length <= 128 && pattern.test(name);
     if (!validationSucceeded) {
-      throw new Error(`Invalid Target Group Name: ${name} (must be between 3-128 characters, and must be a valid name)`);
+      errors.push(`Invalid Target Group Name: ${name} (must be between 3-128 characters, and must be a valid name)`);
     }
+    return errors;
   }
   /**
    * Verifies a valid protocol / target Type combination
    */
-  protected static validateProtocol(protocol: RequestProtocol, targetType: TargetType) {
+  protected validateProtocol(protocol: RequestProtocol, targetType: TargetType): string[] {
+    const errors = new Array<string>();
     // Ensure that protocol is not set to TCP if targetType is ALB
     if (protocol === RequestProtocol.TCP && targetType === TargetType.ALB) {
-      throw new Error(`Invalid Protocol: ${protocol} (must be HTTP or HTTPS if targetType is ALB)`);
+      errors.push(`Invalid Protocol: ${protocol} (must be HTTP or HTTPS if targetType is ALB)`);
     }
+    return errors;
   }
 
   /**
    * Verifies a valid protocol / protocol version combination
    */
-  protected static validateProtocolVersion(protocol: RequestProtocol, protocolVersion: RequestProtocolVersion) {
+  protected validateProtocolVersion(protocol: RequestProtocol, protocolVersion?: RequestProtocolVersion): string[] {
+    const errors = new Array<string>();
     // Ensure that protocol version is undefine if protocol is TCP
     if (protocol === RequestProtocol.TCP && protocolVersion) {
-      throw new Error(`Invalid Protocol Version: ${protocolVersion} (must not be set if protocol is TCP)`);
+      errors.push(`Invalid Protocol Version: ${protocolVersion} (must not be set if protocol is TCP)`);
     }
+    return errors;
   }
+
+  /**
+   * Verifies a valid protocol / target Type combination
+   */
+  protected validateProtocolPort(protocol: RequestProtocol, port: number): string[] {
+    const errors = new Array<string>();
+    if (protocol === RequestProtocol.HTTP && port !== 80) {
+      errors.push('HTTP protocol must use port 80');
+    } else if (protocol === RequestProtocol.HTTPS && port !== 443) {
+      errors.push('HTTPS protocol must use port 443');
+    }
+    return errors;
+  }
+
   // ------------------------------------------------------
   /**
    * The id of the target group

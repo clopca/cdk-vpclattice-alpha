@@ -44,11 +44,27 @@ export interface AlbTargetGroupProps {
 }
 
 export class AlbTargetGroup extends TargetGroupBase {
+  /**
+ * Validate VPC for Target Types
+ */
+  protected validateVpc(): string[] {
+    const errors = new Array<string>();
+    if (this.loadBalancer.vpc) {
+      if (this.loadBalancer.vpc.vpcId != this.vpc.vpcId) {
+        throw new Error('The Application Load Balancer must be in the same VPC as the VPC Lattice target group.');
+      }
+    }
+    return errors;
+  }
+
   public readonly targetGroupArn: string;
   public readonly targetGroupId: string;
   public readonly name: string;
   public readonly targetType = TargetType.ALB;
   public readonly port: number;
+  public readonly vpc: IVpc;
+  public readonly protocol: RequestProtocol;
+  public readonly protocolVersion: RequestProtocolVersion;
   public readonly loadBalancer: IApplicationLoadBalancer;
   private readonly _resource: aws_vpclattice.CfnTargetGroup;
 
@@ -60,19 +76,20 @@ export class AlbTargetGroup extends TargetGroupBase {
     // Set properties or defaults
     // ------------------------------------------------------
     this.name = this.physicalName;
+    this.vpc = props.vpc;
     this.loadBalancer = props.loadBalancer;
     this.port = props.port ?? (props.protocol === RequestProtocol.HTTP ? 80 : 443);
+    this.protocol = props.protocol ?? RequestProtocol.HTTPS;
+    this.protocolVersion = props.protocolVersion ?? RequestProtocolVersion.HTTP1;
 
     // ------------------------------------------------------
     // Validation
     // ------------------------------------------------------
-    if (props.name) { TargetGroupBase.validateTargetGroupName(props.name) }
-    if (props.protocol) { TargetGroupBase.validateProtocol(props.protocol, this.targetType) }
-    if (this.loadBalancer.vpc) {
-      if (this.loadBalancer.vpc.vpcId != props.vpc.vpcId) {
-        throw new Error('The Application Load Balancer must be in the same VPC as the VPC Lattice target group.');
-      }
-    }
+    if (props.name) { this.node.addValidation({ validate: () => this.validateTargetGroupName(this.name) }) }
+    this.node.addValidation({ validate: () => this.validateProtocol(this.protocol, this.targetType) });
+    this.node.addValidation({ validate: () => this.validateProtocolVersion(this.protocol, this.protocolVersion) })
+    this.node.addValidation({ validate: () => this.validateVpc() });
+
 
     // ------------------------------------------------------
     // L1 Instantiation

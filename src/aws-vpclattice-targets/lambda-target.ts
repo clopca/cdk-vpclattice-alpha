@@ -56,9 +56,8 @@ export class LambdaTargetGroup extends TargetGroupBase {
     // ------------------------------------------------------
     // Validation
     // ------------------------------------------------------
-    if (props.name) {
-      TargetGroupBase.validateTargetGroupName(props.name);
-    }
+    if (props.name) { this.node.addValidation({ validate: () => this.validateTargetGroupName(this.name) }) }
+
 
     // ------------------------------------------------------
     // L1 Instantiation

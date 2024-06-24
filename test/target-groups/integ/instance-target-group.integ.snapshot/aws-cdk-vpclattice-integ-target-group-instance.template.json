@@ -591,6 +591,20 @@
    "Type": "AWS::VpcLattice::TargetGroup",
    "Properties": {
     "Config": {
+     "HealthCheck": {
+      "Enabled": false,
+      "HealthCheckIntervalSeconds": 30,
+      "HealthCheckTimeoutSeconds": 5,
+      "HealthyThresholdCount": 5,
+      "Matcher": {
+       "HttpCode": "200"
+      },
+      "Path": "/health",
+      "Port": 8080,
+      "Protocol": "HTTP",
+      "ProtocolVersion": "HTTP1",
+      "UnhealthyThresholdCount": 2
+     },
      "Port": 443,
      "Protocol": "HTTPS",
      "ProtocolVersion": "HTTP1",

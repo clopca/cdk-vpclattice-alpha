@@ -1,7 +1,14 @@
-import { Duration, aws_vpclattice } from 'aws-cdk-lib';
+import { Duration } from 'aws-cdk-lib';
 
 export enum HealthCheckProtocol {
+  /**
+   * HTTP
+   */
   HTTP = 'HTTP',
+
+  /**
+   * HTTPS
+   */
   HTTPS = 'HTTPS',
 }
 
@@ -22,7 +29,7 @@ export enum HealthCheckProtocolVersion {
 /**
  * Fixed response codes
  */
-export enum FixedResponse {
+export enum HTTPFixedResponse {
   /**
    * OK 200
    */
@@ -47,9 +54,19 @@ export enum FixedResponse {
    * Not Found 404
    */
   NOT_FOUND = 404,
+
+  /**
+   * Internal server error 500
+   */
+  INTERNAL_SERVER_ERROR = 500,
 }
 
-export interface TargetGroupHealthCheckProps {
+
+/**
+ * Create a Health Check for a target
+ * @see https://docs.aws.amazon.com/vpc-lattice/latest/ug/target-group-health-checks.html
+ */
+export interface HealthCheck {
   /**
    * Whether to enable health checks for the target group
    * @default - true if protocol version is HTTP1, false if protocol version is HTTP2,
@@ -91,7 +108,7 @@ export interface TargetGroupHealthCheckProps {
    *
    * @default FixedResponse.OK
    */
-  readonly matchers?: FixedResponse | string;
+  readonly matchers?: HTTPFixedResponse | string;
 
   /**
    * The ping path to the destination on the targets for health checks.
@@ -101,7 +118,7 @@ export interface TargetGroupHealthCheckProps {
 
   /**
    * The port the service uses when performing health checks on targets.
-   * @default 443
+   * @default - Defaults to port 80 for HTTP, or 443 for HTTPS
    */
   readonly port?: number;
 
@@ -117,112 +134,4 @@ export interface TargetGroupHealthCheckProps {
    * @default HealthCheckProtocolVersion.HTTP1
    */
   readonly protocolVersion?: HealthCheckProtocolVersion;
-}
-
-/**
- * Create a Health Check for a target
- * @see https://docs.aws.amazon.com/vpc-lattice/latest/ug/target-group-health-checks.html
- */
-export abstract class HealthCheck {
-  /**
-   * A Health Check configuration object for a target
-   * @param props
-   * @returns HealthCheck
-   */
-  public static validateProperties(props: TargetGroupHealthCheckProps): HealthCheck {
-    if (props.healthCheckInterval) {
-      if (props.healthCheckInterval.toSeconds() < 5 || props.healthCheckInterval.toSeconds() > 300) {
-        throw new Error('HealthCheckInterval must be between 5 and 300 seconds');
-      }
-    }
-
-    if (props.healthCheckTimeout) {
-      if (props.healthCheckTimeout.toSeconds() < 1 || props.healthCheckTimeout.toSeconds() > 120) {
-        throw new Error('HealthCheckTimeout must be between 1 and 120seconds');
-      }
-    }
-
-    if (props.healthyThresholdCount) {
-      if (props.healthyThresholdCount < 1 || props.healthyThresholdCount > 10) {
-        throw new Error('HealthyThresholdCount must be between 1 and 10');
-      }
-    }
-
-    if (props.unhealthyThresholdCount) {
-      if (props.unhealthyThresholdCount < 2 || props.unhealthyThresholdCount > 10) {
-        throw new Error('UnhealthyThresholdCount must be between 2 and 10');
-      }
-    }
-
-    var port: number;
-    if (props.port) {
-      port = props.port;
-    } else if (props.protocol === HealthCheckProtocol.HTTP) {
-      port = 80;
-    } else {
-      port = 443;
-    }
-
-    let matcher: aws_vpclattice.CfnTargetGroup.MatcherProperty | undefined = undefined;
-    if (props.matchers) {
-      const codeAsString = props.matchers.toString();
-      matcher = { httpCode: codeAsString };
-    }
-
-    return {
-      enabled: props.enabled ?? true,
-      healthCheckInterval: props.healthCheckInterval ?? Duration.seconds(30),
-      healthCheckTimeout: props.healthCheckTimeout ?? Duration.seconds(5),
-      path: props.path ?? '/',
-      protocol: props.protocol ?? HealthCheckProtocol.HTTPS,
-      port: port,
-      protocolVersion: props.protocolVersion ?? HealthCheckProtocolVersion.HTTP1,
-      unhealthyThresholdCount: props.unhealthyThresholdCount ?? 2,
-      healthyThresholdCount: props.healthyThresholdCount ?? 5,
-      matcher: matcher,
-    };
-  }
-
-  /**
-   * health check is enabled.
-   */
-  public abstract readonly enabled: boolean;
-  /**
-   * healthCheck Interval
-   */
-  public abstract readonly healthCheckInterval: Duration;
-  /**
-   * HealthCheck Timeout
-   */
-  public abstract readonly healthCheckTimeout: Duration;
-  /**
-   * Target Match response
-   */
-  public abstract readonly matcher: aws_vpclattice.CfnTargetGroup.MatcherProperty | undefined;
-  /**
-   * Path to check
-   */
-  public abstract readonly path: string;
-  /**
-   * Port to check
-   */
-  public abstract readonly port: number;
-  /**
-   * Protocol to use
-   */
-  public abstract readonly protocol: HealthCheckProtocol;
-  /**
-   * HTTP Protocol Version
-   */
-  public abstract readonly protocolVersion: HealthCheckProtocolVersion;
-  /**
-   * Unhealthy Threshold Count
-   */
-  public abstract readonly unhealthyThresholdCount: number;
-  /**
-   * Healthy Threshold Count
-   */
-  public abstract readonly healthyThresholdCount: number;
-
-  protected constructor() {}
 }

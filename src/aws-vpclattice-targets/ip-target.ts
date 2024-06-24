@@ -1,9 +1,9 @@
-import { Lazy } from 'aws-cdk-lib';
+import { Duration, Lazy } from 'aws-cdk-lib';
 import { IVpc, IpAddresses, Ipv6Addresses } from 'aws-cdk-lib/aws-ec2';
 import * as aws_vpclattice from 'aws-cdk-lib/aws-vpclattice';
 import * as constructs from 'constructs';
 import { RequestProtocol, RequestProtocolVersion, TargetGroupBase, TargetType } from './base-target-group';
-import { HealthCheck } from './health-check';
+import { HTTPFixedResponse, HealthCheck, HealthCheckProtocol, HealthCheckProtocolVersion } from './health-check';
 
 /**
  * The type of IP Address Protocol
@@ -32,28 +32,8 @@ export interface IpTargetGroupProps {
   readonly targets?: IpTargetGroupTargetProps[];
 
   /**
-   * Configuration for the IP TargetGroup
-   */
-  readonly config: IpTargetGroupConfigProps;
-}
-
-export interface IpTargetGroupTargetProps {
-  /**
-   * The IP Address of the target
-   */
-  readonly ipAddress: Ipv6Addresses | IpAddresses;
-
-  /**
-   * Port
-   * @default - Defaults to port 80 for HTTP, or 443 for HTTPS
-   */
-  readonly port?: number;
-}
-
-export interface IpTargetGroupConfigProps {
-  /**
-   * VPC Identifier
-   */
+  * VPC Identifier
+  */
   readonly vpc: IVpc;
 
   /**
@@ -80,7 +60,24 @@ export interface IpTargetGroupConfigProps {
    */
   readonly protocolVersion?: RequestProtocolVersion;
 
+  /**
+   * Health Check configuration
+   */
   readonly healthCheck?: HealthCheck;
+
+}
+
+export interface IpTargetGroupTargetProps {
+  /**
+   * The IP Address of the target
+   */
+  readonly ipAddress: Ipv6Addresses | IpAddresses;
+
+  /**
+   * Port
+   * @default - Defaults to port 80 for HTTP, or 443 for HTTPS
+   */
+  readonly port?: number;
 }
 
 export class IpTargetGroup extends TargetGroupBase {
@@ -93,9 +90,9 @@ export class IpTargetGroup extends TargetGroupBase {
   public readonly ipAddressType: IpAddressType;
   public readonly protocolVersion: RequestProtocolVersion;
   public readonly vpc: IVpc;
-  public readonly config: aws_vpclattice.CfnTargetGroup.TargetGroupConfigProperty;
   public readonly targetType = TargetType.IP;
   private readonly _resource: aws_vpclattice.CfnTargetGroup;
+  private readonly healthCheck: HealthCheck;
 
   constructor(scope: constructs.Construct, id: string, props: IpTargetGroupProps) {
     super(scope, id, {
@@ -105,38 +102,36 @@ export class IpTargetGroup extends TargetGroupBase {
     // ------------------------------------------------------
     // Set properties or defaults
     // ------------------------------------------------------
-    this.vpc = props.config.vpc;
-    this.ipAddressType = props.config.ipAddressType ?? IpAddressType.IPV4;
-    this.protocol = props.config.protocol ?? RequestProtocol.HTTPS;
-    this.port = props.config.port ?? (this.protocol === RequestProtocol.HTTP ? 80 : 443);
-    this.protocolVersion = props.config.protocolVersion ?? RequestProtocolVersion.HTTP1;
+    this.vpc = props.vpc;
+    this.ipAddressType = props.ipAddressType ?? IpAddressType.IPV4;
+    this.protocol = props.protocol ?? RequestProtocol.HTTPS;
+    this.port = props.port ?? (this.protocol === RequestProtocol.HTTP ? 80 : 443);
+    this.protocolVersion = props.protocolVersion ?? RequestProtocolVersion.HTTP1;
     this.name = this.physicalName;
     this.targets = props.targets ?? [];
+    this.healthCheck = {
+      enabled: props.healthCheck?.enabled ?? true,
+      healthCheckInterval: props.healthCheck?.healthCheckInterval ?? Duration.seconds(30),
+      healthCheckTimeout: props.healthCheck?.healthCheckTimeout ?? Duration.seconds(5),
+      path: props.healthCheck?.path ?? '/',
+      protocol: props.healthCheck?.protocol ?? HealthCheckProtocol.HTTPS,
+      port: props.healthCheck?.port ?? (props.protocol === RequestProtocol.HTTP ? 80 : 443),
+      protocolVersion: props.healthCheck?.protocolVersion ?? HealthCheckProtocolVersion.HTTP1,
+      unhealthyThresholdCount: props.healthCheck?.unhealthyThresholdCount ?? 2,
+      healthyThresholdCount: props.healthCheck?.healthyThresholdCount ?? 5,
+      matchers: props.healthCheck?.matchers ?? HTTPFixedResponse.OK
+    };
 
     // ------------------------------------------------------
     // Validation
     // ------------------------------------------------------
-    if (props.name) {
-      TargetGroupBase.validateTargetGroupName(props.name);
-    }
+    if (props.name) { this.node.addValidation({ validate: () => this.validateTargetGroupName(this.name) }) }
 
-    // Validate the port based on the protocol
-    if (this.protocol === RequestProtocol.HTTP && this.port !== 80) {
-      throw new Error('HTTP protocol must use port 80');
-    } else if (this.protocol === RequestProtocol.HTTPS && this.port !== 443) {
-      throw new Error('HTTPS protocol must use port 443');
-    }
+
 
     // ------------------------------------------------------
     // L1 Instantiation
     // ------------------------------------------------------
-    this.config = {
-      vpcIdentifier: this.vpc.vpcId,
-      ipAddressType: this.ipAddressType,
-      protocol: this.protocol,
-      port: this.port,
-      protocolVersion: this.protocolVersion,
-    };
 
     this._resource = new aws_vpclattice.CfnTargetGroup(this, 'Resource', {
       type: TargetType.IP,
@@ -144,7 +139,27 @@ export class IpTargetGroup extends TargetGroupBase {
       targets: Lazy.any({
         produce: () => this.targets.map(target => ({ id: target.ipAddress.toString(), port: target.port ?? this.port })),
       }),
-      config: this.config,
+      config: {
+        vpcIdentifier: this.vpc.vpcId,
+        ipAddressType: this.ipAddressType,
+        protocol: this.protocol,
+        port: this.port,
+        protocolVersion: this.protocolVersion,
+        healthCheck: {
+          enabled: this.healthCheck.enabled,
+          healthCheckIntervalSeconds: this.healthCheck.healthCheckInterval?.toSeconds(),
+          healthCheckTimeoutSeconds: this.healthCheck.healthCheckTimeout?.toSeconds(),
+          path: this.healthCheck.path,
+          protocol: this.healthCheck.protocol,
+          port: this.healthCheck.port,
+          protocolVersion: this.healthCheck.protocolVersion,
+          unhealthyThresholdCount: this.healthCheck.unhealthyThresholdCount,
+          healthyThresholdCount: this.healthCheck.healthyThresholdCount,
+          matcher: {
+            httpCode: (this.healthCheck.matchers ?? HTTPFixedResponse.OK).toString(),
+          }
+        },
+      }
     });
 
     this.targetGroupId = this._resource.attrId;
