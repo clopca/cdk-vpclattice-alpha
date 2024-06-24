@@ -49,29 +49,34 @@ export class AlbTargetGroup extends TargetGroupBase {
   public readonly name: string;
   public readonly targetType = TargetType.ALB;
   public readonly port: number;
-  private readonly loadBalancer: IApplicationLoadBalancer;
+  public readonly loadBalancer: IApplicationLoadBalancer;
   private readonly _resource: aws_vpclattice.CfnTargetGroup;
 
   constructor(scope: Construct, id: string, props: AlbTargetGroupProps) {
     super(scope, id, {
       physicalName: props.name,
     });
-    if (props.name) {
-      TargetGroupBase.validateTargetGroupName(props.name);
-    }
-    if (props.protocol) {
-      TargetGroupBase.validateProtocol(props.protocol, this.targetType);
-    }
+    // ------------------------------------------------------
+    // Set properties or defaults
+    // ------------------------------------------------------
     this.name = this.physicalName;
     this.loadBalancer = props.loadBalancer;
     this.port = props.port ?? (props.protocol === RequestProtocol.HTTP ? 80 : 443);
 
+    // ------------------------------------------------------
+    // Validation
+    // ------------------------------------------------------
+    if (props.name) { TargetGroupBase.validateTargetGroupName(props.name) }
+    if (props.protocol) { TargetGroupBase.validateProtocol(props.protocol, this.targetType) }
     if (this.loadBalancer.vpc) {
       if (this.loadBalancer.vpc.vpcId != props.vpc.vpcId) {
         throw new Error('The Application Load Balancer must be in the same VPC as the VPC Lattice target group.');
       }
     }
 
+    // ------------------------------------------------------
+    // L1 Instantiation
+    // ------------------------------------------------------
     let config: aws_vpclattice.CfnTargetGroup.TargetGroupConfigProperty = {
       vpcIdentifier: props.vpc.vpcId,
       protocol: props.protocol ?? RequestProtocol.HTTPS,

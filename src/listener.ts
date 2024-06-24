@@ -4,7 +4,7 @@ import * as generated from 'aws-cdk-lib/aws-vpclattice';
 import { Construct } from 'constructs';
 import { WeightedTargetGroup } from './aws-vpclattice-targets/base-target-group';
 import { HTTPMatch } from './matches';
-import { Service } from './service';
+import { IService, Service } from './service';
 
 /**
  * AuthTypes
@@ -24,7 +24,7 @@ export enum AuthType {
 /**
  * HTTP/HTTPS methods
  */
-export enum Protocol {
+export enum ListenerProtocol {
   /**
    * HTTP Protocol
    * @see https://docs.aws.amazon.com/vpc-lattice/latest/ug/http-listeners.html
@@ -33,9 +33,16 @@ export enum Protocol {
 
   /**
    * HTTPS Protocol
+   * VPC Lattice will provision and manage a TLS certificate that is associated 
+   * with the VPC Lattice generated FQDN.
    * @see https://docs.aws.amazon.com/vpc-lattice/latest/ug/https-listeners.html
    */
   HTTPS = 'HTTPS',
+
+  /**
+   * TLS Passthrough
+   */
+  TLS_PASSTHROUGH = 'TLS_PASSTHROUGH'
 }
 
 /**
@@ -187,9 +194,9 @@ export interface ListenerProps {
 
   /**
    * protocol that the listener will listen on
-   * @default HTTPS
+   * @default ListenerProtocol.HTTPS
    */
-  readonly protocol?: Protocol;
+  readonly protocol?: ListenerProtocol;
 
   /**
    * Optional port number for the listener. If not supplied, will default to 80 or 443, depending on the Protocol.
@@ -292,6 +299,7 @@ export interface RuleProp {
  *
  *  **This class should not be called directly**.
  *  Use the `.addListener()` method on an instance of a Service construct.
+ * @resource AWS::VpcLattice::Listener
  *
  */
 export class Listener extends core.Resource implements IListener {
@@ -303,21 +311,49 @@ export class Listener extends core.Resource implements IListener {
    * THe Arn of the Listener
    */
   readonly listenerArn: string;
+
+  /**
+   * The listener protocol
+   */
+  readonly protocol: ListenerProtocol;
+
+  /**
+   * The listener port.
+   */
+  readonly port: number;
+
+  /**
+   * The name of the listener
+   */
+  readonly name?: string;
+
   /**
    * A list of priorities, to check for duplicates
    */
   listenerPriorities: number[] = [];
+
   /**
    * The service this listener is attached to
    */
-  service: Service;
+  service: IService;
+
   /**
    * Service auth Policy
    * @default none.
    */
 
   constructor(scope: Construct, id: string, props: ListenerProps) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.name,
+    });
+
+    // ------------------------------------------------------
+    // Set properties or defaults
+    // ------------------------------------------------------
+    this.name = this.physicalName
+    this.service = props.service
+    this.protocol = props.protocol ?? ListenerProtocol.HTTPS
+    this.port = props.port ?? (props.protocol === ListenerProtocol.HTTP ? 80 : 443)
 
     // the default action is a not provided, it will be set to NOT_FOUND
     // let defaultAction: generated.CfnListener.DefaultActionProperty = props.defaultAction ?? {
@@ -367,7 +403,7 @@ export class Listener extends core.Resource implements IListener {
     }
 
     // default to using HTTPS
-    let protocol = props.protocol ?? Protocol.HTTPS;
+    let protocol = props.protocol ?? ListenerProtocol.HTTPS;
 
     // check the the port is in range if it is specified
     if (props.port) {
@@ -378,9 +414,9 @@ export class Listener extends core.Resource implements IListener {
 
     // if its not specified, set it to the default port based on the protocol
     let port: number;
-    if (protocol === Protocol.HTTP) {
+    if (protocol === ListenerProtocol.HTTP) {
       port = props.port ?? 80;
-    } else if (protocol === Protocol.HTTPS) {
+    } else if (protocol === ListenerProtocol.HTTPS) {
       port = props.port ?? 443;
     } else {
       throw new Error('Protocol not supported');

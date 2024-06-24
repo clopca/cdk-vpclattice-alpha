@@ -205,7 +205,7 @@ abstract class ServiceNetworkBase extends core.Resource implements IServiceNetwo
     });
   }
   /**
-   * Apply the AuthPolicy to the Service Network
+   * Apply the VPC to the Service Network
    */
   public associateVPC(props: AssociateVPCProps): void {
     new AssociateVpc(this, `AssociateVPC${props.vpc.node.addr}`, {
@@ -448,6 +448,10 @@ export class ServiceNetwork extends ServiceNetworkBase {
       resourceIdentifier: this.serviceNetworkId,
     });
   }
+
+  /**
+   * Associates a VPC with the service netwoek.
+   */
 
   /**
    * Amazon VPC Lattice integrates with AWS Resource Access Manager (AWS RAM) to enable

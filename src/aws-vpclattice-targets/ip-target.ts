@@ -3,7 +3,6 @@ import { IVpc, IpAddresses, Ipv6Addresses } from 'aws-cdk-lib/aws-ec2';
 import * as aws_vpclattice from 'aws-cdk-lib/aws-vpclattice';
 import * as constructs from 'constructs';
 import { RequestProtocol, RequestProtocolVersion, TargetGroupBase, TargetType } from './base-target-group';
-import { Lazy } from 'aws-cdk-lib';
 import { HealthCheck } from './health-check';
 
 /**
@@ -33,7 +32,7 @@ export interface IpTargetGroupProps {
   readonly targets?: IpTargetGroupTargetProps[];
 
   /**
-   * Configuration for the TargetGroup, if it is not a lambda
+   * Configuration for the IP TargetGroup
    */
   readonly config: IpTargetGroupConfigProps;
 }

@@ -46,15 +46,19 @@ export class LambdaTargetGroup extends TargetGroupBase {
     super(scope, id, {
       physicalName: props.name,
     });
-    if (props.name) {
-      TargetGroupBase.validateTargetGroupName(props.name);
-    }
     // ------------------------------------------------------
     // Set properties or defaults
     // ------------------------------------------------------
     this.name = this.physicalName;
     this.target = props.target;
     this.lambdaEventStructureVersion = props.lambdaEventStructureVersion ?? LambdaEventStructureVersion.V1;
+
+    // ------------------------------------------------------
+    // Validation
+    // ------------------------------------------------------
+    if (props.name) {
+      TargetGroupBase.validateTargetGroupName(props.name);
+    }
 
     // ------------------------------------------------------
     // L1 Instantiation
