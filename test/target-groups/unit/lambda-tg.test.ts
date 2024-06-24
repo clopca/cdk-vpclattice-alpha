@@ -13,9 +13,9 @@ describe('InstanceTG', () => {
     });
 
     const lambdaFunction = new lambda.Function(stack, 'Helloworld', {
-      runtime: aws_lambda.Runtime.PYTHON_3_10,
+      runtime: lambda.Runtime.PYTHON_3_10,
       handler: 'helloworld.lambda_handler',
-      code: aws_lambda.Code.fromAsset(path.join(__dirname, './lambda')),
+      code: lambda.Code.fromAsset(path.join(__dirname, './lambda')),
       timeout: cdk.Duration.seconds(15),
       role: lambdaRole,
     });
