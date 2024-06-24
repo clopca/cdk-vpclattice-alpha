@@ -33,7 +33,7 @@ export enum ListenerProtocol {
 
   /**
    * HTTPS Protocol
-   * VPC Lattice will provision and manage a TLS certificate that is associated 
+   * VPC Lattice will provision and manage a TLS certificate that is associated
    * with the VPC Lattice generated FQDN.
    * @see https://docs.aws.amazon.com/vpc-lattice/latest/ug/https-listeners.html
    */
@@ -42,7 +42,7 @@ export enum ListenerProtocol {
   /**
    * TLS Passthrough
    */
-  TLS_PASSTHROUGH = 'TLS_PASSTHROUGH'
+  TLS_PASSTHROUGH = 'TLS_PASSTHROUGH',
 }
 
 /**
@@ -335,7 +335,7 @@ export class Listener extends core.Resource implements IListener {
   /**
    * The service this listener is attached to
    */
-  service: IService;
+  service: Service;
 
   /**
    * Service auth Policy
@@ -350,10 +350,10 @@ export class Listener extends core.Resource implements IListener {
     // ------------------------------------------------------
     // Set properties or defaults
     // ------------------------------------------------------
-    this.name = this.physicalName
-    this.service = props.service
-    this.protocol = props.protocol ?? ListenerProtocol.HTTPS
-    this.port = props.port ?? (props.protocol === ListenerProtocol.HTTP ? 80 : 443)
+    this.name = this.physicalName;
+    this.service = props.service;
+    this.protocol = props.protocol ?? ListenerProtocol.HTTPS;
+    this.port = props.port ?? (props.protocol === ListenerProtocol.HTTP ? 80 : 443);
 
     // the default action is a not provided, it will be set to NOT_FOUND
     // let defaultAction: generated.CfnListener.DefaultActionProperty = props.defaultAction ?? {
