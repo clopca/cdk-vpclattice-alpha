@@ -1,6 +1,6 @@
 import * as path from 'path';
 import * as cdk from 'aws-cdk-lib';
-import { aws_iam as iam, aws_lambda } from 'aws-cdk-lib';
+import { aws_iam as iam, aws_lambda as lambda } from 'aws-cdk-lib';
 import { LambdaTargetGroup, LambdaEventStructureVersion } from '../../../src/aws-vpclattice-targets';
 
 describe('InstanceTG', () => {
@@ -12,7 +12,7 @@ describe('InstanceTG', () => {
       assumedBy: new iam.AccountRootPrincipal(),
     });
 
-    const lambdaFunction = new aws_lambda.Function(stack, 'Helloworld', {
+    const lambdaFunction = new lambda.Function(stack, 'Helloworld', {
       runtime: aws_lambda.Runtime.PYTHON_3_10,
       handler: 'helloworld.lambda_handler',
       code: aws_lambda.Code.fromAsset(path.join(__dirname, './lambda')),
