@@ -1,23 +1,24 @@
-import * as path from 'path';
 import * as cdk from 'aws-cdk-lib';
-import { aws_iam as iam, aws_lambda as lambda } from 'aws-cdk-lib';
+import { Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { LambdaTargetGroup, LambdaEventStructureVersion } from '../../../src/aws-vpclattice-targets';
 
 describe('InstanceTG', () => {
   test('DeniesInvalidProtocolVersionCombo', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const lambdaRole = new iam.Role(stack, 'LambdaRole', {
-      roleName: 'LambdaRole',
-      assumedBy: new iam.AccountRootPrincipal(),
-    });
 
-    const lambdaFunction = new lambda.Function(stack, 'Helloworld', {
-      runtime: lambda.Runtime.PYTHON_3_10,
-      handler: 'helloworld.lambda_handler',
-      code: lambda.Code.fromAsset(path.join(__dirname, './lambda')),
-      timeout: cdk.Duration.seconds(15),
-      role: lambdaRole,
+    const lambdaFunction = new Function(stack, 'LambdaTargetFunction', {
+      runtime: Runtime.NODEJS_18_X,
+      code: Code.fromInline(`
+            exports.handler = async (event) => {
+                return {
+                    isBase64Encoded: false,
+                    statusCode: 200,
+                    body: JSON.stringify({ message: "Hello from Lambda!" }),
+                };
+            };
+        `),
+      handler: 'index.function_name',
     });
 
     // WHEN & THEN
