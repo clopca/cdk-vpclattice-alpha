@@ -1,3 +1,4 @@
+import { EOL } from 'os';
 import { aws_iam as iam, aws_ram as ram } from 'aws-cdk-lib';
 import * as core from 'aws-cdk-lib';
 import * as generated from 'aws-cdk-lib/aws-vpclattice';
@@ -174,12 +175,23 @@ export class Service extends ServiceBase {
   // ------------------------------------------------------
   // Imports
   // ------------------------------------------------------
-  public static fromServiceArn(scope: Construct, id: string, arn: string): IService {
+  public static fromServiceArn(scope: Construct, id: string, serviceArn: string): IService {
+    validateServiceArn();
+
     class Import extends ServiceBase {
-      public readonly serviceArn = arn;
-      public readonly serviceId = core.Arn.extractResourceName(arn, 'service');
+      public readonly serviceArn = serviceArn;
+      public readonly serviceId = core.Arn.extractResourceName(serviceArn, 'service');
     }
     return new Import(scope, id);
+
+    function validateServiceArn() {
+      const splitArn = serviceArn.split(':');
+      // knowing that this is an arn example: arn:aws:vpc-lattice:eu-west-1:546667217338:service/svc-029fe1d290c4071ec
+      // check the different parts of the arn
+      if (splitArn[0] !== 'arn' || splitArn[2] !== 'vpc-lattice' || splitArn[5] !== 'service') {
+        throw new Error(`Repository arn should be in the format 'arn:<PARTITION>:vpc-lattice:<REGION>:<ACCOUNT>:service/<NAME>', got ${serviceArn}.`);
+      }
+    }
   }
   // -----------
   public static fromServiceId(scope: Construct, id: string, serviceId: string): IService {
@@ -204,18 +216,30 @@ export class Service extends ServiceBase {
    * Must be between 3-40 characters. Lowercase letters, numbers, and hyphens are accepted.
    * Must begin and end with a letter or number. No consecutive hyphens.
    */
-  protected static validateServiceName(name: string) {
-    const pattern = /^(?!svc-)(?!-)(?!.*-$)(?!.*--)[a-z0-9-]+$/;
-    const validationSucceeded = name.length >= 3 && name.length <= 40 && pattern.test(name);
-    if (!validationSucceeded) {
-      throw new Error(`Invalid Service Name: ${name} (must be between 3-40 characters, and must be a valid DNS name)`);
+  private static validateServiceName(name: string) {
+    const errors: string[] = [];
+
+    // Rules codified from https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-vpclattice-service.html
+    if (name.length < 3 || name.length > 40) {
+      errors.push('Service name must be at least 3 and no more than 40 characters');
+    }
+
+    const isPatternMatch = /^(?!svc-)(?!-)(?!.*-$)(?!.*--)[a-z0-9-]+$/.test(name);
+    if (!isPatternMatch) {
+      errors.push(
+        'Service name must be composed of characters a-z, 0-9, and hyphens (-). You can\'t use a hyphen as the first or last character, or immediately after another hyphen. The name cannot start with "svc-".',
+      );
+    }
+
+    if (errors.length > 0) {
+      throw new Error(`Invalid Service name (value: ${name})${EOL}${errors.join(EOL)}`);
     }
   }
 
   /**
    * Must specify at most only one destination per destination type
    */
-  protected static validateLoggingDestinations(loggingDestinations: LoggingDestination[]) {
+  private static validateLoggingDestinations(loggingDestinations: LoggingDestination[]) {
     if (loggingDestinations.length) {
       const destinationTypes = loggingDestinations.map(destination => destination.destinationType);
       if (new Set(destinationTypes).size !== destinationTypes.length) {
@@ -228,7 +252,7 @@ export class Service extends ServiceBase {
    * Must ensure Service has the correct AuthType and policy is a
    * valid IAM Resource-based Policy
    */
-  protected static validateAuthPolicy(authPolicy: iam.PolicyDocument) {
+  private static validateAuthPolicy(authPolicy: iam.PolicyDocument) {
     if (authPolicy.validateForResourcePolicy().length > 0) {
       throw new Error(`The following errors were found in the policy: \n${authPolicy.validateForResourcePolicy()} \n ${authPolicy}`);
     }
