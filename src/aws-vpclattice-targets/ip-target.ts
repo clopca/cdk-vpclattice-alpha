@@ -24,7 +24,7 @@ export interface IpTargetGroupProps {
   /**
    * The name of the target group
    */
-  readonly name: string;
+  readonly name?: string;
 
   /**
    * Targets
@@ -32,8 +32,8 @@ export interface IpTargetGroupProps {
   readonly targets?: IpTargetGroupTargetProps[];
 
   /**
-  * VPC Identifier
-  */
+   * VPC Identifier
+   */
   readonly vpc: IVpc;
 
   /**
@@ -64,7 +64,6 @@ export interface IpTargetGroupProps {
    * Health Check configuration
    */
   readonly healthCheck?: HealthCheck;
-
 }
 
 export interface IpTargetGroupTargetProps {
@@ -119,7 +118,7 @@ export class IpTargetGroup extends TargetGroupBase {
       protocolVersion: props.healthCheck?.protocolVersion ?? HealthCheckProtocolVersion.HTTP1,
       unhealthyThresholdCount: props.healthCheck?.unhealthyThresholdCount ?? 2,
       healthyThresholdCount: props.healthCheck?.healthyThresholdCount ?? 5,
-      matchers: props.healthCheck?.matchers ?? HTTPFixedResponse.OK
+      matchers: props.healthCheck?.matchers ?? HTTPFixedResponse.OK,
     };
 
     // ------------------------------------------------------
@@ -156,9 +155,9 @@ export class IpTargetGroup extends TargetGroupBase {
           healthyThresholdCount: this.healthCheck.healthyThresholdCount,
           matcher: {
             httpCode: (this.healthCheck.matchers ?? HTTPFixedResponse.OK).toString(),
-          }
+          },
         },
-      }
+      },
     });
 
     this.targetGroupId = this._resource.attrId;

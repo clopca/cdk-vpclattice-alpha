@@ -31,9 +31,9 @@ const tg1 = new InstanceTargetGroup(stack, 'Ec2TG', {
     enabled: false,
     protocol: HealthCheckProtocol.HTTP,
     path: '/health',
-    port: 8080
-  }
-})
+    port: 8080,
+  },
+});
 
 tg1.addTarget({
   instance: instance2,
