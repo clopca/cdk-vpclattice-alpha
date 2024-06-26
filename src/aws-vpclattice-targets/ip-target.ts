@@ -88,7 +88,7 @@ export class IpTargetGroup extends TargetGroupBase {
   public readonly port: number;
   public readonly protocol: RequestProtocol;
   public readonly ipAddressType: IpAddressType;
-  public readonly protocolVersion: RequestProtocolVersion;
+  public readonly protocolVersion?: RequestProtocolVersion;
   public readonly vpc: IVpc;
   public readonly targetType = TargetType.IP;
   private readonly _resource: aws_vpclattice.CfnTargetGroup;
@@ -106,7 +106,7 @@ export class IpTargetGroup extends TargetGroupBase {
     this.ipAddressType = props.ipAddressType ?? IpAddressType.IPV4;
     this.protocol = props.protocol ?? RequestProtocol.HTTPS;
     this.port = props.port ?? (this.protocol === RequestProtocol.HTTP ? 80 : 443);
-    this.protocolVersion = props.protocolVersion ?? RequestProtocolVersion.HTTP1;
+    this.protocolVersion = props.protocolVersion ?? (props.protocol !== RequestProtocol.TCP ? RequestProtocolVersion.HTTP1 : undefined);
     this.name = this.physicalName;
     this.targets = props.targets ?? [];
     this.healthCheck = {
@@ -126,8 +126,7 @@ export class IpTargetGroup extends TargetGroupBase {
     // Validation
     // ------------------------------------------------------
     if (props.name) { this.node.addValidation({ validate: () => this.validateTargetGroupName(this.name) }) }
-
-
+    this.node.addValidation({ validate: () => this.validateHealthCheck(this.healthCheck) });
 
     // ------------------------------------------------------
     // L1 Instantiation

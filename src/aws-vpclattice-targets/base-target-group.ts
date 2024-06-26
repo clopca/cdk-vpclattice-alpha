@@ -1,4 +1,5 @@
 import * as core from 'aws-cdk-lib';
+import { HealthCheck } from './health-check';
 //import { InstanceTargetGroup, InstanceTargetGroupProps } from './instance-target';
 
 /**
@@ -140,7 +141,7 @@ export abstract class TargetGroupBase extends core.Resource implements ITargetGr
    */
   protected validateProtocolVersion(protocol: RequestProtocol, protocolVersion?: RequestProtocolVersion): string[] {
     const errors = new Array<string>();
-    // Ensure that protocol version is undefine if protocol is TCP
+    // Ensure that protocol version is undefined if protocol is TCP
     if (protocol === RequestProtocol.TCP && protocolVersion) {
       errors.push(`Invalid Protocol Version: ${protocolVersion} (must not be set if protocol is TCP)`);
     }
@@ -156,6 +157,29 @@ export abstract class TargetGroupBase extends core.Resource implements ITargetGr
       errors.push('HTTP protocol must use port 80');
     } else if (protocol === RequestProtocol.HTTPS && port !== 443) {
       errors.push('HTTPS protocol must use port 443');
+    }
+    return errors;
+  }
+
+  /**
+ * Validates the HealthCheck
+ */
+  protected validateHealthCheck(healthCheck: HealthCheck): string[] {
+    const errors = new Array<string>();
+    if (healthCheck?.healthyThresholdCount && (healthCheck.healthyThresholdCount < 1 || healthCheck.healthyThresholdCount > 10)) {
+      errors.push('Healthcheck parameter `HealthyThresholdCount` must be between `1` and `10`.');
+    }
+    if (healthCheck?.unhealthyThresholdCount && (healthCheck.unhealthyThresholdCount < 2 || healthCheck.unhealthyThresholdCount > 10)) {
+      errors.push('Healthcheck parameter `HealthyThresholdCount` must be between `2` and `10`.');
+    }
+    if (healthCheck?.healthCheckTimeout && (healthCheck.healthCheckTimeout.toSeconds() < 1 || healthCheck.healthCheckTimeout.toSeconds() > 120)) {
+      errors.push('Healthcheck parameter `HealthCheckTimeout` must be between `1` and `120` seconds.');
+    }
+    if (healthCheck?.healthCheckInterval && (healthCheck.healthCheckInterval.toSeconds() < 1 || healthCheck.healthCheckInterval.toSeconds() > 120)) {
+      errors.push('Healthcheck parameter `HealthCheckInterval` must be between `5` and `300` seconds.');
+    }
+    if (healthCheck?.healthCheckTimeout && healthCheck?.healthCheckInterval && (healthCheck.healthCheckInterval.toSeconds() < healthCheck.healthCheckTimeout.toSeconds())) {
+      errors.push(`Healthcheck parameter 'HealthCheckInterval' set to ${healthCheck.healthCheckInterval} must be greater than or equal to 'HealthCheckTimeout' which is set to  ${healthCheck.healthCheckTimeout} .`);
     }
     return errors;
   }

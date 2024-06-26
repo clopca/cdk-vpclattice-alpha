@@ -66,29 +66,6 @@ export interface InstanceTargetGroupProps {
  */
 export class InstanceTargetGroup extends TargetGroupBase {
 
-  /**
-   * Validates the HealthCheck
-   */
-  protected validateHealthCheck(): string[] {
-    const errors = new Array<string>();
-    if (this.healthCheck?.healthyThresholdCount && (this.healthCheck.healthyThresholdCount < 1 || this.healthCheck.healthyThresholdCount > 10)) {
-      errors.push('Healthcheck parameter `HealthyThresholdCount` must be between `1` and `10`.');
-    }
-    if (this.healthCheck?.unhealthyThresholdCount && (this.healthCheck.unhealthyThresholdCount < 2 || this.healthCheck.unhealthyThresholdCount > 10)) {
-      errors.push('Healthcheck parameter `HealthyThresholdCount` must be between `2` and `10`.');
-    }
-    if (this.healthCheck?.healthCheckTimeout && (this.healthCheck.healthCheckTimeout.toSeconds() < 1 || this.healthCheck.healthCheckTimeout.toSeconds() > 120)) {
-      errors.push('Healthcheck parameter `HealthCheckTimeout` must be between `1` and `120` seconds.');
-    }
-    if (this.healthCheck?.healthCheckInterval && (this.healthCheck.healthCheckInterval.toSeconds() < 1 || this.healthCheck.healthCheckInterval.toSeconds() > 120)) {
-      errors.push('Healthcheck parameter `HealthCheckInterval` must be between `5` and `300` seconds.');
-    }
-    if (this.healthCheck?.healthCheckTimeout && this.healthCheck?.healthCheckInterval && (this.healthCheck.healthCheckInterval.toSeconds() < this.healthCheck.healthCheckTimeout.toSeconds())) {
-      errors.push(`Healthcheck parameter 'HealthCheckInterval' set to ${this.healthCheck.healthCheckInterval} must be greater than or equal to 'HealthCheckTimeout' which is set to  ${this.healthCheck.healthCheckTimeout} .`);
-    }
-    return errors;
-  }
-
   public readonly name: string;
   public readonly targetType = TargetType.INSTANCE;
   public readonly protocol: RequestProtocol;
@@ -134,7 +111,7 @@ export class InstanceTargetGroup extends TargetGroupBase {
     if (props.name) { this.node.addValidation({ validate: () => this.validateTargetGroupName(this.name) }) }
     this.node.addValidation({ validate: () => this.validateProtocol(this.protocol, this.targetType) });
     this.node.addValidation({ validate: () => this.validateProtocolVersion(this.protocol, this.protocolVersion) })
-    this.node.addValidation({ validate: () => this.validateHealthCheck() });
+    this.node.addValidation({ validate: () => this.validateHealthCheck(this.healthCheck) });
 
     // ------------------------------------------------------
     // L1 Instantiation

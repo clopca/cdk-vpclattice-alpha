@@ -4,7 +4,7 @@ import * as generated from 'aws-cdk-lib/aws-vpclattice';
 import { Construct } from 'constructs';
 import { WeightedTargetGroup } from './aws-vpclattice-targets/base-target-group';
 import { HTTPMatch } from './matches';
-import { IService, Service } from './service';
+import { Service } from './service';
 
 /**
  * AuthTypes

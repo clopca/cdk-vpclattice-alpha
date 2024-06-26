@@ -14,7 +14,7 @@ const logGroup = new LogGroup(stack, 'LogsTest', {
 });
 const logBucket = new Bucket(stack, 'LogsBucket', {});
 
-new Service(stack, 'Service', {
+const svc1 = new Service(stack, 'Service', {
   authType: AuthType.AWS_IAM,
   name: 'my-custom-name',
   removalPolicy: cdk.RemovalPolicy.DESTROY,
