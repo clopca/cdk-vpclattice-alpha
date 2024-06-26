@@ -38,7 +38,7 @@ describe('Service', () => {
     });
   });
 
-  test('BasicCreationNoCustomDNSorDomain', () => {
+  test('Basic creation with custom name', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -55,58 +55,105 @@ describe('Service', () => {
     });
   });
 
-  test('BasicServiceLoggingCloudWatch', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
+  describe('Service logging destination validation', () => {
+    test('Service with logging destination to cloudwatch', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
 
-    // WHEN
-    const logGroup = new LogGroup(stack, 'LogsTest', {
-      logGroupName: 'vpc-lattice-name',
-    });
-    new Service(stack, 'Params', {
-      name: 'mycustomlatticeservicename',
-      authType: AuthType.AWS_IAM,
-      loggingDestinations: [LoggingDestination.cloudwatch(logGroup)],
-    });
-
-    //THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::VpcLattice::Service', {
-      AuthType: 'AWS_IAM',
-      Name: 'mycustomlatticeservicename',
-    });
-    Template.fromStack(stack).hasResource('AWS::VpcLattice::AccessLogSubscription', {});
-  });
-
-  test('NoDuplicateLoggingDestinationType', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-
-    // WHEN
-    const logGroup1 = new LogGroup(stack, 'LogsTest1', {
-      logGroupName: 'vpc-lattice-name-1',
-    });
-    const logGroup2 = new LogGroup(stack, 'LogsTest2', {
-      logGroupName: 'vpc-lattice-name-2',
-    });
-
-    //THEN
-    expect(() => {
+      // WHEN
+      const logGroup = new LogGroup(stack, 'LogsTest', {
+        logGroupName: 'vpc-lattice-name',
+      });
       new Service(stack, 'Params', {
         name: 'mycustomlatticeservicename',
         authType: AuthType.AWS_IAM,
-        loggingDestinations: [LoggingDestination.cloudwatch(logGroup1), LoggingDestination.cloudwatch(logGroup2)],
+        loggingDestinations: [LoggingDestination.cloudwatch(logGroup)],
       });
-    }).toThrow();
+
+      //THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::VpcLattice::Service', {
+        AuthType: 'AWS_IAM',
+        Name: 'mycustomlatticeservicename',
+      });
+      Template.fromStack(stack).hasResource('AWS::VpcLattice::AccessLogSubscription', {});
+    });
+
+    test('Service with logging destination to kinesis', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const kinesisStream = Stream.fromStreamArn(stack, 'KinesisStream', 'arn:aws:kinesis:us-east-1:123456789012:stream/my-stream');
+
+      // WHEN
+      new Service(stack, 'Params', {
+        name: 'mycustomlatticeservicename',
+        authType: AuthType.AWS_IAM,
+        loggingDestinations: [LoggingDestination.kinesis(kinesisStream)],
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::VpcLattice::Service', {
+        AuthType: 'AWS_IAM',
+        Name: 'mycustomlatticeservicename',
+      });
+      Template.fromStack(stack).hasResource('AWS::VpcLattice::AccessLogSubscription', {});
+    });
+
+    test('Service with multiple logging destinations', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const logGroup = new LogGroup(stack, 'LogGroup');
+      const kinesisStream = new Stream(stack, 'KinesisStream');
+
+      // WHEN
+      new Service(stack, 'Service', {
+        name: 'my-service',
+        loggingDestinations: [LoggingDestination.cloudwatch(logGroup), LoggingDestination.kinesis(kinesisStream)],
+      });
+
+      // THEN
+      Template.fromStack(stack).resourceCountIs('AWS::VpcLattice::AccessLogSubscription', 2);
+    });
+
+    test('Error with duplicate logging destination type', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const logGroup1 = new LogGroup(stack, 'LogGroup1');
+      const logGroup2 = new LogGroup(stack, 'LogGroup2');
+      const kinesisStream1 = new Stream(stack, 'KinesisStream1');
+      const kinesisStream2 = new Stream(stack, 'KinesisStream2');
+
+      // WHEN & THEN
+      expect(() => {
+        new Service(stack, 'Params', {
+          name: 'mycustomlatticeservicename',
+          authType: AuthType.AWS_IAM,
+          loggingDestinations: [LoggingDestination.cloudwatch(logGroup1), LoggingDestination.cloudwatch(logGroup2)],
+        });
+      }).toThrow();
+
+      // WHEN & THEN
+      expect(() => {
+        new Service(stack, 'Params', {
+          name: 'mycustomlatticeservicename',
+          authType: AuthType.AWS_IAM,
+          loggingDestinations: [LoggingDestination.kinesis(kinesisStream1), LoggingDestination.kinesis(kinesisStream2)],
+        });
+      }).toThrow();
+    });
   });
 
-  test('CustomDomainAndCertificate', () => {
+  test('Service with custom domain and certificate', () => {
+    // GIVEN
     const stack = new cdk.Stack();
+
+    // WHEN
     new Service(stack, 'Service', {
       name: 'my-service',
       customDomainName: 'example.com',
       certificateArn: 'arn:aws:acm:us-west-2:123456789012:certificate/12345678-1234-1234-1234-123456789012',
     });
 
+    // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::VpcLattice::Service', {
       Name: 'my-service',
       CustomDomainName: 'example.com',
@@ -114,18 +161,21 @@ describe('Service', () => {
     });
   });
 
-  test('ServiceWithAuthPolicy', () => {
+  test('Service with auth policy', () => {
+    // GIVEN
     const stack = new cdk.Stack();
     const role = new iam.Role(stack, 'TestRole', {
       assumedBy: new iam.AccountRootPrincipal(),
     });
 
+    // WHEN
     new Service(stack, 'Service', {
       name: 'my-service',
       authType: AuthType.AWS_IAM,
       allowedPrincipals: [role],
     });
 
+    // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::VpcLattice::Service', {
       Name: 'my-service',
       AuthType: 'AWS_IAM',
@@ -149,7 +199,8 @@ describe('Service', () => {
     });
   });
 
-  test('ServiceWithCustomAuthStatements', () => {
+  test('Service with custom auth statement', () => {
+    // GIVEN
     const stack = new cdk.Stack();
     const customStatement = new iam.PolicyStatement({
       effect: iam.Effect.ALLOW,
@@ -158,12 +209,14 @@ describe('Service', () => {
       principals: [new iam.ArnPrincipal('arn:aws:iam::123456789012:role/CustomRole')],
     });
 
+    // WHEN
     new Service(stack, 'Service', {
       name: 'my-service',
       authType: AuthType.AWS_IAM,
       authStatements: [customStatement],
     });
 
+    // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::VpcLattice::AuthPolicy', {
       Policy: {
         Statement: [
@@ -180,7 +233,7 @@ describe('Service', () => {
     });
   });
 
-  test('ServiceWithRemovalPolicy', () => {
+  test('Service with removal policy', () => {
     const stack = new cdk.Stack();
     new Service(stack, 'Service', {
       name: 'my-service',
@@ -192,7 +245,7 @@ describe('Service', () => {
     });
   });
 
-  test('ServiceNetworkAssociation', () => {
+  test('Service with service network association', () => {
     const stack = new cdk.Stack();
     const mockServiceNetwork = ServiceNetwork.fromArn(
       stack,
@@ -214,7 +267,7 @@ describe('Service', () => {
     });
   });
 
-  test('ShareResource', () => {
+  test('Service with resource sharing', () => {
     const stack = new cdk.Stack();
     const service = new Service(stack, 'Service', {
       name: 'my-service',
@@ -240,8 +293,10 @@ describe('Service', () => {
 
   describe('Service name validation', () => {
     test('Service name validations', () => {
+      // GIVEN
       const stack = new cdk.Stack();
 
+      // WHEN & THEN
       expect(
         () =>
           new Service(stack, 'Service1', {
@@ -249,6 +304,7 @@ describe('Service', () => {
           }),
       ).not.toThrow();
 
+      // WHEN & THEN
       expect(
         () =>
           new Service(stack, 'Service2', {
@@ -258,6 +314,7 @@ describe('Service', () => {
     });
 
     test('Fails with message on invalid service names', () => {
+      // GIVEN
       const stack = new cdk.Stack();
       const name = `svc-${new Array(41).join('$')}`;
       const expectedErrors = [
@@ -266,6 +323,7 @@ describe('Service', () => {
         'Service name must be composed of characters a-z, 0-9, and hyphens (-). You can\'t use a hyphen as the first or last character, or immediately after another hyphen. The name cannot start with "svc-".',
       ].join(EOL);
 
+      // WHEN & THEN
       expect(
         () =>
           new Service(stack, 'Service', {
@@ -275,8 +333,10 @@ describe('Service', () => {
     });
 
     test('Fails if service name has less than 3 or more than 40 characters', () => {
+      // GIVEN
       const stack = new cdk.Stack();
 
+      // WHEN & THEN
       expect(
         () =>
           new Service(stack, 'Service1', {
@@ -284,6 +344,7 @@ describe('Service', () => {
           }),
       ).toThrow(/at least 3/);
 
+      // WHEN & THEN
       expect(
         () =>
           new Service(stack, 'Service2', {
@@ -293,8 +354,10 @@ describe('Service', () => {
     });
 
     test('Fails if service name does not follow the specified pattern', () => {
+      // GIVEN
       const stack = new cdk.Stack();
 
+      // WHEN & THEN
       expect(
         () =>
           new Service(stack, 'Service1', {
@@ -304,6 +367,7 @@ describe('Service', () => {
         'Service name must be composed of characters a-z, 0-9, and hyphens (-). You can\'t use a hyphen as the first or last character, or immediately after another hyphen. The name cannot start with "svc-".',
       );
 
+      // WHEN & THEN
       expect(
         () =>
           new Service(stack, 'Service2', {
@@ -313,6 +377,7 @@ describe('Service', () => {
         'Service name must be composed of characters a-z, 0-9, and hyphens (-). You can\'t use a hyphen as the first or last character, or immediately after another hyphen. The name cannot start with "svc-".',
       );
 
+      // WHEN & THEN
       expect(
         () =>
           new Service(stack, 'Service3', {
@@ -322,10 +387,41 @@ describe('Service', () => {
         'Service name must be composed of characters a-z, 0-9, and hyphens (-). You can\'t use a hyphen as the first or last character, or immediately after another hyphen. The name cannot start with "svc-".',
       );
 
+      // WHEN & THEN
       expect(
         () =>
           new Service(stack, 'Service4', {
             name: 'a//a-a',
+          }),
+      ).toThrow(
+        'Service name must be composed of characters a-z, 0-9, and hyphens (-). You can\'t use a hyphen as the first or last character, or immediately after another hyphen. The name cannot start with "svc-".',
+      );
+
+      // WHEN & THEN
+      expect(
+        () =>
+          new Service(stack, 'Service5', {
+            name: 'svc-a',
+          }),
+      ).toThrow(
+        'Service name must be composed of characters a-z, 0-9, and hyphens (-). You can\'t use a hyphen as the first or last character, or immediately after another hyphen. The name cannot start with "svc-".',
+      );
+
+      // WHEN & THEN
+      expect(
+        () =>
+          new Service(stack, 'Service6', {
+            name: '-abc123',
+          }),
+      ).toThrow(
+        'Service name must start with a letter and can only contain lowercase letters, numbers, hyphens, underscores, periods and forward slashes',
+      );
+
+      // WHEN & THEN
+      expect(
+        () =>
+          new Service(stack, 'Service7', {
+            name: 'abc123-',
           }),
       ).toThrow(
         'Service name must start with a letter and can only contain lowercase letters, numbers, hyphens, underscores, periods and forward slashes',
@@ -333,7 +429,7 @@ describe('Service', () => {
     });
   });
 
-  test('InvalidAuthPolicy', () => {
+  test('Error with invalid auth policy', () => {
     const stack = new cdk.Stack();
     const invalidStatement = new iam.PolicyStatement({
       effect: iam.Effect.ALLOW,
@@ -350,31 +446,6 @@ describe('Service', () => {
     }).toThrow(/The following errors were found in the policy/);
   });
 
-  test('MultipleLoggingDestinations', () => {
-    const stack = new cdk.Stack();
-    const logGroup = new LogGroup(stack, 'LogGroup');
-    const firehoseArn = 'arn:aws:firehose:us-west-2:123456789012:deliverystream/my-stream';
-    const kinesisStream = Stream.fromStreamArn(stack, 'KinesisStream', firehoseArn);
-
-    new Service(stack, 'Service', {
-      name: 'my-service',
-      loggingDestinations: [LoggingDestination.cloudwatch(logGroup), LoggingDestination.kinesis(kinesisStream)],
-    });
-
-    Template.fromStack(stack).resourceCountIs('AWS::VpcLattice::AccessLogSubscription', 2);
-  });
-
-  test('Import with wrong arn format', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-
-    // WHEN
-    const invalidArn = 'arn:aws:vpc-lattice:us-east-1:123456789012:svc-12345abcdef';
-    expect(() => {
-      Service.fromServiceArn(stack, 'ImportedService', invalidArn);
-    }).toThrow(Error(`Service arn should be in the format 'arn:<PARTITION>:vpc-lattice:<REGION>:<ACCOUNT>:service/<NAME>', got ${invalidArn}.`));
-  });
-
   test('Import fromServiceArn', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -385,6 +456,35 @@ describe('Service', () => {
     // THEN
     expect(service.serviceArn).toBe('arn:aws:vpc-lattice:us-west-2:123456789012:service/svc-12345abcdef');
     expect(service.serviceId).toBe('svc-12345abcdef');
+  });
+
+  test('Import with wrong arn format', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const invalidArn1 = 'arn:aws:vpc-lattice:us-east-1:123456789012:svc-12345abcdef';
+    const invalidArn2 = 'arn:aws:vpc-lattice:123456789012:service/svc-12345abcdef';
+    const invalidArn3 = 'arn:aws:vpc:us-east-1:123456789012:service/svc-12345abcdef';
+    const invalidArn4 = 'aws:vpc-lattice:us-east-1:123456789012:service/svc-12345abcdef';
+
+    // WHEN & THEN
+    expect(() => {
+      Service.fromServiceArn(stack, 'ImportedService1', invalidArn1);
+    }).toThrow(`Service arn should be in the format 'arn:<PARTITION>:vpc-lattice:<REGION>:<ACCOUNT>:service/<NAME>', got ${invalidArn1}.`);
+
+    // WHEN & THEN
+    expect(() => {
+      Service.fromServiceArn(stack, 'ImportedService1', invalidArn2);
+    }).toThrow(`Service arn should be in the format 'arn:<PARTITION>:vpc-lattice:<REGION>:<ACCOUNT>:service/<NAME>', got ${invalidArn2}.`);
+
+    // WHEN & THEN
+    expect(() => {
+      Service.fromServiceArn(stack, 'ImportedService1', invalidArn3);
+    }).toThrow(`Service arn should be in the format 'arn:<PARTITION>:vpc-lattice:<REGION>:<ACCOUNT>:service/<NAME>', got ${invalidArn3}.`);
+
+    // WHEN & THEN
+    expect(() => {
+      Service.fromServiceArn(stack, 'ImportedService1', invalidArn4);
+    }).toThrow(`Service arn should be in the format 'arn:<PARTITION>:vpc-lattice:<REGION>:<ACCOUNT>:service/<NAME>', got ${invalidArn4}.`);
   });
 
   test('Import fromServiceId', () => {
