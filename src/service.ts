@@ -7,6 +7,7 @@ import { LoggingDestination } from './logging';
 import { IServiceNetwork } from './service-network';
 import { ServiceNetworkAssociation } from './service-network-association';
 import { AuthType } from './util';
+import { Listener, ListenerConfig } from './listener';
 
 /**
  * Represents a Vpc Lattice Service.
@@ -386,6 +387,17 @@ export class Service extends ServiceBase {
       resourceIdentifier: this.serviceArn,
     });
   }
+
+  /**
+   * Add Listener
+   */
+  public addListener(config: ListenerConfig): Listener {
+    return new Listener(this, `Listener${config.name}`, {
+      service: this,
+      config,
+    });
+  }
+
 
   /**
    * Amazon VPC Lattice integrates with AWS Resource Access Manager (AWS RAM) to enable
