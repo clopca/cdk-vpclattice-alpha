@@ -1,6 +1,5 @@
 import * as core from 'aws-cdk-lib';
 import { HealthCheck } from './health-check';
-//import { InstanceTargetGroup, InstanceTargetGroupProps } from './instance-target';
 
 /**
  * ProtocolVersion
@@ -104,9 +103,25 @@ export interface ITargetGroup extends core.IResource {
 }
 
 /**
- * Properties for a Target Group, Only supply one of instancetargets, lambdaTargets, albTargets, ipTargets
+ * Properties for a Target Group, Only supply one of instanceTargets, lambdaTargets, albTargets, ipTargets
  */
 export abstract class TargetGroupBase extends core.Resource implements ITargetGroup {
+  /**
+   * The id of the target group
+   */
+  public abstract readonly targetGroupId: string;
+  /**
+   * The Arn of the target group
+   */
+  public abstract readonly targetGroupArn: string;
+  /**
+   * The name of the target group
+   */
+  public abstract readonly name: string;
+  /**
+   * Targets
+   */
+  public abstract readonly targetType: TargetType;
   // ------------------------------------------------------
   // Validation
   // ------------------------------------------------------
@@ -162,45 +177,33 @@ export abstract class TargetGroupBase extends core.Resource implements ITargetGr
   }
 
   /**
- * Validates the HealthCheck
- */
+   * Validates the HealthCheck
+   */
   protected validateHealthCheck(healthCheck: HealthCheck): string[] {
     const errors = new Array<string>();
     if (healthCheck?.healthyThresholdCount && (healthCheck.healthyThresholdCount < 1 || healthCheck.healthyThresholdCount > 10)) {
-      errors.push('Healthcheck parameter `HealthyThresholdCount` must be between `1` and `10`.');
+      errors.push('HealthCheck parameter `HealthyThresholdCount` must be between `1` and `10`.');
     }
     if (healthCheck?.unhealthyThresholdCount && (healthCheck.unhealthyThresholdCount < 2 || healthCheck.unhealthyThresholdCount > 10)) {
-      errors.push('Healthcheck parameter `HealthyThresholdCount` must be between `2` and `10`.');
+      errors.push('HealthCheck parameter `HealthyThresholdCount` must be between `2` and `10`.');
     }
     if (healthCheck?.healthCheckTimeout && (healthCheck.healthCheckTimeout.toSeconds() < 1 || healthCheck.healthCheckTimeout.toSeconds() > 120)) {
-      errors.push('Healthcheck parameter `HealthCheckTimeout` must be between `1` and `120` seconds.');
+      errors.push('HealthCheck parameter `HealthCheckTimeout` must be between `1` and `120` seconds.');
     }
     if (healthCheck?.healthCheckInterval && (healthCheck.healthCheckInterval.toSeconds() < 1 || healthCheck.healthCheckInterval.toSeconds() > 120)) {
-      errors.push('Healthcheck parameter `HealthCheckInterval` must be between `5` and `300` seconds.');
+      errors.push('HealthCheck parameter `HealthCheckInterval` must be between `5` and `300` seconds.');
     }
-    if (healthCheck?.healthCheckTimeout && healthCheck?.healthCheckInterval && (healthCheck.healthCheckInterval.toSeconds() < healthCheck.healthCheckTimeout.toSeconds())) {
-      errors.push(`Healthcheck parameter 'HealthCheckInterval' set to ${healthCheck.healthCheckInterval} must be greater than or equal to 'HealthCheckTimeout' which is set to  ${healthCheck.healthCheckTimeout} .`);
+    if (
+      healthCheck?.healthCheckTimeout &&
+      healthCheck?.healthCheckInterval &&
+      healthCheck.healthCheckInterval.toSeconds() < healthCheck.healthCheckTimeout.toSeconds()
+    ) {
+      errors.push(
+        `HealthCheck parameter 'HealthCheckInterval' set to ${healthCheck.healthCheckInterval} must be greater than or equal to 'HealthCheckTimeout' which is set to  ${healthCheck.healthCheckTimeout} .`,
+      );
     }
     return errors;
   }
-
-  // ------------------------------------------------------
-  /**
-   * The id of the target group
-   */
-  public abstract readonly targetGroupId: string;
-  /**
-   * The Arn of the target group
-   */
-  public abstract readonly targetGroupArn: string;
-  /**
-   * The name of the target group
-   */
-  public abstract readonly name: string;
-  /**
-   * Targets
-   */
-  public abstract readonly targetType: TargetType;
 }
 
 export interface WeightedTargetGroup {
