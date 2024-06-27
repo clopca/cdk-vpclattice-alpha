@@ -2,11 +2,11 @@ import { EOL } from 'os';
 import { aws_iam as iam, aws_ram as ram } from 'aws-cdk-lib';
 import * as core from 'aws-cdk-lib';
 import * as generated from 'aws-cdk-lib/aws-vpclattice';
-import { Construct } from 'constructs';
-import { AuthType } from './util';
+import { Construct, IConstruct } from 'constructs';
 import { LoggingDestination } from './logging';
 import { IServiceNetwork } from './service-network';
 import { ServiceNetworkAssociation } from './service-network-association';
+import { AuthType } from './util';
 
 /**
  * Represents a Vpc Lattice Service.
@@ -333,16 +333,15 @@ export class Service extends ServiceBase {
       });
     }
 
-    core.Lazy.any({
-      produce: () => {
-        if (!this.authPolicy.isEmpty) {
+    core.Aspects.of(this).add({
+      visit: (node: IConstruct) => {
+        if (node === this && !this.authPolicy.isEmpty) {
           Service.validateAuthPolicy(this.authPolicy);
           new generated.CfnAuthPolicy(this, 'ServiceAuthPolicy', {
             policy: this.authPolicy.toJSON(),
             resourceIdentifier: this.serviceId,
           });
         }
-        return undefined;
       },
     });
   }
