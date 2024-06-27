@@ -220,10 +220,6 @@ export abstract class ListenerBase extends core.Resource implements IListener {
    */
   readonly name?: string;
 
-  // /**
-  //  * A list of priorities, to check for duplicates
-  //  */
-  // listenerPriorities: number[] = [];
 
   /**
    * The service this listener is attached to
@@ -248,12 +244,6 @@ export abstract class ListenerBase extends core.Resource implements IListener {
     this.protocol = props.protocol ?? ListenerProtocol.HTTPS;
     this.port = props.port ?? (props.protocol === ListenerProtocol.HTTP ? 80 : 443);
 
-    // the default action is a not provided, it will be set to NOT_FOUND
-    // let defaultAction: generated.CfnListener.DefaultActionProperty = props.defaultAction ?? {
-    //   HTTPFixedResponse: {
-    //     statusCode: HTTPFixedResponse.NOT_FOUND,
-    //   },
-    // };
 
     let defaultAction: generated.CfnListener.DefaultActionProperty;
     if (props.defaultAction) {
