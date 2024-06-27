@@ -2,7 +2,8 @@ import { Duration, Lazy, aws_vpclattice } from 'aws-cdk-lib';
 import { IInstance, IVpc } from 'aws-cdk-lib/aws-ec2';
 import { Construct } from 'constructs';
 import { RequestProtocol, RequestProtocolVersion, TargetGroupBase, TargetType } from './base-target-group';
-import { HTTPFixedResponse, HealthCheck, HealthCheckProtocol, HealthCheckProtocolVersion } from './health-check';
+import { HealthCheck, HealthCheckProtocol, HealthCheckProtocolVersion } from './health-check';
+import { HTTPFixedResponse } from '../util';
 
 export interface InstanceTarget {
   /**
@@ -109,9 +110,9 @@ export class InstanceTargetGroup extends TargetGroupBase {
     // Validation
     // ------------------------------------------------------
     if (props.name) { this.node.addValidation({ validate: () => this.validateTargetGroupName(this.name) }) }
-    this.node.addValidation({ validate: () => this.validateProtocol(this.protocol, this.targetType) });
+    this.node.addValidation({ validate: () => this.validateProtocol(this.protocol, this.targetType) })
     this.node.addValidation({ validate: () => this.validateProtocolVersion(this.protocol, this.protocolVersion) })
-    this.node.addValidation({ validate: () => this.validateHealthCheck(this.healthCheck) });
+    this.node.addValidation({ validate: () => this.validateHealthCheck(this.healthCheck) })
 
     // ------------------------------------------------------
     // L1 Instantiation

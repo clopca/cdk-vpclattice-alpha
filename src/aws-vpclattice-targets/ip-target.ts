@@ -3,7 +3,8 @@ import { IVpc, IpAddresses, Ipv6Addresses } from 'aws-cdk-lib/aws-ec2';
 import * as aws_vpclattice from 'aws-cdk-lib/aws-vpclattice';
 import * as constructs from 'constructs';
 import { RequestProtocol, RequestProtocolVersion, TargetGroupBase, TargetType } from './base-target-group';
-import { HTTPFixedResponse, HealthCheck, HealthCheckProtocol, HealthCheckProtocolVersion } from './health-check';
+import { HealthCheck, HealthCheckProtocol, HealthCheckProtocolVersion } from './health-check';
+import { HTTPFixedResponse } from '../util';
 
 /**
  * The type of IP Address Protocol

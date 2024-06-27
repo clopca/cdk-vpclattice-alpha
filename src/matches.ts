@@ -1,10 +1,7 @@
-import { HTTPMethods, MatchOperator, PathMatchType } from './listener';
+import { MatchOperator } from "./rules";
+import { HTTPMethod } from "./util";
 
-/**
- * An HTTPMatch for creating rules
- * At least one of headerMatch, method or patchMatches must be created
- */
-export interface HTTPMatch {
+export interface RuleConditions {
   /**
    * Properties to Create A HeaderMatch
    * @default - No header match
@@ -15,13 +12,27 @@ export interface HTTPMatch {
    * Method to match against
    * @default - No header match
    */
-  readonly method?: HTTPMethods;
+  readonly methodMatch?: HTTPMethod;
 
   /**
    * Properties to Create A PathMatch
    * @default - No path match
    */
-  readonly pathMatches?: PathMatch;
+  readonly pathMatch?: PathMatch;
+}
+
+/**
+ * Operators for Path Matches
+ */
+export enum PathMatchType {
+  /**
+   * Exact Match
+   */
+  EXACT = 'EXACT',
+  /**
+   * Prefix Match
+   */
+  PREFIX = 'PREFIX',
 }
 
 /**

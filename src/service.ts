@@ -3,7 +3,7 @@ import { aws_iam as iam, aws_ram as ram } from 'aws-cdk-lib';
 import * as core from 'aws-cdk-lib';
 import * as generated from 'aws-cdk-lib/aws-vpclattice';
 import { Construct } from 'constructs';
-import { AuthType } from './listener';
+import { AuthType } from './util';
 import { LoggingDestination } from './logging';
 import { IServiceNetwork } from './service-network';
 import { ServiceNetworkAssociation } from './service-network-association';

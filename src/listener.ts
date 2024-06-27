@@ -1,28 +1,14 @@
-import * as core from 'aws-cdk-lib';
-import { aws_iam as iam } from 'aws-cdk-lib';
+import { IResource, Resource } from "aws-cdk-lib";
+import { Service } from "./service";
+import { Construct } from "constructs";
+import { RuleAction, IRule, MatchOperator } from "./rules";
 import * as generated from 'aws-cdk-lib/aws-vpclattice';
-import { Construct } from 'constructs';
-import { WeightedTargetGroup } from './aws-vpclattice-targets/base-target-group';
-import { HTTPMatch } from './matches';
-import { Service } from './service';
+import { HTTPFixedResponse } from "./util";
+import { PathMatchType, RuleConditions } from "./matches";
 
 /**
- * AuthTypes
- */
-export enum AuthType {
-  /**
-   * No Authorization
-   */
-  NONE = 'NONE',
-
-  /**
-   * Use IAM Policy as
-   */
-  AWS_IAM = 'AWS_IAM',
-}
-
-/**
- * HTTP/HTTPS methods
+ * It is not required that the listener and target group protocols match.
+ * VPC Lattice manages the entire process of upgrading and downgrading between protocols and versions.
  */
 export enum ListenerProtocol {
   /**
@@ -40,146 +26,35 @@ export enum ListenerProtocol {
   HTTPS = 'HTTPS',
 
   /**
-   * TLS Passthrough
+   * TLS Passthrough. This ensures that your application 
+   * decrypts the encrypted traffic instead of VPC Lattice. 
    */
   TLS_PASSTHROUGH = 'TLS_PASSTHROUGH',
 }
 
 /**
- * This enum maps friendly names to respond codes.
+ * Create a VPC Lattice Listener. It is simply a process that checks for 
+ * connection requests, and routes them to targets in a target group according
+ * to the defined rules.
+ * Implemented by `Listener`.
+ * @see https://docs.aws.amazon.com/vpc-lattice/latest/ug/listeners.html
  */
-export enum FixedResponse {
+export interface IListener extends IResource {
   /**
-   * Not Found 404
+   * The Amazon Resource Name (ARN) of the service.
    */
-  NOT_FOUND = 404,
+  readonly listenerArn: string;
 
   /**
-   * OK 200
+   * The Id of the Service Network
+   * @attribute
    */
-  OK = 200,
-}
-
-/**
- * HTTP Methods
- */
-export enum HTTPMethods {
-  /**
-   * GET Method
-   */
-  GET = 'GET',
+  readonly listenerId: string;
 
   /**
-   * POST Method
+   * Add A Listener Rule to the Listener
    */
-  POST = 'POST',
-
-  /**
-   * PUT Method
-   */
-  PUT = 'PUT',
-
-  /**
-   * Delete Method
-   */
-  DELETE = 'DELETE',
-}
-
-/**
- * Rule Conditions can leverage different operators for Matches
- */
-export enum MatchOperator {
-  /**
-   * Contains Match
-   */
-  CONTAINS = 'CONTAINS',
-
-  /**
-   * Exact Match
-   */
-  EXACT = 'EXACT',
-
-  /**
-   * Prefix Match
-   */
-  PREFIX = 'PREFIX',
-}
-
-/**
- * Operators for Path Matches
- */
-export enum PathMatchType {
-  /**
-   * Exact Match
-   */
-  EXACT = 'EXACT',
-  /**
-   * Prefix Match
-   */
-  PREFIX = 'PREFIX',
-}
-
-/**
- * Access mode for the rule.
- */
-export enum RuleAccessMode {
-  /**
-   * Unauthenticated Access
-   */
-  UNAUTHENTICATED = 'UNAUTHENTICATED',
-
-  /**
-   * Unauthenticated Access
-   */
-  AUTHENTICATED_ONLY = 'AUTHENTICATED',
-
-  /**
-   * THIS Org only
-   */
-  ORG_ONLY = 'ORG_ONLY',
-
-  /**
-   * Do not create a statement
-   */
-  NO_STATEMENT = 'NO_STATEMENT',
-}
-
-interface IHttpMatchProperty {
-  /**
-   * The header matches. Matches incoming requests with rule based on request header value before applying rule action.
-   *
-   * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-vpclattice-rule-httpmatch.html#cfn-vpclattice-rule-httpmatch-headermatches
-   */
-  headerMatches?: Array<generated.CfnRule.HeaderMatchProperty | core.IResolvable> | core.IResolvable;
-  /**
-   * The HTTP method type.
-   *
-   * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-vpclattice-rule-httpmatch.html#cfn-vpclattice-rule-httpmatch-method
-   */
-  method?: string;
-  /**
-   * The path match.
-   *
-   * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-vpclattice-rule-httpmatch.html#cfn-vpclattice-rule-httpmatch-pathmatch
-   */
-  pathMatch?: generated.CfnRule.PathMatchProperty | core.IResolvable;
-}
-
-/**
- * A default listener action.
- * one of fixed response or forward needs to be provided.
- */
-export interface DefaultListenerAction {
-  /**
-   * Drop client requests and return a custom HTTP response
-   * @default - None
-   */
-  readonly fixedResponse?: FixedResponse;
-  /**
-   * Forward to a target group
-   * @default - None
-   */
-  readonly forward?: WeightedTargetGroup;
+  addListenerRule(rule: IRule): void;
 }
 
 /**
@@ -188,9 +63,9 @@ export interface DefaultListenerAction {
 export interface ListenerProps {
   /**
    *  * A default action that will be taken if no rules match.
-   *  @default FixedResponse.NOT_FOUND
+   *  @default HTTPFixedResponse.NOT_FOUND
    */
-  readonly defaultAction?: DefaultListenerAction;
+  readonly defaultAction?: RuleAction;
 
   /**
    * protocol that the listener will listen on
@@ -216,80 +91,9 @@ export interface ListenerProps {
   readonly service: Service;
 
   /**
-   * rules for the listener
+   * Rules to add to the listener.
    */
-  readonly rules?: RuleProp[];
-}
-
-/**
- * Create a VPC Lattice Listener.
- * Implemented by `Listener`.
- * @see https://docs.aws.amazon.com/vpc-lattice/latest/ug/listeners.html
- */
-export interface IListener extends core.IResource {
-  /**
-   * The Amazon Resource Name (ARN) of the service.
-   */
-  readonly listenerArn: string;
-
-  /**
-   * The Id of the Service Network
-   * @attribute
-   */
-  readonly listenerId: string;
-
-  /**
-   * Add A Listener Rule to the Listener
-   */
-  addListenerRule(props: RuleProp): void;
-}
-
-/**
- * Properties to add rules to to a listener
- * One of headerMatch, PathMatch, or methodMatch can be supplied,
- * the Rule can not match multiple Types
- */
-export interface RuleProp {
-  /**
-   * A name for the the Rule
-   */
-  readonly name: string;
-  /**
-   * the action for the rule, is either a fixed Response, or a being sent to  Weighted TargetGroup
-   */
-  readonly action: FixedResponse | WeightedTargetGroup[];
-  /**
-   * the priority of this rule, a lower priority will be processed first
-   * @default 50
-   */
-  readonly priority?: number;
-  /**
-   * the Matching criteria for the rule. This must contain at least one of
-   * header, method or patchMatches
-   */
-  readonly httpMatch: HTTPMatch;
-  /**
-   * List of principals that are allowed to access the resource
-   * @default none
-   */
-  readonly allowedPrincipals?: iam.IPrincipal[];
-  /**
-   * List of principalArns that are allowed to access the resource
-   * @default none
-   */
-  readonly allowedPrincipalArn?: string[];
-  /**
-   * Set an access mode.
-   * @default RuleAccessMode.NO_STATEMENT
-   */
-  readonly accessMode?: RuleAccessMode;
-
-  /**
-   * Organization ID to allow access to the Service Network
-   * @default - no org id is used
-   * @example 'o-1234567890'
-   */
-  readonly orgId?: string;
+  readonly rules?: IRule[];
 }
 
 /**
@@ -302,14 +106,8 @@ export interface RuleProp {
  * @resource AWS::VpcLattice::Listener
  *
  */
-export class Listener extends core.Resource implements IListener {
-  /**
-   *  The Id of the Listener
-   */
+export class Listener extends Resource implements IListener {
   readonly listenerId: string;
-  /**
-   * THe Arn of the Listener
-   */
   readonly listenerArn: string;
 
   /**
@@ -328,9 +126,9 @@ export class Listener extends core.Resource implements IListener {
   readonly name?: string;
 
   /**
-   * A list of priorities, to check for duplicates
+   * The default action for this listener
    */
-  listenerPriorities: number[] = [];
+  readonly defaultAction: RuleAction
 
   /**
    * The service this listener is attached to
@@ -338,10 +136,117 @@ export class Listener extends core.Resource implements IListener {
   service: Service;
 
   /**
-   * Service auth Policy
-   * @default none.
+   * The listener rules to add
    */
+  rules: IRule[];
 
+
+
+  // ------------------------------------------------------
+  // Validation Methods
+  // ------------------------------------------------------
+  /**
+   * Verifies a valid protocol / target Type combination
+   */
+  protected validatePort(): string[] {
+    const errors: string[] = [];
+    // Ensure that protocol is not set to TCP if targetType is ALB
+    if (this.port < 0 || this.port > 65535) {
+      errors.push(`Port ${this.port} out of range (0-65535)`)
+    }
+    return errors;
+  }
+
+  protected validateListenerName(name: string) {
+    const errors: string[] = [];
+    const pattern = /^(?!listener-)(?![-])(?!.*[-]$)(?!.*[-]{2})[a-z0-9-]+$/;
+    const validationSucceeded = name.length >= 3 && name.length <= 63 && pattern.test(name)
+    if (!validationSucceeded) {
+      errors.push(`Invalid Listener Name: ${name} (must be between 3-63 characters, and must be a valid name)`);
+    }
+    return errors;
+  }
+
+  protected validateRulePriorities(): string[] {
+    const errors: string[] = [];
+    const rulePriorities = new Set(this.rules.map((rule) => rule.priority));
+    if (this.rules.length > rulePriorities.size) {
+      errors.push('Invalid Rule Priorities: Duplicate priorities found');
+    }
+    return errors;
+  }
+
+  // ------------------------------------------------------
+  // Util Methods
+  // ------------------------------------------------------
+  /**
+   * Transforms the L2 Rule Action to the CFN-L1 format
+   */
+  private transformRuleActionToCfnProperty(ruleAction: RuleAction): generated.CfnListener.DefaultActionProperty {
+    if (typeof ruleAction === 'number') {
+      // RuleAction is an HTTPFixedResponse
+      return {
+        fixedResponse: {
+          statusCode: ruleAction,
+        },
+      }
+    } else {
+      // RuleAction is an array of WeightedTargetGroup
+      const targetGroups = ruleAction.map((weightedTargetGroup) => ({
+        targetGroupIdentifier: weightedTargetGroup.targetGroup.node.id,
+        weight: weightedTargetGroup.weight,
+      }))
+
+      return {
+        forward: {
+          targetGroups,
+        },
+      }
+    }
+  }
+
+  private transformRuleConditionsToCfnProperty(ruleConditions: RuleConditions): generated.CfnRule.MatchProperty {
+    const { headerMatches, methodMatch, pathMatch } = ruleConditions;
+
+    const matchProperty: generated.CfnRule.MatchProperty = {
+      httpMatch:
+      {
+        headerMatches: headerMatches?.map(({ headerName, matchValue, caseSensitive = false, matchOperator }) => ({
+          name: headerName,
+          match: { [MatchOperator[matchOperator].toLowerCase()]: matchValue },
+          caseSensitive,
+        })),
+        method: methodMatch,
+        pathMatch: {
+          caseSensitive: pathMatch?.caseSensitive ?? false,
+          match: {
+            [(pathMatch?.pathMatchType ?? PathMatchType.EXACT).toLowerCase()]: pathMatch?.path,
+          },
+        },
+      }
+    }
+
+    return matchProperty;
+  }
+
+  // /**
+  //  * In case a priority is not specified, a default priority is created
+  //  * E.g. generateDefaultPriority(7); // Output: [15, 15, 14, 14, 14, 14, 14]
+  //  */
+  // private generateDefaultPriority(numberOfRules: number): number[] {
+  //   const defaultPriorities: number[] = Array(numberOfRules).fill(100 / numberOfRules);
+
+  //   const remainder = 100 % numberOfRules;
+  //   for (let i = 0; i < remainder; i++) {
+  //     defaultPriorities[i]++;
+  //   }
+
+  //   return defaultPriorities;
+  // }
+
+  // ------------------------------------------------------
+  // Constructor
+  // ------------------------------------------------------
   constructor(scope: Construct, id: string, props: ListenerProps) {
     super(scope, id, {
       physicalName: props.name,
@@ -350,300 +255,61 @@ export class Listener extends core.Resource implements IListener {
     // ------------------------------------------------------
     // Set properties or defaults
     // ------------------------------------------------------
-    this.name = this.physicalName;
-    this.service = props.service;
-    this.protocol = props.protocol ?? ListenerProtocol.HTTPS;
-    this.port = props.port ?? (props.protocol === ListenerProtocol.HTTP ? 80 : 443);
+    this.name = this.physicalName
+    this.service = props.service
+    this.protocol = props.protocol ?? ListenerProtocol.HTTPS
+    this.port = props.port ?? (props.protocol === ListenerProtocol.HTTP ? 80 : 443)
+    this.rules = props.rules ?? []
+    this.defaultAction = props.defaultAction ?? HTTPFixedResponse.NOT_FOUND
 
-    // the default action is a not provided, it will be set to NOT_FOUND
-    // let defaultAction: generated.CfnListener.DefaultActionProperty = props.defaultAction ?? {
-    //   fixedResponse: {
-    //     statusCode: FixedResponse.NOT_FOUND,
-    //   },
-    // };
 
-    let defaultAction: generated.CfnListener.DefaultActionProperty;
-    if (props.defaultAction) {
-      // throw an error if both props.defaultAction.fixed action and props.defaultAction.forward are set
-      if (props.defaultAction.fixedResponse && props.defaultAction.forward) {
-        throw new Error('Both fixedResponse and forward are set');
-      }
-      // throw an error if neither of props.defaultAction.fixed action and props.defaultAction.forward are set
-      if (!props.defaultAction.fixedResponse && !props.defaultAction.forward) {
-        throw new Error('At least one of fixedResponse or forward must be set');
-      }
+    // ------------------------------------------------------
+    // Validation
+    // ------------------------------------------------------
+    if (props.name) { this.node.addValidation({ validate: () => this.validateListenerName(this.physicalName) }) }
+    if (props.rules) { this.node.addValidation({ validate: () => this.validateRulePriorities() }) }
+    this.node.addValidation({ validate: () => this.validatePort() })
 
-      // set the default action to the fixedResponse
-      if (props.defaultAction.fixedResponse) {
-        defaultAction = {
-          fixedResponse: {
-            statusCode: props.defaultAction.fixedResponse,
-          },
-        };
-      } else {
-        // set the default action to the forward
-        defaultAction = {
-          forward: {
-            targetGroups: [
-              {
-                targetGroupIdentifier: props.defaultAction.forward?.targetGroup.targetGroupId as string,
-                // the properties below are optional
-                weight: props.defaultAction.forward?.weight,
-              },
-            ],
-          },
-        };
-      }
-    } else {
-      defaultAction = {
-        fixedResponse: {
-          statusCode: FixedResponse.NOT_FOUND,
-        },
-      };
-    }
 
-    // default to using HTTPS
-    let protocol = props.protocol ?? ListenerProtocol.HTTPS;
-
-    // check the the port is in range if it is specified
-    if (props.port) {
-      if (props.port < 0 || props.port > 65535) {
-        throw new Error('Port out of range');
-      }
-    }
-
-    // if its not specified, set it to the default port based on the protocol
-    let port: number;
-    if (protocol === ListenerProtocol.HTTP) {
-      port = props.port ?? 80;
-    } else if (protocol === ListenerProtocol.HTTPS) {
-      port = props.port ?? 443;
-    } else {
-      throw new Error('Protocol not supported');
-    }
-
-    if (props.name !== undefined) {
-      if (props.name.match(/^[a-z0-9\-]{3,63}$/) === null) {
-        throw new Error(
-          'The listener name must be between 3 and 63 characters long. The name can only contain  lower case alphanumeric characters and hyphens. The name must be unique to the account.',
-        );
-      }
-    }
-
+    // ------------------------------------------------------
+    // L1 Instantiation
+    // ------------------------------------------------------
     const listener = new generated.CfnListener(this, 'Resource', {
       name: props.name,
-      defaultAction: defaultAction,
-      protocol: protocol,
-      port: port,
-      serviceIdentifier: props.service.serviceId,
+      defaultAction: this.transformRuleActionToCfnProperty(this.defaultAction),
+      protocol: this.protocol,
+      port: this.port,
+      serviceIdentifier: this.service.serviceId,
     });
 
+    // ------------------------------------------------------
+    // Construct properties
+    // ------------------------------------------------------
     this.listenerId = listener.attrId;
     this.listenerArn = listener.attrArn;
-    this.service = props.service;
 
+    // ------------------------------------------------------
+    // Adds Listener Rules
+    // ------------------------------------------------------
     if (props.rules) {
-      props.rules.forEach(rule => {
+      props.rules.forEach((rule) => {
         this.addListenerRule(rule);
       });
     }
+
   }
-
   /**
-   * add a rule to the listener
-   * @param props AddRuleProps
+   * Adds a target to the target Group
+   * @param target
    */
-  addListenerRule(props: RuleProp): void {
-    let policyStatement: iam.PolicyStatement = new iam.PolicyStatement();
-    let accessMode = props.accessMode ?? RuleAccessMode.NO_STATEMENT;
-
-    // add the action for the statement. There is only one permissable action
-    policyStatement.addActions('vpc-lattice-svcs:Invoke');
-
-    if (accessMode === RuleAccessMode.UNAUTHENTICATED) {
-      if (props.allowedPrincipals) {
-        throw new Error('An unauthenticated rule cannot have allowedPrincipals');
-      }
-      policyStatement.addPrincipals(new iam.StarPrincipal());
-    }
-
-    if (accessMode === RuleAccessMode.AUTHENTICATED_ONLY) {
-      policyStatement.addPrincipals(new iam.StarPrincipal());
-      policyStatement.addCondition('StringNotEqualsIgnoreCase', { 'aws:PrincipalType': 'Anonymous' });
-    }
-
-    if (accessMode === RuleAccessMode.ORG_ONLY) {
-      if (!props.orgId) {
-        throw new Error('orgId is required when accessMode is set to ORG_ONLY');
-      }
-      const orgId = props.orgId;
-      policyStatement.addPrincipals(new iam.StarPrincipal());
-      policyStatement.addCondition('StringEquals', { 'aws:PrincipalOrgID': [orgId] });
-      policyStatement.addCondition('StringNotEqualsIgnoreCase', { 'aws:PrincipalType': 'Anonymous' });
-    }
-
-    // conditionally build a policy statement if principals were provided
-    if (props.allowedPrincipals) {
-      // add principals to the statement
-      // if needed, explicity permit all principals by using iam.StarPrincipal();
-      props.allowedPrincipals.forEach(principal => {
-        policyStatement.addPrincipals(principal);
-      });
-    }
-
-    // conditionally add principals by arn to the the policy
-    if (props.allowedPrincipalArn) {
-      props.allowedPrincipalArn.forEach(arn => {
-        policyStatement.addPrincipals(new iam.ArnPrincipal(arn));
-      });
-    }
-
-    /**
-     * Create the Action for the Rule
-     */
-    let action: generated.CfnRule.ActionProperty;
-
-    // if priority is undefined set it to 50.  This should only be used if there is a single rule
-    const priority = props.priority ?? 50;
-
-    // if the rule has a fixed response
-    if (typeof props.action === 'number') {
-      action = {
-        fixedResponse: {
-          statusCode: props.action,
-        },
-      };
-    } else {
-      // this is a forwarding action
-
-      let targetGroups: generated.CfnRule.WeightedTargetGroupProperty[] = [];
-
-      // loop through the action to build a set of target groups
-      props.action.forEach(targetGroup => {
-        targetGroups.push({
-          targetGroupIdentifier: targetGroup.targetGroup.targetGroupId,
-          // if the targetGroup is no specified set sensible default of 100
-          // this is an opinionated choice.
-          weight: targetGroup.weight ?? 100,
-        });
-      });
-      action = {
-        forward: {
-          targetGroups: targetGroups,
-        },
-      };
-    }
-
-    /**
-     * Validate the priority is not already in use.
-     */
-    if (priority in this.listenerPriorities) {
-      throw new Error('Priority is already in use, ensure all listener rules have unique priorities');
-    }
-    this.listenerPriorities.push(priority);
-    // check to see if priority is between 1 and 100
-    if (priority < 1 || priority > 100) {
-      throw new Error('Priority must be between 1 and 100');
-    }
-    // process the match
-    // fail if at least one method is not selected
-    if (Object.keys(props.httpMatch).length < 1) {
-      throw new Error('At least one of pathMatches, headerMatches, or method must be provided');
-    }
-
-    let match: IHttpMatchProperty = {};
-
-    // method match
-    if (props.httpMatch.method) {
-      // set the method match for the lattice rule
-      match.method = props.httpMatch.method;
-
-      // add a policy statement for the Auth Rule
-      policyStatement.addCondition('StringEquals', { 'vpc-lattice-svcs:RequestMethod': props.httpMatch.method });
-    }
-
-    // path match
-    if (props.httpMatch.pathMatches) {
-      const matchType = props.httpMatch.pathMatches.pathMatchType ?? PathMatchType.EXACT;
-
-      if (matchType === PathMatchType.EXACT) {
-        match.pathMatch = {
-          match: {
-            exact: props.httpMatch.pathMatches.path,
-          },
-          caseSensitive: props.httpMatch.pathMatches.caseSensitive ?? true,
-        };
-        const arn = `arn:${core.Aws.PARTITION}:vpc-lattice:${core.Aws.REGION}:${core.Aws.ACCOUNT_ID}:service/${this.service.serviceId}`;
-        policyStatement.addResources(arn + props.httpMatch.pathMatches.path);
-      }
-
-      if (matchType === PathMatchType.PREFIX) {
-        match.pathMatch = {
-          match: {
-            prefix: props.httpMatch.pathMatches.path,
-          },
-          caseSensitive: props.httpMatch.pathMatches.caseSensitive ?? true,
-        };
-        const arn = `arn:${core.Aws.PARTITION}:vpc-lattice:${core.Aws.REGION}:${core.Aws.ACCOUNT_ID}:service/${this.service.serviceId}`;
-        policyStatement.addResources(arn + props.httpMatch.pathMatches.path + '*');
-      }
-    }
-    // header Match
-    if (props.httpMatch.headerMatches) {
-      let headerMatches: generated.CfnRule.HeaderMatchProperty[] = [];
-
-      props.httpMatch.headerMatches.forEach(headerMatch => {
-        const matchOperator = headerMatch.matchOperator ?? MatchOperator.EXACT;
-
-        if (matchOperator === MatchOperator.EXACT) {
-          headerMatches.push({
-            name: headerMatch.headerName,
-            match: {
-              exact: headerMatch.matchValue,
-            },
-            caseSensitive: headerMatch.caseSensitive ?? false,
-          });
-          policyStatement.addCondition('StringEquals', { [`vpc-lattice-svcs:RequestHeader/${headerMatch.headerName}`]: headerMatch.matchValue });
-        } else if (matchOperator === MatchOperator.CONTAINS) {
-          headerMatches.push({
-            name: headerMatch.headerName,
-            match: {
-              contains: headerMatch.matchValue,
-            },
-            caseSensitive: headerMatch.caseSensitive ?? false,
-          });
-          policyStatement.addCondition('StringEquals', {
-            [`vpc-lattice-svcs:RequestHeader/${headerMatch.headerName}`]: `*${headerMatch.matchValue}*`,
-          });
-        } else if (matchOperator === MatchOperator.PREFIX) {
-          headerMatches.push({
-            name: headerMatch.headerName,
-            match: {
-              prefix: headerMatch.matchValue,
-            },
-            caseSensitive: headerMatch.caseSensitive ?? false,
-          });
-          policyStatement.addCondition('StringEquals', {
-            [`vpc-lattice-svcs:RequestHeader/${headerMatch.headerName}`]: `${headerMatch.matchValue}*`,
-          });
-        }
-      });
-      match.headerMatches = headerMatches;
-    }
-
-    if (accessMode !== RuleAccessMode.NO_STATEMENT) {
-      this.service.addAuthPolicyStatement(policyStatement);
-    }
-
-    // finally create a rule
-    new generated.CfnRule(this, `${props.name}-Rule`, {
-      action: action,
-      match: {
-        httpMatch: match,
-      },
-      priority: priority,
+  public addListenerRule(rule: IRule) {
+    new generated.CfnRule(this, `${rule.node.addr}-Rule`, {
+      action: this.transformRuleActionToCfnProperty(rule.action),
+      priority: rule.priority,
+      match: this.transformRuleConditionsToCfnProperty(rule.conditions),
       listenerIdentifier: this.listenerId,
       serviceIdentifier: this.service.serviceId,
     });
   }
 }
+

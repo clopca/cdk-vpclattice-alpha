@@ -1,4 +1,5 @@
 import { Duration } from 'aws-cdk-lib';
+import { HTTPFixedResponse } from '../util';
 
 export enum HealthCheckProtocol {
   /**
@@ -24,41 +25,6 @@ export enum HealthCheckProtocolVersion {
    * protocol is HTTP/2 or gRPC, but gRPC-specific features are not available.
    */
   HTTP2 = 'HTTP2',
-}
-
-/**
- * Fixed response codes
- */
-export enum HTTPFixedResponse {
-  /**
-   * OK 200
-   */
-  OK = 200,
-
-  /**
-   * Created 201
-   */
-  CREATED = 201,
-
-  /**
-   * Accepted
-   */
-  ACCEPTED = 202,
-
-  /**
-   * No Content 204
-   */
-  NO_CONTENT = 204,
-
-  /**
-   * Not Found 404
-   */
-  NOT_FOUND = 404,
-
-  /**
-   * Internal server error 500
-   */
-  INTERNAL_SERVER_ERROR = 500,
 }
 
 
