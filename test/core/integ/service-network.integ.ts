@@ -3,7 +3,7 @@ import * as cdk from 'aws-cdk-lib';
 import { Vpc } from 'aws-cdk-lib/aws-ec2';
 import { LogGroup, RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
-import { AuthType, LoggingDestination, Service, ServiceNetwork, ServiceNetworkAccessMode } from '../../src';
+import { AuthType, LoggingDestination, Service, ServiceNetwork, ServiceNetworkAccessMode } from '../../../src';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-vpclattice-integ-svcn');

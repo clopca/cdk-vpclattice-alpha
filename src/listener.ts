@@ -1,10 +1,10 @@
-import { IResource, Resource } from "aws-cdk-lib";
-import { Service } from "./service";
-import { Construct } from "constructs";
-import { RuleAction, IRule, MatchOperator } from "./rules";
+import { IResource, Resource } from 'aws-cdk-lib';
+import { Service } from './service';
+import { Construct } from 'constructs';
+import { RuleAction, IRule, MatchOperator } from './rules';
 import * as generated from 'aws-cdk-lib/aws-vpclattice';
-import { HTTPFixedResponse } from "./util";
-import { PathMatchType, RuleConditions } from "./matches";
+import { HTTPFixedResponse } from './util';
+import { PathMatchType, RuleConditions } from './matches';
 
 /**
  * It is not required that the listener and target group protocols match.
@@ -26,14 +26,14 @@ export enum ListenerProtocol {
   HTTPS = 'HTTPS',
 
   /**
-   * TLS Passthrough. This ensures that your application 
-   * decrypts the encrypted traffic instead of VPC Lattice. 
+   * TLS Passthrough. This ensures that your application
+   * decrypts the encrypted traffic instead of VPC Lattice.
    */
   TLS_PASSTHROUGH = 'TLS_PASSTHROUGH',
 }
 
 /**
- * Create a VPC Lattice Listener. It is simply a process that checks for 
+ * Create a VPC Lattice Listener. It is simply a process that checks for
  * connection requests, and routes them to targets in a target group according
  * to the defined rules.
  * Implemented by `Listener`.
@@ -128,7 +128,7 @@ export class Listener extends Resource implements IListener {
   /**
    * The default action for this listener
    */
-  readonly defaultAction: RuleAction
+  readonly defaultAction: RuleAction;
 
   /**
    * The service this listener is attached to
@@ -139,110 +139,6 @@ export class Listener extends Resource implements IListener {
    * The listener rules to add
    */
   rules: IRule[];
-
-
-
-  // ------------------------------------------------------
-  // Validation Methods
-  // ------------------------------------------------------
-  /**
-   * Verifies a valid protocol / target Type combination
-   */
-  protected validatePort(): string[] {
-    const errors: string[] = [];
-    // Ensure that protocol is not set to TCP if targetType is ALB
-    if (this.port < 0 || this.port > 65535) {
-      errors.push(`Port ${this.port} out of range (0-65535)`)
-    }
-    return errors;
-  }
-
-  protected validateListenerName(name: string) {
-    const errors: string[] = [];
-    const pattern = /^(?!listener-)(?![-])(?!.*[-]$)(?!.*[-]{2})[a-z0-9-]+$/;
-    const validationSucceeded = name.length >= 3 && name.length <= 63 && pattern.test(name)
-    if (!validationSucceeded) {
-      errors.push(`Invalid Listener Name: ${name} (must be between 3-63 characters, and must be a valid name)`);
-    }
-    return errors;
-  }
-
-  protected validateRulePriorities(): string[] {
-    const errors: string[] = [];
-    const rulePriorities = new Set(this.rules.map((rule) => rule.priority));
-    if (this.rules.length > rulePriorities.size) {
-      errors.push('Invalid Rule Priorities: Duplicate priorities found');
-    }
-    return errors;
-  }
-
-  // ------------------------------------------------------
-  // Util Methods
-  // ------------------------------------------------------
-  /**
-   * Transforms the L2 Rule Action to the CFN-L1 format
-   */
-  private transformRuleActionToCfnProperty(ruleAction: RuleAction): generated.CfnListener.DefaultActionProperty {
-    if (typeof ruleAction === 'number') {
-      // RuleAction is an HTTPFixedResponse
-      return {
-        fixedResponse: {
-          statusCode: ruleAction,
-        },
-      }
-    } else {
-      // RuleAction is an array of WeightedTargetGroup
-      const targetGroups = ruleAction.map((weightedTargetGroup) => ({
-        targetGroupIdentifier: weightedTargetGroup.targetGroup.node.id,
-        weight: weightedTargetGroup.weight,
-      }))
-
-      return {
-        forward: {
-          targetGroups,
-        },
-      }
-    }
-  }
-
-  private transformRuleConditionsToCfnProperty(ruleConditions: RuleConditions): generated.CfnRule.MatchProperty {
-    const { headerMatches, methodMatch, pathMatch } = ruleConditions;
-
-    const matchProperty: generated.CfnRule.MatchProperty = {
-      httpMatch:
-      {
-        headerMatches: headerMatches?.map(({ headerName, matchValue, caseSensitive = false, matchOperator }) => ({
-          name: headerName,
-          match: { [MatchOperator[matchOperator].toLowerCase()]: matchValue },
-          caseSensitive,
-        })),
-        method: methodMatch,
-        pathMatch: {
-          caseSensitive: pathMatch?.caseSensitive ?? false,
-          match: {
-            [(pathMatch?.pathMatchType ?? PathMatchType.EXACT).toLowerCase()]: pathMatch?.path,
-          },
-        },
-      }
-    }
-
-    return matchProperty;
-  }
-
-  // /**
-  //  * In case a priority is not specified, a default priority is created
-  //  * E.g. generateDefaultPriority(7); // Output: [15, 15, 14, 14, 14, 14, 14]
-  //  */
-  // private generateDefaultPriority(numberOfRules: number): number[] {
-  //   const defaultPriorities: number[] = Array(numberOfRules).fill(100 / numberOfRules);
-
-  //   const remainder = 100 % numberOfRules;
-  //   for (let i = 0; i < remainder; i++) {
-  //     defaultPriorities[i]++;
-  //   }
-
-  //   return defaultPriorities;
-  // }
 
   // ------------------------------------------------------
   // Constructor
@@ -255,21 +151,23 @@ export class Listener extends Resource implements IListener {
     // ------------------------------------------------------
     // Set properties or defaults
     // ------------------------------------------------------
-    this.name = this.physicalName
-    this.service = props.service
-    this.protocol = props.protocol ?? ListenerProtocol.HTTPS
-    this.port = props.port ?? (props.protocol === ListenerProtocol.HTTP ? 80 : 443)
-    this.rules = props.rules ?? []
-    this.defaultAction = props.defaultAction ?? HTTPFixedResponse.NOT_FOUND
-
+    this.name = this.physicalName;
+    this.service = props.service;
+    this.protocol = props.protocol ?? ListenerProtocol.HTTPS;
+    this.port = props.port ?? (props.protocol === ListenerProtocol.HTTP ? 80 : 443);
+    this.rules = props.rules ?? [];
+    this.defaultAction = props.defaultAction ?? HTTPFixedResponse.NOT_FOUND;
 
     // ------------------------------------------------------
     // Validation
     // ------------------------------------------------------
-    if (props.name) { this.node.addValidation({ validate: () => this.validateListenerName(this.physicalName) }) }
-    if (props.rules) { this.node.addValidation({ validate: () => this.validateRulePriorities() }) }
-    this.node.addValidation({ validate: () => this.validatePort() })
-
+    if (props.name) {
+      this.node.addValidation({ validate: () => this.validateListenerName(this.physicalName) });
+    }
+    if (props.rules) {
+      this.node.addValidation({ validate: () => this.validateRulePriorities() });
+    }
+    this.node.addValidation({ validate: () => this.validatePort() });
 
     // ------------------------------------------------------
     // L1 Instantiation
@@ -292,12 +190,112 @@ export class Listener extends Resource implements IListener {
     // Adds Listener Rules
     // ------------------------------------------------------
     if (props.rules) {
-      props.rules.forEach((rule) => {
+      props.rules.forEach(rule => {
         this.addListenerRule(rule);
       });
     }
-
   }
+  // ------------------------------------------------------
+  // Validation Methods
+  // ------------------------------------------------------
+  /**
+   * Verifies a valid protocol / target Type combination
+   */
+  protected validatePort(): string[] {
+    const errors: string[] = [];
+    // Ensure that protocol is not set to TCP if targetType is ALB
+    if (this.port < 0 || this.port > 65535) {
+      errors.push(`Port ${this.port} out of range (0-65535)`);
+    }
+    return errors;
+  }
+
+  protected validateListenerName(name: string) {
+    const errors: string[] = [];
+    const pattern = /^(?!listener-)(?![-])(?!.*[-]$)(?!.*[-]{2})[a-z0-9-]+$/;
+    const validationSucceeded = name.length >= 3 && name.length <= 63 && pattern.test(name);
+    if (!validationSucceeded) {
+      errors.push(`Invalid Listener Name: ${name} (must be between 3-63 characters, and must be a valid name)`);
+    }
+    return errors;
+  }
+
+  protected validateRulePriorities(): string[] {
+    const errors: string[] = [];
+    const rulePriorities = new Set(this.rules.map(rule => rule.priority));
+    if (this.rules.length > rulePriorities.size) {
+      errors.push('Invalid Rule Priorities: Duplicate priorities found');
+    }
+    return errors;
+  }
+
+  // ------------------------------------------------------
+  // Util Methods
+  // ------------------------------------------------------
+  /**
+   * Transforms the L2 Rule Action to the CFN-L1 format
+   */
+  private transformRuleActionToCfnProperty(ruleAction: RuleAction): generated.CfnListener.DefaultActionProperty {
+    if (typeof ruleAction === 'number') {
+      // RuleAction is an HTTPFixedResponse
+      return {
+        fixedResponse: {
+          statusCode: ruleAction,
+        },
+      };
+    } else {
+      // RuleAction is an array of WeightedTargetGroup
+      const targetGroups = ruleAction.map(weightedTargetGroup => ({
+        targetGroupIdentifier: weightedTargetGroup.targetGroup.node.id,
+        weight: weightedTargetGroup.weight,
+      }));
+
+      return {
+        forward: {
+          targetGroups,
+        },
+      };
+    }
+  }
+
+  private transformRuleConditionsToCfnProperty(ruleConditions: RuleConditions): generated.CfnRule.MatchProperty {
+    const { headerMatches, methodMatch, pathMatch } = ruleConditions;
+
+    const matchProperty: generated.CfnRule.MatchProperty = {
+      httpMatch: {
+        headerMatches: headerMatches?.map(({ headerName, matchValue, caseSensitive = false, matchOperator }) => ({
+          name: headerName,
+          match: { [MatchOperator[matchOperator].toLowerCase()]: matchValue },
+          caseSensitive,
+        })),
+        method: methodMatch,
+        pathMatch: {
+          caseSensitive: pathMatch?.caseSensitive ?? false,
+          match: {
+            [(pathMatch?.pathMatchType ?? PathMatchType.EXACT).toLowerCase()]: pathMatch?.path,
+          },
+        },
+      },
+    };
+
+    return matchProperty;
+  }
+
+  // /**
+  //  * In case a priority is not specified, a default priority is created
+  //  * E.g. generateDefaultPriority(7); // Output: [15, 15, 14, 14, 14, 14, 14]
+  //  */
+  // private generateDefaultPriority(numberOfRules: number): number[] {
+  //   const defaultPriorities: number[] = Array(numberOfRules).fill(100 / numberOfRules);
+
+  //   const remainder = 100 % numberOfRules;
+  //   for (let i = 0; i < remainder; i++) {
+  //     defaultPriorities[i]++;
+  //   }
+
+  //   return defaultPriorities;
+  // }
+
   /**
    * Adds a target to the target Group
    * @param target
@@ -312,4 +310,3 @@ export class Listener extends Resource implements IListener {
     });
   }
 }
-
