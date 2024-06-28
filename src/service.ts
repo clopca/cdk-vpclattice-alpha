@@ -73,7 +73,7 @@ export interface ServiceProps {
   readonly name?: string;
 
   /**
-   * Determine what happens to the repository when the resource/stack is deleted.
+   * Determine what happens to the service when the resource/stack is deleted.
    *
    * @default RemovalPolicy.RETAIN
    */
@@ -186,16 +186,16 @@ export class Service extends ServiceBase {
     return new Import(scope, id);
 
     function validateServiceArn() {
-      const splitArn = serviceArn.split(':');
-      // knowing that this is an arn example: arn:aws:vpc-lattice:eu-west-1:546667217338:service/svc-029fe1d290c4071ec
-      // check the different parts of the arn
-      if (splitArn[0] !== 'arn' || splitArn[2] !== 'vpc-lattice' || splitArn[5] !== 'service') {
-        throw new Error(`Repository arn should be in the format 'arn:<PARTITION>:vpc-lattice:<REGION>:<ACCOUNT>:service/<NAME>', got ${serviceArn}.`);
+      const arnPattern = /^arn:aws:vpc-lattice:[a-z0-9-]+:\d{12}:service\/[a-zA-Z0-9-]+$/;
+
+      if (!arnPattern.test(serviceArn)) {
+        throw new Error(`Service ARN should be in the format 'arn:aws:vpc-lattice:<REGION>:<ACCOUNT>:service/<NAME>', got ${serviceArn}.`);
       }
     }
   }
   // -----------
   public static fromServiceId(scope: Construct, id: string, serviceId: string): IService {
+    validateServiceId();
     class Import extends ServiceBase {
       public readonly serviceId = serviceId;
       public readonly serviceArn = core.Arn.format(
@@ -208,6 +208,17 @@ export class Service extends ServiceBase {
       );
     }
     return new Import(scope, id);
+
+    function validateServiceId() {
+      // Combined pattern to check the "svc-" prefix and apply the name pattern
+      const idPattern = /^svc-(?!svc-)(?!-)(?!.*-$)(?!.*--)[a-z0-9-]{3,40}$/;
+
+      if (!idPattern.test(serviceId)) {
+        throw new Error(
+          `Service ID should be in the format 'svc-<NAME>', where <NAME> is 3-40 characters long, starts and ends with a letter or number, cannot start with "svc-", and can contain lowercase letters, numbers, and hyphens (no consecutive hyphens). Got ${serviceId}.`,
+        );
+      }
+    }
   }
 
   // ------------------------------------------------------
@@ -233,7 +244,7 @@ export class Service extends ServiceBase {
     }
 
     if (errors.length > 0) {
-      throw new Error(`Invalid Service name (value: ${name})${EOL}${errors.join(EOL)}`);
+      throw new Error(`Invalid service name (value: ${name})${EOL}${errors.join(EOL)}`);
     }
   }
 
@@ -251,12 +262,65 @@ export class Service extends ServiceBase {
 
   /**
    * Must ensure Service has the correct AuthType and policy is a
-   * valid IAM Resource-based Policy
+   * valid IAM Resource-based Policy for VPC Lattice
    */
   private static validateAuthPolicy(authPolicy: iam.PolicyDocument) {
-    if (authPolicy.validateForResourcePolicy().length > 0) {
-      throw new Error(`The following errors were found in the policy: \n${authPolicy.validateForResourcePolicy()} \n ${authPolicy}`);
+    const errors: string[] = [];
+
+    const policyJson = authPolicy.toJSON();
+    if (!policyJson.Statement || !Array.isArray(policyJson.Statement)) {
+      errors.push('Invalid policy structure: Statement array is missing or not an array.');
+    } else {
+      for (const statement of policyJson.Statement) {
+        // Check for valid VPC Lattice actions
+        const validActions = ['vpc-lattice-svcs:Invoke'];
+        if (!this.validateActions(statement.Action, validActions)) {
+          errors.push(`Invalid action detected. Allowed actions for VPC Lattice are: ${validActions.join(', ')} or '*'.`);
+        }
+
+        // Check for valid principal types
+        if (statement.Principal && typeof statement.Principal === 'object') {
+          const validPrincipalTypes = ['AWS', 'Service'];
+          for (const key of Object.keys(statement.Principal)) {
+            if (!validPrincipalTypes.includes(key)) {
+              errors.push(`Invalid principal type: ${key}. Allowed types are: ${validPrincipalTypes.join(', ')}.`);
+            }
+          }
+        }
+
+        // Check for valid resource format
+        if (!this.validateResources(statement.Resource)) {
+          errors.push('Invalid resource format. Resources should be "*" or start with "arn:aws:vpc-lattice:".');
+        }
+      }
     }
+
+    if (errors.length > 0) {
+      throw new Error(
+        `The following errors were found in the VPC Lattice auth policy: \n${errors.join('\n')} \n ${JSON.stringify(policyJson, null, 2)}`,
+      );
+    }
+  }
+
+  private static validateActions(action: string | string[], validActions: string[]): boolean {
+    if (typeof action === 'string') {
+      return action === '*' || validActions.includes(action);
+    }
+    if (Array.isArray(action)) {
+      return action.every(a => a === '*' || validActions.includes(a));
+    }
+    return false;
+  }
+
+  private static validateResources(resource: string | string[]): boolean {
+    const isValidResource = (r: string) => r === '*' || r.startsWith('arn:aws:vpc-lattice:');
+    if (typeof resource === 'string') {
+      return isValidResource(resource);
+    }
+    if (Array.isArray(resource)) {
+      return resource.every(isValidResource);
+    }
+    return false;
   }
 
   // -----------
@@ -334,10 +398,13 @@ export class Service extends ServiceBase {
       });
     }
 
+    if (!this.authPolicy.isEmpty) {
+      Service.validateAuthPolicy(this.authPolicy);
+    }
+
     core.Aspects.of(this).add({
       visit: (node: IConstruct) => {
         if (node === this && !this.authPolicy.isEmpty) {
-          Service.validateAuthPolicy(this.authPolicy);
           new generated.CfnAuthPolicy(this, 'ServiceAuthPolicy', {
             policy: this.authPolicy.toJSON(),
             resourceIdentifier: this.serviceId,
