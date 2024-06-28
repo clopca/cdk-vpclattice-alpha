@@ -77,7 +77,7 @@ export class VpclatticealphaStack extends cdk.Stack {
     new vpclattice.ServiceNetwork(this, 'ServiceNetwork', {
       accessMode: vpclattice.ServiceNetworkAccessMode.UNAUTHENTICATED,
       // authType: vpclattice.AuthType.NONE,
-      vpcs: [support.vpc1],
+      vpcAssociations: [support.vpc1],
       services: [myLatticeService],
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });

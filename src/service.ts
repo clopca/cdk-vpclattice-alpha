@@ -81,15 +81,9 @@ export interface ServiceProps {
 
   /**
    * The authType of the Service
-   * @default AuthType.NONE
+   * @default AuthType.NONE 
    */
   readonly authType?: AuthType;
-
-  /**
-   * Listeners that will be attached to the service
-   * @default no listeners
-   */
-  // readonly listeners?: IListener[];
 
   /**
    * A certificate that may be used by the service
@@ -137,7 +131,7 @@ export interface ServiceProps {
 
   /**
    * Policy to apply to the service
-   * @default - No policy is applied
+   * @default - No policy is attached. All traffic is denied by default.
    */
   readonly authPolicy?: iam.PolicyDocument;
 }
@@ -186,10 +180,10 @@ export class Service extends ServiceBase {
     return new Import(scope, id);
 
     function validateServiceArn() {
-      const splitArn = serviceArn.split(':');
+      const splitArn = core.Arn.split(serviceArn, core.ArnFormat.SLASH_RESOURCE_NAME);
       // knowing that this is an arn example: arn:aws:vpc-lattice:eu-west-1:546667217338:service/svc-029fe1d290c4071ec
       // check the different parts of the arn
-      if (splitArn[0] !== 'arn' || splitArn[2] !== 'vpc-lattice' || splitArn[5] !== 'service') {
+      if (splitArn.service !== 'vpc-lattice' || splitArn.resource !== 'service') {
         throw new Error(`Repository arn should be in the format 'arn:<PARTITION>:vpc-lattice:<REGION>:<ACCOUNT>:service/<NAME>', got ${serviceArn}.`);
       }
     }

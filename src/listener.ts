@@ -5,6 +5,7 @@ import { RuleAction, MatchOperator, RuleProps } from './rules';
 import * as generated from 'aws-cdk-lib/aws-vpclattice';
 import { HTTPFixedResponse } from './util';
 import { PathMatchType, RuleConditions } from './matches';
+import { TargetGroupBase } from './aws-vpclattice-targets';
 
 /**
  * It is not required that the listener and target group protocols match.
@@ -251,18 +252,30 @@ export class Listener extends Resource implements IListener {
           statusCode: ruleAction,
         },
       };
-    } else {
-      // RuleAction is an array of WeightedTargetGroup
+    }
+    else if (ruleAction.constructor === Array) {
       const targetGroups = ruleAction.map(weightedTargetGroup => ({
         targetGroupIdentifier: weightedTargetGroup.targetGroup.targetGroupId,
         weight: weightedTargetGroup.weight,
       }));
-
       return {
         forward: {
           targetGroups,
         },
       };
+    }
+    else if (ruleAction instanceof TargetGroupBase) {
+      return {
+        forward: {
+          targetGroups: [{
+            targetGroupIdentifier: ruleAction.targetGroupId,
+            weight: 100,
+          }]
+        }
+      }
+    }
+    else {
+      return {}
     }
   }
 
@@ -317,5 +330,9 @@ export class Listener extends Resource implements IListener {
       listenerIdentifier: this.listenerId,
       serviceIdentifier: this.service.serviceId,
     });
+
+    // TODO Modify the Auth Policy of the service
+    // this ruleStatement = this.buildStatement()
+    //this.service.authPolicy.addStatements({})
   }
 }

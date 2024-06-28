@@ -49,6 +49,15 @@ junit.xml
 .jsii
 tsconfig.json
 !/API.md
+test/core/e2e/.tmp
+test/core/e2e/basic.integ.snapshot/asset.*
+test/core/e2e/basic.integ.snapshot/**/asset.*
+test/core/e2e/basic.integ.snapshot/cdk.out
+test/core/e2e/basic.integ.snapshot/**/cdk.out
+test/core/e2e/basic.integ.snapshot/manifest.json
+test/core/e2e/basic.integ.snapshot/**/manifest.json
+test/core/e2e/basic.integ.snapshot/tree.json
+test/core/e2e/basic.integ.snapshot/**/tree.json
 test/core/integ/listener.integ.snapshot/asset.*
 test/core/integ/listener.integ.snapshot/**/asset.*
 test/core/integ/listener.integ.snapshot/cdk.out

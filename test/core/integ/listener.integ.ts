@@ -21,7 +21,7 @@ new ServiceNetwork(stack, 'ServiceNetwork', {
 	name: 'my-custom-name',
 	removalPolicy: cdk.RemovalPolicy.DESTROY,
 	accessMode: ServiceNetworkAccessMode.AUTHENTICATED_ONLY,
-	vpcs: [vpc],
+	vpcAssociations: [{ vpc }],
 	services: [sampleSvc],
 });
 
@@ -59,9 +59,7 @@ const listener1 = sampleSvc.addListener({
 				caseSensitive: true
 			}]
 		},
-		action: [{
-			targetGroup: tg1
-		}]
+		action: tg1
 	},
 	{
 		name: "second-rule",
@@ -69,19 +67,22 @@ const listener1 = sampleSvc.addListener({
 		conditions: {
 			methodMatch: HTTPMethod.GET
 		},
-		action: HTTPFixedResponse.NOT_FOUND
+		action: [{
+			targetGroup: tg1,
+			weight: 50
+		}]
 	}]
 })
 
 listener1.addListenerRule({
 	name: "third-rule",
-	action: HTTPFixedResponse.NOT_FOUND,
 	priority: 3,
 	conditions: {
 		pathMatch: {
 			path: "/test"
 		}
-	}
+	},
+	action: HTTPFixedResponse.NOT_FOUND,
 })
 
 new integ.IntegTest(app, 'ServiceNetworkTest', {

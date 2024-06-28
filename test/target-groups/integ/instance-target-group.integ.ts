@@ -21,7 +21,7 @@ const instance2 = new Instance(stack, 'Instance2', {
 
 const tg1 = new InstanceTargetGroup(stack, 'Ec2TG', {
   vpc,
-  targets: [
+  intances: [
     {
       instance: instance1,
       port: 80,

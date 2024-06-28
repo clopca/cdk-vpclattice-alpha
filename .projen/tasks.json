@@ -212,6 +212,69 @@
         }
       ]
     },
+    "integ:basic:assert": {
+      "name": "integ:basic:assert",
+      "description": "assert the snapshot of integration test 'basic'",
+      "steps": [
+        {
+          "exec": "[ -d \"test/core/e2e/basic.integ.snapshot\" ] || (echo \"No snapshot available for integration test 'basic'. Run 'projen integ:basic:deploy' to capture.\" && exit 1)"
+        },
+        {
+          "exec": "cdk synth --app \"ts-node -P tsconfig.dev.json test/core/e2e/basic.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata -o test/core/e2e/.tmp/basic.integ/assert.cdk.out > /dev/null"
+        },
+        {
+          "exec": "diff -r -x asset.* -x cdk.out -x manifest.json -x tree.json test/core/e2e/basic.integ.snapshot/ test/core/e2e/.tmp/basic.integ/assert.cdk.out/"
+        }
+      ]
+    },
+    "integ:basic:deploy": {
+      "name": "integ:basic:deploy",
+      "description": "deploy integration test 'basic' and capture snapshot",
+      "steps": [
+        {
+          "exec": "rm -fr test/core/e2e/.tmp/basic.integ/deploy.cdk.out"
+        },
+        {
+          "exec": "cdk deploy --app \"ts-node -P tsconfig.dev.json test/core/e2e/basic.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata '**' --require-approval=never -o test/core/e2e/.tmp/basic.integ/deploy.cdk.out"
+        },
+        {
+          "exec": "rm -fr test/core/e2e/basic.integ.snapshot"
+        },
+        {
+          "exec": "mv test/core/e2e/.tmp/basic.integ/deploy.cdk.out test/core/e2e/basic.integ.snapshot"
+        },
+        {
+          "spawn": "integ:basic:destroy"
+        }
+      ]
+    },
+    "integ:basic:destroy": {
+      "name": "integ:basic:destroy",
+      "description": "destroy integration test 'basic'",
+      "steps": [
+        {
+          "exec": "cdk destroy --app test/core/e2e/basic.integ.snapshot '**' --no-version-reporting"
+        }
+      ]
+    },
+    "integ:basic:snapshot": {
+      "name": "integ:basic:snapshot",
+      "description": "update snapshot for integration test \"basic\"",
+      "steps": [
+        {
+          "exec": "cdk synth --app \"ts-node -P tsconfig.dev.json test/core/e2e/basic.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata -o test/core/e2e/basic.integ.snapshot > /dev/null"
+        }
+      ]
+    },
+    "integ:basic:watch": {
+      "name": "integ:basic:watch",
+      "description": "watch integration test 'basic' (without updating snapshots)",
+      "steps": [
+        {
+          "exec": "cdk watch --app \"ts-node -P tsconfig.dev.json test/core/e2e/basic.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata '**' -o test/core/e2e/.tmp/basic.integ/deploy.cdk.out"
+        }
+      ]
+    },
     "integ:instance-target-group:assert": {
       "name": "integ:instance-target-group:assert",
       "description": "assert the snapshot of integration test 'instance-target-group'",
@@ -595,6 +658,9 @@
       "description": "update snapshot for all integration tests",
       "steps": [
         {
+          "spawn": "integ:basic:snapshot"
+        },
+        {
           "spawn": "integ:listener:snapshot"
         },
         {
@@ -695,6 +761,9 @@
         },
         {
           "spawn": "eslint"
+        },
+        {
+          "spawn": "integ:basic:assert"
         },
         {
           "spawn": "integ:listener:assert"

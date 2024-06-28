@@ -430,7 +430,8 @@
           "LambdaTGF1D88294",
           "Id"
          ]
-        }
+        },
+        "Weight": 100
        }
       ]
      }
@@ -468,8 +469,18 @@
    "Type": "AWS::VpcLattice::Rule",
    "Properties": {
     "Action": {
-     "FixedResponse": {
-      "StatusCode": 404
+     "Forward": {
+      "TargetGroups": [
+       {
+        "TargetGroupIdentifier": {
+         "Fn::GetAtt": [
+          "LambdaTGF1D88294",
+          "Id"
+         ]
+        },
+        "Weight": 50
+       }
+      ]
      }
     },
     "ListenerIdentifier": {

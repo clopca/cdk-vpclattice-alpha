@@ -141,7 +141,7 @@ export interface ServiceNetworkProps {
    * their VPCs to it.
    * @default - no VPCs are associated
    */
-  readonly vpcs?: ec2.IVpc[];
+  readonly vpcAssociations?: AssociateVPCProps[];
 
   /**
    * Allow external principals
@@ -327,9 +327,9 @@ export class ServiceNetwork extends ServiceNetworkBase {
     // ------------------------------------------------------
     // VPC & Service Association
     // ------------------------------------------------------
-    if (props.vpcs) {
-      props.vpcs.forEach(vpc => {
-        this.associateVPC({ vpc: vpc });
+    if (props.vpcAssociations) {
+      props.vpcAssociations.forEach(vpcProps => {
+        this.associateVPC({ ...vpcProps });
       });
     }
 

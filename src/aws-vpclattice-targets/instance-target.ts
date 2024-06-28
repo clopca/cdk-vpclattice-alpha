@@ -4,6 +4,8 @@ import { Construct } from 'constructs';
 import { RequestProtocol, RequestProtocolVersion, TargetGroupBase, TargetType } from './base-target-group';
 import { HealthCheck, HealthCheckProtocol, HealthCheckProtocolVersion } from './health-check';
 import { HTTPFixedResponse } from '../util';
+import { IAutoScalingGroup } from 'aws-cdk-lib/aws-autoscaling';
+import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from 'aws-cdk-lib/custom-resources';
 
 export interface InstanceTarget {
   /**
@@ -33,7 +35,12 @@ export interface InstanceTargetGroupProps {
   /**
    * The targets to associate with the target group
    */
-  readonly targets?: InstanceTarget[];
+  readonly intances?: InstanceTarget[];
+
+  /**
+   * The ASGs to associate with the target group
+   */
+  readonly autoScalingGroups?: IAutoScalingGroup[];
 
   /**
    * The protocol to use for routing traffic to the targets.
@@ -76,7 +83,8 @@ export class InstanceTargetGroup extends TargetGroupBase {
   public readonly port: number;
   public readonly vpc: IVpc;
   public readonly healthCheck: HealthCheck;
-  public readonly targets: InstanceTarget[];
+  public readonly instances: InstanceTarget[];
+  public readonly autoScalingGroups: IAutoScalingGroup[];
   private readonly _resource: aws_vpclattice.CfnTargetGroup;
 
   constructor(scope: Construct, id: string, props: InstanceTargetGroupProps) {
@@ -92,7 +100,8 @@ export class InstanceTargetGroup extends TargetGroupBase {
     this.protocol = props.protocol ?? RequestProtocol.HTTPS;
     this.protocolVersion = props.protocolVersion ?? (props.protocol !== RequestProtocol.TCP ? RequestProtocolVersion.HTTP1 : undefined);
     this.port = props.port ?? (props.protocol === RequestProtocol.HTTP ? 80 : 443);
-    this.targets = props.targets ?? [];
+    this.instances = props.intances ?? [];
+    this.autoScalingGroups = props.autoScalingGroups ?? [];
     this.healthCheck = {
       enabled: props.healthCheck?.enabled ?? true,
       healthCheckInterval: props.healthCheck?.healthCheckInterval ?? Duration.seconds(30),
@@ -144,13 +153,44 @@ export class InstanceTargetGroup extends TargetGroupBase {
       name: this.name,
       // Lazy basically processes this line at synthesis time, making additions after instantiation possible
       targets: Lazy.any({
-        produce: () => this.targets.map(target => ({ id: target.instance.instanceId, port: target.port ?? this.port })),
+        produce: () => this.instances.map(target => ({ id: target.instance.instanceId, port: target.port ?? this.port })),
       }),
       config,
     });
 
     this.targetGroupId = this._resource.attrId;
     this.targetGroupArn = this._resource.attrArn;
+
+    // ASG associations
+    if (this.autoScalingGroups.length > 0) {
+      this.autoScalingGroups.forEach(asg => {
+        new AwsCustomResource(this, `AsgLatticeAssociation${asg.node.addr}`, {
+          installLatestAwsSdk: true,
+          onCreate: {
+            service: 'AutoScaling',
+            action: 'attachTrafficSources',
+            parameters: {
+              AutoScalingGroupName: asg.autoScalingGroupName,
+              TrafficSources: [{
+                Identifier: this.targetGroupArn
+              }]
+            },
+            physicalResourceId: PhysicalResourceId.of(`${this.targetGroupId}-${asg.autoScalingGroupName}`),
+          },
+          onDelete: {
+            service: 'AutoScaling',
+            action: 'detachTrafficSources',
+            parameters: {
+              AutoScalingGroupName: asg.autoScalingGroupName,
+              TrafficSources: [{
+                Identifier: this.targetGroupArn
+              }]
+            },
+          },
+          policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+        })
+      });
+    }
   }
 
   /**
@@ -158,6 +198,6 @@ export class InstanceTargetGroup extends TargetGroupBase {
    * @param target
    */
   public addTarget(target: InstanceTarget) {
-    this.targets.push(target);
+    this.instances.push(target);
   }
 }
