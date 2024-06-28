@@ -8,10 +8,10 @@ import { Service, LoggingDestination, AuthType } from '../../../src';
 import { ServiceNetwork } from '../../../src/service-network';
 
 describe('Service', () => {
-  // default service
   test('Default service', () => {
     // GIVEN
-    const stack = new cdk.Stack();
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'TestStack');
 
     // WHEN
     new Service(stack, 'Service', {});
@@ -24,7 +24,8 @@ describe('Service', () => {
 
   test('Basic creation with custom name', () => {
     // GIVEN
-    const stack = new cdk.Stack();
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'TestStack');
 
     // WHEN
     new Service(stack, 'Params', {
@@ -41,7 +42,8 @@ describe('Service', () => {
 
   test('Service with custom domain and certificate', () => {
     // GIVEN
-    const stack = new cdk.Stack();
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'TestStack');
 
     // WHEN
     new Service(stack, 'Service', {
@@ -59,7 +61,8 @@ describe('Service', () => {
   });
 
   test('Service with removal policy', () => {
-    const stack = new cdk.Stack();
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'TestStack');
     new Service(stack, 'Service', {
       name: 'my-service',
       removalPolicy: cdk.RemovalPolicy.DESTROY,
@@ -71,7 +74,8 @@ describe('Service', () => {
   });
 
   test('Service with service network association', () => {
-    const stack = new cdk.Stack();
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'TestStack');
     const mockServiceNetwork = ServiceNetwork.fromArn(
       stack,
       'MockServiceNetwork',
@@ -93,7 +97,8 @@ describe('Service', () => {
   });
 
   test('Service with resource sharing', () => {
-    const stack = new cdk.Stack();
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'TestStack');
     const service = new Service(stack, 'Service', {
       name: 'my-service',
     });
@@ -118,7 +123,8 @@ describe('Service', () => {
 
   describe('Service with methods', () => {
     test('Add auth policy statement', () => {
-      const stack = new cdk.Stack();
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'TestStack');
       const service = new Service(stack, 'Service', {
         name: 'my-service',
       });
@@ -145,59 +151,66 @@ describe('Service', () => {
     });
 
     test('Add auth policy statement with invalid statement', () => {
-      const stack = new cdk.Stack();
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'TestStack');
       const service = new Service(stack, 'Service', {
         name: 'my-service',
       });
 
-      expect(() => {
-        service.addAuthPolicyStatement(
-          new iam.PolicyStatement({
-            effect: iam.Effect.ALLOW,
-            actions: ['s3:GetObject'],
-            resources: ['*'],
-          }),
-        );
-      }).toThrow(/Invalid action detected/);
+      service.addAuthPolicyStatement(
+        new iam.PolicyStatement({
+          effect: iam.Effect.ALLOW,
+          actions: ['s3:GetObject'],
+          resources: ['*'],
+        }),
+      );
+
+      // Expect synthesis to throw an error
+      expect(() => app.synth()).toThrow(/Invalid action detected/);
     });
 
     test('Add auth policy statement with invalid principal', () => {
-      const stack = new cdk.Stack();
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'TestStack');
       const service = new Service(stack, 'Service', {
         name: 'my-service',
       });
 
-      expect(() => {
-        service.addAuthPolicyStatement(
-          new iam.PolicyStatement({
-            effect: iam.Effect.ALLOW,
-            actions: ['vpc-lattice-svcs:Invoke'],
-            resources: ['*'],
-            principals: [new iam.FederatedPrincipal('cognito-identity.amazonaws.com', {})],
-          }),
-        );
-      }).toThrow(/Invalid principal type/);
+      service.addAuthPolicyStatement(
+        new iam.PolicyStatement({
+          effect: iam.Effect.ALLOW,
+          actions: ['vpc-lattice-svcs:Invoke'],
+          resources: ['*'],
+          principals: [new iam.FederatedPrincipal('cognito-identity.amazonaws.com', {})],
+        }),
+      );
+
+      // Expect synthesis to throw an error
+      expect(() => app.synth()).toThrow(/Invalid principal type/);
     });
 
     test('Add auth policy statement with invalid resource', () => {
-      const stack = new cdk.Stack();
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'TestStack');
       const service = new Service(stack, 'Service', {
         name: 'my-service',
       });
 
-      expect(() => {
-        service.addAuthPolicyStatement(
-          new iam.PolicyStatement({
-            effect: iam.Effect.ALLOW,
-            actions: ['vpc-lattice-svcs:Invoke'],
-            resources: ['arn:aws:s3:::my-bucket'],
-          }),
-        );
-      }).toThrow(/Invalid resource format/);
+      service.addAuthPolicyStatement(
+        new iam.PolicyStatement({
+          effect: iam.Effect.ALLOW,
+          actions: ['vpc-lattice-svcs:Invoke'],
+          resources: ['arn:aws:s3:::my-bucket'],
+        }),
+      );
+
+      // Expect synthesis to throw an error
+      expect(() => app.synth()).toThrow(/Invalid resource format/);
     });
 
     test('Grant access', () => {
-      const stack = new cdk.Stack();
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'TestStack');
       const service = new Service(stack, 'Service', {
         name: 'my-service',
       });
@@ -217,13 +230,15 @@ describe('Service', () => {
     });
 
     test('Grant access with invalid principal', () => {
-      const stack = new cdk.Stack();
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'TestStack');
       const service = new Service(stack, 'Service', {
         name: 'my-service',
       });
 
+      service.grantAccess([new iam.FederatedPrincipal('cognito-identity.amazonaws.com', {})]);
       expect(() => {
-        service.grantAccess([new iam.FederatedPrincipal('cognito-identity.amazonaws.com', {})]);
+        app.synth();
       }).toThrow(/Invalid principal type/);
     });
   });
@@ -269,7 +284,8 @@ describe('Service', () => {
 
     test('Error with invalid action', () => {
       // GIVEN
-      const stack = new cdk.Stack();
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'TestStack');
       const invalidActionStatement = new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,
         actions: ['s3:GetObject'],
@@ -277,18 +293,18 @@ describe('Service', () => {
       });
 
       // WHEN & THEN
-      expect(() => {
-        new Service(stack, 'ServiceInvalidAction', {
-          name: 'my-service-invalid-action',
-          authType: AuthType.AWS_IAM,
-          authStatements: [invalidActionStatement],
-        });
-      }).toThrow(/Invalid action detected/);
+      new Service(stack, 'ServiceInvalidAction', {
+        name: 'my-service-invalid-action',
+        authType: AuthType.AWS_IAM,
+        authStatements: [invalidActionStatement],
+      });
+      expect(() => app.synth()).toThrow(/Invalid action detected/);
     });
 
     test('Error with invalid principal type', () => {
       // GIVEN
-      const stack = new cdk.Stack();
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'TestStack');
       const invalidPrincipalStatement = new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,
         actions: ['vpc-lattice-svcs:Invoke'],
@@ -297,18 +313,18 @@ describe('Service', () => {
       });
 
       // WHEN & THEN
-      expect(() => {
-        new Service(stack, 'ServiceInvalidPrincipal', {
-          name: 'my-service-invalid-principal',
-          authType: AuthType.AWS_IAM,
-          authStatements: [invalidPrincipalStatement],
-        });
-      }).toThrow(/Invalid principal type/);
+      new Service(stack, 'ServiceInvalidPrincipal', {
+        name: 'my-service-invalid-principal',
+        authType: AuthType.AWS_IAM,
+        authStatements: [invalidPrincipalStatement],
+      });
+      expect(() => app.synth()).toThrow(/Invalid principal type/);
     });
 
     test('Error with invalid resource format', () => {
       // GIVEN
-      const stack = new cdk.Stack();
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'TestStack');
       const invalidResourceStatement = new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,
         actions: ['vpc-lattice-svcs:Invoke'],
@@ -316,18 +332,18 @@ describe('Service', () => {
       });
 
       // WHEN & THEN
-      expect(() => {
-        new Service(stack, 'ServiceInvalidResource', {
-          name: 'my-service-invalid-resource',
-          authType: AuthType.AWS_IAM,
-          authStatements: [invalidResourceStatement],
-        });
-      }).toThrow(/Invalid resource format/);
+      new Service(stack, 'ServiceInvalidResource', {
+        name: 'my-service-invalid-resource',
+        authType: AuthType.AWS_IAM,
+        authStatements: [invalidResourceStatement],
+      });
+      expect(() => app.synth()).toThrow(/Invalid resource format/);
     });
 
     test('Error with multiple invalid elements', () => {
       // GIVEN
-      const stack = new cdk.Stack();
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'TestStack');
       const multipleInvalidStatement = new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,
         actions: ['s3:GetObject', 'vpc-lattice-svcs:Invoke'],
@@ -336,18 +352,18 @@ describe('Service', () => {
       });
 
       // WHEN & THEN
-      expect(() => {
-        new Service(stack, 'ServiceMultipleInvalid', {
-          name: 'my-service-multiple-invalid',
-          authType: AuthType.AWS_IAM,
-          authStatements: [multipleInvalidStatement],
-        });
-      }).toThrow(/The following errors were found in the VPC Lattice auth policy/);
+      new Service(stack, 'ServiceMultipleInvalid', {
+        name: 'my-service-multiple-invalid',
+        authType: AuthType.AWS_IAM,
+        authStatements: [multipleInvalidStatement],
+      });
+      expect(() => app.synth()).toThrow(/The following errors were found in the VPC Lattice auth policy/);
     });
 
     test('Valid policy passes validation', () => {
       // GIVEN
-      const stack = new cdk.Stack();
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'TestStack');
       const validStatement = new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,
         actions: ['vpc-lattice-svcs:Invoke'],
@@ -356,18 +372,18 @@ describe('Service', () => {
       });
 
       // WHEN & THEN
-      expect(() => {
-        new Service(stack, 'ServiceValid', {
-          name: 'my-service-valid',
-          authType: AuthType.AWS_IAM,
-          authStatements: [validStatement],
-        });
-      }).not.toThrow();
+      new Service(stack, 'ServiceValid', {
+        name: 'my-service-valid',
+        authType: AuthType.AWS_IAM,
+        authStatements: [validStatement],
+      });
+      expect(() => app.synth()).not.toThrow();
     });
 
     test('Service with custom auth statement', () => {
       // GIVEN
-      const stack = new cdk.Stack();
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'TestStack');
       const customStatement = new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,
         actions: ['vpc-lattice-svcs:Invoke'],
@@ -403,7 +419,8 @@ describe('Service', () => {
   describe('Service logging destination validation', () => {
     test('Service with logging destination to cloudwatch', () => {
       // GIVEN
-      const stack = new cdk.Stack();
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'TestStack');
 
       // WHEN
       const logGroup = new LogGroup(stack, 'LogsTest', {
@@ -425,7 +442,8 @@ describe('Service', () => {
 
     test('Service with logging destination to kinesis', () => {
       // GIVEN
-      const stack = new cdk.Stack();
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'TestStack');
       const kinesisStream = Stream.fromStreamArn(stack, 'KinesisStream', 'arn:aws:kinesis:us-east-1:123456789012:stream/my-stream');
 
       // WHEN
@@ -445,7 +463,8 @@ describe('Service', () => {
 
     test('Service with multiple logging destinations', () => {
       // GIVEN
-      const stack = new cdk.Stack();
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'TestStack');
       const logGroup = new LogGroup(stack, 'LogGroup');
       const kinesisStream = new Stream(stack, 'KinesisStream');
 
@@ -461,107 +480,98 @@ describe('Service', () => {
 
     test('Error with duplicate logging destination type', () => {
       // GIVEN
-      const stack = new cdk.Stack();
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'TestStack');
       const logGroup1 = new LogGroup(stack, 'LogGroup1');
       const logGroup2 = new LogGroup(stack, 'LogGroup2');
       const kinesisStream1 = new Stream(stack, 'KinesisStream1');
       const kinesisStream2 = new Stream(stack, 'KinesisStream2');
 
       // WHEN & THEN
-      expect(() => {
-        new Service(stack, 'Params', {
-          name: 'mycustomlatticeservicename',
-          authType: AuthType.AWS_IAM,
-          loggingDestinations: [LoggingDestination.cloudwatch(logGroup1), LoggingDestination.cloudwatch(logGroup2)],
-        });
-      }).toThrow();
+      new Service(stack, 'Service1', {
+        name: 'mycustomlatticeservicename',
+        authType: AuthType.AWS_IAM,
+        loggingDestinations: [LoggingDestination.cloudwatch(logGroup1), LoggingDestination.cloudwatch(logGroup2)],
+      });
+      expect(() => app.synth()).toThrow('A service can only have one logging destination per destination type.');
 
       // WHEN & THEN
-      expect(() => {
-        new Service(stack, 'Params', {
-          name: 'mycustomlatticeservicename',
-          authType: AuthType.AWS_IAM,
-          loggingDestinations: [LoggingDestination.kinesis(kinesisStream1), LoggingDestination.kinesis(kinesisStream2)],
-        });
-      }).toThrow();
+      new Service(stack, 'Service2', {
+        name: 'mycustomlatticeservicename',
+        authType: AuthType.AWS_IAM,
+        loggingDestinations: [LoggingDestination.kinesis(kinesisStream1), LoggingDestination.kinesis(kinesisStream2)],
+      });
+      expect(() => app.synth()).toThrow('A service can only have one logging destination per destination type.');
     });
   });
 
   describe('Service name validation', () => {
     test('Service name validations', () => {
       // GIVEN
-      const stack = new cdk.Stack();
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'TestStack');
 
       // WHEN & THEN
-      expect(
-        () =>
-          new Service(stack, 'Service1', {
-            name: 'abc-xyz-34ab',
-          }),
-      ).not.toThrow();
+      new Service(stack, 'Service1', {
+        name: 'abc-xyz-34ab',
+      });
+      expect(() => app.synth()).not.toThrow();
 
       // WHEN & THEN
-      expect(
-        () =>
-          new Service(stack, 'Service2', {
-            name: '124pp-33',
-          }),
-      ).not.toThrow();
+      new Service(stack, 'Service2', {
+        name: '124pp-33',
+      });
+      expect(() => app.synth()).not.toThrow();
     });
 
     test('Fails with message on invalid service names', () => {
       // GIVEN
-      const stack = new cdk.Stack();
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'TestStack');
       const name = `svc-${'$'.repeat(41)}`;
       const expectedErrors = [
-        `Invalid service name (value: ${name})`,
-        'Service name must be at least 3 and no more than 40 characters',
-        'Service name must be composed of characters a-z, 0-9, and hyphens (-). You can\'t use a hyphen as the first or last character, or immediately after another hyphen. The name cannot start with "svc-".',
+        `  [TestStack/Service] Invalid service name (value: ${name})`,
+        '  [TestStack/Service] Service name must be at least 3 and no more than 40 characters',
+        '  [TestStack/Service] Service name must be composed of characters a-z, 0-9, and hyphens (-). You can\'t use a hyphen as the first or last character, or immediately after another hyphen. The name cannot start with "svc-".',
       ].join(EOL);
 
       // WHEN & THEN
-      expect(
-        () =>
-          new Service(stack, 'Service', {
-            name,
-          }),
-      ).toThrow(expectedErrors);
+      new Service(stack, 'Service', {
+        name,
+      });
+      expect(() => app.synth()).toThrow(`Validation failed with the following errors:${EOL}${expectedErrors}`);
     });
 
     test('Fails if service name has less than 3 or more than 40 characters', () => {
       // GIVEN
-      const stack = new cdk.Stack();
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'TestStack');
 
       // WHEN & THEN
-      expect(
-        () =>
-          new Service(stack, 'Service1', {
-            name: 'a',
-          }),
-      ).toThrow(/at least 3/);
+      new Service(stack, 'Service1', {
+        name: 'a',
+      });
+      expect(() => app.synth()).toThrow(/at least 3/);
 
       // WHEN & THEN
-      expect(
-        () =>
-          new Service(stack, 'Service2', {
-            name: 'x'.repeat(41),
-          }),
-      ).toThrow(/no more than 40/);
+      new Service(stack, 'Service2', {
+        name: 'x'.repeat(41),
+      });
+      expect(() => app.synth()).toThrow(/no more than 40/);
     });
 
     test('Fails if service name does not follow the specified pattern', () => {
       // GIVEN
-      const stack = new cdk.Stack();
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'TestStack');
       const invalidNames = ['aAa', 'a--a', 'a./a-a', 'a//a-a', 'svc-a', '-abc123', 'abc123-'];
 
       // WHEN & THEN
       invalidNames.forEach(name => {
-        expect(
-          () =>
-            new Service(stack, `Service-${name}`, {
-              name,
-            }),
-        ).toThrow(/Service name must be composed of characters a-z, 0-9, and hyphens/);
+        new Service(stack, `Service-${name}`, {
+          name,
+        });
+        expect(() => app.synth()).toThrow(/Service name must be composed of characters a-z, 0-9, and hyphens/);
       });
     });
   });

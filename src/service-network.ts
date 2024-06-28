@@ -276,107 +276,6 @@ export class ServiceNetwork extends ServiceNetworkBase {
     }
   }
 
-  // ------------------------------------------------------
-  // Validation
-  // ------------------------------------------------------
-  /**
-   * Must be between 3-63 characters. Lowercase letters, numbers, and hyphens are accepted.
-   * Must begin and end with a letter or number. No consecutive hyphens.
-   */
-  private static validateServiceNetworkName(name: string) {
-    const errors: string[] = [];
-
-    if (name.length < 3 || name.length > 63) {
-      errors.push('Service network name must be at least 3 and no more than 63 characters');
-    }
-
-    const isPatternMatch = /^(?!servicenetwork-)(?!-)(?!.*-$)(?!.*--)[a-z0-9-]+$/.test(name);
-    if (!isPatternMatch) {
-      errors.push(
-        'Service network name must be composed of characters a-z, 0-9, and hyphens (-). You can\'t use a hyphen as the first or last character, or immediately after another hyphen. The name cannot start with "servicenetwork-".',
-      );
-    }
-
-    if (errors.length > 0) {
-      throw new Error(`Invalid service network name (value: ${name})${EOL}${errors.join(EOL)}`);
-    }
-  }
-
-  /**
-   * Must specify at most only one destination per destination type
-   */
-  private static validateLoggingDestinations(loggingDestinations: LoggingDestination[]) {
-    if (loggingDestinations.length) {
-      const destinationTypes = loggingDestinations.map(destination => destination.destinationType);
-      if (new Set(destinationTypes).size !== destinationTypes.length) {
-        throw new Error('A service network can only have one logging destination per destination type.');
-      }
-    }
-  }
-
-  /**
-   * Must ensure Service has the correct AuthType and policy is a
-   * valid IAM Resource-based Policy for VPC Lattice
-   */
-  private static validateAuthPolicy(authPolicy: iam.PolicyDocument) {
-    const errors: string[] = [];
-
-    const policyJson = authPolicy.toJSON();
-    if (!policyJson.Statement || !Array.isArray(policyJson.Statement)) {
-      errors.push('Invalid policy structure: Statement array is missing or not an array.');
-    } else {
-      for (const statement of policyJson.Statement) {
-        // Check for valid VPC Lattice actions
-        const validActions = ['vpc-lattice-svcs:Invoke'];
-        if (!this.validateActions(statement.Action, validActions)) {
-          errors.push(`Invalid action detected. Allowed actions for VPC Lattice are: ${validActions.join(', ')} or '*'.`);
-        }
-
-        // Check for valid principal types
-        if (statement.Principal && typeof statement.Principal === 'object') {
-          const validPrincipalTypes = ['AWS', 'Service'];
-          for (const key of Object.keys(statement.Principal)) {
-            if (!validPrincipalTypes.includes(key)) {
-              errors.push(`Invalid principal type: ${key}. Allowed types are: ${validPrincipalTypes.join(', ')}.`);
-            }
-          }
-        }
-
-        // Check for valid resource format
-        if (!this.validateResources(statement.Resource)) {
-          errors.push('Invalid resource format. Resources should be "*" or start with "arn:aws:vpc-lattice:".');
-        }
-      }
-    }
-
-    if (errors.length > 0) {
-      throw new Error(
-        `The following errors were found in the VPC Lattice auth policy: \n${errors.join('\n')} \n ${JSON.stringify(policyJson, null, 2)}`,
-      );
-    }
-  }
-
-  private static validateActions(action: string | string[], validActions: string[]): boolean {
-    if (typeof action === 'string') {
-      return action === '*' || validActions.includes(action);
-    }
-    if (Array.isArray(action)) {
-      return action.every(a => a === '*' || validActions.includes(a));
-    }
-    return false;
-  }
-
-  private static validateResources(resource: string | string[]): boolean {
-    const isValidResource = (r: string) => r === '*' || r.startsWith('arn:aws:vpc-lattice:');
-    if (typeof resource === 'string') {
-      return isValidResource(resource);
-    }
-    if (Array.isArray(resource)) {
-      return resource.every(isValidResource);
-    }
-    return false;
-  }
-
   // -----------
   public readonly serviceNetworkArn: string;
   public readonly serviceNetworkId: string;
@@ -398,7 +297,7 @@ export class ServiceNetwork extends ServiceNetworkBase {
     });
 
     if (props.name) {
-      ServiceNetwork.validateServiceNetworkName(props.name);
+      this.validateServiceNetworkName(props.name);
     }
 
     this.authType = props.authType ?? AuthType.NONE;
@@ -443,7 +342,7 @@ export class ServiceNetwork extends ServiceNetworkBase {
     // Logging Configuration
     // ------------------------------------------------------
     if (this.loggingDestinations.length) {
-      ServiceNetwork.validateLoggingDestinations(this.loggingDestinations);
+      this.validateLoggingDestinations(this.loggingDestinations);
       this.loggingDestinations.forEach(destination => {
         this.addLoggingDestination(destination);
       });
@@ -496,7 +395,7 @@ export class ServiceNetwork extends ServiceNetworkBase {
     }
 
     if (!this.authPolicy.isEmpty) {
-      ServiceNetwork.validateAuthPolicy(this.authPolicy);
+      this.validateAuthPolicy(this.authPolicy);
     }
 
     core.Aspects.of(this).add({
@@ -509,6 +408,107 @@ export class ServiceNetwork extends ServiceNetworkBase {
         }
       },
     });
+  }
+
+  // ------------------------------------------------------
+  // Validation Methods
+  // ------------------------------------------------------
+  /**
+   * Must be between 3-63 characters. Lowercase letters, numbers, and hyphens are accepted.
+   * Must begin and end with a letter or number. No consecutive hyphens.
+   */
+  protected validateServiceNetworkName(name: string) {
+    const errors: string[] = [];
+
+    if (name.length < 3 || name.length > 63) {
+      errors.push('Service network name must be at least 3 and no more than 63 characters');
+    }
+
+    const isPatternMatch = /^(?!servicenetwork-)(?!-)(?!.*-$)(?!.*--)[a-z0-9-]+$/.test(name);
+    if (!isPatternMatch) {
+      errors.push(
+        'Service network name must be composed of characters a-z, 0-9, and hyphens (-). You can\'t use a hyphen as the first or last character, or immediately after another hyphen. The name cannot start with "servicenetwork-".',
+      );
+    }
+
+    if (errors.length > 0) {
+      throw new Error(`Invalid service network name (value: ${name})${EOL}${errors.join(EOL)}`);
+    }
+  }
+
+  /**
+   * Must specify at most only one destination per destination type
+   */
+  protected validateLoggingDestinations(loggingDestinations: LoggingDestination[]) {
+    if (loggingDestinations.length) {
+      const destinationTypes = loggingDestinations.map(destination => destination.destinationType);
+      if (new Set(destinationTypes).size !== destinationTypes.length) {
+        throw new Error('A service network can only have one logging destination per destination type.');
+      }
+    }
+  }
+
+  /**
+   * Must ensure Service has the correct AuthType and policy is a
+   * valid IAM Resource-based Policy for VPC Lattice
+   */
+  protected validateAuthPolicy(authPolicy: iam.PolicyDocument) {
+    const errors: string[] = [];
+
+    const policyJson = authPolicy.toJSON();
+    if (!policyJson.Statement || !Array.isArray(policyJson.Statement)) {
+      errors.push('Invalid policy structure: Statement array is missing or not an array.');
+    } else {
+      for (const statement of policyJson.Statement) {
+        // Check for valid VPC Lattice actions
+        const validActions = ['vpc-lattice-svcs:Invoke'];
+        if (!this.validateActions(statement.Action, validActions)) {
+          errors.push(`Invalid action detected. Allowed actions for VPC Lattice are: ${validActions.join(', ')} or '*'.`);
+        }
+
+        // Check for valid principal types
+        if (statement.Principal && typeof statement.Principal === 'object') {
+          const validPrincipalTypes = ['AWS', 'Service'];
+          for (const key of Object.keys(statement.Principal)) {
+            if (!validPrincipalTypes.includes(key)) {
+              errors.push(`Invalid principal type: ${key}. Allowed types are: ${validPrincipalTypes.join(', ')}.`);
+            }
+          }
+        }
+
+        // Check for valid resource format
+        if (!this.validateResources(statement.Resource)) {
+          errors.push('Invalid resource format. Resources should be "*" or start with "arn:aws:vpc-lattice:".');
+        }
+      }
+    }
+
+    if (errors.length > 0) {
+      throw new Error(
+        `The following errors were found in the VPC Lattice auth policy: \n${errors.join('\n')} \n ${JSON.stringify(policyJson, null, 2)}`,
+      );
+    }
+  }
+
+  private validateActions(action: string | string[], validActions: string[]): boolean {
+    if (typeof action === 'string') {
+      return action === '*' || validActions.includes(action);
+    }
+    if (Array.isArray(action)) {
+      return action.every(a => a === '*' || validActions.includes(a));
+    }
+    return false;
+  }
+
+  private validateResources(resource: string | string[]): boolean {
+    const isValidResource = (r: string) => r === '*' || r.startsWith('arn:aws:vpc-lattice:');
+    if (typeof resource === 'string') {
+      return isValidResource(resource);
+    }
+    if (Array.isArray(resource)) {
+      return resource.every(isValidResource);
+    }
+    return false;
   }
 
   // ------------------------------------------------------
@@ -530,7 +530,7 @@ export class ServiceNetwork extends ServiceNetworkBase {
       principals: principals,
     });
     this.authPolicy.addStatements(policyStatement);
-    ServiceNetwork.validateAuthPolicy(this.authPolicy);
+    this.validateAuthPolicy(this.authPolicy);
   }
 
   /**
@@ -539,7 +539,7 @@ export class ServiceNetwork extends ServiceNetworkBase {
    */
   public addAuthPolicyStatement(statement: iam.PolicyStatement): void {
     this.authPolicy.addStatements(statement);
-    ServiceNetwork.validateAuthPolicy(this.authPolicy);
+    this.validateAuthPolicy(this.authPolicy);
   }
 
   /**
