@@ -3,11 +3,11 @@ import { aws_iam as iam, aws_ram as ram } from 'aws-cdk-lib';
 import * as core from 'aws-cdk-lib';
 import * as generated from 'aws-cdk-lib/aws-vpclattice';
 import { Construct, IConstruct } from 'constructs';
+import { Listener, ListenerConfig } from './listener';
 import { LoggingDestination } from './logging';
 import { IServiceNetwork } from './service-network';
 import { ServiceNetworkAssociation } from './service-network-association';
 import { AuthType } from './util';
-import { Listener, ListenerConfig } from './listener';
 
 /**
  * Represents a Vpc Lattice Service.
@@ -397,7 +397,6 @@ export class Service extends ServiceBase {
       config,
     });
   }
-
 
   /**
    * Amazon VPC Lattice integrates with AWS Resource Access Manager (AWS RAM) to enable

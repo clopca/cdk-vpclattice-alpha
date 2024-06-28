@@ -44,19 +44,6 @@ export interface AlbTargetGroupProps {
 }
 
 export class AlbTargetGroup extends TargetGroupBase {
-  /**
- * Validate VPC for Target Types
- */
-  protected validateVpc(): string[] {
-    const errors = new Array<string>();
-    if (this.loadBalancer.vpc) {
-      if (this.loadBalancer.vpc.vpcId != this.vpc.vpcId) {
-        throw new Error('The Application Load Balancer must be in the same VPC as the VPC Lattice target group.');
-      }
-    }
-    return errors;
-  }
-
   public readonly targetGroupArn: string;
   public readonly targetGroupId: string;
   public readonly name: string;
@@ -85,11 +72,12 @@ export class AlbTargetGroup extends TargetGroupBase {
     // ------------------------------------------------------
     // Validation
     // ------------------------------------------------------
-    if (props.name) { this.node.addValidation({ validate: () => this.validateTargetGroupName(this.name) }); }
+    if (props.name) {
+      this.node.addValidation({ validate: () => this.validateTargetGroupName(this.name) });
+    }
     this.node.addValidation({ validate: () => this.validateProtocol(this.protocol, this.targetType) });
     this.node.addValidation({ validate: () => this.validateProtocolVersion(this.protocol, this.protocolVersion) });
     this.node.addValidation({ validate: () => this.validateVpc() });
-
 
     // ------------------------------------------------------
     // L1 Instantiation
@@ -110,5 +98,18 @@ export class AlbTargetGroup extends TargetGroupBase {
 
     this.targetGroupId = this._resource.attrId;
     this.targetGroupArn = this._resource.attrArn;
+  }
+
+  /**
+   * Validate VPC for Target Types
+   */
+  protected validateVpc(): string[] {
+    const errors = new Array<string>();
+    if (this.loadBalancer.vpc) {
+      if (this.loadBalancer.vpc.vpcId != this.vpc.vpcId) {
+        throw new Error('The Application Load Balancer must be in the same VPC as the VPC Lattice target group.');
+      }
+    }
+    return errors;
   }
 }
