@@ -265,10 +265,12 @@ export class Listener extends Resource implements IListener {
     } else if (ruleAction instanceof TargetGroupBase) {
       return {
         forward: {
-          targetGroups: [{
-            targetGroupIdentifier: ruleAction.targetGroupId,
-            weight: 100,
-          }],
+          targetGroups: [
+            {
+              targetGroupIdentifier: ruleAction.targetGroupId,
+              weight: 100,
+            },
+          ],
         },
       };
     } else {
@@ -315,8 +317,8 @@ export class Listener extends Resource implements IListener {
   // }
 
   /**
-   * Adds a target to the target Group
-   * @param target
+   * Adds a rule to the listener
+   * @param rule
    */
   public addListenerRule(rule: RuleProps) {
     new generated.CfnRule(this, `${rule.name}Rule`, {
