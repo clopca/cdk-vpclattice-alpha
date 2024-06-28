@@ -2,10 +2,10 @@ import { aws_iam as iam, aws_ec2 as ec2, aws_ram as ram } from 'aws-cdk-lib';
 import * as core from 'aws-cdk-lib';
 import * as generated from 'aws-cdk-lib/aws-vpclattice';
 import { Construct } from 'constructs';
-import { AuthType } from './util';
 import { LoggingDestination } from './logging';
 import { IService } from './service';
 import { ServiceNetworkAssociation } from './service-network-association';
+import { AuthType } from './util';
 
 /**
  * AccessModes for the Service Network.

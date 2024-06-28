@@ -85,9 +85,9 @@ export class AlbTargetGroup extends TargetGroupBase {
     // ------------------------------------------------------
     // Validation
     // ------------------------------------------------------
-    if (props.name) { this.node.addValidation({ validate: () => this.validateTargetGroupName(this.name) }) }
+    if (props.name) { this.node.addValidation({ validate: () => this.validateTargetGroupName(this.name) }); }
     this.node.addValidation({ validate: () => this.validateProtocol(this.protocol, this.targetType) });
-    this.node.addValidation({ validate: () => this.validateProtocolVersion(this.protocol, this.protocolVersion) })
+    this.node.addValidation({ validate: () => this.validateProtocolVersion(this.protocol, this.protocolVersion) });
     this.node.addValidation({ validate: () => this.validateVpc() });
 
 
