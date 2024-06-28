@@ -81,7 +81,7 @@ export interface ServiceProps {
 
   /**
    * The authType of the Service
-   * @default AuthType.NONE 
+   * @default AuthType.NONE
    */
   readonly authType?: AuthType;
 
@@ -180,13 +180,8 @@ export class Service extends ServiceBase {
     return new Import(scope, id);
 
     function validateServiceArn() {
-      const splitArn = core.Arn.split(serviceArn, core.ArnFormat.SLASH_RESOURCE_NAME);
-      // knowing that this is an arn example: arn:aws:vpc-lattice:eu-west-1:546667217338:service/svc-029fe1d290c4071ec
-      // check the different parts of the arn
-      if (splitArn.service !== 'vpc-lattice' || splitArn.resource !== 'service') {
-        throw new Error(`Repository arn should be in the format 'arn:<PARTITION>:vpc-lattice:<REGION>:<ACCOUNT>:service/<NAME>', got ${serviceArn}.`);
-      }
       const arnPattern = /^arn:aws:vpc-lattice:[a-z0-9-]+:\d{12}:service\/[a-zA-Z0-9-]+$/;
+
       if (!arnPattern.test(serviceArn)) {
         throw new Error(`Service ARN should be in the format 'arn:aws:vpc-lattice:<REGION>:<ACCOUNT>:service/<NAME>', got ${serviceArn}.`);
       }

@@ -1,11 +1,11 @@
 import { IResource, Resource } from 'aws-cdk-lib';
 import * as generated from 'aws-cdk-lib/aws-vpclattice';
 import { Construct } from 'constructs';
+import { TargetGroupBase } from './aws-vpclattice-targets';
 import { PathMatchType, RuleConditions } from './matches';
 import { RuleAction, MatchOperator, RuleProps } from './rules';
 import { Service } from './service';
 import { HTTPFixedResponse } from './util';
-import { TargetGroupBase } from './aws-vpclattice-targets';
 
 /**
  * It is not required that the listener and target group protocols match.
@@ -252,8 +252,7 @@ export class Listener extends Resource implements IListener {
           statusCode: ruleAction,
         },
       };
-    }
-    else if (ruleAction.constructor === Array) {
+    } else if (ruleAction.constructor === Array) {
       const targetGroups = ruleAction.map(weightedTargetGroup => ({
         targetGroupIdentifier: weightedTargetGroup.targetGroup.targetGroupId,
         weight: weightedTargetGroup.weight,
@@ -263,19 +262,17 @@ export class Listener extends Resource implements IListener {
           targetGroups,
         },
       };
-    }
-    else if (ruleAction instanceof TargetGroupBase) {
+    } else if (ruleAction instanceof TargetGroupBase) {
       return {
         forward: {
           targetGroups: [{
             targetGroupIdentifier: ruleAction.targetGroupId,
             weight: 100,
-          }]
-        }
-      }
-    }
-    else {
-      return {}
+          }],
+        },
+      };
+    } else {
+      return {};
     }
   }
 

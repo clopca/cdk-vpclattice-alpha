@@ -1,11 +1,11 @@
 import { Duration, Lazy, aws_vpclattice } from 'aws-cdk-lib';
+import { IAutoScalingGroup } from 'aws-cdk-lib/aws-autoscaling';
 import { IInstance, IVpc } from 'aws-cdk-lib/aws-ec2';
+import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from 'aws-cdk-lib/custom-resources';
 import { Construct } from 'constructs';
 import { RequestProtocol, RequestProtocolVersion, TargetGroupBase, TargetType } from './base-target-group';
 import { HealthCheck, HealthCheckProtocol, HealthCheckProtocolVersion } from './health-check';
 import { HTTPFixedResponse } from '../util';
-import { IAutoScalingGroup } from 'aws-cdk-lib/aws-autoscaling';
-import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from 'aws-cdk-lib/custom-resources';
 
 export interface InstanceTarget {
   /**
@@ -172,8 +172,8 @@ export class InstanceTargetGroup extends TargetGroupBase {
             parameters: {
               AutoScalingGroupName: asg.autoScalingGroupName,
               TrafficSources: [{
-                Identifier: this.targetGroupArn
-              }]
+                Identifier: this.targetGroupArn,
+              }],
             },
             physicalResourceId: PhysicalResourceId.of(`${this.targetGroupId}-${asg.autoScalingGroupName}`),
           },
@@ -183,12 +183,12 @@ export class InstanceTargetGroup extends TargetGroupBase {
             parameters: {
               AutoScalingGroupName: asg.autoScalingGroupName,
               TrafficSources: [{
-                Identifier: this.targetGroupArn
-              }]
+                Identifier: this.targetGroupArn,
+              }],
             },
           },
           policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
-        })
+        });
       });
     }
   }

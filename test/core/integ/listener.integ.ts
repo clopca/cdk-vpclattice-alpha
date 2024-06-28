@@ -13,21 +13,21 @@ const stack = new cdk.Stack(app, 'aws-cdk-vpclattice-integ-listener');
 const vpc = new Vpc(stack, 'VPC', {});
 
 const sampleSvc = new Service(stack, 'Service', {
-	removalPolicy: cdk.RemovalPolicy.DESTROY,
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
 new ServiceNetwork(stack, 'ServiceNetwork', {
-	authType: AuthType.AWS_IAM,
-	name: 'my-custom-name',
-	removalPolicy: cdk.RemovalPolicy.DESTROY,
-	accessMode: ServiceNetworkAccessMode.AUTHENTICATED_ONLY,
-	vpcAssociations: [{ vpc }],
-	services: [sampleSvc],
+  authType: AuthType.AWS_IAM,
+  name: 'my-custom-name',
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
+  accessMode: ServiceNetworkAccessMode.AUTHENTICATED_ONLY,
+  vpcAssociations: [{ vpc }],
+  services: [sampleSvc],
 });
 
 const lambdaFunction = new Function(stack, 'LambdaTargetFunction', {
-	runtime: Runtime.NODEJS_18_X,
-	code: Code.fromInline(`
+  runtime: Runtime.NODEJS_18_X,
+  code: Code.fromInline(`
 		  exports.handler = async (event) => {
 			  return {
 				  isBase64Encoded: false,
@@ -36,57 +36,57 @@ const lambdaFunction = new Function(stack, 'LambdaTargetFunction', {
 			  };
 		  };
 	  `),
-	handler: 'index.function_name',
+  handler: 'index.function_name',
 });
 
 const tg1 = new LambdaTargetGroup(stack, 'LambdaTG', {
-	//name: "lambda-tg1",
-	target: lambdaFunction,
+  //name: "lambda-tg1",
+  target: lambdaFunction,
 });
 
 const listener1 = sampleSvc.addListener({
-	name: "listener1",
-	protocol: ListenerProtocol.HTTP,
-	port: 80,
-	rules: [{
-		name: "first-rule",
-		priority: 1,
-		conditions: {
-			headerMatches: [{
-				headerName: "x-custom-header",
-				matchOperator: MatchOperator.EXACT,
-				matchValue: "some-value",
-				caseSensitive: true
-			}]
-		},
-		action: tg1
-	},
-	{
-		name: "second-rule",
-		priority: 2,
-		conditions: {
-			methodMatch: HTTPMethod.GET
-		},
-		action: [{
-			targetGroup: tg1,
-			weight: 50
-		}]
-	}]
-})
+  name: 'listener1',
+  protocol: ListenerProtocol.HTTP,
+  port: 80,
+  rules: [{
+    name: 'first-rule',
+    priority: 1,
+    conditions: {
+      headerMatches: [{
+        headerName: 'x-custom-header',
+        matchOperator: MatchOperator.EXACT,
+        matchValue: 'some-value',
+        caseSensitive: true,
+      }],
+    },
+    action: tg1,
+  },
+  {
+    name: 'second-rule',
+    priority: 2,
+    conditions: {
+      methodMatch: HTTPMethod.GET,
+    },
+    action: [{
+      targetGroup: tg1,
+      weight: 50,
+    }],
+  }],
+});
 
 listener1.addListenerRule({
-	name: "third-rule",
-	priority: 3,
-	conditions: {
-		pathMatch: {
-			path: "/test"
-		}
-	},
-	action: HTTPFixedResponse.NOT_FOUND,
-})
+  name: 'third-rule',
+  priority: 3,
+  conditions: {
+    pathMatch: {
+      path: '/test',
+    },
+  },
+  action: HTTPFixedResponse.NOT_FOUND,
+});
 
 new integ.IntegTest(app, 'ServiceNetworkTest', {
-	testCases: [stack],
+  testCases: [stack],
 });
 
 app.synth();
