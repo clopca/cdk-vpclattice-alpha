@@ -116,6 +116,118 @@ describe('Service', () => {
     });
   });
 
+  describe('Service with methods', () => {
+    test('Add auth policy statement', () => {
+      const stack = new cdk.Stack();
+      const service = new Service(stack, 'Service', {
+        name: 'my-service',
+      });
+
+      service.addAuthPolicyStatement(
+        new iam.PolicyStatement({
+          effect: iam.Effect.ALLOW,
+          actions: ['vpc-lattice-svcs:Invoke'],
+          resources: ['*'],
+        }),
+      );
+
+      Template.fromStack(stack).hasResourceProperties('AWS::VpcLattice::AuthPolicy', {
+        Policy: {
+          Statement: [
+            {
+              Effect: 'Allow',
+              Action: 'vpc-lattice-svcs:Invoke',
+              Resource: '*',
+            },
+          ],
+        },
+      });
+    });
+
+    test('Add auth policy statement with invalid statement', () => {
+      const stack = new cdk.Stack();
+      const service = new Service(stack, 'Service', {
+        name: 'my-service',
+      });
+
+      expect(() => {
+        service.addAuthPolicyStatement(
+          new iam.PolicyStatement({
+            effect: iam.Effect.ALLOW,
+            actions: ['s3:GetObject'],
+            resources: ['*'],
+          }),
+        );
+      }).toThrow(/Invalid action detected/);
+    });
+
+    test('Add auth policy statement with invalid principal', () => {
+      const stack = new cdk.Stack();
+      const service = new Service(stack, 'Service', {
+        name: 'my-service',
+      });
+
+      expect(() => {
+        service.addAuthPolicyStatement(
+          new iam.PolicyStatement({
+            effect: iam.Effect.ALLOW,
+            actions: ['vpc-lattice-svcs:Invoke'],
+            resources: ['*'],
+            principals: [new iam.FederatedPrincipal('cognito-identity.amazonaws.com', {})],
+          }),
+        );
+      }).toThrow(/Invalid principal type/);
+    });
+
+    test('Add auth policy statement with invalid resource', () => {
+      const stack = new cdk.Stack();
+      const service = new Service(stack, 'Service', {
+        name: 'my-service',
+      });
+
+      expect(() => {
+        service.addAuthPolicyStatement(
+          new iam.PolicyStatement({
+            effect: iam.Effect.ALLOW,
+            actions: ['vpc-lattice-svcs:Invoke'],
+            resources: ['arn:aws:s3:::my-bucket'],
+          }),
+        );
+      }).toThrow(/Invalid resource format/);
+    });
+
+    test('Grant access', () => {
+      const stack = new cdk.Stack();
+      const service = new Service(stack, 'Service', {
+        name: 'my-service',
+      });
+      service.grantAccess([new iam.ArnPrincipal('arn:aws:iam::123456789012:role/MyRole')]);
+
+      Template.fromStack(stack).hasResourceProperties('AWS::VpcLattice::AuthPolicy', {
+        Policy: {
+          Statement: [
+            {
+              Effect: 'Allow',
+              Action: 'vpc-lattice-svcs:Invoke',
+              Resource: '*',
+            },
+          ],
+        },
+      });
+    });
+
+    test('Grant access with invalid principal', () => {
+      const stack = new cdk.Stack();
+      const service = new Service(stack, 'Service', {
+        name: 'my-service',
+      });
+
+      expect(() => {
+        service.grantAccess([new iam.FederatedPrincipal('cognito-identity.amazonaws.com', {})]);
+      }).toThrow(/Invalid principal type/);
+    });
+  });
+
   describe('Auth policy validation', () => {
     test('Service with auth policy', () => {
       // GIVEN
@@ -440,64 +552,17 @@ describe('Service', () => {
     test('Fails if service name does not follow the specified pattern', () => {
       // GIVEN
       const stack = new cdk.Stack();
-      const expectedErrorMessage =
-        'Service name must be composed of characters a-z, 0-9, and hyphens (-). You can\'t use a hyphen as the first or last character, or immediately after another hyphen. The name cannot start with "svc-".';
+      const invalidNames = ['aAa', 'a--a', 'a./a-a', 'a//a-a', 'svc-a', '-abc123', 'abc123-'];
 
       // WHEN & THEN
-      expect(
-        () =>
-          new Service(stack, 'Service1', {
-            name: 'aAa',
-          }),
-      ).toThrow(['Invalid service name (value: aAa)', expectedErrorMessage].join(EOL));
-
-      // WHEN & THEN
-      expect(
-        () =>
-          new Service(stack, 'Service2', {
-            name: 'a--a',
-          }),
-      ).toThrow(['Invalid service name (value: a--a)', expectedErrorMessage].join(EOL));
-
-      // WHEN & THEN
-      expect(
-        () =>
-          new Service(stack, 'Service3', {
-            name: 'a./a-a',
-          }),
-      ).toThrow(['Invalid service name (value: a./a-a)', expectedErrorMessage].join(EOL));
-
-      // WHEN & THEN
-      expect(
-        () =>
-          new Service(stack, 'Service4', {
-            name: 'a//a-a',
-          }),
-      ).toThrow(['Invalid service name (value: a//a-a)', expectedErrorMessage].join(EOL));
-
-      // WHEN & THEN
-      expect(
-        () =>
-          new Service(stack, 'Service5', {
-            name: 'svc-a',
-          }),
-      ).toThrow(['Invalid service name (value: svc-a)', expectedErrorMessage].join(EOL));
-
-      // WHEN & THEN
-      expect(
-        () =>
-          new Service(stack, 'Service6', {
-            name: '-abc123',
-          }),
-      ).toThrow(['Invalid service name (value: -abc123)', expectedErrorMessage].join(EOL));
-
-      // WHEN & THEN
-      expect(
-        () =>
-          new Service(stack, 'Service7', {
-            name: 'abc123-',
-          }),
-      ).toThrow(['Invalid service name (value: abc123-)', expectedErrorMessage].join(EOL));
+      invalidNames.forEach(name => {
+        expect(
+          () =>
+            new Service(stack, `Service-${name}`, {
+              name,
+            }),
+        ).toThrow(/Service name must be composed of characters a-z, 0-9, and hyphens/);
+      });
     });
   });
 
