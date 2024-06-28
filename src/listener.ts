@@ -1,10 +1,10 @@
 import { IResource, Resource } from 'aws-cdk-lib';
-import { Service } from './service';
-import { Construct } from 'constructs';
-import { RuleAction, MatchOperator, RuleProps } from './rules';
 import * as generated from 'aws-cdk-lib/aws-vpclattice';
-import { HTTPFixedResponse } from './util';
+import { Construct } from 'constructs';
 import { PathMatchType, RuleConditions } from './matches';
+import { RuleAction, MatchOperator, RuleProps } from './rules';
+import { Service } from './service';
+import { HTTPFixedResponse } from './util';
 import { TargetGroupBase } from './aws-vpclattice-targets';
 
 /**
@@ -68,7 +68,7 @@ export interface ListenerProps {
   readonly service: Service;
 
   /**
-   * 
+   *
    */
   readonly config?: ListenerConfig;
 }
@@ -78,8 +78,8 @@ export interface ListenerProps {
  */
 export interface ListenerConfig {
   /**
- * The Name of the listener.
- */
+   * The Name of the listener.
+   */
   readonly name: string;
 
   /**

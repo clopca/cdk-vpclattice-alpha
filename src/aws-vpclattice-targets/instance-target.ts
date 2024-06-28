@@ -112,16 +112,16 @@ export class InstanceTargetGroup extends TargetGroupBase {
       protocolVersion: props.healthCheck?.protocolVersion ?? HealthCheckProtocolVersion.HTTP1,
       unhealthyThresholdCount: props.healthCheck?.unhealthyThresholdCount ?? 2,
       healthyThresholdCount: props.healthCheck?.healthyThresholdCount ?? 5,
-      matchers: props.healthCheck?.matchers ?? HTTPFixedResponse.OK
+      matchers: props.healthCheck?.matchers ?? HTTPFixedResponse.OK,
     };
 
     // ------------------------------------------------------
     // Validation
     // ------------------------------------------------------
-    if (props.name) { this.node.addValidation({ validate: () => this.validateTargetGroupName(this.name) }) }
-    this.node.addValidation({ validate: () => this.validateProtocol(this.protocol, this.targetType) })
-    this.node.addValidation({ validate: () => this.validateProtocolVersion(this.protocol, this.protocolVersion) })
-    this.node.addValidation({ validate: () => this.validateHealthCheck(this.healthCheck) })
+    if (props.name) { this.node.addValidation({ validate: () => this.validateTargetGroupName(this.name) }); }
+    this.node.addValidation({ validate: () => this.validateProtocol(this.protocol, this.targetType) });
+    this.node.addValidation({ validate: () => this.validateProtocolVersion(this.protocol, this.protocolVersion) });
+    this.node.addValidation({ validate: () => this.validateHealthCheck(this.healthCheck) });
 
     // ------------------------------------------------------
     // L1 Instantiation
@@ -143,8 +143,8 @@ export class InstanceTargetGroup extends TargetGroupBase {
         healthyThresholdCount: this.healthCheck.healthyThresholdCount,
         matcher: {
           httpCode: (this.healthCheck.matchers ?? HTTPFixedResponse.OK).toString(),
-        }
-      }
+        },
+      },
 
     };
 

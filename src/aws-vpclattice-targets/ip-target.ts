@@ -125,7 +125,7 @@ export class IpTargetGroup extends TargetGroupBase {
     // ------------------------------------------------------
     // Validation
     // ------------------------------------------------------
-    if (props.name) { this.node.addValidation({ validate: () => this.validateTargetGroupName(this.name) }) }
+    if (props.name) { this.node.addValidation({ validate: () => this.validateTargetGroupName(this.name) }); }
     this.node.addValidation({ validate: () => this.validateHealthCheck(this.healthCheck) });
 
     // ------------------------------------------------------

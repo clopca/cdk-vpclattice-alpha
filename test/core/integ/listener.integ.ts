@@ -1,10 +1,10 @@
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import { Vpc } from 'aws-cdk-lib/aws-ec2';
-import { AuthType, HTTPFixedResponse, HTTPMethod, ListenerProtocol, Service, ServiceNetwork, ServiceNetworkAccessMode } from '../../../src';
-import { MatchOperator } from '../../../src/rules';
 import { Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
+import { AuthType, HTTPFixedResponse, HTTPMethod, ListenerProtocol, Service, ServiceNetwork, ServiceNetworkAccessMode } from '../../../src';
 import { LambdaTargetGroup } from '../../../src/aws-vpclattice-targets';
+import { MatchOperator } from '../../../src/rules';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-vpclattice-integ-listener');
