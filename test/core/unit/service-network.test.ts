@@ -1,6 +1,7 @@
 import { EOL } from 'os';
 import * as cdk from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
+import { Vpc } from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { Stream } from 'aws-cdk-lib/aws-kinesis';
 import { LogGroup } from 'aws-cdk-lib/aws-logs';
@@ -48,24 +49,6 @@ describe('Service network', () => {
 
     Template.fromStack(stack).hasResource('AWS::VpcLattice::ServiceNetwork', {
       DeletionPolicy: 'Delete',
-    });
-  });
-
-  test('Service network with service association', () => {
-    const stack = new cdk.Stack();
-    const mockService = Service.fromServiceArn(stack, 'MockService', 'arn:aws:vpc-lattice:us-west-2:123456789012:service/svc-12345');
-
-    const serviceNetwork = new ServiceNetwork(stack, 'ServiceNetwork', {
-      name: 'my-service-network',
-    });
-
-    serviceNetwork.associateService(mockService);
-
-    Template.fromStack(stack).hasResourceProperties('AWS::VpcLattice::ServiceNetworkServiceAssociation', {
-      ServiceIdentifier: 'svc-12345',
-      ServiceNetworkIdentifier: {
-        'Fn::GetAtt': ['ServiceNetworkEF29AF70', 'Id'],
-      },
     });
   });
 
@@ -202,6 +185,48 @@ describe('Service network', () => {
       expect(() => {
         serviceNetwork.grantAccess([new iam.FederatedPrincipal('cognito-identity.amazonaws.com', {})]);
       }).toThrow(/Invalid principal type/);
+    });
+
+    test('Service network with service association', () => {
+      const stack = new cdk.Stack();
+      const mockService = Service.fromServiceArn(stack, 'MockService', 'arn:aws:vpc-lattice:us-west-2:123456789012:service/svc-12345');
+
+      const serviceNetwork = new ServiceNetwork(stack, 'ServiceNetwork', {
+        name: 'my-service-network',
+      });
+
+      serviceNetwork.associateService(mockService);
+
+      Template.fromStack(stack).hasResourceProperties('AWS::VpcLattice::ServiceNetworkServiceAssociation', {
+        ServiceIdentifier: 'svc-12345',
+        ServiceNetworkIdentifier: {
+          'Fn::GetAtt': ['ServiceNetworkEF29AF70', 'Id'],
+        },
+      });
+    });
+
+    test('Service network with VPC association', () => {
+      const stack = new cdk.Stack();
+      const vpc = new Vpc(stack, 'VPC', {
+        vpcName: 'my-vpc',
+      });
+
+      const serviceNetwork = new ServiceNetwork(stack, 'ServiceNetwork', {
+        name: 'my-service-network',
+      });
+
+      serviceNetwork.associateVPC({
+        vpc,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::VpcLattice::ServiceNetworkVpcAssociation', {
+        ServiceNetworkIdentifier: {
+          'Fn::GetAtt': ['ServiceNetworkEF29AF70', 'Id'],
+        },
+        VpcIdentifier: {
+          Ref: 'VPCB9E5F0B4',
+        },
+      });
     });
   });
 
@@ -377,7 +402,7 @@ describe('Service network', () => {
     });
   });
 
-  describe('Service logging destination validation', () => {
+  describe('Service network logging destination validation', () => {
     test('Service network with logging destination to cloudwatch', () => {
       // GIVEN
       const stack = new cdk.Stack();
