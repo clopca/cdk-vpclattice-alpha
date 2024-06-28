@@ -34,7 +34,7 @@ const network = new ServiceNetwork(stack, 'ServiceNetwork', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
   loggingDestinations: [LoggingDestination.cloudwatch(logGroup), LoggingDestination.s3(logBucket)],
   accessMode: ServiceNetworkAccessMode.AUTHENTICATED_ONLY,
-  vpcs: [vpc],
+  vpcAssociations: [{ vpc }],
   services: [sampleSvc],
 });
 
