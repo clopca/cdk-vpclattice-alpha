@@ -212,7 +212,6 @@ export class Service extends ServiceBase {
     function validateServiceId() {
       // Combined pattern to check the "svc-" prefix and apply the name pattern
       const idPattern = /^svc-(?!svc-)(?!-)(?!.*-$)(?!.*--)[a-z0-9-]{3,40}$/;
-
       if (!idPattern.test(serviceId)) {
         throw new Error(
           `Service ID should be in the format 'svc-<NAME>', where <NAME> is 3-40 characters long, starts and ends with a letter or number, cannot start with "svc-", and can contain lowercase letters, numbers, and hyphens (no consecutive hyphens). Got ${serviceId}.`,
