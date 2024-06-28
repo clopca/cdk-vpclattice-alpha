@@ -171,25 +171,39 @@ export class Service extends ServiceBase {
   // Imports
   // ------------------------------------------------------
   public static fromServiceArn(scope: Construct, id: string, serviceArn: string): IService {
-    validateServiceArn();
-
     class Import extends ServiceBase {
       public readonly serviceArn = serviceArn;
-      public readonly serviceId = core.Arn.extractResourceName(serviceArn, 'service');
-    }
-    return new Import(scope, id);
+      public readonly serviceId: string;
 
-    function validateServiceArn() {
-      const arnPattern = /^arn:aws:vpc-lattice:[a-z0-9-]+:\d{12}:service\/[a-zA-Z0-9-]+$/;
+      constructor() {
+        super(scope, id);
+        this.serviceId = this.extractServiceId();
+        this.node.addValidation({ validate: () => this.validateServiceArn() });
+      }
 
-      if (!arnPattern.test(serviceArn)) {
-        throw new Error(`Service ARN should be in the format 'arn:aws:vpc-lattice:<REGION>:<ACCOUNT>:service/<NAME>', got ${serviceArn}.`);
+      private extractServiceId(): string {
+        try {
+          return core.Arn.extractResourceName(this.serviceArn, 'service');
+        } catch (error) {
+          // If extraction fails, return an empty string or some placeholder
+          // The validation will catch this and report the error
+          return '';
+        }
+      }
+
+      private validateServiceArn(): string[] {
+        const errors: string[] = [];
+        const arnPattern = /^arn:aws:vpc-lattice:[a-z0-9-]+:\d{12}:service\/[a-zA-Z0-9-]+$/;
+        if (!arnPattern.test(this.serviceArn)) {
+          errors.push(`Service ARN should be in the format 'arn:aws:vpc-lattice:<REGION>:<ACCOUNT>:service/<NAME>', got ${this.serviceArn}.`);
+        }
+        return errors;
       }
     }
+    return new Import();
   }
   // -----------
   public static fromServiceId(scope: Construct, id: string, serviceId: string): IService {
-    validateServiceId();
     class Import extends ServiceBase {
       public readonly serviceId = serviceId;
       public readonly serviceArn = core.Arn.format(
@@ -198,20 +212,26 @@ export class Service extends ServiceBase {
           resource: 'service',
           resourceName: serviceId,
         },
-        core.Stack.of(this),
+        core.Stack.of(scope),
       );
-    }
-    return new Import(scope, id);
 
-    function validateServiceId() {
-      // Combined pattern to check the "svc-" prefix and apply the name pattern
-      const idPattern = /^svc-(?!svc-)(?!-)(?!.*-$)(?!.*--)[a-z0-9-]{3,40}$/;
-      if (!idPattern.test(serviceId)) {
-        throw new Error(
-          `Service ID should be in the format 'svc-<NAME>', where <NAME> is 3-40 characters long, starts and ends with a letter or number, cannot start with "svc-", and can contain lowercase letters, numbers, and hyphens (no consecutive hyphens). Got ${serviceId}.`,
-        );
+      constructor() {
+        super(scope, id);
+        this.node.addValidation({ validate: () => this.validateServiceId() });
+      }
+
+      private validateServiceId(): string[] {
+        const errors: string[] = [];
+        const idPattern = /^svc-(?!svc-)(?!-)(?!.*-$)(?!.*--)[a-z0-9-]{3,40}$/;
+        if (!idPattern.test(this.serviceId)) {
+          errors.push(
+            `Service ID should be in the format 'svc-<NAME>', where <NAME> is 3-40 characters long, starts and ends with a letter or number, cannot start with "svc-", and can contain lowercase letters, numbers, and hyphens (no consecutive hyphens). Got ${this.serviceId}.`,
+          );
+        }
+        return errors;
       }
     }
+    return new Import();
   }
 
   // -----------

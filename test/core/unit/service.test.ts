@@ -579,7 +579,8 @@ describe('Service', () => {
   describe('Import', () => {
     test('Import fromServiceArn', () => {
       // GIVEN
-      const stack = new cdk.Stack();
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'TestStack');
 
       // WHEN
       const service = Service.fromServiceArn(stack, 'ImportedService', 'arn:aws:vpc-lattice:us-west-2:123456789012:service/svc-12345abcdef');
@@ -591,7 +592,8 @@ describe('Service', () => {
 
     test('Import fromServiceArn', () => {
       // GIVEN
-      const stack = new cdk.Stack();
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'TestStack');
       const arn = 'arn:aws:vpc-lattice:us-west-2:123456789012:service/svc-12345abcdef';
 
       // WHEN
@@ -604,7 +606,8 @@ describe('Service', () => {
 
     test('Import with wrong arn format', () => {
       // GIVEN
-      const stack = new cdk.Stack();
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'TestStack');
       const invalidArns = [
         'arn:aws:ec2:us-west-2:123456789012:service/svc-12345abcdef', // Wrong service
         'arn:aws:vpc-lattice:us-west-2:123456789012:vpc/svc-12345abcdef', // Wrong resource type
@@ -618,15 +621,15 @@ describe('Service', () => {
 
       // WHEN & THEN
       invalidArns.forEach(invalidArn => {
-        expect(() => {
-          Service.fromServiceArn(stack, 'ImportedService', invalidArn);
-        }).toThrow(/Service ARN should be in the format/);
+        Service.fromServiceArn(stack, `ImportedService-${invalidArn}`, invalidArn);
+        expect(() => app.synth()).toThrow(/Service ARN should be in the format/);
       });
     });
 
     test('Import fromServiceId', () => {
       // GIVEN
-      const stack = new cdk.Stack();
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'TestStack');
 
       // WHEN
       const service = Service.fromServiceId(stack, 'ImportedService', 'svc-12345abcdef');
@@ -640,12 +643,14 @@ describe('Service', () => {
 
     test('Import with wrong serviceId', () => {
       // GIVEN
-      const stack = new cdk.Stack();
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'TestStack');
       const invalidIds = ['12345abcdef', 'svc-12345ABcd', 'svc--abc123', 'svc-svc-12345abc/abc', 'svc-abc--ab', 'svc-a', `svc-${'x'.repeat(41)}`];
 
       // WHEN & THEN
       invalidIds.forEach(invalidId => {
-        expect(() => Service.fromServiceId(stack, 'ImportedService', invalidId)).toThrow(/Service ID should be in the format/);
+        Service.fromServiceId(stack, `ImportedService-${invalidId}`, invalidId);
+        expect(() => app.synth()).toThrow(/Service ID should be in the format/);
       });
     });
   });
