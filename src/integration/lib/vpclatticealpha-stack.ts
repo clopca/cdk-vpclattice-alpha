@@ -5,7 +5,7 @@ import * as vpclattice from '../..';
 // import * as targets from '../../aws-vpclattice-targets';
 // import { aws_iam as iam } from 'aws-cdk-lib';
 
-export class VpclatticealphaStack extends cdk.Stack {
+export class VpcLatticeAlphaStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
@@ -71,13 +71,13 @@ export class VpclatticealphaStack extends cdk.Stack {
 
     // create a latticeServiceNetwork using the default settings for a Service network;
     // - Requires an IAM policy, do not allow access outside this org,
-    // Overide the default option to allow unauthenticated/signed requests
+    // Override the default option to allow unauthenticated/signed requests
     // associate the vpcs
-    // assocaite the services with the servicenetwork
+    // associate the services with the servicenetwork
     new vpclattice.ServiceNetwork(this, 'ServiceNetwork', {
       accessMode: vpclattice.ServiceNetworkAccessMode.UNAUTHENTICATED,
       // authType: vpclattice.AuthType.NONE,
-      vpcAssociations: [support.vpc1],
+      vpcAssociations: [{ vpc: support.vpc1 }],
       services: [myLatticeService],
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
