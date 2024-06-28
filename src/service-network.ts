@@ -230,28 +230,42 @@ export class ServiceNetwork extends ServiceNetworkBase {
    * Import a Service Network by Arn
    */
   public static fromArn(scope: Construct, id: string, arn: string): IServiceNetwork {
-    validateServiceNetworkArn();
-
     class Import extends ServiceNetworkBase {
       public readonly serviceNetworkArn = arn;
-      public readonly serviceNetworkId = core.Arn.extractResourceName(arn, 'servicenetwork');
-    }
-    return new Import(scope, id);
+      public readonly serviceNetworkId: string;
 
-    function validateServiceNetworkArn() {
-      const arnPattern = /^arn:aws:vpc-lattice:[a-z0-9-]+:\d{12}:servicenetwork\/[a-zA-Z0-9-]+$/;
+      constructor() {
+        super(scope, id);
+        this.serviceNetworkId = this.extractServiceNetworkId();
+        this.node.addValidation({ validate: () => this.validateServiceNetworkArn() });
+      }
 
-      if (!arnPattern.test(arn)) {
-        throw new Error(`Service network ARN should be in the format 'arn:aws:vpc-lattice:<REGION>:<ACCOUNT>:servicenetwork/<NAME>', got ${arn}.`);
+      private extractServiceNetworkId(): string {
+        try {
+          return core.Arn.extractResourceName(this.serviceNetworkArn, 'servicenetwork');
+        } catch (error) {
+          // If extraction fails, return an empty string
+          // The validation will catch this and report the error
+          return '';
+        }
+      }
+
+      private validateServiceNetworkArn() {
+        const errors: string[] = [];
+        const arnPattern = /^arn:aws:vpc-lattice:[a-z0-9-]+:\d{12}:servicenetwork\/[a-zA-Z0-9-]+$/;
+        if (!arnPattern.test(arn)) {
+          errors.push(`Service network ARN should be in the format 'arn:aws:vpc-lattice:<REGION>:<ACCOUNT>:servicenetwork/<NAME>', got ${arn}.`);
+        }
+        return errors;
       }
     }
+    return new Import();
   }
   // -----------
   /**
    * Import a Service Network by Id
    */
   public static fromId(scope: Construct, id: string, serviceNetworkId: string): IServiceNetwork {
-    validateServiceId();
     class Import extends ServiceNetworkBase {
       public readonly serviceNetworkId = serviceNetworkId;
       public readonly serviceNetworkArn = core.Arn.format(
@@ -260,20 +274,26 @@ export class ServiceNetwork extends ServiceNetworkBase {
           resource: 'servicenetwork',
           resourceName: serviceNetworkId,
         },
-        core.Stack.of(this),
+        core.Stack.of(scope),
       );
-    }
-    return new Import(scope, id);
 
-    function validateServiceId() {
-      // Combined pattern to check the "servicenetwork-" prefix and the rest of the name pattern
-      const idPattern = /^servicenetwork-(?!servicenetwork-)(?!-)(?!.*-$)(?!.*--)[a-z0-9-]{3,63}$/;
-      if (!idPattern.test(serviceNetworkId)) {
-        throw new Error(
-          `Service network ID should be in the format 'servicenetwork-<NAME>', where <NAME> is 3-63 characters long, starts and ends with a letter or number, cannot start with "servicenetwork-", and can contain lowercase letters, numbers, and hyphens (no consecutive hyphens). Got ${serviceNetworkId}.`,
-        );
+      constructor() {
+        super(scope, id);
+        this.node.addValidation({ validate: () => this.validateServiceNetworkId() });
+      }
+
+      private validateServiceNetworkId() {
+        const errors: string[] = [];
+        const idPattern = /^servicenetwork-(?!servicenetwork-)(?!-)(?!.*-$)(?!.*--)[a-z0-9-]{3,63}$/;
+        if (!idPattern.test(serviceNetworkId)) {
+          errors.push(
+            `Service network ID should be in the format 'servicenetwork-<NAME>', where <NAME> is 3-63 characters long, starts and ends with a letter or number, cannot start with "servicenetwork-", and can contain lowercase letters, numbers, and hyphens (no consecutive hyphens). Got ${serviceNetworkId}.`,
+          );
+        }
+        return errors;
       }
     }
+    return new Import();
   }
 
   // -----------
@@ -297,7 +317,7 @@ export class ServiceNetwork extends ServiceNetworkBase {
     });
 
     if (props.name) {
-      this.validateServiceNetworkName(props.name);
+      this.node.addValidation({ validate: () => this.validateServiceNetworkName(props.name!) });
     }
 
     this.authType = props.authType ?? AuthType.NONE;
@@ -342,7 +362,7 @@ export class ServiceNetwork extends ServiceNetworkBase {
     // Logging Configuration
     // ------------------------------------------------------
     if (this.loggingDestinations.length) {
-      this.validateLoggingDestinations(this.loggingDestinations);
+      this.node.addValidation({ validate: () => this.validateLoggingDestinations(this.loggingDestinations) });
       this.loggingDestinations.forEach(destination => {
         this.addLoggingDestination(destination);
       });
@@ -395,7 +415,7 @@ export class ServiceNetwork extends ServiceNetworkBase {
     }
 
     if (!this.authPolicy.isEmpty) {
-      this.validateAuthPolicy(this.authPolicy);
+      this.node.addValidation({ validate: () => this.validateAuthPolicy(this.authPolicy) });
     }
 
     core.Aspects.of(this).add({
@@ -417,7 +437,7 @@ export class ServiceNetwork extends ServiceNetworkBase {
    * Must be between 3-63 characters. Lowercase letters, numbers, and hyphens are accepted.
    * Must begin and end with a letter or number. No consecutive hyphens.
    */
-  protected validateServiceNetworkName(name: string) {
+  protected validateServiceNetworkName(name: string): string[] {
     const errors: string[] = [];
 
     if (name.length < 3 || name.length > 63) {
@@ -432,20 +452,23 @@ export class ServiceNetwork extends ServiceNetworkBase {
     }
 
     if (errors.length > 0) {
-      throw new Error(`Invalid service network name (value: ${name})${EOL}${errors.join(EOL)}`);
+      errors.unshift(`Invalid service network name (value: ${name})`);
     }
+    return errors;
   }
 
   /**
    * Must specify at most only one destination per destination type
    */
-  protected validateLoggingDestinations(loggingDestinations: LoggingDestination[]) {
+  protected validateLoggingDestinations(loggingDestinations: LoggingDestination[]): string[] {
+    const errors: string[] = [];
     if (loggingDestinations.length) {
       const destinationTypes = loggingDestinations.map(destination => destination.destinationType);
       if (new Set(destinationTypes).size !== destinationTypes.length) {
-        throw new Error('A service network can only have one logging destination per destination type.');
+        errors.push('A service network can only have one logging destination per destination type.');
       }
     }
+    return errors;
   }
 
   /**
@@ -484,10 +507,9 @@ export class ServiceNetwork extends ServiceNetworkBase {
     }
 
     if (errors.length > 0) {
-      throw new Error(
-        `The following errors were found in the VPC Lattice auth policy: \n${errors.join('\n')} \n ${JSON.stringify(policyJson, null, 2)}`,
-      );
+      errors.unshift(`The following errors were found in the VPC Lattice auth policy:${EOL}${JSON.stringify(policyJson, null, 2)}`);
     }
+    return errors;
   }
 
   private validateActions(action: string | string[], validActions: string[]): boolean {
@@ -530,7 +552,7 @@ export class ServiceNetwork extends ServiceNetworkBase {
       principals: principals,
     });
     this.authPolicy.addStatements(policyStatement);
-    this.validateAuthPolicy(this.authPolicy);
+    this.node.addValidation({ validate: () => this.validateAuthPolicy(this.authPolicy) });
   }
 
   /**
@@ -539,7 +561,7 @@ export class ServiceNetwork extends ServiceNetworkBase {
    */
   public addAuthPolicyStatement(statement: iam.PolicyStatement): void {
     this.authPolicy.addStatements(statement);
-    this.validateAuthPolicy(this.authPolicy);
+    this.node.addValidation({ validate: () => this.validateAuthPolicy(this.authPolicy) });
   }
 
   /**

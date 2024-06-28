@@ -28,7 +28,7 @@ describe('Service', () => {
     const stack = new cdk.Stack(app, 'TestStack');
 
     // WHEN
-    new Service(stack, 'Params', {
+    new Service(stack, 'Service', {
       name: 'mycustomlatticeservicename',
       authType: AuthType.AWS_IAM,
     });
@@ -426,7 +426,7 @@ describe('Service', () => {
       const logGroup = new LogGroup(stack, 'LogsTest', {
         logGroupName: 'vpc-lattice-name',
       });
-      new Service(stack, 'Params', {
+      new Service(stack, 'Service', {
         name: 'mycustomlatticeservicename',
         authType: AuthType.AWS_IAM,
         loggingDestinations: [LoggingDestination.cloudwatch(logGroup)],
@@ -447,7 +447,7 @@ describe('Service', () => {
       const kinesisStream = Stream.fromStreamArn(stack, 'KinesisStream', 'arn:aws:kinesis:us-east-1:123456789012:stream/my-stream');
 
       // WHEN
-      new Service(stack, 'Params', {
+      new Service(stack, 'Service', {
         name: 'mycustomlatticeservicename',
         authType: AuthType.AWS_IAM,
         loggingDestinations: [LoggingDestination.kinesis(kinesisStream)],

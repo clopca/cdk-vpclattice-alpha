@@ -177,16 +177,14 @@ export class Service extends ServiceBase {
 
       constructor() {
         super(scope, id);
-        this.serviceId = this.extractServiceId();
         this.node.addValidation({ validate: () => this.validateServiceArn() });
+        this.serviceId = this.extractServiceId();
       }
 
       private extractServiceId(): string {
         try {
           return core.Arn.extractResourceName(this.serviceArn, 'service');
         } catch (error) {
-          // If extraction fails, return an empty string or some placeholder
-          // The validation will catch this and report the error
           return '';
         }
       }
