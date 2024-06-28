@@ -1,7 +1,7 @@
 import { IResource, Resource } from 'aws-cdk-lib';
 import { Service } from './service';
 import { Construct } from 'constructs';
-import { RuleAction, IRule, MatchOperator } from './rules';
+import { RuleAction, MatchOperator, RuleProps } from './rules';
 import * as generated from 'aws-cdk-lib/aws-vpclattice';
 import { HTTPFixedResponse } from './util';
 import { PathMatchType, RuleConditions } from './matches';
@@ -54,7 +54,7 @@ export interface IListener extends IResource {
   /**
    * Add A Listener Rule to the Listener
    */
-  addListenerRule(rule: IRule): void;
+  addListenerRule(rule: RuleProps): void;
 }
 
 /**
@@ -62,16 +62,29 @@ export interface IListener extends IResource {
  */
 export interface ListenerProps {
   /**
-   *  * A default action that will be taken if no rules match.
-   *  @default HTTPFixedResponse.NOT_FOUND
+   * The Id of the service that this listener is associated with.
    */
-  readonly defaultAction?: RuleAction;
+  readonly service: Service;
 
   /**
-   * protocol that the listener will listen on
-   * @default ListenerProtocol.HTTPS
+   * 
    */
-  readonly protocol?: ListenerProtocol;
+  readonly config?: ListenerConfig;
+}
+
+/**
+ * Listener Config
+ */
+export interface ListenerConfig {
+  /**
+ * The Name of the listener.
+ */
+  readonly name: string;
+
+  /**
+   * Protocol that the listener will listen on
+   */
+  readonly protocol: ListenerProtocol;
 
   /**
    * Optional port number for the listener. If not supplied, will default to 80 or 443, depending on the Protocol.
@@ -80,20 +93,15 @@ export interface ListenerProps {
   readonly port?: number;
 
   /**
-   * The Name of the service.
-   * @default CloudFormation provided name.
+   *  * A default action that will be taken if no rules match.
+   *  @default HTTPFixedResponse.NOT_FOUND
    */
-  readonly name?: string;
-
-  /**
-   * The Id of the service that this listener is associated with.
-   */
-  readonly service: Service;
+  readonly defaultAction?: RuleAction;
 
   /**
    * Rules to add to the listener.
    */
-  readonly rules?: IRule[];
+  readonly rules?: RuleProps[];
 }
 
 /**
@@ -138,14 +146,14 @@ export class Listener extends Resource implements IListener {
   /**
    * The listener rules to add
    */
-  rules: IRule[];
+  rules: RuleProps[];
 
   // ------------------------------------------------------
   // Constructor
   // ------------------------------------------------------
   constructor(scope: Construct, id: string, props: ListenerProps) {
     super(scope, id, {
-      physicalName: props.name,
+      physicalName: props.config?.name,
     });
 
     // ------------------------------------------------------
@@ -153,18 +161,18 @@ export class Listener extends Resource implements IListener {
     // ------------------------------------------------------
     this.name = this.physicalName;
     this.service = props.service;
-    this.protocol = props.protocol ?? ListenerProtocol.HTTPS;
-    this.port = props.port ?? (props.protocol === ListenerProtocol.HTTP ? 80 : 443);
-    this.rules = props.rules ?? [];
-    this.defaultAction = props.defaultAction ?? HTTPFixedResponse.NOT_FOUND;
+    this.protocol = props.config?.protocol ?? ListenerProtocol.HTTPS;
+    this.port = props.config?.port ?? (props.config?.protocol === ListenerProtocol.HTTP ? 80 : 443);
+    this.rules = props.config?.rules ?? [];
+    this.defaultAction = props.config?.defaultAction ?? HTTPFixedResponse.NOT_FOUND;
 
     // ------------------------------------------------------
     // Validation
     // ------------------------------------------------------
-    if (props.name) {
+    if (props.config?.name) {
       this.node.addValidation({ validate: () => this.validateListenerName(this.physicalName) });
     }
-    if (props.rules) {
+    if (props.config?.rules) {
       this.node.addValidation({ validate: () => this.validateRulePriorities() });
     }
     this.node.addValidation({ validate: () => this.validatePort() });
@@ -173,7 +181,7 @@ export class Listener extends Resource implements IListener {
     // L1 Instantiation
     // ------------------------------------------------------
     const listener = new generated.CfnListener(this, 'Resource', {
-      name: props.name,
+      name: props.config?.name,
       defaultAction: this.transformRuleActionToCfnProperty(this.defaultAction),
       protocol: this.protocol,
       port: this.port,
@@ -189,8 +197,8 @@ export class Listener extends Resource implements IListener {
     // ------------------------------------------------------
     // Adds Listener Rules
     // ------------------------------------------------------
-    if (props.rules) {
-      props.rules.forEach(rule => {
+    if (props.config?.rules) {
+      props.config?.rules.forEach(rule => {
         this.addListenerRule(rule);
       });
     }
@@ -246,7 +254,7 @@ export class Listener extends Resource implements IListener {
     } else {
       // RuleAction is an array of WeightedTargetGroup
       const targetGroups = ruleAction.map(weightedTargetGroup => ({
-        targetGroupIdentifier: weightedTargetGroup.targetGroup.node.id,
+        targetGroupIdentifier: weightedTargetGroup.targetGroup.targetGroupId,
         weight: weightedTargetGroup.weight,
       }));
 
@@ -269,7 +277,7 @@ export class Listener extends Resource implements IListener {
           caseSensitive,
         })),
         method: methodMatch,
-        pathMatch: {
+        pathMatch: pathMatch && {
           caseSensitive: pathMatch?.caseSensitive ?? false,
           match: {
             [(pathMatch?.pathMatchType ?? PathMatchType.EXACT).toLowerCase()]: pathMatch?.path,
@@ -282,26 +290,27 @@ export class Listener extends Resource implements IListener {
   }
 
   // /**
-  //  * In case a priority is not specified, a default priority is created
-  //  * E.g. generateDefaultPriority(7); // Output: [15, 15, 14, 14, 14, 14, 14]
+  //  * In case a weight is not specified, a default weight is created
+  //  * E.g. generateDefaultWeight(7); // Output: [15, 15, 14, 14, 14, 14, 14]
   //  */
-  // private generateDefaultPriority(numberOfRules: number): number[] {
-  //   const defaultPriorities: number[] = Array(numberOfRules).fill(100 / numberOfRules);
+  // private generateDefaultWeight(numberOfTargets: number): number[] {
+  //   const defaultWeights: number[] = Array(numberOfTargets).fill(100 / numberOfTargets);
 
-  //   const remainder = 100 % numberOfRules;
+  //   const remainder = 100 % numberOfTargets;
   //   for (let i = 0; i < remainder; i++) {
-  //     defaultPriorities[i]++;
+  //     defaultWeights[i]++;
   //   }
 
-  //   return defaultPriorities;
+  //   return defaultWeights;
   // }
 
   /**
    * Adds a target to the target Group
    * @param target
    */
-  public addListenerRule(rule: IRule) {
-    new generated.CfnRule(this, `${rule.node.addr}-Rule`, {
+  public addListenerRule(rule: RuleProps) {
+    new generated.CfnRule(this, `${rule.name}Rule`, {
+      name: rule.name,
       action: this.transformRuleActionToCfnProperty(rule.action),
       priority: rule.priority,
       match: this.transformRuleConditionsToCfnProperty(rule.conditions),

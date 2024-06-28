@@ -1,9 +1,6 @@
 import { ITargetGroup } from './aws-vpclattice-targets';
 import { HTTPFixedResponse } from './util';
 import { RuleConditions } from './matches';
-import { IPrincipal } from 'aws-cdk-lib/aws-iam';
-import { IResource } from 'aws-cdk-lib';
-
 /**
  * Rule Conditions can leverage different operators for Matches
  */
@@ -63,7 +60,7 @@ export interface WeightedTargetGroup {
 
 export type RuleAction = HTTPFixedResponse | WeightedTargetGroup[];
 
-export interface IRule extends IResource {
+export interface RuleProps {
 	/**
 	 * A name for the the Rule
 	 */
