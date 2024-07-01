@@ -1,12 +1,12 @@
 import { EOL } from 'os';
 import * as cdk from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
-import { Vpc } from 'aws-cdk-lib/aws-ec2';
+import { Vpc, SecurityGroup } from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { Stream } from 'aws-cdk-lib/aws-kinesis';
 import { LogGroup } from 'aws-cdk-lib/aws-logs';
 import { Service, LoggingDestination, AuthType } from '../../../src';
-import { ServiceNetwork } from '../../../src/service-network';
+import { ServiceNetwork, ServiceNetworkAccessMode } from '../../../src/service-network';
 
 describe('Service network', () => {
   // default service
@@ -80,8 +80,161 @@ describe('Service network', () => {
     });
   });
 
+  test('Service network with VPC associated', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'TestStack');
+    const vpc = new Vpc(stack, 'VPC', {
+      vpcName: 'my-vpc',
+    });
+    new ServiceNetwork(stack, 'ServiceNetwork', {
+      name: 'my-service-network',
+      vpcAssociations: [
+        {
+          vpc,
+        },
+      ],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::VpcLattice::ServiceNetworkVpcAssociation', {
+      ServiceNetworkIdentifier: {
+        'Fn::GetAtt': ['ServiceNetworkEF29AF70', 'Id'],
+      },
+      VpcIdentifier: {
+        Ref: 'VPCB9E5F0B4',
+      },
+    });
+  });
+
+  // Service network with service in props
+  test('Service network with service in props', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'TestStack');
+    const service = new Service(stack, 'Service', {
+      name: 'my-service',
+    });
+
+    new ServiceNetwork(stack, 'ServiceNetwork', {
+      name: 'my-service-network',
+      services: [service],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::VpcLattice::ServiceNetworkServiceAssociation', {
+      ServiceIdentifier: {
+        'Fn::GetAtt': ['ServiceDBC79909', 'Id'],
+      },
+      ServiceNetworkIdentifier: {
+        'Fn::GetAtt': ['ServiceNetworkEF29AF70', 'Id'],
+      },
+    });
+  });
+
+  // Service network with access mode set
+  test('Service network with authenticated access mode set', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'TestStack');
+    new ServiceNetwork(stack, 'ServiceNetwork', {
+      name: 'my-service-network',
+      accessMode: ServiceNetworkAccessMode.AUTHENTICATED_ONLY,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::VpcLattice::AuthPolicy', {
+      Policy: {
+        Statement: [
+          {
+            Effect: 'Allow',
+            Action: 'vpc-lattice-svcs:Invoke',
+            Resource: '*',
+            Condition: {
+              StringNotEqualsIgnoreCase: { 'aws:PrincipalType': 'anonymous' },
+            },
+          },
+        ],
+      },
+    });
+  });
+
+  // Service network with ORG_ONLY access mode set
+  test('Service network with org only access mode set', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'TestStack');
+    new ServiceNetwork(stack, 'ServiceNetwork', {
+      name: 'my-service-network',
+      accessMode: ServiceNetworkAccessMode.ORG_ONLY,
+      orgId: 'o-1234567890',
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::VpcLattice::AuthPolicy', {
+      Policy: {
+        Statement: [
+          {
+            Effect: 'Allow',
+            Action: 'vpc-lattice-svcs:Invoke',
+            Resource: '*',
+            Condition: {
+              StringEquals: { 'aws:PrincipalOrgID': ['o-1234567890'] },
+            },
+          },
+        ],
+      },
+    });
+  });
+
+  test('Service network with org only access mode set and no orgId provided', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'TestStack');
+    new ServiceNetwork(stack, 'ServiceNetwork', {
+      name: 'my-service-network',
+      accessMode: ServiceNetworkAccessMode.ORG_ONLY,
+    });
+
+    // THEN
+    expect(() => app.synth()).toThrow(/orgId is required when accessMode is set to ORG_ONLY/);
+  });
+
+  test('Service network with provided auth policy', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'TestStack');
+    const customPolicy = new iam.PolicyDocument({
+      statements: [
+        new iam.PolicyStatement({
+          actions: ['vpc-lattice-svcs:Invoke'],
+          effect: iam.Effect.ALLOW,
+          resources: ['*'],
+        }),
+      ],
+    });
+
+    new ServiceNetwork(stack, 'ServiceNetwork', {
+      name: 'my-service-network',
+      authPolicy: customPolicy,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::VpcLattice::AuthPolicy', {
+      Policy: {
+        Statement: [
+          {
+            Action: 'vpc-lattice-svcs:Invoke',
+            Effect: 'Allow',
+            Resource: '*',
+          },
+        ],
+      },
+    });
+  });
+
   describe('Service network with methods', () => {
     test('Add auth policy statement', () => {
+      // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'TestStack');
       const serviceNetwork = new ServiceNetwork(stack, 'ServiceNetwork', {
@@ -110,6 +263,7 @@ describe('Service network', () => {
     });
 
     test('Add auth policy statement with invalid statement', () => {
+      // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'TestStack');
       const serviceNetwork = new ServiceNetwork(stack, 'ServiceNetwork', {
@@ -226,6 +380,10 @@ describe('Service network', () => {
       const vpc = new Vpc(stack, 'VPC', {
         vpcName: 'my-vpc',
       });
+      const securityGroup = new SecurityGroup(stack, 'SecurityGroup', {
+        vpc,
+        securityGroupName: 'my-security-group',
+      });
 
       const serviceNetwork = new ServiceNetwork(stack, 'ServiceNetwork', {
         name: 'my-service-network',
@@ -233,6 +391,7 @@ describe('Service network', () => {
 
       serviceNetwork.associateVPC({
         vpc,
+        securityGroups: [securityGroup],
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::VpcLattice::ServiceNetworkVpcAssociation', {
@@ -243,6 +402,21 @@ describe('Service network', () => {
           Ref: 'VPCB9E5F0B4',
         },
       });
+    });
+
+    test('Service network adding policy with not resource and not principal', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'TestStack');
+      const serviceNetwork = new ServiceNetwork(stack, 'ServiceNetwork', {
+        name: 'my-service-network',
+        authType: AuthType.AWS_IAM,
+      });
+
+      serviceNetwork.addAuthPolicyStatement(new iam.PolicyStatement());
+
+      // WHEN & THEN
+      expect(() => app.synth()).toThrow(/Validation failed with the following errors:.*Invalid action detected.*Invalid resource format/s);
     });
   });
 

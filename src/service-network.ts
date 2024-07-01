@@ -389,25 +389,12 @@ export class ServiceNetwork extends ServiceNetworkBase {
         principals: [new iam.StarPrincipal()],
       });
       if (props.accessMode === ServiceNetworkAccessMode.ORG_ONLY) {
-        if (!props.orgId) {
-          throw new Error('orgId is required when accessMode is set to ORG_ONLY');
+        this.node.addValidation({ validate: () => this.validateAccessMode(props.accessMode!, props.orgId) });
+        if (props.orgId) {
+          const orgId = props.orgId;
+          statement.addCondition('StringEquals', { 'aws:PrincipalOrgID': [orgId] });
+          statement.addCondition('StringNotEqualsIgnoreCase', { 'aws:PrincipalType': 'anonymous' });
         }
-        const orgId = props.orgId;
-        // const orgIdCr = new cr.AwsCustomResource(this, 'getOrgId', {
-        //   onCreate: {
-        //     region: 'us-east-1',
-        //     service: 'Organizations',
-        //     action: 'describeOrganization',
-        //     physicalResourceId: cr.PhysicalResourceId.of('orgId'),
-        //   },
-        //   policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
-        //     resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE,
-        //   }),
-        // });
-        // const orgId = orgIdCr.getResponseField('Organization.Id');
-
-        statement.addCondition('StringEquals', { 'aws:PrincipalOrgID': [orgId] });
-        statement.addCondition('StringNotEqualsIgnoreCase', { 'aws:PrincipalType': 'anonymous' });
       } else if (props.accessMode === ServiceNetworkAccessMode.AUTHENTICATED_ONLY) {
         statement.addCondition('StringNotEqualsIgnoreCase', { 'aws:PrincipalType': 'anonymous' });
       }
@@ -467,6 +454,17 @@ export class ServiceNetwork extends ServiceNetworkBase {
       if (new Set(destinationTypes).size !== destinationTypes.length) {
         errors.push('A service network can only have one logging destination per destination type.');
       }
+    }
+    return errors;
+  }
+
+  /**
+   * Validate that Access mode ORG_ONLY can be set only if orgId is provided
+   */
+  protected validateAccessMode(accessMode: ServiceNetworkAccessMode, orgId?: string): string[] {
+    const errors: string[] = [];
+    if (accessMode === ServiceNetworkAccessMode.ORG_ONLY && !orgId) {
+      errors.push('orgId is required when accessMode is set to ORG_ONLY');
     }
     return errors;
   }
