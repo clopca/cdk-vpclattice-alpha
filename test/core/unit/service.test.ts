@@ -4,7 +4,7 @@ import { Template } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { Stream } from 'aws-cdk-lib/aws-kinesis';
 import { LogGroup } from 'aws-cdk-lib/aws-logs';
-import { Service, LoggingDestination, AuthType } from '../../../src';
+import { Service, LoggingDestination, AuthType, ListenerProtocol } from '../../../src';
 import { ServiceNetwork } from '../../../src/service-network';
 
 describe('Service', () => {
@@ -73,7 +73,7 @@ describe('Service', () => {
     });
   });
 
-  test('Service with service network association', () => {
+  test('Service with service network association from props', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'TestStack');
     const mockServiceNetwork = ServiceNetwork.fromArn(
@@ -82,11 +82,10 @@ describe('Service', () => {
       'arn:aws:vpc-lattice:us-west-2:123456789012:servicenetwork/sn-12345',
     );
 
-    const service = new Service(stack, 'Service', {
+    new Service(stack, 'Service', {
       name: 'my-service',
+      serviceNetwork: mockServiceNetwork,
     });
-
-    service.associateWithServiceNetwork(mockServiceNetwork);
 
     Template.fromStack(stack).hasResourceProperties('AWS::VpcLattice::ServiceNetworkServiceAssociation', {
       ServiceIdentifier: {
@@ -241,6 +240,76 @@ describe('Service', () => {
         app.synth();
       }).toThrow(/Invalid principal type/);
     });
+
+    test('Associate with service network', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'TestStack');
+      const mockServiceNetwork = ServiceNetwork.fromArn(
+        stack,
+        'MockServiceNetwork',
+        'arn:aws:vpc-lattice:us-west-2:123456789012:servicenetwork/sn-12345',
+      );
+      const service = new Service(stack, 'Service', {
+        name: 'my-service',
+      });
+
+      // WHEN
+      service.associateWithServiceNetwork(mockServiceNetwork);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::VpcLattice::ServiceNetworkServiceAssociation', {
+        ServiceIdentifier: {
+          'Fn::GetAtt': ['ServiceDBC79909', 'Id'],
+        },
+        ServiceNetworkIdentifier: 'sn-12345',
+      });
+    });
+
+    //test Service with addListener method
+    test('Service with addListener method', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'TestStack');
+      const service = new Service(stack, 'Service', {
+        name: 'my-service',
+      });
+
+      // WHEN
+      service.addListener({
+        name: 'listener1',
+        protocol: ListenerProtocol.HTTPS,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::VpcLattice::Listener', {
+        Name: 'listener1',
+        Protocol: 'HTTPS',
+        Port: 443,
+        ServiceIdentifier: {
+          'Fn::GetAtt': ['ServiceDBC79909', 'Id'],
+        },
+        DefaultAction: {
+          FixedResponse: {
+            StatusCode: 404,
+          },
+        },
+      });
+    });
+
+    test('Service adding policy with not resource and not principal', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'TestStack');
+      const service = new Service(stack, 'Service', {
+        name: 'my-service',
+        authType: AuthType.AWS_IAM,
+      });
+
+      service.addAuthPolicyStatement(new iam.PolicyStatement());
+
+      // WHEN & THEN
+      expect(() => app.synth()).toThrow(/Validation failed with the following errors:.*Invalid action detected.*Invalid resource format/s);
+    });
   });
 
   describe('Auth policy validation', () => {
@@ -278,6 +347,40 @@ describe('Service', () => {
               },
             },
           ],
+        },
+      });
+    });
+
+    test('Service with provided auth policy', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'TestStack');
+      const customPolicy = new iam.PolicyDocument({
+        statements: [
+          new iam.PolicyStatement({
+            actions: ['vpc-lattice-svcs:Invoke'],
+            effect: iam.Effect.ALLOW,
+            resources: ['*'],
+          }),
+        ],
+      });
+
+      new Service(stack, 'Service', {
+        name: 'my-service',
+        authType: AuthType.AWS_IAM,
+        authPolicy: customPolicy,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::VpcLattice::AuthPolicy', {
+        Policy: {
+          Statement: [
+            {
+              Action: 'vpc-lattice-svcs:Invoke',
+              Effect: 'Allow',
+              Resource: '*',
+            },
+          ],
+          Version: '2012-10-17',
         },
       });
     });

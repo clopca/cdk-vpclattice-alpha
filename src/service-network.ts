@@ -475,34 +475,34 @@ export class ServiceNetwork extends ServiceNetworkBase {
    * Must ensure Service has the correct AuthType and policy is a
    * valid IAM Resource-based Policy for VPC Lattice
    */
-  protected validateAuthPolicy(authPolicy: iam.PolicyDocument) {
+  /**
+   * Must ensure Service has the correct AuthType and policy is a
+   * valid IAM Resource-based Policy for VPC Lattice
+   */
+  protected validateAuthPolicy(authPolicy: iam.PolicyDocument): string[] {
     const errors: string[] = [];
 
     const policyJson = authPolicy.toJSON();
-    if (!policyJson.Statement || !Array.isArray(policyJson.Statement)) {
-      errors.push('Invalid policy structure: Statement array is missing or not an array.');
-    } else {
-      for (const statement of policyJson.Statement) {
-        // Check for valid VPC Lattice actions
-        const validActions = ['vpc-lattice-svcs:Invoke'];
-        if (!this.validateActions(statement.Action, validActions)) {
-          errors.push(`Invalid action detected. Allowed actions for VPC Lattice are: ${validActions.join(', ')} or '*'.`);
-        }
+    for (const statement of policyJson.Statement) {
+      // Check for valid VPC Lattice actions
+      const validActions = ['vpc-lattice-svcs:Invoke'];
+      if (!this.validateActions(statement.Action, validActions)) {
+        errors.push(`Invalid action detected. Allowed actions for VPC Lattice are: ${validActions.join(', ')} or '*'.`);
+      }
 
-        // Check for valid principal types
-        if (statement.Principal && typeof statement.Principal === 'object') {
-          const validPrincipalTypes = ['AWS', 'Service'];
-          for (const key of Object.keys(statement.Principal)) {
-            if (!validPrincipalTypes.includes(key)) {
-              errors.push(`Invalid principal type: ${key}. Allowed types are: ${validPrincipalTypes.join(', ')}.`);
-            }
+      // Check for valid principal types
+      if (statement.Principal && typeof statement.Principal === 'object') {
+        const validPrincipalTypes = ['AWS', 'Service'];
+        for (const key of Object.keys(statement.Principal)) {
+          if (!validPrincipalTypes.includes(key)) {
+            errors.push(`Invalid principal type: ${key}. Allowed types are: ${validPrincipalTypes.join(', ')}.`);
           }
         }
+      }
 
-        // Check for valid resource format
-        if (!this.validateResources(statement.Resource)) {
-          errors.push('Invalid resource format. Resources should be "*" or start with "arn:aws:vpc-lattice:".');
-        }
+      // Check for valid resource format
+      if (!this.validateResources(statement.Resource)) {
+        errors.push('Invalid resource format. Resources should be "*" or start with "arn:aws:vpc-lattice:".');
       }
     }
 

@@ -376,38 +376,31 @@ export class Service extends ServiceBase {
     const errors: string[] = [];
 
     const policyJson = authPolicy.toJSON();
-    if (!policyJson.Statement || !Array.isArray(policyJson.Statement)) {
-      errors.push('Invalid policy structure: Statement array is missing or not an array.');
-    } else {
-      for (const statement of policyJson.Statement) {
-        // Check for valid VPC Lattice actions
-        const validActions = ['vpc-lattice-svcs:Invoke'];
-        if (!this.validateActions(statement.Action, validActions)) {
-          errors.push(`Invalid action detected. Allowed actions for VPC Lattice are: ${validActions.join(', ')} or '*'.`);
-        }
+    for (const statement of policyJson.Statement) {
+      // Check for valid VPC Lattice actions
+      const validActions = ['vpc-lattice-svcs:Invoke'];
+      if (!this.validateActions(statement.Action, validActions)) {
+        errors.push(`Invalid action detected. Allowed actions for VPC Lattice are: ${validActions.join(', ')} or '*'.`);
+      }
 
-        // Check for valid principal types
-        if (statement.Principal && typeof statement.Principal === 'object') {
-          const validPrincipalTypes = ['AWS', 'Service'];
-          for (const key of Object.keys(statement.Principal)) {
-            if (!validPrincipalTypes.includes(key)) {
-              errors.push(`Invalid principal type: ${key}. Allowed types are: ${validPrincipalTypes.join(', ')}.`);
-            }
+      // Check for valid principal types
+      if (statement.Principal && typeof statement.Principal === 'object') {
+        const validPrincipalTypes = ['AWS', 'Service'];
+        for (const key of Object.keys(statement.Principal)) {
+          if (!validPrincipalTypes.includes(key)) {
+            errors.push(`Invalid principal type: ${key}. Allowed types are: ${validPrincipalTypes.join(', ')}.`);
           }
         }
+      }
 
-        // Check for valid resource format
-        if (!this.validateResources(statement.Resource)) {
-          errors.push('Invalid resource format. Resources should be "*" or start with "arn:aws:vpc-lattice:".');
-        }
+      // Check for valid resource format
+      if (!this.validateResources(statement.Resource)) {
+        errors.push('Invalid resource format. Resources should be "*" or start with "arn:aws:vpc-lattice:".');
       }
     }
 
     if (errors.length > 0) {
       errors.unshift(`The following errors were found in the VPC Lattice auth policy:${EOL}${JSON.stringify(policyJson, null, 2)}`);
-      // throw new Error(
-      //   `The following errors were found in the VPC Lattice auth policy: \n${errors.join('\n')} \n ${JSON.stringify(policyJson, null, 2)}`,
-      // );
     }
     return errors;
   }
