@@ -94,7 +94,7 @@ export interface ListenerConfig {
   /**
    * Protocol that the listener will listen on
    */
-  readonly protocol: ListenerProtocol;
+  readonly protocol?: ListenerProtocol;
 
   /**
    * Optional port number for the listener. If not supplied, will default to 80 or 443, depending on the Protocol.
@@ -350,3 +350,5 @@ export class Listener extends Resource implements IListener {
     //this.service.authPolicy.addStatements({})
   }
 }
+
+// 186-188,190-191,216-219,231-232,237-244,247-253,270-294,297-317,339-351
