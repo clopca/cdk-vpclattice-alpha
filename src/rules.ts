@@ -46,7 +46,7 @@ export enum RuleAccessMode {
   NO_STATEMENT = 'NO_STATEMENT',
 }
 
-export type WeightedTargetGroup = {
+export interface WeightedTargetGroup {
   /**
    * A target Group
    */
@@ -58,7 +58,11 @@ export type WeightedTargetGroup = {
   readonly weight?: number;
 };
 
-export type RuleAction = HTTPFixedResponse | ITargetGroup | WeightedTargetGroup[];
+export interface RuleAction {
+  readonly httpFixedResponse?: HTTPFixedResponse,
+  readonly targetGroup?: ITargetGroup,
+  readonly weightedTargetGroups?: WeightedTargetGroup[]
+}
 
 export interface RuleProps {
   /**

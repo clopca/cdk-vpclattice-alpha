@@ -2,7 +2,6 @@ import type { IResource } from 'aws-cdk-lib';
 import { Resource } from 'aws-cdk-lib';
 import * as generated from 'aws-cdk-lib/aws-vpclattice';
 import type { Construct } from 'constructs';
-import { TargetGroupBase } from './aws-vpclattice-targets';
 import type { RuleConditions } from './matches';
 import { PathMatchType } from './matches';
 import type { RuleAction, RuleProps } from './rules';
@@ -152,6 +151,7 @@ export class Listener extends Resource implements IListener {
    */
   rules: RuleProps[];
 
+
   // ------------------------------------------------------
   // Constructor
   // ------------------------------------------------------
@@ -168,7 +168,9 @@ export class Listener extends Resource implements IListener {
     this.protocol = props.config?.protocol ?? ListenerProtocol.HTTPS;
     this.port = props.config?.port ?? (props.config?.protocol === ListenerProtocol.HTTP ? 80 : 443);
     this.rules = props.config?.rules ?? [];
-    this.defaultAction = props.config?.defaultAction ?? HTTPFixedResponse.NOT_FOUND;
+    this.defaultAction = props.config?.defaultAction ?? {
+      httpFixedResponse: HTTPFixedResponse.NOT_FOUND
+    }
 
     // ------------------------------------------------------
     // Validation
@@ -248,16 +250,16 @@ export class Listener extends Resource implements IListener {
    * Transforms the L2 Rule Action to the CFN-L1 format
    */
   private transformRuleActionToCfnProperty(ruleAction: RuleAction): generated.CfnListener.DefaultActionProperty {
-    if (typeof ruleAction === 'number') {
+    if (ruleAction.httpFixedResponse) {
       // RuleAction is an HTTPFixedResponse
       return {
         fixedResponse: {
-          statusCode: ruleAction,
+          statusCode: ruleAction.httpFixedResponse,
         },
       };
     }
-    if (ruleAction.constructor === Array) {
-      const targetGroups = ruleAction.map(weightedTargetGroup => ({
+    if (ruleAction.weightedTargetGroups) {
+      const targetGroups = ruleAction.weightedTargetGroups.map(weightedTargetGroup => ({
         targetGroupIdentifier: weightedTargetGroup.targetGroup.targetGroupId,
         weight: weightedTargetGroup.weight,
       }));
@@ -267,12 +269,12 @@ export class Listener extends Resource implements IListener {
         },
       };
     }
-    if (ruleAction instanceof TargetGroupBase) {
+    if (ruleAction.targetGroup) {
       return {
         forward: {
           targetGroups: [
             {
-              targetGroupIdentifier: ruleAction.targetGroupId,
+              targetGroupIdentifier: ruleAction.targetGroup.targetGroupId,
               weight: 100,
             },
           ],

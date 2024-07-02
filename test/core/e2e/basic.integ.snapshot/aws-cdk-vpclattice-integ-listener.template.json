@@ -1230,10 +1230,11 @@
     "Type": "LAMBDA"
    }
   },
-  "ASGInstanceSecurityGroup0525485D": {
+  "RatesSGCC1DAFB6": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "aws-cdk-vpclattice-integ-listener/ASG/InstanceSecurityGroup",
+    "GroupDescription": "aws-cdk-vpclattice-integ-listener/RatesSG",
+    "GroupName": "autoscaling-group-sg",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -1241,10 +1242,16 @@
       "IpProtocol": "-1"
      }
     ],
-    "Tags": [
+    "SecurityGroupIngress": [
      {
-      "Key": "Name",
-      "Value": "aws-cdk-vpclattice-integ-listener/ASG"
+      "CidrIp": "10.0.0.0/16",
+      "Description": "from 10.0.0.0/16:ALL TRAFFIC",
+      "IpProtocol": "-1"
+     },
+     {
+      "CidrIp": "169.254.0.0/16",
+      "Description": "from 169.254.0.0/16:ALL TRAFFIC",
+      "IpProtocol": "-1"
      }
     ],
     "VpcId": {
@@ -1298,7 +1305,7 @@
     "SecurityGroups": [
      {
       "Fn::GetAtt": [
-       "ASGInstanceSecurityGroup0525485D",
+       "RatesSGCC1DAFB6",
        "GroupId"
       ]
      }
@@ -1355,7 +1362,7 @@
       },
       "Path": "/",
       "Port": 80,
-      "Protocol": "HTTP",
+      "Protocol": "HTTPS",
       "ProtocolVersion": "HTTP1",
       "UnhealthyThresholdCount": 2
      },

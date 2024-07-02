@@ -4,10 +4,10 @@ import * as cdk from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as autoscaling from 'aws-cdk-lib/aws-autoscaling';
 import { Instance, Peer, Port, SecurityGroup, Vpc } from 'aws-cdk-lib/aws-ec2';
-// import { ApplicationLoadBalancedFargateService } from 'aws-cdk-lib/aws-ecs-patterns';
+import { ApplicationLoadBalancedFargateService } from 'aws-cdk-lib/aws-ecs-patterns';
 import { Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { AuthType, HTTPFixedResponse, ListenerProtocol, PathMatchType, Service, ServiceNetwork } from '../../../src';
-import { HealthCheckProtocol, InstanceTargetGroup, LambdaTargetGroup, RequestProtocol, RequestProtocolVersion } from '../../../src/aws-vpclattice-targets';
+import { AlbTargetGroup, InstanceTargetGroup, LambdaTargetGroup, RequestProtocol, RequestProtocolVersion } from '../../../src/aws-vpclattice-targets';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-vpclattice-integ-listener');
@@ -15,7 +15,7 @@ const stack = new cdk.Stack(app, 'aws-cdk-vpclattice-integ-listener');
 const ratesVpc = new Vpc(stack, 'RatesVPC', { natGateways: 1 });
 const reservationsVpc = new Vpc(stack, 'ReservationVPC', { natGateways: 1 });
 const clientsVpc = new Vpc(stack, 'ClientsVPC', { natGateways: 1 });
-// const paymentsVpc = new Vpc(stack, 'PaymentsVPC', {});
+const paymentsVpc = new Vpc(stack, 'PaymentsVPC', { natGateways: 1 });
 
 
 const clientsSg = new SecurityGroup(stack, 'ResSG', {
@@ -45,6 +45,14 @@ const reservationTg = new LambdaTargetGroup(stack, 'LambdaTG', {
 // ------------------------------------------------------
 // EC2 TG
 // ------------------------------------------------------
+const asgSecurityGroup = new SecurityGroup(stack, 'RatesSG', {
+  securityGroupName: 'autoscaling-group-sg',
+  vpc: ratesVpc,
+});
+
+asgSecurityGroup.addIngressRule(Peer.ipv4("10.0.0.0/16"), Port.allTraffic())
+asgSecurityGroup.addIngressRule(Peer.ipv4("169.254.0.0/16"), Port.allTraffic())
+
 const ratesTg = new InstanceTargetGroup(stack, 'Ec2TG', {
   vpc: ratesVpc,
   name: 'rates-tg',
@@ -52,14 +60,13 @@ const ratesTg = new InstanceTargetGroup(stack, 'Ec2TG', {
   protocolVersion: RequestProtocolVersion.HTTP1,
   port: 80,
   healthCheck: {
-    protocol: HealthCheckProtocol.HTTP,
-    path: '/',
-    port: 80,
+    enabled: false,
   },
   autoScalingGroups: [
     new autoscaling.AutoScalingGroup(stack, 'ASG', {
       instanceType: new ec2.InstanceType('t3.micro'),
       vpc: ratesVpc,
+      securityGroup: asgSecurityGroup,
       vpcSubnets: ratesVpc.selectSubnets({ subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }),
       machineImage: new ec2.AmazonLinuxImage({ generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 }),
       userData: ec2.UserData.custom(`
@@ -76,25 +83,34 @@ const ratesTg = new InstanceTargetGroup(stack, 'Ec2TG', {
 // ------------------------------------------------------
 // ALB TG
 // ------------------------------------------------------
-// const albSvc = new ApplicationLoadBalancedFargateService(stack, 'ALBService', {
-//   vpc: paymentsVpc,
-//   memoryLimitMiB: 1024,
-//   cpu: 512,
-//   taskImageOptions: {
-//     image: cdk.aws_ecs.ContainerImage.fromRegistry('public.ecr.aws/bitnami/lamp:8.1'),
-//     containerPort: 80,
-//   },
-//   publicLoadBalancer: false,
-// });
+const paymentsSecurityGroup = new SecurityGroup(stack, 'PaymentsSG', {
+  securityGroupName: 'alb-group-sg',
+  vpc: ratesVpc,
+});
 
-// const paymentsTg = new AlbTargetGroup(stack, 'ALBTG', {
-//   name: 'payments-tg',
-//   vpc: paymentsVpc,
-//   loadBalancer: albSvc.loadBalancer,
-//   protocol: RequestProtocol.HTTP,
-//   protocolVersion: RequestProtocolVersion.HTTP1,
-//   port: 80,
-// });
+paymentsSecurityGroup.addIngressRule(Peer.ipv4("10.0.0.0/16"), Port.allTraffic())
+paymentsSecurityGroup.addIngressRule(Peer.ipv4("169.254.0.0/16"), Port.allTraffic())
+
+const albSvc = new ApplicationLoadBalancedFargateService(stack, 'ALBService', {
+  vpc: paymentsVpc,
+  memoryLimitMiB: 1024,
+  cpu: 512,
+  taskImageOptions: {
+    image: cdk.aws_ecs.ContainerImage.fromRegistry('public.ecr.aws/bitnami/lamp:8.1'),
+    containerPort: 80,
+  },
+  securityGroups: [paymentsSecurityGroup],
+  publicLoadBalancer: false,
+});
+
+const paymentsTg = new AlbTargetGroup(stack, 'ALBTG', {
+  name: 'payments-tg',
+  vpc: paymentsVpc,
+  loadBalancer: albSvc.loadBalancer,
+  protocol: RequestProtocol.HTTP,
+  protocolVersion: RequestProtocolVersion.HTTP1,
+  port: 80,
+});
 
 // ------------------------------------------------------
 // Service: Parking
@@ -109,7 +125,9 @@ const parkingListener = svcParking.addListener({
   name: 'listener1',
   protocol: ListenerProtocol.HTTP,
   port: 80,
-  defaultAction: HTTPFixedResponse.NOT_FOUND,
+  defaultAction: {
+    httpFixedResponse: HTTPFixedResponse.NOT_FOUND
+  }
 });
 
 
@@ -122,20 +140,24 @@ parkingListener.addListenerRule({
       path: '/rates',
     },
   },
-  action: ratesTg,
+  action: {
+    targetGroup: ratesTg
+  },
 });
 
-// parkingListener.addListenerRule({
-//   name: 'payments-rule',
-//   priority: 20,
-//   conditions: {
-//     pathMatch: {
-//       pathMatchType: PathMatchType.EXACT,
-//       path: '/payments',
-//     },
-//   },
-//   action: paymentsTg,
-// });
+parkingListener.addListenerRule({
+  name: 'payments-rule',
+  priority: 20,
+  conditions: {
+    pathMatch: {
+      pathMatchType: PathMatchType.EXACT,
+      path: '/payments',
+    },
+  },
+  action: {
+    targetGroup: paymentsTg
+  }
+});
 
 // ------------------------------------------------------
 // Service: Reservation
@@ -150,7 +172,9 @@ svcReservation.addListener({
   name: 'listener1',
   protocol: ListenerProtocol.HTTPS,
   port: 443,
-  defaultAction: reservationTg,
+  defaultAction: {
+    targetGroup: reservationTg
+  },
 });
 
 

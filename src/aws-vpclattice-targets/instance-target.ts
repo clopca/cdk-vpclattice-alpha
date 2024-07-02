@@ -125,7 +125,7 @@ export class InstanceTargetGroup extends TargetGroupBase {
     this.node.addValidation({ validate: () => this.validateHealthCheck(this.healthCheck) });
 
     // ------------------------------------------------------
-    // L1 Instantiation
+    // L1 Properties
     // ------------------------------------------------------
     let config: aws_vpclattice.CfnTargetGroup.TargetGroupConfigProperty = {
       vpcIdentifier: this.vpc.vpcId,
@@ -149,6 +149,9 @@ export class InstanceTargetGroup extends TargetGroupBase {
 
     };
 
+    // ------------------------------------------------------
+    // L1 Instantiation
+    // ------------------------------------------------------
     this._resource = new aws_vpclattice.CfnTargetGroup(this, 'Resource', {
       type: this.targetType,
       name: this.name,
@@ -162,7 +165,9 @@ export class InstanceTargetGroup extends TargetGroupBase {
     this.targetGroupId = this._resource.attrId;
     this.targetGroupArn = this._resource.attrArn;
 
-    // ASG associations
+    // ------------------------------------------------------
+    // ASG Associations
+    // ------------------------------------------------------
     if (this.autoScalingGroups.length > 0) {
       this.autoScalingGroups.forEach(asg => {
         new AwsCustomResource(this, `AsgLatticeAssociation${asg.node.addr}`, {
