@@ -133,7 +133,8 @@ export abstract class TargetGroupBase extends core.Resource implements ITargetGr
    */
   protected validateTargetGroupName(name: string): string[] {
     const errors = [];
-    const validationSucceeded = name.length >= TARGET_GROUP.NAME_MIN_LENGTH && name.length <= TARGET_GROUP.NAME_MAX_LENGTH && TARGET_GROUP.NAME_FORMAT.test(name);
+    const validationSucceeded =
+      name.length >= TARGET_GROUP.NAME_MIN_LENGTH && name.length <= TARGET_GROUP.NAME_MAX_LENGTH && TARGET_GROUP.NAME_FORMAT.test(name);
     if (!validationSucceeded) {
       errors.push(`Invalid Target Group Name: ${name} (must be between 3-128 characters, and must be a valid name)`);
     }
@@ -181,8 +182,14 @@ export abstract class TargetGroupBase extends core.Resource implements ITargetGr
    */
   protected validateHealthCheck(healthCheck: HealthCheck): string[] {
     const errors = new Array<string>();
-    if (healthCheck?.healthyThresholdCount && (healthCheck.healthyThresholdCount < HEALTH_CHECK.MIN_HEALTHY_THRESHOLD_COUNT || healthCheck.healthyThresholdCount > HEALTH_CHECK.MAX_HEALTHY_THRESHOLD_COUNT)) {
-      errors.push(`HealthCheck parameter "HealthyThresholdCount" must be between ${HEALTH_CHECK.MIN_HEALTHY_THRESHOLD_COUNT} and ${HEALTH_CHECK.MAX_HEALTHY_THRESHOLD_COUNT}`);
+    if (
+      healthCheck?.healthyThresholdCount &&
+      (healthCheck.healthyThresholdCount < HEALTH_CHECK.MIN_HEALTHY_THRESHOLD_COUNT ||
+        healthCheck.healthyThresholdCount > HEALTH_CHECK.MAX_HEALTHY_THRESHOLD_COUNT)
+    ) {
+      errors.push(
+        `HealthCheck parameter "HealthyThresholdCount" must be between ${HEALTH_CHECK.MIN_HEALTHY_THRESHOLD_COUNT} and ${HEALTH_CHECK.MAX_HEALTHY_THRESHOLD_COUNT}`,
+      );
     }
     if (healthCheck?.unhealthyThresholdCount && (healthCheck.unhealthyThresholdCount < 2 || healthCheck.unhealthyThresholdCount > 10)) {
       errors.push('HealthCheck parameter `HealthyThresholdCount` must be between `2` and `10`.');

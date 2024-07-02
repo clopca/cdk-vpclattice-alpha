@@ -1,6 +1,7 @@
 // AWS::VpcLattice CloudFormation Resources:
 //export * from './vpc-lattice.generated';
 
+export * from './aws-vpclattice-targets';
 export * from './listener';
 export * from './logging';
 export * from './matches';

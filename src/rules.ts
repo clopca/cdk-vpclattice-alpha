@@ -1,4 +1,4 @@
-import type { ITargetGroup } from './aws-vpclattice-targets';
+import { ITargetGroup, WeightedTargetGroup } from './aws-vpclattice-targets';
 import type { RuleConditions } from './matches';
 import type { HTTPFixedResponse } from './util';
 /**
@@ -46,22 +46,10 @@ export enum RuleAccessMode {
   NO_STATEMENT = 'NO_STATEMENT',
 }
 
-export interface WeightedTargetGroup {
-  /**
-   * A target Group
-   */
-  readonly targetGroup: ITargetGroup;
-  /**
-   * A weight for the target group.
-   * @default 100
-   */
-  readonly weight?: number;
-};
-
 export interface RuleAction {
-  readonly httpFixedResponse?: HTTPFixedResponse,
-  readonly targetGroup?: ITargetGroup,
-  readonly weightedTargetGroups?: WeightedTargetGroup[]
+  readonly httpFixedResponse?: HTTPFixedResponse;
+  readonly targetGroup?: ITargetGroup;
+  readonly weightedTargetGroups?: WeightedTargetGroup[];
 }
 
 export interface RuleProps {
