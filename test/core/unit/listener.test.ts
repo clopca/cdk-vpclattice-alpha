@@ -106,29 +106,40 @@ describe('Listener', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'TestStack');
-    new Listener(stack, 'Listener', {
-      service: new Service(stack, 'Service', {}),
-      config: {
-        rules: [
-          {
-            name: 'test1',
-            action: {
-              httpFixedResponse: HTTPFixedResponse.NOT_FOUND,
+    const invalidPriorities = [-1, 101];
+    for (const priority of invalidPriorities) {
+      new Listener(stack, `Listener-${priority}`, {
+        service: new Service(stack, `Service-${priority}`, {}),
+        config: {
+          rules: [
+            {
+              name: 'test',
+              action: {
+                httpFixedResponse: HTTPFixedResponse.NOT_FOUND,
+              },
+              priority: priority,
             },
-            priority: 0,
-          },
-          {
-            name: 'test2',
-            action: {
-              httpFixedResponse: HTTPFixedResponse.NOT_FOUND,
-            },
-            priority: 102,
-          },
-        ],
-      },
-    });
+          ],
+        },
+      });
+      expect(() => app.synth()).toThrow('Invalid rule priorities: Rule priorities must be between 1 and 100');
+    }
+  });
 
-    // THEN
-    expect(() => app.synth()).toThrow('Invalid rule priorities: Rule priorities must be between 1 and 100');
+  test('Listener creation with invalid port', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'TestStack');
+    const invalidPorts = [-1, 66666];
+
+    for (const port of invalidPorts) {
+      new Listener(stack, `Listener-${port}`, {
+        service: new Service(stack, `Service-${port}`, {}),
+        config: {
+          port: port,
+        },
+      });
+      expect(() => app.synth()).toThrow(`Invalid port ${port}: Out of range (0-65535)`);
+    }
   });
 });

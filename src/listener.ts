@@ -228,7 +228,7 @@ export class Listener extends Resource implements IListener {
     const errors: string[] = [];
     // Ensure that protocol is not set to TCP if targetType is ALB
     if (this.port < 0 || this.port > 65535) {
-      errors.push(`Port ${this.port} out of range (0-65535)`);
+      errors.push(`Invalid port ${this.port}: Out of range (0-65535)`);
     }
     return errors;
   }
@@ -356,3 +356,4 @@ export class Listener extends Resource implements IListener {
 }
 
 // 186-188,190-191,216-219,231-232,237-244,247-253,270-294,297-317,339-351
+// 231-232,241-242,274-298,306-308,312-316
