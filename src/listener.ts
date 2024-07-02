@@ -293,8 +293,8 @@ export class Listener extends Resource implements IListener {
     return {};
   }
 
-  private transformRuleConditionsToCfnProperty(ruleConditions: RuleConditions): generated.CfnRule.MatchProperty {
-    const { headerMatches, methodMatch, pathMatch } = ruleConditions;
+  private transformRuleConditionsToCfnProperty(ruleConditions?: RuleConditions): generated.CfnRule.MatchProperty {
+    const { headerMatches, methodMatch, pathMatch } = ruleConditions ?? {};
 
     const matchProperty: generated.CfnRule.MatchProperty = {
       httpMatch: {

@@ -5,7 +5,7 @@ import { Template } from 'aws-cdk-lib/assertions';
 // import { Stream } from 'aws-cdk-lib/aws-kinesis';
 // import { LogGroup } from 'aws-cdk-lib/aws-logs';
 // import { Service, LoggingDestination, AuthType, ListenerProtocol, Listener } from '../../../src';
-import { AuthType, Listener, ListenerProtocol, Service } from '../../../src';
+import { HTTPFixedResponse, Listener, Service } from '../../../src';
 // import { ServiceNetwork } from '../../../src/service-network';
 
 describe('Listener', () => {
@@ -26,7 +26,7 @@ describe('Listener', () => {
     });
   });
 
-  test('Basic creation with custom name', () => {
+  test('Listener creation with custom name', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'TestStack');
@@ -41,7 +41,41 @@ describe('Listener', () => {
 
     //THEN
     Template.fromStack(stack).hasResourceProperties('AWS::VpcLattice::Listener', {
-      name: 'mycustomlatticelistener',
+      Name: 'mycustomlatticelistener',
+    });
+  });
+
+  // Listener creation with rules
+  test('Listener creation with rules', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'TestStack');
+
+    // WHEN
+    new Listener(stack, 'Listener', {
+      service: new Service(stack, 'Service', {}),
+      config: {
+        rules: [
+          {
+            name: 'test',
+            action: {
+              httpFixedResponse: HTTPFixedResponse.NOT_FOUND,
+            },
+            priority: 1,
+          },
+        ],
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::VpcLattice::Rule', {
+      Name: 'test',
+      Action: {
+        FixedResponse: {
+          StatusCode: 404,
+        },
+      },
+      Priority: 1,
     });
   });
 });

@@ -69,7 +69,7 @@ export interface RuleProps {
    * the Matching criteria for the rule. This must contain at least one of
    * header, method or patchMatches
    */
-  readonly conditions: RuleConditions;
+  readonly conditions?: RuleConditions;
   // /**
   //  * List of principals that are allowed to access the resource
   //  * @default none
