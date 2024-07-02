@@ -151,7 +151,6 @@ export class Listener extends Resource implements IListener {
    */
   rules: RuleProps[];
 
-
   // ------------------------------------------------------
   // Constructor
   // ------------------------------------------------------
@@ -169,8 +168,8 @@ export class Listener extends Resource implements IListener {
     this.port = props.config?.port ?? (props.config?.protocol === ListenerProtocol.HTTP ? 80 : 443);
     this.rules = props.config?.rules ?? [];
     this.defaultAction = props.config?.defaultAction ?? {
-      httpFixedResponse: HTTPFixedResponse.NOT_FOUND
-    }
+      httpFixedResponse: HTTPFixedResponse.NOT_FOUND,
+    };
 
     // ------------------------------------------------------
     // Validation

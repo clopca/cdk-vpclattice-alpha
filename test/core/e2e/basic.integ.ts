@@ -1,8 +1,8 @@
 import * as path from 'path';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as autoscaling from 'aws-cdk-lib/aws-autoscaling';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { Instance, Peer, Port, SecurityGroup, Vpc } from 'aws-cdk-lib/aws-ec2';
 import { ApplicationLoadBalancedFargateService } from 'aws-cdk-lib/aws-ecs-patterns';
 import { Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
@@ -23,8 +23,8 @@ const clientsSg = new SecurityGroup(stack, 'ResSG', {
   vpc: clientsVpc,
 });
 
-clientsSg.addIngressRule(Peer.ipv4("10.0.0.0/16"), Port.allTraffic())
-clientsSg.addIngressRule(Peer.ipv4("169.254.0.0/16"), Port.allTraffic())
+clientsSg.addIngressRule(Peer.ipv4('10.0.0.0/16'), Port.allTraffic());
+clientsSg.addIngressRule(Peer.ipv4('169.254.0.0/16'), Port.allTraffic());
 
 // ------------------------------------------------------
 // Lambda TG
@@ -50,8 +50,8 @@ const asgSecurityGroup = new SecurityGroup(stack, 'RatesSG', {
   vpc: ratesVpc,
 });
 
-asgSecurityGroup.addIngressRule(Peer.ipv4("10.0.0.0/16"), Port.allTraffic())
-asgSecurityGroup.addIngressRule(Peer.ipv4("169.254.0.0/16"), Port.allTraffic())
+asgSecurityGroup.addIngressRule(Peer.ipv4('10.0.0.0/16'), Port.allTraffic());
+asgSecurityGroup.addIngressRule(Peer.ipv4('169.254.0.0/16'), Port.allTraffic());
 
 const ratesTg = new InstanceTargetGroup(stack, 'Ec2TG', {
   vpc: ratesVpc,
@@ -75,7 +75,7 @@ const ratesTg = new InstanceTargetGroup(stack, 'Ec2TG', {
         sudo systemctl enable httpd
         sudo systemctl start httpd
         sudo echo "Hello World from $(hostname -f)" > /var/www/html/index.html
-      `)
+      `),
     }),
   ],
 });
@@ -88,8 +88,8 @@ const paymentsSecurityGroup = new SecurityGroup(stack, 'PaymentsSG', {
   vpc: ratesVpc,
 });
 
-paymentsSecurityGroup.addIngressRule(Peer.ipv4("10.0.0.0/16"), Port.allTraffic())
-paymentsSecurityGroup.addIngressRule(Peer.ipv4("169.254.0.0/16"), Port.allTraffic())
+paymentsSecurityGroup.addIngressRule(Peer.ipv4('10.0.0.0/16'), Port.allTraffic());
+paymentsSecurityGroup.addIngressRule(Peer.ipv4('169.254.0.0/16'), Port.allTraffic());
 
 const albSvc = new ApplicationLoadBalancedFargateService(stack, 'ALBService', {
   vpc: paymentsVpc,
@@ -126,8 +126,8 @@ const parkingListener = svcParking.addListener({
   protocol: ListenerProtocol.HTTP,
   port: 80,
   defaultAction: {
-    httpFixedResponse: HTTPFixedResponse.NOT_FOUND
-  }
+    httpFixedResponse: HTTPFixedResponse.NOT_FOUND,
+  },
 });
 
 
@@ -141,7 +141,7 @@ parkingListener.addListenerRule({
     },
   },
   action: {
-    targetGroup: ratesTg
+    targetGroup: ratesTg,
   },
 });
 
@@ -155,8 +155,8 @@ parkingListener.addListenerRule({
     },
   },
   action: {
-    targetGroup: paymentsTg
-  }
+    targetGroup: paymentsTg,
+  },
 });
 
 // ------------------------------------------------------
@@ -173,7 +173,7 @@ svcReservation.addListener({
   protocol: ListenerProtocol.HTTPS,
   port: 443,
   defaultAction: {
-    targetGroup: reservationTg
+    targetGroup: reservationTg,
   },
 });
 
