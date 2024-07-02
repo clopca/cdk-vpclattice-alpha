@@ -1,6 +1,6 @@
-import { ITargetGroup } from './aws-vpclattice-targets';
-import { RuleConditions } from './matches';
-import { HTTPFixedResponse } from './util';
+import type { ITargetGroup } from './aws-vpclattice-targets';
+import type { RuleConditions } from './matches';
+import type { HTTPFixedResponse } from './util';
 /**
  * Rule Conditions can leverage different operators for Matches
  */
@@ -56,7 +56,7 @@ export type WeightedTargetGroup = {
    * @default 100
    */
   readonly weight?: number;
-}
+};
 
 export type RuleAction = HTTPFixedResponse | ITargetGroup | WeightedTargetGroup[];
 

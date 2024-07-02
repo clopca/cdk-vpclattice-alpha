@@ -1,5 +1,5 @@
-import { MatchOperator } from './rules';
-import { HTTPMethod } from './util';
+import type { MatchOperator } from './rules';
+import type { HTTPMethod } from './util';
 
 export interface RuleConditions {
   /**

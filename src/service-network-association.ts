@@ -1,8 +1,8 @@
 import * as core from 'aws-cdk-lib';
 import { aws_vpclattice } from 'aws-cdk-lib';
-import { Construct } from 'constructs';
-import { IService } from './service';
-import { IServiceNetwork } from './service-network';
+import type { Construct } from 'constructs';
+import type { IService } from './service';
+import type { IServiceNetwork } from './service-network';
 
 /**
  * Properties for associating a VPC with a Service Network

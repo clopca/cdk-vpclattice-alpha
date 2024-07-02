@@ -1,9 +1,9 @@
-import { aws_s3 as s3, aws_logs as logs, aws_kinesis as kinesis } from 'aws-cdk-lib';
+import type { aws_s3 as s3, aws_logs as logs, aws_kinesis as kinesis } from 'aws-cdk-lib';
 
 export enum LoggingDestinationType {
   S3 = 'S3',
   CLOUDWATCH_LOGS = 'CLOUDWATCH_LOGS',
-  KINESIS_DATA_STREAM = 'KINESIS_DATA_STREAM'
+  KINESIS_DATA_STREAM = 'KINESIS_DATA_STREAM',
 }
 
 /**
@@ -81,5 +81,5 @@ export abstract class LoggingDestination {
    */
   public abstract readonly destinationType: LoggingDestinationType;
 
-  protected constructor() { }
+  protected constructor() {}
 }

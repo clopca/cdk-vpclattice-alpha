@@ -1,10 +1,11 @@
-import { EOL } from 'os';
-import { aws_iam as iam, aws_ec2 as ec2, aws_ram as ram } from 'aws-cdk-lib';
+import { EOL } from 'node:os';
+import type { aws_ec2 as ec2 } from 'aws-cdk-lib';
+import { aws_iam as iam, aws_ram as ram } from 'aws-cdk-lib';
 import * as core from 'aws-cdk-lib';
 import * as generated from 'aws-cdk-lib/aws-vpclattice';
-import { Construct, IConstruct } from 'constructs';
-import { LoggingDestination } from './logging';
-import { IService } from './service';
+import type { Construct, IConstruct } from 'constructs';
+import type { LoggingDestination } from './logging';
+import type { IService } from './service';
 import { ServiceNetworkAssociation } from './service-network-association';
 import { AuthType } from './util';
 
@@ -315,9 +316,9 @@ export class ServiceNetwork extends ServiceNetworkBase {
     super(scope, id, {
       physicalName: props.name,
     });
-
     if (props.name) {
-      this.node.addValidation({ validate: () => this.validateServiceNetworkName(props.name!) });
+      const name = props.name;
+      this.node.addValidation({ validate: () => this.validateServiceNetworkName(name) });
     }
 
     this.authType = props.authType ?? AuthType.NONE;
@@ -347,15 +348,15 @@ export class ServiceNetwork extends ServiceNetworkBase {
     // VPC & Service Association
     // ------------------------------------------------------
     if (props.vpcAssociations) {
-      props.vpcAssociations.forEach(vpcProps => {
+      for (const vpcProps of props.vpcAssociations) {
         this.associateVPC({ ...vpcProps });
-      });
+      }
     }
 
     if (props.services) {
-      props.services.forEach(service => {
+      for (const service of props.services) {
         this.associateService(service);
-      });
+      }
     }
 
     // ------------------------------------------------------
@@ -363,9 +364,9 @@ export class ServiceNetwork extends ServiceNetworkBase {
     // ------------------------------------------------------
     if (this.loggingDestinations.length) {
       this.node.addValidation({ validate: () => this.validateLoggingDestinations(this.loggingDestinations) });
-      this.loggingDestinations.forEach(destination => {
+      for (const destination of this.loggingDestinations) {
         this.addLoggingDestination(destination);
-      });
+      }
     }
 
     // ------------------------------------------------------
@@ -376,9 +377,9 @@ export class ServiceNetwork extends ServiceNetworkBase {
     }
 
     if (props.authStatements) {
-      props.authStatements.forEach(propStatement => {
+      for (const propStatement of props.authStatements) {
         this.authPolicy.addStatements(propStatement);
-      });
+      }
     }
 
     if (this.accessMode) {
@@ -389,7 +390,8 @@ export class ServiceNetwork extends ServiceNetworkBase {
         principals: [new iam.StarPrincipal()],
       });
       if (props.accessMode === ServiceNetworkAccessMode.ORG_ONLY) {
-        this.node.addValidation({ validate: () => this.validateAccessMode(props.accessMode!, props.orgId) });
+        const accessMode = props.accessMode;
+        this.node.addValidation({ validate: () => this.validateAccessMode(accessMode, props.orgId) });
         if (props.orgId) {
           const orgId = props.orgId;
           statement.addCondition('StringEquals', { 'aws:PrincipalOrgID': [orgId] });
@@ -543,7 +545,7 @@ export class ServiceNetwork extends ServiceNetworkBase {
    * @param principals a list of IAM principals to grant access.
    */
   public grantAccess(principals: iam.IPrincipal[]): void {
-    let policyStatement: iam.PolicyStatement = new iam.PolicyStatement({
+    const policyStatement: iam.PolicyStatement = new iam.PolicyStatement({
       effect: iam.Effect.ALLOW,
       actions: ['vpc-lattice-svcs:Invoke'],
       resources: ['*'],
@@ -620,9 +622,9 @@ export class AssociateVpc extends core.Resource {
 
     const securityGroupIds: string[] = [];
     if (props.securityGroups) {
-      props.securityGroups.forEach(sg => {
+      for (const sg of props.securityGroups) {
         securityGroupIds.push(sg.securityGroupId);
-      });
+      }
     }
 
     new generated.CfnServiceNetworkVpcAssociation(this, `VpcAssociation${this.node.addr}`, {

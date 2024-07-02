@@ -1,10 +1,13 @@
-import { IResource, Resource } from 'aws-cdk-lib';
+import type { IResource } from 'aws-cdk-lib';
+import { Resource } from 'aws-cdk-lib';
 import * as generated from 'aws-cdk-lib/aws-vpclattice';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { TargetGroupBase } from './aws-vpclattice-targets';
-import { PathMatchType, RuleConditions } from './matches';
-import { RuleAction, MatchOperator, RuleProps } from './rules';
-import { Service } from './service';
+import type { RuleConditions } from './matches';
+import { PathMatchType } from './matches';
+import type { RuleAction, RuleProps } from './rules';
+import { MatchOperator } from './rules';
+import type { Service } from './service';
 import { HTTPFixedResponse } from './util';
 
 /**
@@ -199,9 +202,9 @@ export class Listener extends Resource implements IListener {
     // Adds Listener Rules
     // ------------------------------------------------------
     if (props.config?.rules) {
-      props.config?.rules.forEach(rule => {
+      for (const rule of props.config.rules) {
         this.addListenerRule(rule);
-      });
+      }
     }
   }
   // ------------------------------------------------------
@@ -252,7 +255,8 @@ export class Listener extends Resource implements IListener {
           statusCode: ruleAction,
         },
       };
-    } else if (ruleAction.constructor === Array) {
+    }
+    if (ruleAction.constructor === Array) {
       const targetGroups = ruleAction.map(weightedTargetGroup => ({
         targetGroupIdentifier: weightedTargetGroup.targetGroup.targetGroupId,
         weight: weightedTargetGroup.weight,
@@ -262,7 +266,8 @@ export class Listener extends Resource implements IListener {
           targetGroups,
         },
       };
-    } else if (ruleAction instanceof TargetGroupBase) {
+    }
+    if (ruleAction instanceof TargetGroupBase) {
       return {
         forward: {
           targetGroups: [
@@ -273,9 +278,8 @@ export class Listener extends Resource implements IListener {
           ],
         },
       };
-    } else {
-      return {};
     }
+    return {};
   }
 
   private transformRuleConditionsToCfnProperty(ruleConditions: RuleConditions): generated.CfnRule.MatchProperty {
