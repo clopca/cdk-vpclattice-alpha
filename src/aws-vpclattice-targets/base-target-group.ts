@@ -1,5 +1,6 @@
 import * as core from 'aws-cdk-lib';
 import { HealthCheck } from './health-check';
+import { HEALTH_CHECK, TARGET_GROUP } from '../constants';
 
 /**
  * ProtocolVersion
@@ -131,9 +132,8 @@ export abstract class TargetGroupBase extends core.Resource implements ITargetGr
    * the first or last character, or immediately after another hyphen.
    */
   protected validateTargetGroupName(name: string): string[] {
-    const errors = new Array<string>();
-    const pattern = /^(?!tg-)(?!-)(?!.*-$)(?!.*--)[a-z0-9-]+$/;
-    const validationSucceeded = name.length >= 3 && name.length <= 128 && pattern.test(name);
+    const errors = [];
+    const validationSucceeded = name.length >= TARGET_GROUP.NAME_MIN_LENGTH && name.length <= TARGET_GROUP.NAME_MAX_LENGTH && TARGET_GROUP.NAME_FORMAT.test(name);
     if (!validationSucceeded) {
       errors.push(`Invalid Target Group Name: ${name} (must be between 3-128 characters, and must be a valid name)`);
     }
@@ -143,7 +143,7 @@ export abstract class TargetGroupBase extends core.Resource implements ITargetGr
    * Verifies a valid protocol / target Type combination
    */
   protected validateProtocol(protocol: RequestProtocol, targetType: TargetType): string[] {
-    const errors = new Array<string>();
+    const errors = [];
     // Ensure that protocol is not set to TCP if targetType is ALB
     if (protocol === RequestProtocol.TCP && targetType === TargetType.ALB) {
       errors.push(`Invalid Protocol: ${protocol} (must be HTTP or HTTPS if targetType is ALB)`);
@@ -181,8 +181,8 @@ export abstract class TargetGroupBase extends core.Resource implements ITargetGr
    */
   protected validateHealthCheck(healthCheck: HealthCheck): string[] {
     const errors = new Array<string>();
-    if (healthCheck?.healthyThresholdCount && (healthCheck.healthyThresholdCount < 1 || healthCheck.healthyThresholdCount > 10)) {
-      errors.push('HealthCheck parameter `HealthyThresholdCount` must be between `1` and `10`.');
+    if (healthCheck?.healthyThresholdCount && (healthCheck.healthyThresholdCount < HEALTH_CHECK.MIN_HEALTHY_THRESHOLD_COUNT || healthCheck.healthyThresholdCount > HEALTH_CHECK.MAX_HEALTHY_THRESHOLD_COUNT)) {
+      errors.push(`HealthCheck parameter "HealthyThresholdCount" must be between ${HEALTH_CHECK.MIN_HEALTHY_THRESHOLD_COUNT} and ${HEALTH_CHECK.MAX_HEALTHY_THRESHOLD_COUNT}`);
     }
     if (healthCheck?.unhealthyThresholdCount && (healthCheck.unhealthyThresholdCount < 2 || healthCheck.unhealthyThresholdCount > 10)) {
       errors.push('HealthCheck parameter `HealthyThresholdCount` must be between `2` and `10`.');

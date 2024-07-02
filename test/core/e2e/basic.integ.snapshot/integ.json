@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "ServiceNetworkTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-vpclattice-integ-listener"
+      ],
+      "assertionStack": "ServiceNetworkTest/DefaultTest/DeployAssert",
+      "assertionStackName": "ServiceNetworkTestDefaultTestDeployAssert62481699"
+    }
+  }
+}

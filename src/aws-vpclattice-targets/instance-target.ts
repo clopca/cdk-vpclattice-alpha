@@ -6,6 +6,7 @@ import { Construct } from 'constructs';
 import { RequestProtocol, RequestProtocolVersion, TargetGroupBase, TargetType } from './base-target-group';
 import { HealthCheck, HealthCheckProtocol, HealthCheckProtocolVersion } from './health-check';
 import { HTTPFixedResponse } from '../util';
+import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
 
 export interface InstanceTarget {
   /**
@@ -187,7 +188,20 @@ export class InstanceTargetGroup extends TargetGroupBase {
               }],
             },
           },
-          policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+          policy: AwsCustomResourcePolicy.fromStatements([
+            new PolicyStatement({
+              actions: ['autoscaling:AttachTrafficSources', 'autoscaling:DetachTrafficSources'],
+              resources: [asg.autoScalingGroupArn]
+            }),
+            new PolicyStatement({
+              actions: ['vpc-lattice:RegisterTargets', 'vpc-lattice:DeregisterTargets'],
+              resources: [this.targetGroupArn]
+            }),
+            new PolicyStatement({
+              actions: ['iam:PassRole', "ec2:DescribeInstances"],
+              resources: ['*']
+            })
+          ]),
         });
       });
     }
