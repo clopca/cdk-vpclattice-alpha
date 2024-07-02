@@ -1,4 +1,4 @@
-import { EOL } from 'os';
+import { EOL } from 'node:os';
 import * as cdk from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
@@ -668,14 +668,13 @@ describe('Service', () => {
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'TestStack');
       const invalidNames = ['aAa', 'a--a', 'a./a-a', 'a//a-a', 'svc-a', '-abc123', 'abc123-'];
-
       // WHEN & THEN
-      invalidNames.forEach(name => {
+      for (const name of invalidNames) {
         new Service(stack, `Service-${name}`, {
           name,
         });
         expect(() => app.synth()).toThrow(/Service name must be composed of characters a-z, 0-9, and hyphens/);
-      });
+      }
     });
   });
 
@@ -723,10 +722,10 @@ describe('Service', () => {
       ];
 
       // WHEN & THEN
-      invalidArns.forEach(invalidArn => {
+      for (const invalidArn of invalidArns) {
         Service.fromServiceArn(stack, `ImportedService-${invalidArn}`, invalidArn);
         expect(() => app.synth()).toThrow(/Service ARN should be in the format/);
-      });
+      }
     });
 
     test('Import fromServiceId', () => {
@@ -751,10 +750,10 @@ describe('Service', () => {
       const invalidIds = ['12345abcdef', 'svc-12345ABcd', 'svc--abc123', 'svc-svc-12345abc/abc', 'svc-abc--ab', 'svc-a', `svc-${'x'.repeat(41)}`];
 
       // WHEN & THEN
-      invalidIds.forEach(invalidId => {
+      for (const invalidId of invalidIds) {
         Service.fromServiceId(stack, `ImportedService-${invalidId}`, invalidId);
         expect(() => app.synth()).toThrow(/Service ID should be in the format/);
-      });
+      }
     });
   });
 });

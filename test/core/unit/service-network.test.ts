@@ -1,4 +1,4 @@
-import { EOL } from 'os';
+import { EOL } from 'node:os';
 import * as cdk from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { Vpc, SecurityGroup } from 'aws-cdk-lib/aws-ec2';
@@ -769,14 +769,14 @@ describe('Service network', () => {
       const invalidNames = ['aAa', 'a--a', 'a./a-a', 'a//a-a', 'servicenetwork-a', '-abc123', 'abc123-'];
 
       // WHEN & THEN
-      invalidNames.forEach(name => {
+      for (const name of invalidNames) {
         new ServiceNetwork(stack, `ServiceNetwork-${name}`, {
           name,
         });
         expect(() => {
           app.synth();
         }).toThrow(/Service network name must be composed of characters a-z, 0-9, and hyphens/);
-      });
+      }
     });
   });
 
@@ -814,12 +814,12 @@ describe('Service network', () => {
       ];
 
       // WHEN & THEN
-      invalidArns.forEach(invalidArn => {
+      for (const invalidArn of invalidArns) {
         ServiceNetwork.fromArn(stack, `ImportedService-${invalidArn}`, invalidArn);
         expect(() => {
           app.synth();
         }).toThrow(/Service network ARN should be in the format/);
-      });
+      }
     });
 
     test('Import fromId', () => {
@@ -852,12 +852,12 @@ describe('Service network', () => {
       ];
 
       // WHEN & THEN
-      invalidIds.forEach(invalidId => {
+      for (const invalidId of invalidIds) {
         ServiceNetwork.fromId(stack, `ImportedServiceNetwork-${invalidId}`, invalidId);
         expect(() => {
           app.synth();
         }).toThrow(/Service network ID should be in the format/);
-      });
+      }
     });
   });
 });
