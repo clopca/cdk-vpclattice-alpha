@@ -13,8 +13,6 @@ describe('Listener', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'TestStack');
-
-    // WHEN
     new Listener(stack, 'Listener', {
       service: new Service(stack, 'Service', {}),
     });
@@ -30,8 +28,6 @@ describe('Listener', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'TestStack');
-
-    // WHEN
     new Listener(stack, 'Listener', {
       service: new Service(stack, 'Service', {}),
       config: {
@@ -45,13 +41,10 @@ describe('Listener', () => {
     });
   });
 
-  // Listener creation with rules
   test('Listener creation with rules', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'TestStack');
-
-    // WHEN
     new Listener(stack, 'Listener', {
       service: new Service(stack, 'Service', {}),
       config: {
@@ -77,5 +70,65 @@ describe('Listener', () => {
       },
       Priority: 1,
     });
+  });
+
+  test('Listener creation with rules with duplicate priorities', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'TestStack');
+    new Listener(stack, 'Listener', {
+      service: new Service(stack, 'Service', {}),
+      config: {
+        rules: [
+          {
+            name: 'test1',
+            action: {
+              httpFixedResponse: HTTPFixedResponse.NOT_FOUND,
+            },
+            priority: 1,
+          },
+          {
+            name: 'test2',
+            action: {
+              httpFixedResponse: HTTPFixedResponse.NOT_FOUND,
+            },
+            priority: 1,
+          },
+        ],
+      },
+    });
+
+    // THEN
+    expect(() => app.synth()).toThrow('Invalid rule priorities: Duplicate priorities found');
+  });
+
+  test('Listener creation with rules with invalid priorities', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'TestStack');
+    new Listener(stack, 'Listener', {
+      service: new Service(stack, 'Service', {}),
+      config: {
+        rules: [
+          {
+            name: 'test1',
+            action: {
+              httpFixedResponse: HTTPFixedResponse.NOT_FOUND,
+            },
+            priority: 0,
+          },
+          {
+            name: 'test2',
+            action: {
+              httpFixedResponse: HTTPFixedResponse.NOT_FOUND,
+            },
+            priority: 102,
+          },
+        ],
+      },
+    });
+
+    // THEN
+    expect(() => app.synth()).toThrow('Invalid rule priorities: Rule priorities must be between 1 and 100');
   });
 });

@@ -247,7 +247,11 @@ export class Listener extends Resource implements IListener {
     const errors: string[] = [];
     const rulePriorities = new Set(this.rules.map(rule => rule.priority));
     if (this.rules.length > rulePriorities.size) {
-      errors.push('Invalid Rule Priorities: Duplicate priorities found');
+      errors.push('Invalid rule priorities: Duplicate priorities found');
+    }
+    // check if any of the values of rulePriorities set is not between 1 and 1000
+    if (this.rules.some(rule => rule.priority < 1 || rule.priority > 100)) {
+      errors.push('Invalid rule priorities: Rule priorities must be between 1 and 100');
     }
     return errors;
   }
