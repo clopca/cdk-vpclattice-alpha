@@ -1,5 +1,5 @@
 import type { IResource } from 'aws-cdk-lib';
-import { Resource } from 'aws-cdk-lib';
+import { RemovalPolicy, Resource } from 'aws-cdk-lib';
 import * as generated from 'aws-cdk-lib/aws-vpclattice';
 import type { Construct } from 'constructs';
 import type { RuleConditions } from './matches';
@@ -73,6 +73,13 @@ export interface ListenerProps {
    *
    */
   readonly config?: ListenerConfig;
+
+  /**
+   * Determine what happens to the service when the resource/stack is deleted.
+   *
+   * @default RemovalPolicy.RETAIN
+   */
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -118,8 +125,8 @@ export interface ListenerConfig {
  *
  */
 export class Listener extends Resource implements IListener {
-  readonly listenerId: string;
   readonly listenerArn: string;
+  readonly listenerId: string;
 
   /**
    * The listener protocol
@@ -150,6 +157,7 @@ export class Listener extends Resource implements IListener {
    * The listener rules to add
    */
   rules: RuleProps[];
+  private readonly _resource: generated.CfnListener;
 
   // ------------------------------------------------------
   // Constructor
@@ -175,7 +183,8 @@ export class Listener extends Resource implements IListener {
     // Validation
     // ------------------------------------------------------
     if (props.config?.name) {
-      this.node.addValidation({ validate: () => this.validateListenerName(this.physicalName) });
+      const name = props.config.name;
+      this.node.addValidation({ validate: () => this.validateListenerName(name) });
     }
     if (props.config?.rules) {
       this.node.addValidation({ validate: () => this.validateRulePriorities() });
@@ -185,7 +194,7 @@ export class Listener extends Resource implements IListener {
     // ------------------------------------------------------
     // L1 Instantiation
     // ------------------------------------------------------
-    const listener = new generated.CfnListener(this, 'Resource', {
+    this._resource = new generated.CfnListener(this, 'Resource', {
       name: props.config?.name,
       defaultAction: this.transformRuleActionToCfnProperty(this.defaultAction),
       protocol: this.protocol,
@@ -196,8 +205,9 @@ export class Listener extends Resource implements IListener {
     // ------------------------------------------------------
     // Construct properties
     // ------------------------------------------------------
-    this.listenerId = listener.attrId;
-    this.listenerArn = listener.attrArn;
+    this._resource.applyRemovalPolicy(props.removalPolicy);
+    this.listenerArn = this._resource.attrArn;
+    this.listenerId = this._resource.attrId;
 
     // ------------------------------------------------------
     // Adds Listener Rules

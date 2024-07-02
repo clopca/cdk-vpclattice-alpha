@@ -1,6 +1,6 @@
 import { EOL } from 'os';
-import { aws_iam as iam, aws_ram as ram } from 'aws-cdk-lib';
-import * as core from 'aws-cdk-lib';
+import { aws_iam as iam, aws_ram as ram, RemovalPolicy, Resource, Aspects, Arn, Stack } from 'aws-cdk-lib';
+import type { IResource } from 'aws-cdk-lib';
 import * as generated from 'aws-cdk-lib/aws-vpclattice';
 import { Construct, IConstruct } from 'constructs';
 import { Listener, ListenerConfig } from './listener';
@@ -13,7 +13,7 @@ import { AuthType } from './util';
  * Represents a Vpc Lattice Service.
  * Implemented by `Service`.
  */
-export interface IService extends core.IResource {
+export interface IService extends IResource {
   /**
    * The Amazon Resource Name (ARN) of the service.
    * @attribute
@@ -77,7 +77,7 @@ export interface ServiceProps {
    *
    * @default RemovalPolicy.RETAIN
    */
-  readonly removalPolicy?: core.RemovalPolicy;
+  readonly removalPolicy?: RemovalPolicy;
 
   /**
    * The authType of the Service
@@ -139,7 +139,7 @@ export interface ServiceProps {
 /**
  * Base class for Service. Reused between imported and created services.
  */
-abstract class ServiceBase extends core.Resource implements IService {
+abstract class ServiceBase extends Resource implements IService {
   /**
    * @inheritdoc
    */
@@ -183,7 +183,7 @@ export class Service extends ServiceBase {
 
       private extractServiceId(): string {
         try {
-          return core.Arn.extractResourceName(this.serviceArn, 'service');
+          return Arn.extractResourceName(this.serviceArn, 'service');
         } catch (error) {
           return '';
         }
@@ -204,13 +204,13 @@ export class Service extends ServiceBase {
   public static fromServiceId(scope: Construct, id: string, serviceId: string): IService {
     class Import extends ServiceBase {
       public readonly serviceId = serviceId;
-      public readonly serviceArn = core.Arn.format(
+      public readonly serviceArn = Arn.format(
         {
           service: 'vpc-lattice',
           resource: 'service',
           resourceName: serviceId,
         },
-        core.Stack.of(scope),
+        Stack.of(scope),
       );
 
       constructor() {
@@ -236,12 +236,28 @@ export class Service extends ServiceBase {
   public readonly serviceArn: string;
   public readonly serviceId: string;
   // variables specific to the non-imported Service
+  /**
+   * The name of the service
+   */
   public readonly serviceName: string;
+  /**
+   * The auth type of the service
+   * @default AuthType.NONE
+   */
   public readonly authType: AuthType;
-  private readonly _resource: generated.CfnService;
+  /**
+   * Allowed principals to invoke the service
+   */
   public readonly allowedPrincipals: iam.IPrincipal[];
+  /**
+   * Logging destinations of the service
+   */
   public readonly loggingDestinations: LoggingDestination[];
+  /**
+   * Auth policy to be added to the service
+   */
   public readonly authPolicy: iam.PolicyDocument;
+  private readonly _resource: generated.CfnService;
 
   // ------------------------------------------------------
   // Construct
@@ -249,9 +265,20 @@ export class Service extends ServiceBase {
   constructor(scope: Construct, id: string, props: ServiceProps) {
     super(scope, id, { physicalName: props.name });
 
+    // ------------------------------------------------------
+    // Set properties or defaults
+    // ------------------------------------------------------
+    this.serviceName = this.physicalName;
+    this.allowedPrincipals = props.allowedPrincipals ?? [];
+    this.loggingDestinations = props.loggingDestinations ?? [];
+    this.authPolicy = props.authPolicy ?? new iam.PolicyDocument();
+
+    // ------------------------------------------------------
+    // Validation
+    // ------------------------------------------------------
     if (props.name) {
-      // this.validateServiceName(props.name);
-      this.node.addValidation({ validate: () => this.validateServiceName(props.name!) });
+      const name = props.name;
+      this.node.addValidation({ validate: () => this.validateServiceName(name) });
     }
     this.authType = props.authType ?? AuthType.NONE;
 
@@ -273,10 +300,6 @@ export class Service extends ServiceBase {
     this._resource.applyRemovalPolicy(props.removalPolicy);
     this.serviceArn = this._resource.attrArn;
     this.serviceId = this._resource.attrId;
-    this.serviceName = this.physicalName;
-    this.allowedPrincipals = props.allowedPrincipals ?? [];
-    this.loggingDestinations = props.loggingDestinations ?? [];
-    this.authPolicy = props.authPolicy ?? new iam.PolicyDocument();
 
     // ------------------------------------------------------
     // Service Network Association
@@ -312,7 +335,7 @@ export class Service extends ServiceBase {
       this.node.addValidation({ validate: () => this.validateAuthPolicy(this.authPolicy) });
     }
 
-    core.Aspects.of(this).add({
+    Aspects.of(this).add({
       visit: (node: IConstruct) => {
         if (node === this && !this.authPolicy.isEmpty) {
           new generated.CfnAuthPolicy(this, 'ServiceAuthPolicy', {
