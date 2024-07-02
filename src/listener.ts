@@ -89,7 +89,7 @@ export interface ListenerConfig {
   /**
    * The Name of the listener.
    */
-  readonly name: string;
+  readonly name?: string;
 
   /**
    * Protocol that the listener will listen on
