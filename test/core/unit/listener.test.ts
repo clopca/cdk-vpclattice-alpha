@@ -5,8 +5,8 @@ import { Template } from 'aws-cdk-lib/assertions';
 // import { Stream } from 'aws-cdk-lib/aws-kinesis';
 // import { LogGroup } from 'aws-cdk-lib/aws-logs';
 // import { Service, LoggingDestination, AuthType, ListenerProtocol, Listener } from '../../../src';
-import { HTTPFixedResponse, IpTargetGroup, Listener, Service } from '../../../src';
 import { Vpc } from 'aws-cdk-lib/aws-ec2';
+import { HTTPFixedResponse, IpTargetGroup, Listener, MatchOperator, Service } from '../../../src';
 // import { ServiceNetwork } from '../../../src/service-network';
 
 describe('Listener', () => {
@@ -144,6 +144,113 @@ describe('Listener', () => {
     }
   });
 
+  test('Listener creation with no target group', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'TestStack');
+    new Listener(stack, 'Listener', {
+      service: new Service(stack, 'Service', {}),
+      config: {
+        rules: [
+          {
+            name: 'test-rule',
+            priority: 10,
+            action: {},
+          },
+        ],
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::VpcLattice::Rule', {
+      Name: 'test-rule',
+      Priority: 10,
+      Action: {},
+    });
+  });
+
+  test('Listener creation with path match condition', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'TestStack');
+    new Listener(stack, 'Listener', {
+      service: new Service(stack, 'Service', {}),
+      config: {
+        rules: [
+          {
+            name: 'test-rule',
+            priority: 10,
+            action: {},
+            conditions: { pathMatch: { path: '/' } },
+          },
+        ],
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::VpcLattice::Rule', {
+      Name: 'test-rule',
+      Priority: 10,
+      Action: {},
+      Match: {
+        HttpMatch: {
+          PathMatch: {
+            Match: {
+              Exact: '/',
+            },
+          },
+        },
+      },
+    });
+  });
+
+  test('Listener creation with header match condition', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'TestStack');
+    new Listener(stack, 'Listener', {
+      service: new Service(stack, 'Service', {}),
+      config: {
+        rules: [
+          {
+            name: 'test-rule',
+            priority: 10,
+            action: {},
+            conditions: {
+              headerMatches: [
+                {
+                  headerName: 'x-test',
+                  matchOperator: MatchOperator.PREFIX,
+                  matchValue: 'test',
+                  caseSensitive: false,
+                },
+              ],
+            },
+          },
+        ],
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::VpcLattice::Rule', {
+      Name: 'test-rule',
+      Priority: 10,
+      Action: {},
+      Match: {
+        HttpMatch: {
+          HeaderMatches: [
+            {
+              Match: {
+                Prefix: 'test',
+              },
+              Name: 'x-test',
+            },
+          ],
+        },
+      },
+    });
+  });
+
   test('Listener creation with weighted target groups', () => {
     // GIVEN
     const app = new cdk.App();
@@ -174,6 +281,57 @@ describe('Listener', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::VpcLattice::Rule', {
       Name: 'test-rule',
       Priority: 10,
+      Action: {
+        Forward: {
+          TargetGroups: [
+            {
+              TargetGroupIdentifier: {
+                'Fn::GetAtt': ['TargetGroup3D7CD9B8', 'Id'],
+              },
+              Weight: 100,
+            },
+          ],
+        },
+      },
+    });
+  });
+
+  test('Listener creation with target group', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'TestStack');
+    new Listener(stack, 'Listener', {
+      service: new Service(stack, 'Service', {}),
+      config: {
+        rules: [
+          {
+            name: 'test-rule',
+            priority: 10,
+            action: {
+              targetGroup: new IpTargetGroup(stack, 'TargetGroup', {
+                vpc: new Vpc(stack, 'Vpc', {}),
+              }),
+            },
+          },
+        ],
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::VpcLattice::Rule', {
+      Name: 'test-rule',
+      Priority: 10,
+      Action: {
+        Forward: {
+          TargetGroups: [
+            {
+              TargetGroupIdentifier: {
+                'Fn::GetAtt': ['TargetGroup3D7CD9B8', 'Id'],
+              },
+            },
+          ],
+        },
+      },
     });
   });
 
