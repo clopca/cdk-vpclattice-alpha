@@ -4,6 +4,7 @@ import { Template } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { Stream } from 'aws-cdk-lib/aws-kinesis';
 import { LogGroup } from 'aws-cdk-lib/aws-logs';
+import { Bucket } from 'aws-cdk-lib/aws-s3';
 import { Service, LoggingDestination, AuthType, ListenerProtocol } from '../../../src';
 import { ServiceNetwork } from '../../../src/service-network';
 
@@ -564,21 +565,43 @@ describe('Service', () => {
       Template.fromStack(stack).hasResource('AWS::VpcLattice::AccessLogSubscription', {});
     });
 
+    test('Service with logging destination to S3', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'TestStack');
+      const bucket = new Bucket(stack, 'Bucket');
+
+      // WHEN
+      new Service(stack, 'Service', {
+        name: 'mycustomlatticeservicename',
+        authType: AuthType.AWS_IAM,
+        loggingDestinations: [LoggingDestination.s3(bucket)],
+      });
+
+      //THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::VpcLattice::Service', {
+        AuthType: 'AWS_IAM',
+        Name: 'mycustomlatticeservicename',
+      });
+      Template.fromStack(stack).hasResource('AWS::VpcLattice::AccessLogSubscription', {});
+    });
+
     test('Service with multiple logging destinations', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'TestStack');
       const logGroup = new LogGroup(stack, 'LogGroup');
       const kinesisStream = new Stream(stack, 'KinesisStream');
+      const bucket = new Bucket(stack, 'Bucket');
 
       // WHEN
       new Service(stack, 'Service', {
         name: 'my-service',
-        loggingDestinations: [LoggingDestination.cloudwatch(logGroup), LoggingDestination.kinesis(kinesisStream)],
+        loggingDestinations: [LoggingDestination.cloudwatch(logGroup), LoggingDestination.kinesis(kinesisStream), LoggingDestination.s3(bucket)],
       });
 
       // THEN
-      Template.fromStack(stack).resourceCountIs('AWS::VpcLattice::AccessLogSubscription', 2);
+      Template.fromStack(stack).resourceCountIs('AWS::VpcLattice::AccessLogSubscription', 3);
     });
 
     test('Error with duplicate logging destination type', () => {
@@ -589,6 +612,8 @@ describe('Service', () => {
       const logGroup2 = new LogGroup(stack, 'LogGroup2');
       const kinesisStream1 = new Stream(stack, 'KinesisStream1');
       const kinesisStream2 = new Stream(stack, 'KinesisStream2');
+      const bucket1 = new Bucket(stack, 'Bucket1');
+      const bucket2 = new Bucket(stack, 'Bucket2');
 
       // WHEN & THEN
       new Service(stack, 'Service1', {
@@ -603,6 +628,14 @@ describe('Service', () => {
         name: 'my-service-2',
         authType: AuthType.AWS_IAM,
         loggingDestinations: [LoggingDestination.kinesis(kinesisStream1), LoggingDestination.kinesis(kinesisStream2)],
+      });
+      expect(() => app.synth()).toThrow('A service can only have one logging destination per destination type.');
+
+      // WHEN & THEN
+      new Service(stack, 'Service3', {
+        name: 'my-service-3',
+        authType: AuthType.AWS_IAM,
+        loggingDestinations: [LoggingDestination.s3(bucket1), LoggingDestination.s3(bucket2)],
       });
       expect(() => app.synth()).toThrow('A service can only have one logging destination per destination type.');
     });
