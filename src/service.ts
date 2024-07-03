@@ -317,9 +317,6 @@ export class Service extends ServiceBase {
       for (const destination of this.loggingDestinations) {
         this.addLoggingDestination(destination);
       }
-      for (const destination of this.loggingDestinations) {
-        this.addLoggingDestination(destination);
-      }
     }
 
     // ------------------------------------------------------

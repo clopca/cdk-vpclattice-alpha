@@ -658,7 +658,7 @@ describe('Service network', () => {
 
       // WHEN
       new ServiceNetwork(stack, 'ServiceNetwork', {
-        name: 'my-service',
+        name: 'my-service-network',
         loggingDestinations: [LoggingDestination.cloudwatch(logGroup), LoggingDestination.kinesis(kinesisStream)],
       });
 
@@ -677,23 +677,19 @@ describe('Service network', () => {
 
       // WHEN & THEN
       new ServiceNetwork(stack, 'ServiceNetwork1', {
-        name: 'mycustomlatticeservicename',
+        name: 'my-service-network',
         authType: AuthType.AWS_IAM,
         loggingDestinations: [LoggingDestination.cloudwatch(logGroup1), LoggingDestination.cloudwatch(logGroup2)],
       });
-      expect(() => {
-        app.synth();
-      }).toThrow();
+      expect(() => app.synth()).toThrow('A service network can only have one logging destination per destination type.');
 
       // WHEN & THEN
       new ServiceNetwork(stack, 'ServiceNetwork2', {
-        name: 'mycustomlatticeservicename',
+        name: 'my-service-network',
         authType: AuthType.AWS_IAM,
         loggingDestinations: [LoggingDestination.kinesis(kinesisStream1), LoggingDestination.kinesis(kinesisStream2)],
       });
-      expect(() => {
-        app.synth();
-      }).toThrow();
+      expect(() => app.synth()).toThrow('A service network can only have one logging destination per destination type.');
     });
   });
 

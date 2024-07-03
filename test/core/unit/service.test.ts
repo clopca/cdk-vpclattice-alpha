@@ -592,7 +592,7 @@ describe('Service', () => {
 
       // WHEN & THEN
       new Service(stack, 'Service1', {
-        name: 'mycustomlatticeservicename',
+        name: 'my-service-1',
         authType: AuthType.AWS_IAM,
         loggingDestinations: [LoggingDestination.cloudwatch(logGroup1), LoggingDestination.cloudwatch(logGroup2)],
       });
@@ -600,7 +600,7 @@ describe('Service', () => {
 
       // WHEN & THEN
       new Service(stack, 'Service2', {
-        name: 'mycustomlatticeservicename',
+        name: 'my-service-2',
         authType: AuthType.AWS_IAM,
         loggingDestinations: [LoggingDestination.kinesis(kinesisStream1), LoggingDestination.kinesis(kinesisStream2)],
       });
