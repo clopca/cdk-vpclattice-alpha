@@ -6,7 +6,7 @@ import { Template } from 'aws-cdk-lib/assertions';
 // import { LogGroup } from 'aws-cdk-lib/aws-logs';
 // import { Service, LoggingDestination, AuthType, ListenerProtocol, Listener } from '../../../src';
 import { Vpc } from 'aws-cdk-lib/aws-ec2';
-import { HTTPFixedResponse, IpTargetGroup, Listener, MatchOperator, Service } from '../../../src';
+import { HTTPFixedResponse, IpTargetGroup, Listener, ListenerProtocol, MatchOperator, PathMatchType, Service } from '../../../src';
 // import { ServiceNetwork } from '../../../src/service-network';
 
 describe('Listener', () => {
@@ -39,6 +39,65 @@ describe('Listener', () => {
     //THEN
     Template.fromStack(stack).hasResourceProperties('AWS::VpcLattice::Listener', {
       Name: 'mycustomlatticelistener',
+    });
+  });
+
+  test('Listener creation with custom protocol', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'TestStack');
+    new Listener(stack, 'Listener', {
+      service: new Service(stack, 'Service', {}),
+      config: {
+        protocol: ListenerProtocol.HTTP,
+      },
+    });
+
+    //THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::VpcLattice::Listener', {
+      Protocol: 'HTTP',
+      Port: 80,
+    });
+  });
+
+  test('Listener creation with custom port', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'TestStack');
+    new Listener(stack, 'Listener', {
+      service: new Service(stack, 'Service', {}),
+      config: {
+        port: 443,
+      },
+    });
+
+    //THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::VpcLattice::Listener', {
+      Protocol: 'HTTPS',
+      Port: 443,
+    });
+  });
+
+  test('Listener creation with default action', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'TestStack');
+    new Listener(stack, 'Listener', {
+      service: new Service(stack, 'Service', {}),
+      config: {
+        defaultAction: {
+          httpFixedResponse: HTTPFixedResponse.NOT_FOUND,
+        },
+      },
+    });
+
+    //THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::VpcLattice::Listener', {
+      DefaultAction: {
+        FixedResponse: {
+          StatusCode: 404,
+        },
+      },
     });
   });
 
@@ -169,7 +228,7 @@ describe('Listener', () => {
     });
   });
 
-  test('Listener creation with path match condition', () => {
+  test('Listener creation with path match condition default props', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'TestStack');
@@ -181,7 +240,11 @@ describe('Listener', () => {
             name: 'test-rule',
             priority: 10,
             action: {},
-            conditions: { pathMatch: { path: '/' } },
+            conditions: {
+              pathMatch: {
+                path: '/',
+              },
+            },
           },
         ],
       },
@@ -195,8 +258,51 @@ describe('Listener', () => {
       Match: {
         HttpMatch: {
           PathMatch: {
+            CaseSensitive: false,
             Match: {
               Exact: '/',
+            },
+          },
+        },
+      },
+    });
+  });
+
+  test('Listener creation with path match condition', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'TestStack');
+    new Listener(stack, 'Listener', {
+      service: new Service(stack, 'Service', {}),
+      config: {
+        rules: [
+          {
+            name: 'test-rule',
+            priority: 10,
+            action: {},
+            conditions: {
+              pathMatch: {
+                path: '/test',
+                caseSensitive: true,
+                pathMatchType: PathMatchType.PREFIX,
+              },
+            },
+          },
+        ],
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::VpcLattice::Rule', {
+      Name: 'test-rule',
+      Priority: 10,
+      Action: {},
+      Match: {
+        HttpMatch: {
+          PathMatch: {
+            CaseSensitive: true,
+            Match: {
+              Prefix: '/test',
             },
           },
         },
