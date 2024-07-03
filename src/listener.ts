@@ -235,10 +235,19 @@ export class Listener extends Resource implements IListener {
 
   protected validateListenerName(name: string) {
     const errors: string[] = [];
-    const pattern = /^(?!listener-)(?!-)(?!.*-$)(?!.*--)[a-z0-9-]+$/;
-    const validationSucceeded = name.length >= 3 && name.length <= 63 && pattern.test(name);
-    if (!validationSucceeded) {
-      errors.push(`Invalid Listener Name: ${name} (must be between 3-63 characters, and must be a valid name)`);
+    // Rules codified from https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-vpclattice-listener.html
+    if (name.length < 3 || name.length > 63) {
+      errors.push('Listener name must be at least 3 and no more than 63 characters');
+    }
+
+    const isPatternMatch = /^(?!listener-)(?!-)(?!.*-$)(?!.*--)[a-z0-9-]+$/.test(name);
+    if (!isPatternMatch) {
+      errors.push(
+        'Listener name must be composed of characters a-z, 0-9, and hyphens (-). You can\'t use a hyphen as the first or last character, or immediately after another hyphen. The name cannot start with "listener-".',
+      );
+    }
+    if (errors.length > 0) {
+      errors.unshift(`Invalid listener name (value: ${name})`);
     }
     return errors;
   }
@@ -356,3 +365,4 @@ export class Listener extends Resource implements IListener {
 }
 
 // 231-232,241-242,274-298,306-308,312-316
+// 241-242,274-298,306-308,312-316

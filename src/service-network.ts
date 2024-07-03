@@ -602,7 +602,7 @@ export class ServiceNetwork extends ServiceNetworkBase {
   }
 
   /**
-   * Associates a VPC with the service netwoek.
+   * Associates a VPC with the service network.
    */
 
   /**
