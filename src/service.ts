@@ -1,11 +1,12 @@
-import { EOL } from 'os';
-import { aws_iam as iam, aws_ram as ram, RemovalPolicy, Resource, Aspects, Arn, Stack } from 'aws-cdk-lib';
-import type { IResource } from 'aws-cdk-lib';
+import { EOL } from 'node:os';
+import { aws_iam as iam, aws_ram as ram, Resource, Aspects, Arn, Stack } from 'aws-cdk-lib';
+import type { IResource, RemovalPolicy } from 'aws-cdk-lib';
 import * as generated from 'aws-cdk-lib/aws-vpclattice';
-import { Construct, IConstruct } from 'constructs';
-import { Listener, ListenerConfig } from './listener';
-import { LoggingDestination } from './logging';
-import { IServiceNetwork } from './service-network';
+import type { Construct, IConstruct } from 'constructs';
+import { Listener } from './listener';
+import type { ListenerConfig } from './listener';
+import type { LoggingDestination } from './logging';
+import type { IServiceNetwork } from './service-network';
 import { ServiceNetworkAssociation } from './service-network-association';
 import { AuthType } from './util';
 
@@ -313,9 +314,12 @@ export class Service extends ServiceBase {
     // ------------------------------------------------------
     if (this.loggingDestinations.length) {
       this.node.addValidation({ validate: () => this.validateLoggingDestinations(this.loggingDestinations) });
-      this.loggingDestinations.forEach(destination => {
+      for (const destination of this.loggingDestinations) {
         this.addLoggingDestination(destination);
-      });
+      }
+      for (const destination of this.loggingDestinations) {
+        this.addLoggingDestination(destination);
+      }
     }
 
     // ------------------------------------------------------
@@ -326,9 +330,9 @@ export class Service extends ServiceBase {
     }
 
     if (props.authStatements) {
-      props.authStatements.forEach(propStatement => {
+      for (const propStatement of props.authStatements) {
         this.authPolicy.addStatements(propStatement);
-      });
+      }
     }
 
     if (!this.authPolicy.isEmpty) {
@@ -371,7 +375,6 @@ export class Service extends ServiceBase {
 
     if (errors.length > 0) {
       errors.unshift(`Invalid service name (value: ${name})`);
-      // throw new Error(`Invalid service name (value: ${name})${EOL}${errors.join(EOL)}`);
     }
     return errors;
   }
@@ -385,7 +388,6 @@ export class Service extends ServiceBase {
       const destinationTypes = loggingDestinations.map(destination => destination.destinationType);
       if (new Set(destinationTypes).size !== destinationTypes.length) {
         errors.push('A service can only have one logging destination per destination type.');
-        // throw new Error('A service can only have one logging destination per destination type.');
       }
     }
     return errors;
@@ -461,7 +463,7 @@ export class Service extends ServiceBase {
    * @param principals a list of IAM principals to grant access.
    */
   public grantAccess(principals: iam.IPrincipal[]): void {
-    let policyStatement: iam.PolicyStatement = new iam.PolicyStatement({
+    const policyStatement: iam.PolicyStatement = new iam.PolicyStatement({
       effect: iam.Effect.ALLOW,
       actions: ['vpc-lattice-svcs:Invoke'],
       resources: ['*'],

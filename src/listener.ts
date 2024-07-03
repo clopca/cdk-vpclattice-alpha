@@ -1,5 +1,5 @@
-import type { IResource } from 'aws-cdk-lib';
-import { RemovalPolicy, Resource } from 'aws-cdk-lib';
+import type { IResource, RemovalPolicy } from 'aws-cdk-lib';
+import { Resource } from 'aws-cdk-lib';
 import * as generated from 'aws-cdk-lib/aws-vpclattice';
 import type { Construct } from 'constructs';
 import type { RuleConditions } from './matches';
@@ -235,7 +235,7 @@ export class Listener extends Resource implements IListener {
 
   protected validateListenerName(name: string) {
     const errors: string[] = [];
-    const pattern = /^(?!listener-)(?![-])(?!.*[-]$)(?!.*[-]{2})[a-z0-9-]+$/;
+    const pattern = /^(?!listener-)(?!-)(?!.*-$)(?!.*--)[a-z0-9-]+$/;
     const validationSucceeded = name.length >= 3 && name.length <= 63 && pattern.test(name);
     if (!validationSucceeded) {
       errors.push(`Invalid Listener Name: ${name} (must be between 3-63 characters, and must be a valid name)`);
@@ -355,5 +355,4 @@ export class Listener extends Resource implements IListener {
   }
 }
 
-// 186-188,190-191,216-219,231-232,237-244,247-253,270-294,297-317,339-351
 // 231-232,241-242,274-298,306-308,312-316
