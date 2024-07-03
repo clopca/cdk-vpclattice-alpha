@@ -133,10 +133,20 @@ export abstract class TargetGroupBase extends core.Resource implements ITargetGr
    */
   protected validateTargetGroupName(name: string): string[] {
     const errors = [];
-    const validationSucceeded =
-      name.length >= TARGET_GROUP.NAME_MIN_LENGTH && name.length <= TARGET_GROUP.NAME_MAX_LENGTH && TARGET_GROUP.NAME_FORMAT.test(name);
-    if (!validationSucceeded) {
-      errors.push(`Invalid Target Group Name: ${name} (must be between 3-128 characters, and must be a valid name)`);
+
+    if (name.length < TARGET_GROUP.NAME_MIN_LENGTH || name.length > TARGET_GROUP.NAME_MAX_LENGTH) {
+      errors.push('Target group name must be at least 3 characters and no more than 128 characters.');
+    }
+
+    const isPatternMatch = TARGET_GROUP.NAME_FORMAT.test(name);
+    if (!isPatternMatch) {
+      errors.push(
+        'Target group name must be composed of characters a-z, 0-9, and hyphens (-). You can\'t use a hyphen as the first or last character, or immediately after another hyphen. The name cannot start with "tg-".',
+      );
+    }
+
+    if (errors.length > 0) {
+      errors.unshift(`Invalid target group name (value: ${name})`);
     }
     return errors;
   }
