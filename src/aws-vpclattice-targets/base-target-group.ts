@@ -1,5 +1,5 @@
 import * as core from 'aws-cdk-lib';
-import { HealthCheck } from './health-check';
+import type { HealthCheck } from './health-check';
 import { HEALTH_CHECK, TARGET_GROUP } from '../constants';
 
 /**

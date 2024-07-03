@@ -1,4 +1,4 @@
-import { ITargetGroup, WeightedTargetGroup } from './aws-vpclattice-targets';
+import type { ITargetGroup, WeightedTargetGroup } from './aws-vpclattice-targets';
 import type { RuleConditions } from './matches';
 import type { HTTPFixedResponse } from './util';
 /**

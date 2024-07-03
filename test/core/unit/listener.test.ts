@@ -5,7 +5,8 @@ import { Template } from 'aws-cdk-lib/assertions';
 // import { Stream } from 'aws-cdk-lib/aws-kinesis';
 // import { LogGroup } from 'aws-cdk-lib/aws-logs';
 // import { Service, LoggingDestination, AuthType, ListenerProtocol, Listener } from '../../../src';
-import { HTTPFixedResponse, Listener, Service } from '../../../src';
+import { HTTPFixedResponse, IpTargetGroup, Listener, Service } from '../../../src';
+import { Vpc } from 'aws-cdk-lib/aws-ec2';
 // import { ServiceNetwork } from '../../../src/service-network';
 
 describe('Listener', () => {
@@ -141,6 +142,39 @@ describe('Listener', () => {
       });
       expect(() => app.synth()).toThrow(`Invalid port ${port}: Out of range (0-65535)`);
     }
+  });
+
+  test('Listener creation with weighted target groups', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'TestStack');
+    new Listener(stack, 'Listener', {
+      service: new Service(stack, 'Service', {}),
+      config: {
+        rules: [
+          {
+            name: 'test-rule',
+            priority: 10,
+            action: {
+              weightedTargetGroups: [
+                {
+                  weight: 100,
+                  targetGroup: new IpTargetGroup(stack, 'TargetGroup', {
+                    vpc: new Vpc(stack, 'Vpc', {}),
+                  }),
+                },
+              ],
+            },
+          },
+        ],
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::VpcLattice::Rule', {
+      Name: 'test-rule',
+      Priority: 10,
+    });
   });
 
   describe('Listener name validation', () => {
