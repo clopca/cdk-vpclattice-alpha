@@ -2006,13 +2006,13 @@ Service.fromServiceId(scope: Construct, id: string, serviceId: string)
 | <code><a href="#cdk-vpclattice-alpha.Service.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
 | <code><a href="#cdk-vpclattice-alpha.Service.property.env">env</a></code> | <code>aws-cdk-lib.ResourceEnvironment</code> | The environment this resource belongs to. |
 | <code><a href="#cdk-vpclattice-alpha.Service.property.stack">stack</a></code> | <code>aws-cdk-lib.Stack</code> | The stack in which this resource is defined. |
-| <code><a href="#cdk-vpclattice-alpha.Service.property.allowedPrincipals">allowedPrincipals</a></code> | <code>aws-cdk-lib.aws_iam.IPrincipal[]</code> | *No description.* |
-| <code><a href="#cdk-vpclattice-alpha.Service.property.authPolicy">authPolicy</a></code> | <code>aws-cdk-lib.aws_iam.PolicyDocument</code> | *No description.* |
-| <code><a href="#cdk-vpclattice-alpha.Service.property.authType">authType</a></code> | <code><a href="#cdk-vpclattice-alpha.AuthType">AuthType</a></code> | *No description.* |
-| <code><a href="#cdk-vpclattice-alpha.Service.property.loggingDestinations">loggingDestinations</a></code> | <code><a href="#cdk-vpclattice-alpha.LoggingDestination">LoggingDestination</a>[]</code> | *No description.* |
+| <code><a href="#cdk-vpclattice-alpha.Service.property.allowedPrincipals">allowedPrincipals</a></code> | <code>aws-cdk-lib.aws_iam.IPrincipal[]</code> | Allowed principals to invoke the service. |
+| <code><a href="#cdk-vpclattice-alpha.Service.property.authPolicy">authPolicy</a></code> | <code>aws-cdk-lib.aws_iam.PolicyDocument</code> | Auth policy to be added to the service. |
+| <code><a href="#cdk-vpclattice-alpha.Service.property.authType">authType</a></code> | <code><a href="#cdk-vpclattice-alpha.AuthType">AuthType</a></code> | The auth type of the service. |
+| <code><a href="#cdk-vpclattice-alpha.Service.property.loggingDestinations">loggingDestinations</a></code> | <code><a href="#cdk-vpclattice-alpha.LoggingDestination">LoggingDestination</a>[]</code> | Logging destinations of the service. |
 | <code><a href="#cdk-vpclattice-alpha.Service.property.serviceArn">serviceArn</a></code> | <code>string</code> | The Amazon Resource Name (ARN) of the service. |
 | <code><a href="#cdk-vpclattice-alpha.Service.property.serviceId">serviceId</a></code> | <code>string</code> | The Id of the service. |
-| <code><a href="#cdk-vpclattice-alpha.Service.property.serviceName">serviceName</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#cdk-vpclattice-alpha.Service.property.serviceName">serviceName</a></code> | <code>string</code> | The name of the service. |
 
 ---
 
@@ -2067,6 +2067,8 @@ public readonly allowedPrincipals: IPrincipal[];
 
 - *Type:* aws-cdk-lib.aws_iam.IPrincipal[]
 
+Allowed principals to invoke the service.
+
 ---
 
 ##### `authPolicy`<sup>Required</sup> <a name="authPolicy" id="cdk-vpclattice-alpha.Service.property.authPolicy"></a>
@@ -2077,6 +2079,8 @@ public readonly authPolicy: PolicyDocument;
 
 - *Type:* aws-cdk-lib.aws_iam.PolicyDocument
 
+Auth policy to be added to the service.
+
 ---
 
 ##### `authType`<sup>Required</sup> <a name="authType" id="cdk-vpclattice-alpha.Service.property.authType"></a>
@@ -2086,6 +2090,9 @@ public readonly authType: AuthType;
 ```
 
 - *Type:* <a href="#cdk-vpclattice-alpha.AuthType">AuthType</a>
+- *Default:* AuthType.NONE
+
+The auth type of the service.
 
 ---
 
@@ -2096,6 +2103,8 @@ public readonly loggingDestinations: LoggingDestination[];
 ```
 
 - *Type:* <a href="#cdk-vpclattice-alpha.LoggingDestination">LoggingDestination</a>[]
+
+Logging destinations of the service.
 
 ---
 
@@ -2130,6 +2139,8 @@ public readonly serviceName: string;
 ```
 
 - *Type:* string
+
+The name of the service.
 
 ---
 
@@ -2432,14 +2443,14 @@ Import a Service Network by Id.
 | <code><a href="#cdk-vpclattice-alpha.ServiceNetwork.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
 | <code><a href="#cdk-vpclattice-alpha.ServiceNetwork.property.env">env</a></code> | <code>aws-cdk-lib.ResourceEnvironment</code> | The environment this resource belongs to. |
 | <code><a href="#cdk-vpclattice-alpha.ServiceNetwork.property.stack">stack</a></code> | <code>aws-cdk-lib.Stack</code> | The stack in which this resource is defined. |
-| <code><a href="#cdk-vpclattice-alpha.ServiceNetwork.property.allowedPrincipals">allowedPrincipals</a></code> | <code>aws-cdk-lib.aws_iam.IPrincipal[]</code> | *No description.* |
-| <code><a href="#cdk-vpclattice-alpha.ServiceNetwork.property.authPolicy">authPolicy</a></code> | <code>aws-cdk-lib.aws_iam.PolicyDocument</code> | *No description.* |
-| <code><a href="#cdk-vpclattice-alpha.ServiceNetwork.property.authType">authType</a></code> | <code><a href="#cdk-vpclattice-alpha.AuthType">AuthType</a></code> | *No description.* |
-| <code><a href="#cdk-vpclattice-alpha.ServiceNetwork.property.loggingDestinations">loggingDestinations</a></code> | <code><a href="#cdk-vpclattice-alpha.LoggingDestination">LoggingDestination</a>[]</code> | *No description.* |
-| <code><a href="#cdk-vpclattice-alpha.ServiceNetwork.property.name">name</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#cdk-vpclattice-alpha.ServiceNetwork.property.allowedPrincipals">allowedPrincipals</a></code> | <code>aws-cdk-lib.aws_iam.IPrincipal[]</code> | Allowed principals to invoke services in the service network. |
+| <code><a href="#cdk-vpclattice-alpha.ServiceNetwork.property.authPolicy">authPolicy</a></code> | <code>aws-cdk-lib.aws_iam.PolicyDocument</code> | Auth policy to be added to the service network. |
+| <code><a href="#cdk-vpclattice-alpha.ServiceNetwork.property.authType">authType</a></code> | <code><a href="#cdk-vpclattice-alpha.AuthType">AuthType</a></code> | The auth type of the service network. |
+| <code><a href="#cdk-vpclattice-alpha.ServiceNetwork.property.loggingDestinations">loggingDestinations</a></code> | <code><a href="#cdk-vpclattice-alpha.LoggingDestination">LoggingDestination</a>[]</code> | Logging destinations of the service network. |
+| <code><a href="#cdk-vpclattice-alpha.ServiceNetwork.property.name">name</a></code> | <code>string</code> | The name of the service network. |
 | <code><a href="#cdk-vpclattice-alpha.ServiceNetwork.property.serviceNetworkArn">serviceNetworkArn</a></code> | <code>string</code> | The Amazon Resource Name (ARN) of the service network. |
 | <code><a href="#cdk-vpclattice-alpha.ServiceNetwork.property.serviceNetworkId">serviceNetworkId</a></code> | <code>string</code> | The Id of the Service Network. |
-| <code><a href="#cdk-vpclattice-alpha.ServiceNetwork.property.accessMode">accessMode</a></code> | <code><a href="#cdk-vpclattice-alpha.ServiceNetworkAccessMode">ServiceNetworkAccessMode</a></code> | *No description.* |
+| <code><a href="#cdk-vpclattice-alpha.ServiceNetwork.property.accessMode">accessMode</a></code> | <code><a href="#cdk-vpclattice-alpha.ServiceNetworkAccessMode">ServiceNetworkAccessMode</a></code> | Access mode to the service network, Authenticated, unauthenticated or only to org principals. |
 
 ---
 
@@ -2494,6 +2505,8 @@ public readonly allowedPrincipals: IPrincipal[];
 
 - *Type:* aws-cdk-lib.aws_iam.IPrincipal[]
 
+Allowed principals to invoke services in the service network.
+
 ---
 
 ##### `authPolicy`<sup>Required</sup> <a name="authPolicy" id="cdk-vpclattice-alpha.ServiceNetwork.property.authPolicy"></a>
@@ -2504,6 +2517,8 @@ public readonly authPolicy: PolicyDocument;
 
 - *Type:* aws-cdk-lib.aws_iam.PolicyDocument
 
+Auth policy to be added to the service network.
+
 ---
 
 ##### `authType`<sup>Required</sup> <a name="authType" id="cdk-vpclattice-alpha.ServiceNetwork.property.authType"></a>
@@ -2513,6 +2528,9 @@ public readonly authType: AuthType;
 ```
 
 - *Type:* <a href="#cdk-vpclattice-alpha.AuthType">AuthType</a>
+- *Default:* AuthType.NONE
+
+The auth type of the service network.
 
 ---
 
@@ -2524,6 +2542,8 @@ public readonly loggingDestinations: LoggingDestination[];
 
 - *Type:* <a href="#cdk-vpclattice-alpha.LoggingDestination">LoggingDestination</a>[]
 
+Logging destinations of the service network.
+
 ---
 
 ##### `name`<sup>Required</sup> <a name="name" id="cdk-vpclattice-alpha.ServiceNetwork.property.name"></a>
@@ -2533,6 +2553,8 @@ public readonly name: string;
 ```
 
 - *Type:* string
+
+The name of the service network.
 
 ---
 
@@ -2567,6 +2589,8 @@ public readonly accessMode: ServiceNetworkAccessMode;
 ```
 
 - *Type:* <a href="#cdk-vpclattice-alpha.ServiceNetworkAccessMode">ServiceNetworkAccessMode</a>
+
+Access mode to the service network, Authenticated, unauthenticated or only to org principals.
 
 ---
 
@@ -3937,35 +3961,11 @@ const listenerConfig: ListenerConfig = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#cdk-vpclattice-alpha.ListenerConfig.property.name">name</a></code> | <code>string</code> | The Name of the listener. |
-| <code><a href="#cdk-vpclattice-alpha.ListenerConfig.property.protocol">protocol</a></code> | <code><a href="#cdk-vpclattice-alpha.ListenerProtocol">ListenerProtocol</a></code> | Protocol that the listener will listen on. |
 | <code><a href="#cdk-vpclattice-alpha.ListenerConfig.property.defaultAction">defaultAction</a></code> | <code><a href="#cdk-vpclattice-alpha.RuleAction">RuleAction</a></code> | * A default action that will be taken if no rules match. |
+| <code><a href="#cdk-vpclattice-alpha.ListenerConfig.property.name">name</a></code> | <code>string</code> | The Name of the listener. |
 | <code><a href="#cdk-vpclattice-alpha.ListenerConfig.property.port">port</a></code> | <code>number</code> | Optional port number for the listener. |
+| <code><a href="#cdk-vpclattice-alpha.ListenerConfig.property.protocol">protocol</a></code> | <code><a href="#cdk-vpclattice-alpha.ListenerProtocol">ListenerProtocol</a></code> | Protocol that the listener will listen on. |
 | <code><a href="#cdk-vpclattice-alpha.ListenerConfig.property.rules">rules</a></code> | <code><a href="#cdk-vpclattice-alpha.RuleProps">RuleProps</a>[]</code> | Rules to add to the listener. |
-
----
-
-##### `name`<sup>Required</sup> <a name="name" id="cdk-vpclattice-alpha.ListenerConfig.property.name"></a>
-
-```typescript
-public readonly name: string;
-```
-
-- *Type:* string
-
-The Name of the listener.
-
----
-
-##### `protocol`<sup>Required</sup> <a name="protocol" id="cdk-vpclattice-alpha.ListenerConfig.property.protocol"></a>
-
-```typescript
-public readonly protocol: ListenerProtocol;
-```
-
-- *Type:* <a href="#cdk-vpclattice-alpha.ListenerProtocol">ListenerProtocol</a>
-
-Protocol that the listener will listen on.
 
 ---
 
@@ -3982,6 +3982,18 @@ public readonly defaultAction: RuleAction;
 
 ---
 
+##### `name`<sup>Optional</sup> <a name="name" id="cdk-vpclattice-alpha.ListenerConfig.property.name"></a>
+
+```typescript
+public readonly name: string;
+```
+
+- *Type:* string
+
+The Name of the listener.
+
+---
+
 ##### `port`<sup>Optional</sup> <a name="port" id="cdk-vpclattice-alpha.ListenerConfig.property.port"></a>
 
 ```typescript
@@ -3994,6 +4006,18 @@ public readonly port: number;
 Optional port number for the listener.
 
 If not supplied, will default to 80 or 443, depending on the Protocol.
+
+---
+
+##### `protocol`<sup>Optional</sup> <a name="protocol" id="cdk-vpclattice-alpha.ListenerConfig.property.protocol"></a>
+
+```typescript
+public readonly protocol: ListenerProtocol;
+```
+
+- *Type:* <a href="#cdk-vpclattice-alpha.ListenerProtocol">ListenerProtocol</a>
+
+Protocol that the listener will listen on.
 
 ---
 
@@ -4027,6 +4051,7 @@ const listenerProps: ListenerProps = { ... }
 | --- | --- | --- |
 | <code><a href="#cdk-vpclattice-alpha.ListenerProps.property.service">service</a></code> | <code><a href="#cdk-vpclattice-alpha.Service">Service</a></code> | The Id of the service that this listener is associated with. |
 | <code><a href="#cdk-vpclattice-alpha.ListenerProps.property.config">config</a></code> | <code><a href="#cdk-vpclattice-alpha.ListenerConfig">ListenerConfig</a></code> | *No description.* |
+| <code><a href="#cdk-vpclattice-alpha.ListenerProps.property.removalPolicy">removalPolicy</a></code> | <code>aws-cdk-lib.RemovalPolicy</code> | Determine what happens to the service when the resource/stack is deleted. |
 
 ---
 
@@ -4049,6 +4074,19 @@ public readonly config: ListenerConfig;
 ```
 
 - *Type:* <a href="#cdk-vpclattice-alpha.ListenerConfig">ListenerConfig</a>
+
+---
+
+##### `removalPolicy`<sup>Optional</sup> <a name="removalPolicy" id="cdk-vpclattice-alpha.ListenerProps.property.removalPolicy"></a>
+
+```typescript
+public readonly removalPolicy: RemovalPolicy;
+```
+
+- *Type:* aws-cdk-lib.RemovalPolicy
+- *Default:* RemovalPolicy.RETAIN
+
+Determine what happens to the service when the resource/stack is deleted.
 
 ---
 
@@ -4236,9 +4274,9 @@ const ruleProps: RuleProps = { ... }
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
 | <code><a href="#cdk-vpclattice-alpha.RuleProps.property.action">action</a></code> | <code><a href="#cdk-vpclattice-alpha.RuleAction">RuleAction</a></code> | the action for the rule, is either a fixed Response, or a being sent to  Weighted TargetGroup. |
-| <code><a href="#cdk-vpclattice-alpha.RuleProps.property.conditions">conditions</a></code> | <code><a href="#cdk-vpclattice-alpha.RuleConditions">RuleConditions</a></code> | the Matching criteria for the rule. |
 | <code><a href="#cdk-vpclattice-alpha.RuleProps.property.name">name</a></code> | <code>string</code> | A name for the the Rule. |
 | <code><a href="#cdk-vpclattice-alpha.RuleProps.property.priority">priority</a></code> | <code>number</code> | The priority of this rule, a lower priority will be processed first. |
+| <code><a href="#cdk-vpclattice-alpha.RuleProps.property.conditions">conditions</a></code> | <code><a href="#cdk-vpclattice-alpha.RuleConditions">RuleConditions</a></code> | the Matching criteria for the rule. |
 
 ---
 
@@ -4251,21 +4289,6 @@ public readonly action: RuleAction;
 - *Type:* <a href="#cdk-vpclattice-alpha.RuleAction">RuleAction</a>
 
 the action for the rule, is either a fixed Response, or a being sent to  Weighted TargetGroup.
-
----
-
-##### `conditions`<sup>Required</sup> <a name="conditions" id="cdk-vpclattice-alpha.RuleProps.property.conditions"></a>
-
-```typescript
-public readonly conditions: RuleConditions;
-```
-
-- *Type:* <a href="#cdk-vpclattice-alpha.RuleConditions">RuleConditions</a>
-
-the Matching criteria for the rule.
-
-This must contain at least one of
-header, method or patchMatches
 
 ---
 
@@ -4290,6 +4313,21 @@ public readonly priority: number;
 - *Type:* number
 
 The priority of this rule, a lower priority will be processed first.
+
+---
+
+##### `conditions`<sup>Optional</sup> <a name="conditions" id="cdk-vpclattice-alpha.RuleProps.property.conditions"></a>
+
+```typescript
+public readonly conditions: RuleConditions;
+```
+
+- *Type:* <a href="#cdk-vpclattice-alpha.RuleConditions">RuleConditions</a>
+
+the Matching criteria for the rule.
+
+This must contain at least one of
+header, method or patchMatches
 
 ---
 

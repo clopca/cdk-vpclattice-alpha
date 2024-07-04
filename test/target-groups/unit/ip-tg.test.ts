@@ -1,6 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { Vpc } from 'aws-cdk-lib/aws-ec2';
+import { HTTPFixedResponse } from '../../../src';
 import {
   HealthCheckProtocol,
   HealthCheckProtocolVersion,
@@ -10,7 +11,6 @@ import {
   RequestProtocolVersion,
   TargetType,
 } from '../../../src/aws-vpclattice-targets';
-import { HTTPFixedResponse } from '../../../src';
 
 describe('IP Target Group', () => {
   let app: cdk.App;
