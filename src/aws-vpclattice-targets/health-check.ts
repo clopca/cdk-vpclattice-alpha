@@ -1,5 +1,5 @@
-import { Duration } from 'aws-cdk-lib';
-import { HTTPFixedResponse } from '../util';
+import type { Duration } from 'aws-cdk-lib';
+import type { HTTPFixedResponse } from '../util';
 
 export enum HealthCheckProtocol {
   /**
@@ -26,7 +26,6 @@ export enum HealthCheckProtocolVersion {
    */
   HTTP2 = 'HTTP2',
 }
-
 
 /**
  * Create a Health Check for a target
