@@ -30,7 +30,19 @@ describe('BaseTargetGroup', () => {
     });
     expect(() => app.synth()).toThrow(`Invalid Protocol: ${RequestProtocol.TCP} (must be HTTP or HTTPS if targetType is ALB)`);
   });
-  // Invalid health check
+
+  test('Target group with default health check', () => {
+    // GIVEN
+    new IpTargetGroup(stack, 'IpTG', {
+      vpc,
+      healthCheck: {
+        path: '/health',
+      },
+    });
+    // WHEN & THEN
+    expect(() => app.synth()).not.toThrow();
+  });
+
   test('Invalid health check', () => {
     // GIVEN
     const invalidHealthCheckTimeout = 350;
@@ -124,5 +136,3 @@ describe('BaseTargetGroup', () => {
     });
   });
 });
-
-// 200-203,205-206,208-209,211-212,218-221
