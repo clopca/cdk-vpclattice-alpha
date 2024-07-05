@@ -85,7 +85,7 @@ const ratesTg = new InstanceTargetGroup(stack, 'Ec2TG', {
 // ------------------------------------------------------
 const paymentsSecurityGroup = new SecurityGroup(stack, 'PaymentsSG', {
   securityGroupName: 'alb-group-sg',
-  vpc: ratesVpc,
+  vpc: paymentsVpc,
 });
 
 paymentsSecurityGroup.addIngressRule(Peer.ipv4("10.0.0.0/16"), Port.allTraffic())

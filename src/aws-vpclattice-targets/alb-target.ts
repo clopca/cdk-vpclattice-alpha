@@ -36,11 +36,19 @@ export interface AlbTargetGroupProps {
   readonly protocolVersion?: RequestProtocolVersion;
 
   /**
-   * The port on which the target will listen. It should match the port
-   * of your Application Load Balancer's listeners.
+   * The port on which the target group will listen.
    * @default 443
    */
   readonly port?: number;
+
+  /**
+   * This port is used for routing traffic to the target, 
+   * and defaults to the target group port. However, you can 
+   * override the default and specify a custom port that matches 
+   * the port of your Application Load Balancer's listeners
+   * @defaultv the Target Group Port
+   */
+  readonly listenerPort?: number;
 }
 
 export class AlbTargetGroup extends TargetGroupBase {
@@ -49,6 +57,7 @@ export class AlbTargetGroup extends TargetGroupBase {
   public readonly name: string;
   public readonly targetType = TargetType.ALB;
   public readonly port: number;
+  public readonly listenerPort: number;
   public readonly vpc: IVpc;
   public readonly protocol: RequestProtocol;
   public readonly protocolVersion: RequestProtocolVersion;
@@ -66,6 +75,7 @@ export class AlbTargetGroup extends TargetGroupBase {
     this.vpc = props.vpc;
     this.loadBalancer = props.loadBalancer;
     this.port = props.port ?? (props.protocol === RequestProtocol.HTTP ? 80 : 443);
+    this.listenerPort = props.listenerPort ?? this.port;
     this.protocol = props.protocol ?? RequestProtocol.HTTPS;
     this.protocolVersion = props.protocolVersion ?? RequestProtocolVersion.HTTP1;
 
@@ -92,7 +102,7 @@ export class AlbTargetGroup extends TargetGroupBase {
     this._resource = new aws_vpclattice.CfnTargetGroup(this, 'Resource', {
       type: this.targetType,
       name: this.name,
-      targets: [{ id: this.loadBalancer.loadBalancerArn, port: this.port }],
+      targets: [{ id: this.loadBalancer.loadBalancerArn, port: this.listenerPort }],
       config,
     });
 
