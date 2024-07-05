@@ -1,13 +1,17 @@
 import * as cdk from 'aws-cdk-lib';
-import { Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
+import { Code, Runtime, Function as LambdaFunction } from 'aws-cdk-lib/aws-lambda';
 import { LambdaTargetGroup, LambdaEventStructureVersion } from '../../../src/aws-vpclattice-targets';
 
-describe('InstanceTG', () => {
-  test('DeniesInvalidProtocolVersionCombo', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
+describe('Lambda Target Group', () => {
+  let app: cdk.App;
+  let stack: cdk.Stack;
+  let lambdaFunction: LambdaFunction;
 
-    const lambdaFunction = new Function(stack, 'LambdaTargetFunction', {
+  beforeEach(() => {
+    // GIVEN
+    app = new cdk.App();
+    stack = new cdk.Stack(app, 'TestStack');
+    lambdaFunction = new LambdaFunction(stack, 'LambdaTargetFunction', {
       runtime: Runtime.NODEJS_18_X,
       code: Code.fromInline(`
             exports.handler = async (event) => {
@@ -20,13 +24,27 @@ describe('InstanceTG', () => {
         `),
       handler: 'index.function_name',
     });
+  });
 
-    // WHEN & THEN
-    expect(() => {
-      new LambdaTargetGroup(stack, 'LambdaTG', {
-        target: lambdaFunction,
-        lambdaEventStructureVersion: LambdaEventStructureVersion.V2,
-      });
-    }).toThrow();
+  test('Basic Lambda Target Group', () => {
+    // WHEN
+    new LambdaTargetGroup(stack, 'LambdaTG', {
+      target: lambdaFunction,
+    });
+
+    // THEN
+    expect(() => app.synth()).not.toThrow();
+  });
+
+  test('Lambda Target Group with custom name', () => {
+    // WHEN
+    new LambdaTargetGroup(stack, 'CustomLambdaTG', {
+      name: 'lambda-tg',
+      target: lambdaFunction,
+      lambdaEventStructureVersion: LambdaEventStructureVersion.V2,
+    });
+
+    // THEN
+    expect(() => app.synth()).not.toThrow();
   });
 });

@@ -1,5 +1,5 @@
 import * as core from 'aws-cdk-lib';
-import { HealthCheck } from './health-check';
+import type { HealthCheck } from './health-check';
 import { HEALTH_CHECK, TARGET_GROUP } from '../constants';
 
 /**
@@ -133,9 +133,20 @@ export abstract class TargetGroupBase extends core.Resource implements ITargetGr
    */
   protected validateTargetGroupName(name: string): string[] {
     const errors = [];
-    const validationSucceeded = name.length >= TARGET_GROUP.NAME_MIN_LENGTH && name.length <= TARGET_GROUP.NAME_MAX_LENGTH && TARGET_GROUP.NAME_FORMAT.test(name);
-    if (!validationSucceeded) {
-      errors.push(`Invalid Target Group Name: ${name} (must be between 3-128 characters, and must be a valid name)`);
+
+    if (name.length < TARGET_GROUP.NAME_MIN_LENGTH || name.length > TARGET_GROUP.NAME_MAX_LENGTH) {
+      errors.push('Target group name must be at least 3 characters and no more than 128 characters.');
+    }
+
+    const isPatternMatch = TARGET_GROUP.NAME_FORMAT.test(name);
+    if (!isPatternMatch) {
+      errors.push(
+        'Target group name must be composed of characters a-z, 0-9, and hyphens (-). You can\'t use a hyphen as the first or last character, or immediately after another hyphen. The name cannot start with "tg-".',
+      );
+    }
+
+    if (errors.length > 0) {
+      errors.unshift(`Invalid target group name (value: ${name})`);
     }
     return errors;
   }
@@ -163,43 +174,51 @@ export abstract class TargetGroupBase extends core.Resource implements ITargetGr
     return errors;
   }
 
-  /**
-   * Verifies a valid protocol / target Type combination
-   */
-  protected validateProtocolPort(protocol: RequestProtocol, port: number): string[] {
-    const errors = new Array<string>();
-    if (protocol === RequestProtocol.HTTP && port !== 80) {
-      errors.push('HTTP protocol must use port 80');
-    } else if (protocol === RequestProtocol.HTTPS && port !== 443) {
-      errors.push('HTTPS protocol must use port 443');
-    }
-    return errors;
-  }
+  // /**
+  //  * Verifies a valid protocol / target Type combination
+  //  */
+  // protected validateProtocolPort(protocol: RequestProtocol, port: number): string[] {
+  //   const errors = new Array<string>();
+  //   if (protocol === RequestProtocol.HTTP && port !== 80) {
+  //     errors.push('HTTP protocol must use port 80');
+  //   } else if (protocol === RequestProtocol.HTTPS && port !== 443) {
+  //     errors.push('HTTPS protocol must use port 443');
+  //   }
+  //   return errors;
+  // }
 
   /**
    * Validates the HealthCheck
    */
   protected validateHealthCheck(healthCheck: HealthCheck): string[] {
-    const errors = new Array<string>();
-    if (healthCheck?.healthyThresholdCount && (healthCheck.healthyThresholdCount < HEALTH_CHECK.MIN_HEALTHY_THRESHOLD_COUNT || healthCheck.healthyThresholdCount > HEALTH_CHECK.MAX_HEALTHY_THRESHOLD_COUNT)) {
-      errors.push(`HealthCheck parameter "HealthyThresholdCount" must be between ${HEALTH_CHECK.MIN_HEALTHY_THRESHOLD_COUNT} and ${HEALTH_CHECK.MAX_HEALTHY_THRESHOLD_COUNT}`);
+    const errors: string[] = [];
+    if (healthCheck?.healthyThresholdCount !== undefined && (healthCheck.healthyThresholdCount < 1 || healthCheck.healthyThresholdCount > 10)) {
+      errors.push(
+        `HealthCheck parameter "HealthyThresholdCount" must be between ${HEALTH_CHECK.MIN_HEALTHY_THRESHOLD_COUNT} and ${HEALTH_CHECK.MAX_HEALTHY_THRESHOLD_COUNT}.`,
+      );
     }
-    if (healthCheck?.unhealthyThresholdCount && (healthCheck.unhealthyThresholdCount < 2 || healthCheck.unhealthyThresholdCount > 10)) {
-      errors.push('HealthCheck parameter `HealthyThresholdCount` must be between `2` and `10`.');
-    }
-    if (healthCheck?.healthCheckTimeout && (healthCheck.healthCheckTimeout.toSeconds() < 1 || healthCheck.healthCheckTimeout.toSeconds() > 120)) {
-      errors.push('HealthCheck parameter `HealthCheckTimeout` must be between `1` and `120` seconds.');
-    }
-    if (healthCheck?.healthCheckInterval && (healthCheck.healthCheckInterval.toSeconds() < 1 || healthCheck.healthCheckInterval.toSeconds() > 120)) {
-      errors.push('HealthCheck parameter `HealthCheckInterval` must be between `5` and `300` seconds.');
+    if (healthCheck?.unhealthyThresholdCount !== undefined && (healthCheck.unhealthyThresholdCount < 2 || healthCheck.unhealthyThresholdCount > 10)) {
+      errors.push('HealthCheck parameter "UnhealthyThresholdCount" must be between 2 and 10.');
     }
     if (
-      healthCheck?.healthCheckTimeout &&
-      healthCheck?.healthCheckInterval &&
+      healthCheck?.healthCheckTimeout !== undefined &&
+      (healthCheck.healthCheckTimeout.toSeconds() < 1 || healthCheck.healthCheckTimeout.toSeconds() > 120)
+    ) {
+      errors.push('HealthCheck parameter "HealthCheckTimeout" must be between 1 and 120 seconds.');
+    }
+    if (
+      healthCheck?.healthCheckInterval !== undefined &&
+      (healthCheck.healthCheckInterval.toSeconds() < 5 || healthCheck.healthCheckInterval.toSeconds() > 300)
+    ) {
+      errors.push('HealthCheck parameter "HealthCheckInterval" must be between 5 and 300 seconds.');
+    }
+    if (
+      healthCheck?.healthCheckTimeout !== undefined &&
+      healthCheck?.healthCheckInterval !== undefined &&
       healthCheck.healthCheckInterval.toSeconds() < healthCheck.healthCheckTimeout.toSeconds()
     ) {
       errors.push(
-        `HealthCheck parameter 'HealthCheckInterval' set to ${healthCheck.healthCheckInterval} must be greater than or equal to 'HealthCheckTimeout' which is set to  ${healthCheck.healthCheckTimeout} .`,
+        `HealthCheck parameter "HealthCheckTimeout" set to ${healthCheck.healthCheckTimeout.toSeconds()} seconds must be greater than or equal to "HealthCheckInterval" which is set to ${healthCheck.healthCheckInterval.toSeconds()} seconds.`,
       );
     }
     return errors;

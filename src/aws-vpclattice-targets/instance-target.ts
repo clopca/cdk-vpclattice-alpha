@@ -1,12 +1,12 @@
 import { Duration, Lazy, aws_vpclattice } from 'aws-cdk-lib';
 import { IAutoScalingGroup } from 'aws-cdk-lib/aws-autoscaling';
 import { IInstance, IVpc } from 'aws-cdk-lib/aws-ec2';
+import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from 'aws-cdk-lib/custom-resources';
 import { Construct } from 'constructs';
 import { RequestProtocol, RequestProtocolVersion, TargetGroupBase, TargetType } from './base-target-group';
 import { HealthCheck, HealthCheckProtocol, HealthCheckProtocolVersion } from './health-check';
 import { HTTPFixedResponse } from '../util';
-import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
 
 export interface InstanceTarget {
   /**
@@ -196,16 +196,16 @@ export class InstanceTargetGroup extends TargetGroupBase {
           policy: AwsCustomResourcePolicy.fromStatements([
             new PolicyStatement({
               actions: ['autoscaling:AttachTrafficSources', 'autoscaling:DetachTrafficSources'],
-              resources: [asg.autoScalingGroupArn]
+              resources: [asg.autoScalingGroupArn],
             }),
             new PolicyStatement({
               actions: ['vpc-lattice:RegisterTargets', 'vpc-lattice:DeregisterTargets'],
-              resources: [this.targetGroupArn]
+              resources: [this.targetGroupArn],
             }),
             new PolicyStatement({
-              actions: ['iam:PassRole', "ec2:DescribeInstances"],
-              resources: ['*']
-            })
+              actions: ['iam:PassRole', 'ec2:DescribeInstances'],
+              resources: ['*'],
+            }),
           ]),
         });
       });

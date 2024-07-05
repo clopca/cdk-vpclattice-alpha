@@ -1,4 +1,4 @@
-import type { IResource } from 'aws-cdk-lib';
+import type { IResource, RemovalPolicy } from 'aws-cdk-lib';
 import { Resource } from 'aws-cdk-lib';
 import * as generated from 'aws-cdk-lib/aws-vpclattice';
 import type { Construct } from 'constructs';
@@ -73,6 +73,13 @@ export interface ListenerProps {
    *
    */
   readonly config?: ListenerConfig;
+
+  /**
+   * Determine what happens to the service when the resource/stack is deleted.
+   *
+   * @default RemovalPolicy.RETAIN
+   */
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -82,12 +89,12 @@ export interface ListenerConfig {
   /**
    * The Name of the listener.
    */
-  readonly name: string;
+  readonly name?: string;
 
   /**
    * Protocol that the listener will listen on
    */
-  readonly protocol: ListenerProtocol;
+  readonly protocol?: ListenerProtocol;
 
   /**
    * Optional port number for the listener. If not supplied, will default to 80 or 443, depending on the Protocol.
@@ -118,8 +125,8 @@ export interface ListenerConfig {
  *
  */
 export class Listener extends Resource implements IListener {
-  readonly listenerId: string;
   readonly listenerArn: string;
+  readonly listenerId: string;
 
   /**
    * The listener protocol
@@ -150,7 +157,7 @@ export class Listener extends Resource implements IListener {
    * The listener rules to add
    */
   rules: RuleProps[];
-
+  private readonly _resource: generated.CfnListener;
 
   // ------------------------------------------------------
   // Constructor
@@ -169,14 +176,15 @@ export class Listener extends Resource implements IListener {
     this.port = props.config?.port ?? (props.config?.protocol === ListenerProtocol.HTTP ? 80 : 443);
     this.rules = props.config?.rules ?? [];
     this.defaultAction = props.config?.defaultAction ?? {
-      httpFixedResponse: HTTPFixedResponse.NOT_FOUND
-    }
+      httpFixedResponse: HTTPFixedResponse.NOT_FOUND,
+    };
 
     // ------------------------------------------------------
     // Validation
     // ------------------------------------------------------
     if (props.config?.name) {
-      this.node.addValidation({ validate: () => this.validateListenerName(this.physicalName) });
+      const name = props.config.name;
+      this.node.addValidation({ validate: () => this.validateListenerName(name) });
     }
     if (props.config?.rules) {
       this.node.addValidation({ validate: () => this.validateRulePriorities() });
@@ -186,7 +194,7 @@ export class Listener extends Resource implements IListener {
     // ------------------------------------------------------
     // L1 Instantiation
     // ------------------------------------------------------
-    const listener = new generated.CfnListener(this, 'Resource', {
+    this._resource = new generated.CfnListener(this, 'Resource', {
       name: props.config?.name,
       defaultAction: this.transformRuleActionToCfnProperty(this.defaultAction),
       protocol: this.protocol,
@@ -197,8 +205,9 @@ export class Listener extends Resource implements IListener {
     // ------------------------------------------------------
     // Construct properties
     // ------------------------------------------------------
-    this.listenerId = listener.attrId;
-    this.listenerArn = listener.attrArn;
+    this._resource.applyRemovalPolicy(props.removalPolicy);
+    this.listenerArn = this._resource.attrArn;
+    this.listenerId = this._resource.attrId;
 
     // ------------------------------------------------------
     // Adds Listener Rules
@@ -219,17 +228,26 @@ export class Listener extends Resource implements IListener {
     const errors: string[] = [];
     // Ensure that protocol is not set to TCP if targetType is ALB
     if (this.port < 0 || this.port > 65535) {
-      errors.push(`Port ${this.port} out of range (0-65535)`);
+      errors.push(`Invalid port ${this.port}: Out of range (0-65535)`);
     }
     return errors;
   }
 
   protected validateListenerName(name: string) {
     const errors: string[] = [];
-    const pattern = /^(?!listener-)(?![-])(?!.*[-]$)(?!.*[-]{2})[a-z0-9-]+$/;
-    const validationSucceeded = name.length >= 3 && name.length <= 63 && pattern.test(name);
-    if (!validationSucceeded) {
-      errors.push(`Invalid Listener Name: ${name} (must be between 3-63 characters, and must be a valid name)`);
+    // Rules codified from https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-vpclattice-listener.html
+    if (name.length < 3 || name.length > 63) {
+      errors.push('Listener name must be at least 3 and no more than 63 characters');
+    }
+
+    const isPatternMatch = /^(?!listener-)(?!-)(?!.*-$)(?!.*--)[a-z0-9-]+$/.test(name);
+    if (!isPatternMatch) {
+      errors.push(
+        'Listener name must be composed of characters a-z, 0-9, and hyphens (-). You can\'t use a hyphen as the first or last character, or immediately after another hyphen. The name cannot start with "listener-".',
+      );
+    }
+    if (errors.length > 0) {
+      errors.unshift(`Invalid listener name (value: ${name})`);
     }
     return errors;
   }
@@ -238,7 +256,11 @@ export class Listener extends Resource implements IListener {
     const errors: string[] = [];
     const rulePriorities = new Set(this.rules.map(rule => rule.priority));
     if (this.rules.length > rulePriorities.size) {
-      errors.push('Invalid Rule Priorities: Duplicate priorities found');
+      errors.push('Invalid rule priorities: Duplicate priorities found');
+    }
+    // check if any of the values of rulePriorities set is not between 1 and 1000
+    if (this.rules.some(rule => rule.priority < 1 || rule.priority > 100)) {
+      errors.push('Invalid rule priorities: Rule priorities must be between 1 and 100');
     }
     return errors;
   }
@@ -284,8 +306,8 @@ export class Listener extends Resource implements IListener {
     return {};
   }
 
-  private transformRuleConditionsToCfnProperty(ruleConditions: RuleConditions): generated.CfnRule.MatchProperty {
-    const { headerMatches, methodMatch, pathMatch } = ruleConditions;
+  private transformRuleConditionsToCfnProperty(ruleConditions?: RuleConditions): generated.CfnRule.MatchProperty {
+    const { headerMatches, methodMatch, pathMatch } = ruleConditions ?? {};
 
     const matchProperty: generated.CfnRule.MatchProperty = {
       httpMatch: {
@@ -341,3 +363,5 @@ export class Listener extends Resource implements IListener {
     //this.service.authPolicy.addStatements({})
   }
 }
+
+// 175-176,178,321-323

@@ -1,10 +1,13 @@
 {
-  "cSpell.words": [
-    "Fargate",
-    "integ",
-    "mycustomlatticeservicename",
-    "servicenetwork",
-    "svcs",
-    "vpclattice"
-  ]
+	"cSpell.words": [
+		"elasticloadbalancingv",
+		"Fargate",
+		"integ",
+		"mycustomlatticelistener",
+		"mycustomlatticeservicename",
+		"mycustomlatticeservicenetworkname",
+		"servicenetwork",
+		"svcs",
+		"vpclattice"
+	]
 }

@@ -1,7 +1,7 @@
 import { aws_vpclattice } from 'aws-cdk-lib';
-import { IVpc } from 'aws-cdk-lib/aws-ec2';
-import { IApplicationLoadBalancer } from 'aws-cdk-lib/aws-elasticloadbalancingv2';
-import { Construct } from 'constructs';
+import type { IVpc } from 'aws-cdk-lib/aws-ec2';
+import type { IApplicationLoadBalancer } from 'aws-cdk-lib/aws-elasticloadbalancingv2';
+import type { Construct } from 'constructs';
 import { RequestProtocol, RequestProtocolVersion, TargetGroupBase, TargetType } from './base-target-group';
 
 export interface AlbTargetGroupProps {
@@ -92,7 +92,7 @@ export class AlbTargetGroup extends TargetGroupBase {
     // ------------------------------------------------------
     // L1 Instantiation
     // ------------------------------------------------------
-    let config: aws_vpclattice.CfnTargetGroup.TargetGroupConfigProperty = {
+    const config: aws_vpclattice.CfnTargetGroup.TargetGroupConfigProperty = {
       vpcIdentifier: props.vpc.vpcId,
       protocol: props.protocol ?? RequestProtocol.HTTPS,
       port: this.port,
@@ -116,7 +116,7 @@ export class AlbTargetGroup extends TargetGroupBase {
   protected validateVpc(): string[] {
     const errors = new Array<string>();
     if (this.loadBalancer.vpc) {
-      if (this.loadBalancer.vpc.vpcId != this.vpc.vpcId) {
+      if (this.loadBalancer.vpc.vpcId !== this.vpc.vpcId) {
         throw new Error('The Application Load Balancer must be in the same VPC as the VPC Lattice target group.');
       }
     }

@@ -301,13 +301,33 @@ export class ServiceNetwork extends ServiceNetworkBase {
   public readonly serviceNetworkArn: string;
   public readonly serviceNetworkId: string;
   // variables specific to the non-imported Service Network
+  /**
+   * The name of the service network
+   */
   public readonly name: string;
+  /**
+   * The auth type of the service network
+   * @default AuthType.NONE
+   */
   public readonly authType: AuthType;
-  private readonly _resource: generated.CfnServiceNetwork;
+  /**
+   * Allowed principals to invoke services in the service network
+   */
   public readonly allowedPrincipals: iam.IPrincipal[];
+  /**
+   * Access mode to the service network,
+   * Authenticated, unauthenticated or only to org principals
+   */
   public readonly accessMode?: ServiceNetworkAccessMode;
+  /**
+   * Logging destinations of the service network
+   */
   public readonly loggingDestinations: LoggingDestination[];
+  /**
+   * Auth policy to be added to the service network
+   */
   public readonly authPolicy: iam.PolicyDocument;
+  private readonly _resource: generated.CfnServiceNetwork;
 
   // ------------------------------------------------------
   // Construct
@@ -316,13 +336,24 @@ export class ServiceNetwork extends ServiceNetworkBase {
     super(scope, id, {
       physicalName: props.name,
     });
+
+    // ------------------------------------------------------
+    // Set properties or defaults
+    // ------------------------------------------------------
+    this.name = this.physicalName;
+    this.allowedPrincipals = props.allowedPrincipals ?? [];
+    this.loggingDestinations = props.loggingDestinations ?? [];
+    this.authPolicy = props.authPolicy ?? new iam.PolicyDocument();
+    this.authType = props.authType ?? AuthType.NONE;
+    this.accessMode = props.accessMode;
+
+    // ------------------------------------------------------
+    // Validation
+    // ------------------------------------------------------
     if (props.name) {
       const name = props.name;
       this.node.addValidation({ validate: () => this.validateServiceNetworkName(name) });
     }
-
-    this.authType = props.authType ?? AuthType.NONE;
-    this.accessMode = props.accessMode;
 
     // ------------------------------------------------------
     // L1 Instantiation
@@ -339,10 +370,6 @@ export class ServiceNetwork extends ServiceNetworkBase {
     this._resource.applyRemovalPolicy(props.removalPolicy);
     this.serviceNetworkArn = this._resource.attrArn;
     this.serviceNetworkId = this._resource.attrId;
-    this.name = this.physicalName;
-    this.allowedPrincipals = props.allowedPrincipals ?? [];
-    this.loggingDestinations = props.loggingDestinations ?? [];
-    this.authPolicy = props.authPolicy ?? new iam.PolicyDocument();
 
     // ------------------------------------------------------
     // VPC & Service Association
@@ -575,7 +602,7 @@ export class ServiceNetwork extends ServiceNetworkBase {
   }
 
   /**
-   * Associates a VPC with the service netwoek.
+   * Associates a VPC with the service network.
    */
 
   /**

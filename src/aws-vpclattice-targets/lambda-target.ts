@@ -1,6 +1,6 @@
-import { aws_lambda as lambda } from 'aws-cdk-lib';
+import type { aws_lambda as lambda } from 'aws-cdk-lib';
 import * as aws_vpclattice from 'aws-cdk-lib/aws-vpclattice';
-import * as constructs from 'constructs';
+import type * as constructs from 'constructs';
 import { TargetGroupBase, TargetType } from './base-target-group';
 
 export enum LambdaEventStructureVersion {
@@ -56,8 +56,9 @@ export class LambdaTargetGroup extends TargetGroupBase {
     // ------------------------------------------------------
     // Validation
     // ------------------------------------------------------
-    if (props.name) { this.node.addValidation({ validate: () => this.validateTargetGroupName(this.name) }); }
-
+    if (props.name) {
+      this.node.addValidation({ validate: () => this.validateTargetGroupName(this.name) });
+    }
 
     // ------------------------------------------------------
     // L1 Instantiation
