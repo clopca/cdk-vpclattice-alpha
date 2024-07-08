@@ -7,7 +7,8 @@ import type { Construct, IConstruct } from 'constructs';
 import type { LoggingDestination } from './logging';
 import type { IService } from './service';
 import { ServiceNetworkAssociation } from './service-network-association';
-import { AuthPolicyAccessMode, AuthType } from './util';
+import { AuthPolicyAccessMode } from './auth';
+import { AuthType } from "./auth";
 
 
 /**

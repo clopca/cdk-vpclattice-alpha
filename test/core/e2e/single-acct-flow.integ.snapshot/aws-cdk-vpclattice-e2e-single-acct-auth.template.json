@@ -10,7 +10,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-e2e-single-acct-flow-auth/ServiceVPC"
+      "Value": "aws-cdk-vpclattice-e2e-single-acct-auth/ServiceVPC"
      }
     ]
    }
@@ -39,7 +39,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-e2e-single-acct-flow-auth/ServiceVPC/PublicSubnet1"
+      "Value": "aws-cdk-vpclattice-e2e-single-acct-auth/ServiceVPC/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -53,7 +53,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-e2e-single-acct-flow-auth/ServiceVPC/PublicSubnet1"
+      "Value": "aws-cdk-vpclattice-e2e-single-acct-auth/ServiceVPC/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -94,7 +94,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-e2e-single-acct-flow-auth/ServiceVPC/PublicSubnet1"
+      "Value": "aws-cdk-vpclattice-e2e-single-acct-auth/ServiceVPC/PublicSubnet1"
      }
     ]
    }
@@ -114,7 +114,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-e2e-single-acct-flow-auth/ServiceVPC/PublicSubnet1"
+      "Value": "aws-cdk-vpclattice-e2e-single-acct-auth/ServiceVPC/PublicSubnet1"
      }
     ]
    },
@@ -147,7 +147,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-e2e-single-acct-flow-auth/ServiceVPC/PublicSubnet2"
+      "Value": "aws-cdk-vpclattice-e2e-single-acct-auth/ServiceVPC/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -161,7 +161,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-e2e-single-acct-flow-auth/ServiceVPC/PublicSubnet2"
+      "Value": "aws-cdk-vpclattice-e2e-single-acct-auth/ServiceVPC/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -219,7 +219,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-e2e-single-acct-flow-auth/ServiceVPC/PrivateSubnet1"
+      "Value": "aws-cdk-vpclattice-e2e-single-acct-auth/ServiceVPC/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -233,7 +233,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-e2e-single-acct-flow-auth/ServiceVPC/PrivateSubnet1"
+      "Value": "aws-cdk-vpclattice-e2e-single-acct-auth/ServiceVPC/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -288,7 +288,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-e2e-single-acct-flow-auth/ServiceVPC/PrivateSubnet2"
+      "Value": "aws-cdk-vpclattice-e2e-single-acct-auth/ServiceVPC/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -302,7 +302,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-e2e-single-acct-flow-auth/ServiceVPC/PrivateSubnet2"
+      "Value": "aws-cdk-vpclattice-e2e-single-acct-auth/ServiceVPC/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -339,7 +339,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-e2e-single-acct-flow-auth/ServiceVPC"
+      "Value": "aws-cdk-vpclattice-e2e-single-acct-auth/ServiceVPC"
      }
     ]
    }
@@ -365,7 +365,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-e2e-single-acct-flow-auth/ClientVPC"
+      "Value": "aws-cdk-vpclattice-e2e-single-acct-auth/ClientVPC"
      }
     ]
    }
@@ -394,7 +394,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-e2e-single-acct-flow-auth/ClientVPC/PublicSubnet1"
+      "Value": "aws-cdk-vpclattice-e2e-single-acct-auth/ClientVPC/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -408,7 +408,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-e2e-single-acct-flow-auth/ClientVPC/PublicSubnet1"
+      "Value": "aws-cdk-vpclattice-e2e-single-acct-auth/ClientVPC/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -449,7 +449,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-e2e-single-acct-flow-auth/ClientVPC/PublicSubnet1"
+      "Value": "aws-cdk-vpclattice-e2e-single-acct-auth/ClientVPC/PublicSubnet1"
      }
     ]
    }
@@ -469,7 +469,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-e2e-single-acct-flow-auth/ClientVPC/PublicSubnet1"
+      "Value": "aws-cdk-vpclattice-e2e-single-acct-auth/ClientVPC/PublicSubnet1"
      }
     ]
    },
@@ -502,7 +502,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-e2e-single-acct-flow-auth/ClientVPC/PublicSubnet2"
+      "Value": "aws-cdk-vpclattice-e2e-single-acct-auth/ClientVPC/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -516,7 +516,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-e2e-single-acct-flow-auth/ClientVPC/PublicSubnet2"
+      "Value": "aws-cdk-vpclattice-e2e-single-acct-auth/ClientVPC/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -574,7 +574,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-e2e-single-acct-flow-auth/ClientVPC/PrivateSubnet1"
+      "Value": "aws-cdk-vpclattice-e2e-single-acct-auth/ClientVPC/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -588,7 +588,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-e2e-single-acct-flow-auth/ClientVPC/PrivateSubnet1"
+      "Value": "aws-cdk-vpclattice-e2e-single-acct-auth/ClientVPC/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -643,7 +643,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-e2e-single-acct-flow-auth/ClientVPC/PrivateSubnet2"
+      "Value": "aws-cdk-vpclattice-e2e-single-acct-auth/ClientVPC/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -657,7 +657,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-e2e-single-acct-flow-auth/ClientVPC/PrivateSubnet2"
+      "Value": "aws-cdk-vpclattice-e2e-single-acct-auth/ClientVPC/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -694,7 +694,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-e2e-single-acct-flow-auth/ClientVPC"
+      "Value": "aws-cdk-vpclattice-e2e-single-acct-auth/ClientVPC"
      }
     ]
    }
@@ -713,7 +713,7 @@
   "ResSGE9E4FDE5": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "aws-cdk-vpclattice-e2e-single-acct-flow-auth/ResSG",
+    "GroupDescription": "aws-cdk-vpclattice-e2e-single-acct-auth/ResSG",
     "GroupName": "client-sg",
     "SecurityGroupEgress": [
      {
@@ -736,6 +736,35 @@
     ],
     "VpcId": {
      "Ref": "ClientVPC9BBAC0E1"
+    }
+   }
+  },
+  "ServiceSG3DD30CA4": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "aws-cdk-vpclattice-e2e-single-acct-auth/ServiceSG",
+    "GroupName": "service-sg",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "SecurityGroupIngress": [
+     {
+      "CidrIp": "10.0.0.0/16",
+      "Description": "from 10.0.0.0/16:ALL TRAFFIC",
+      "IpProtocol": "-1"
+     },
+     {
+      "CidrIp": "169.254.0.0/16",
+      "Description": "from 169.254.0.0/16:ALL TRAFFIC",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "ServiceVPC2EDFAACA"
     }
    }
   },
@@ -795,6 +824,17 @@
        "Effect": "Allow",
        "Principal": "*",
        "Resource": "*"
+      },
+      {
+       "Action": "vpc-lattice-svcs:*",
+       "Condition": {
+        "StringEquals": {
+         "vpc-lattice-svcs:RequestMethod": "GET"
+        }
+       },
+       "Effect": "Allow",
+       "Principal": "*",
+       "Resource": "*"
       }
      ],
      "Version": "2012-10-17"
@@ -816,7 +856,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "ServiceNetworkAssociateVPCc81f2a652530d0127df6170c6d8d7e09f983ad00ffVpcAssociationc8018b22527858e6e3c56cc30262def26afa9fb3a4E9AEF719": {
+  "ServiceNetworkAssociateVPCc82109ec4f50c659081928dce8e8815b12ebd3cfc6VpcAssociationc8201a61ce848455ba897a63301b1e56b016367e4eF9992C9C": {
    "Type": "AWS::VpcLattice::ServiceNetworkVpcAssociation",
    "Properties": {
     "SecurityGroupIds": [],
@@ -831,7 +871,7 @@
     }
    }
   },
-  "ServiceNetworkAssociateVPCc83559a4f1edc31c2734339e20208d434f28a5778bVpcAssociationc82b3ace5f4951ca1ca7111f91c4bd4a8c7dc83f45640ABDA3": {
+  "ServiceNetworkAssociateVPCc8c4413997c6ea78d48ac0d4f42733f9f7d757d6e3VpcAssociationc85cc3687d232b3ef31ed79ed747c9d1ffd5fc654e93CECCF9": {
    "Type": "AWS::VpcLattice::ServiceNetworkVpcAssociation",
    "Properties": {
     "SecurityGroupIds": [
@@ -853,7 +893,7 @@
     }
    }
   },
-  "ServiceNetworkServiceAssociationc8ee2817f01be229a6f61d1cd6db956051955c31a7LatticeAssociationc8071b73e961b183338b0c4c8e78a6d2bef72ce06bEDDEC837": {
+  "ServiceNetworkServiceAssociationc807e308ffd1ea5ea17d63c68c6f5b6b5ec44244afLatticeAssociationc858cdf9b944219e9d50b44eaf889c38555e954b0a199A15A9": {
    "Type": "AWS::VpcLattice::ServiceNetworkServiceAssociation",
    "Properties": {
     "ServiceIdentifier": {
@@ -922,7 +962,7 @@
   "LatticeLambdaReservationSecurityGroupDACFDAFC": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "Automatic security group for Lambda Function awscdkvpclatticee2esingleacctflowauthLatticeLambdaReservation286A2E48",
+    "GroupDescription": "Automatic security group for Lambda Function awscdkvpclatticee2esingleacctauthLatticeLambdaReservationCD02EA64",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -1005,23 +1045,147 @@
     ],
     "Type": "LAMBDA"
    }
+  },
+  "Ec2InstanceInstanceRole0047324B": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ec2.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AmazonSSMManagedInstanceCore"
+       ]
+      ]
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "client-instance"
+     }
+    ]
+   }
+  },
+  "Ec2InstanceInstanceRoleDefaultPolicy053E367E": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "vpc-lattice-svcs:Invoke",
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "Ec2InstanceInstanceRoleDefaultPolicy053E367E",
+    "Roles": [
+     {
+      "Ref": "Ec2InstanceInstanceRole0047324B"
+     }
+    ]
+   }
+  },
+  "Ec2InstanceInstanceProfileDA451126": {
+   "Type": "AWS::IAM::InstanceProfile",
+   "Properties": {
+    "Roles": [
+     {
+      "Ref": "Ec2InstanceInstanceRole0047324B"
+     }
+    ]
+   }
+  },
+  "Ec2InstanceD6444E3D": {
+   "Type": "AWS::EC2::Instance",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "IamInstanceProfile": {
+     "Ref": "Ec2InstanceInstanceProfileDA451126"
+    },
+    "ImageId": {
+     "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
+    },
+    "InstanceType": "t3.micro",
+    "SecurityGroupIds": [
+     {
+      "Fn::GetAtt": [
+       "ResSGE9E4FDE5",
+       "GroupId"
+      ]
+     }
+    ],
+    "SubnetId": {
+     "Ref": "ClientVPCPrivateSubnet1SubnetE3E5FFFE"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "client-instance"
+     }
+    ],
+    "UserData": {
+     "Fn::Base64": "\n    #!/bin/bash\n    yum update -y\n    yum install -y jq\n  "
+    }
+   },
+   "DependsOn": [
+    "Ec2InstanceInstanceRoleDefaultPolicy053E367E",
+    "Ec2InstanceInstanceRole0047324B"
+   ]
+  }
+ },
+ "Parameters": {
+  "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter": {
+   "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
+   "Default": "/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2"
+  },
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
   }
  },
  "Outputs": {
   "SvcDomainName": {
    "Value": {
-    "Fn::GetAtt": [
-     "Parking6000F0C6",
-     "DnsEntry.DomainName"
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Fn::GetAtt": [
+        "Parking6000F0C6",
+        "DnsEntry.DomainName"
+       ]
+      }
+     ]
     ]
    }
-  }
- },
- "Parameters": {
-  "BootstrapVersion": {
-   "Type": "AWS::SSM::Parameter::Value<String>",
-   "Default": "/cdk-bootstrap/hnb659fds/version",
-   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
   }
  },
  "Rules": {

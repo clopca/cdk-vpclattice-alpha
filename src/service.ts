@@ -1,4 +1,4 @@
-import { EOL } from 'node:os';
+
 import { aws_iam as iam, aws_ram as ram, Resource, Aspects, Arn, Stack } from 'aws-cdk-lib';
 import type { IResource, RemovalPolicy } from 'aws-cdk-lib';
 import * as generated from 'aws-cdk-lib/aws-vpclattice';
@@ -8,7 +8,7 @@ import type { ListenerConfig } from './listener';
 import type { LoggingDestination } from './logging';
 import type { IServiceNetwork } from './service-network';
 import { ServiceNetworkAssociation } from './service-network-association';
-import { AuthPolicyAccessMode, AuthType } from './util';
+import { AuthPolicyDocument, AuthType, AuthPolicyAccessMode } from "./auth";
 import { ICertificate } from 'aws-cdk-lib/aws-certificatemanager';
 import { IHostedZone } from 'aws-cdk-lib/aws-route53';
 
@@ -108,13 +108,6 @@ export interface ServiceProps {
   readonly certificate?: ICertificate;
 
   /**
-   * Organization ID to allow access to the Service Network
-   * @default - no org id is used
-   * @example 'o-1234567890'
-   */
-  readonly orgId?: string;
-
-  /**
    * A registered custom domain name for your service. Requests to the custom
    * domain are resolved by the DNS server to the VPC Lattice generated domain name.
    * Note: **Changing it requires recreating the service.**
@@ -131,12 +124,6 @@ export interface ServiceProps {
   readonly dnsEntry?: DnsEntryProperty;
 
   /**
- * Access mode to the service network,
- * Authenticated, unauthenticated or only to org principals
- */
-  readonly accessMode?: AuthPolicyAccessMode;
-
-  /**
    * ServiceNetwork to associate with.
    * @default - will not associate with any serviceNetwork.
    */
@@ -150,21 +137,25 @@ export interface ServiceProps {
   readonly loggingDestinations?: LoggingDestination[];
 
   /**
-   * Allowed principals to access the service
-   * @default - No principals are allowed
-   */
-  readonly allowedPrincipals?: iam.IPrincipal[];
-
-  /**
-   * Additional AuthStatements:
-   */
-  readonly authStatements?: iam.PolicyStatement[];
-
-  /**
    * Policy to apply to the service
    * @default - No policy is attached. All traffic is denied by default.
    */
-  readonly authPolicy?: iam.PolicyDocument;
+  readonly authPolicy?: AuthPolicyDocument;
+
+  /**
+   * The Auth Policy Acess Mode
+   * Setting this forces the auth policy to allow certain kind of access.
+   * @default - No default access mode, thus no policy is attached.
+   */
+  readonly accessMode?: AuthPolicyAccessMode
+
+  /**
+   * Organization ID to allow access to the Service. Will be used
+   * only if accessMode is equal to AuthPolicyAccessMode.ORG_ONLY
+   * @default - no org id is used
+   * @example 'o-1234567890'
+   */
+  readonly orgId?: string;
 }
 
 /**
@@ -273,7 +264,6 @@ export class Service extends ServiceBase {
   public readonly serviceName: string;
   /**
    * The auth type of the service
-   * @default AuthType.NONE
    */
   public readonly authType: AuthType;
   /**
@@ -281,22 +271,20 @@ export class Service extends ServiceBase {
    */
   public readonly accessMode?: AuthPolicyAccessMode;
   /**
-   * Allowed principals to invoke the service
-   */
-  public readonly allowedPrincipals: iam.IPrincipal[];
-  /**
    * Logging destinations of the service
    */
   public readonly loggingDestinations: LoggingDestination[];
   /**
    * Auth policy to be added to the service
    */
-  public readonly authPolicy: iam.PolicyDocument;
+  public readonly authPolicy: AuthPolicyDocument;
   /**
    * VPC Lattice Domain Name
    */
   public readonly domainName: string;
-
+  /**
+   * L1 resource
+   */
   private readonly _resource: generated.CfnService;
 
   // ------------------------------------------------------
@@ -309,10 +297,14 @@ export class Service extends ServiceBase {
     // Set properties or defaults
     // ------------------------------------------------------
     this.serviceName = this.physicalName;
-    this.allowedPrincipals = props.allowedPrincipals ?? [];
-    this.loggingDestinations = props.loggingDestinations ?? [];
-    this.authPolicy = props.authPolicy ?? new iam.PolicyDocument();
+    //this.allowedPrincipals = props.allowedPrincipals ?? [];
     this.accessMode = props.accessMode;
+    this.loggingDestinations = props.loggingDestinations ?? [];
+    this.authPolicy = props.authPolicy ?? new AuthPolicyDocument({
+      accessMode: this.accessMode,
+      orgId: props?.orgId
+    });;
+    this.authType = props.authType ?? AuthType.NONE;
 
     // ------------------------------------------------------
     // Validation
@@ -321,7 +313,7 @@ export class Service extends ServiceBase {
       const name = props.name;
       this.node.addValidation({ validate: () => this.validateServiceName(name) });
     }
-    this.authType = props.authType ?? AuthType.NONE;
+    this.node.addValidation({ validate: () => this.authPolicy.validateAuthPolicy() })
 
     // ------------------------------------------------------
     // L1 Instantiation
@@ -366,44 +358,6 @@ export class Service extends ServiceBase {
     // ------------------------------------------------------
     // Auth Policy
     // ------------------------------------------------------
-    if (this.allowedPrincipals.length) {
-      this.grantAccess(this.allowedPrincipals);
-    }
-
-    if (props.authStatements) {
-      for (const propStatement of props.authStatements) {
-        this.authPolicy.addStatements(propStatement);
-      }
-    }
-
-    if (!this.authPolicy.isEmpty) {
-      this.node.addValidation({ validate: () => this.validateAuthPolicy(this.authPolicy) });
-    }
-    if (this.accessMode) {
-      const statement = new iam.PolicyStatement({
-        effect: iam.Effect.ALLOW,
-        actions: ['vpc-lattice-svcs:Invoke'],
-        resources: ['*'],
-        principals: [new iam.StarPrincipal()],
-      });
-      if (props.accessMode === AuthPolicyAccessMode.ORG_ONLY) {
-        const accessMode = props.accessMode;
-        this.node.addValidation({ validate: () => this.validateAccessMode(accessMode, props.orgId) });
-        if (props.orgId) {
-          const orgId = props.orgId;
-          statement.addCondition('StringEquals', { 'aws:PrincipalOrgID': [orgId] });
-          statement.addCondition('StringNotEqualsIgnoreCase', { 'aws:PrincipalType': 'anonymous' });
-        }
-      } else if (props.accessMode === AuthPolicyAccessMode.AUTHENTICATED_ONLY) {
-        statement.addCondition('StringNotEqualsIgnoreCase', { 'aws:PrincipalType': 'anonymous' });
-      }
-      this.authPolicy.addStatements(statement);
-    }
-
-    if (!this.authPolicy.isEmpty) {
-      this.node.addValidation({ validate: () => this.validateAuthPolicy(this.authPolicy) });
-    }
-
     Aspects.of(this).add({
       visit: (node: IConstruct) => {
         if (node === this && !this.authPolicy.isEmpty) {
@@ -458,74 +412,7 @@ export class Service extends ServiceBase {
     return errors;
   }
 
-  /**
-   * Validate that Access mode ORG_ONLY can be set only if orgId is provided
-   */
-  protected validateAccessMode(accessMode: AuthPolicyAccessMode, orgId?: string): string[] {
-    const errors: string[] = [];
-    if (accessMode === AuthPolicyAccessMode.ORG_ONLY && !orgId) {
-      errors.push('orgId is required when accessMode is set to ORG_ONLY');
-    }
-    return errors;
-  }
 
-  /**
-   * Must ensure Service has the correct AuthType and policy is a
-   * valid IAM Resource-based Policy for VPC Lattice
-   */
-  protected validateAuthPolicy(authPolicy: iam.PolicyDocument): string[] {
-    const errors: string[] = [];
-
-    const policyJson = authPolicy.toJSON();
-    for (const statement of policyJson.Statement) {
-      // Check for valid VPC Lattice actions
-      const validActions = ['vpc-lattice-svcs:Invoke'];
-      if (!this.validateActions(statement.Action, validActions)) {
-        errors.push(`Invalid action detected. Allowed actions for VPC Lattice are: ${validActions.join(', ')} or '*'.`);
-      }
-
-      // Check for valid principal types
-      if (statement.Principal && typeof statement.Principal === 'object') {
-        const validPrincipalTypes = ['AWS', 'Service'];
-        for (const key of Object.keys(statement.Principal)) {
-          if (!validPrincipalTypes.includes(key)) {
-            errors.push(`Invalid principal type: ${key}. Allowed types are: ${validPrincipalTypes.join(', ')}.`);
-          }
-        }
-      }
-
-      // Check for valid resource format
-      if (!this.validateResources(statement.Resource)) {
-        errors.push('Invalid resource format. Resources should be "*" or start with "arn:aws:vpc-lattice:".');
-      }
-    }
-
-    if (errors.length > 0) {
-      errors.unshift(`The following errors were found in the VPC Lattice auth policy:${EOL}${JSON.stringify(policyJson, null, 2)}`);
-    }
-    return errors;
-  }
-
-  private validateActions(action: string | string[], validActions: string[]): boolean {
-    if (typeof action === 'string') {
-      return action === '*' || validActions.includes(action);
-    }
-    if (Array.isArray(action)) {
-      return action.every(a => a === '*' || validActions.includes(a));
-    }
-    return false;
-  }
-
-  private validateResources(resource: string | string[]): boolean {
-    const isValidResource = (r: string) => r === '*' || r.startsWith('arn:aws:vpc-lattice:');
-    if (typeof resource === 'string') {
-      return isValidResource(resource);
-    }
-    if (Array.isArray(resource)) {
-      return resource.every(isValidResource);
-    }
-    return false;
-  }
 
   // ------------------------------------------------------
   // Methods
@@ -539,23 +426,14 @@ export class Service extends ServiceBase {
    * @param principals a list of IAM principals to grant access.
    */
   public grantAccess(principals: iam.IPrincipal[]): void {
-    const policyStatement: iam.PolicyStatement = new iam.PolicyStatement({
-      effect: iam.Effect.ALLOW,
-      actions: ['vpc-lattice-svcs:Invoke'],
-      resources: ['*'],
-      principals: principals,
-    });
-    this.authPolicy.addStatements(policyStatement);
-    this.node.addValidation({ validate: () => this.validateAuthPolicy(this.authPolicy) });
-  }
-
-  /**
-   * Add a statement to the auth policy
-   * @param statement - The Policy Statement to add
-   */
-  public addAuthPolicyStatement(statement: iam.PolicyStatement): void {
-    this.authPolicy.addStatements(statement);
-    this.node.addValidation({ validate: () => this.validateAuthPolicy(this.authPolicy) });
+    this.authPolicy.addStatements(
+      new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        actions: ['vpc-lattice-svcs:Invoke'],
+        resources: ['*'],
+        principals: principals,
+      }),
+    )
   }
 
   /**

@@ -281,10 +281,14 @@ export class Listener extends Resource implements IListener {
       };
     }
     if (ruleAction.weightedTargetGroups) {
-      const targetGroups = ruleAction.weightedTargetGroups.map(weightedTargetGroup => ({
-        targetGroupIdentifier: weightedTargetGroup.targetGroup.targetGroupId,
-        weight: weightedTargetGroup.weight,
-      }));
+      const targetGroups = ruleAction.weightedTargetGroups.map(weightedTargetGroup => {
+        //this._resource.node.addDependency(weightedTargetGroup);
+        return {
+          targetGroupIdentifier: weightedTargetGroup.targetGroup.targetGroupId,
+          weight: weightedTargetGroup.weight,
+        }
+      });
+
       return {
         forward: {
           targetGroups,
@@ -292,6 +296,7 @@ export class Listener extends Resource implements IListener {
       };
     }
     if (ruleAction.targetGroup) {
+      //this._resource.addDependency(ruleAction.targetGroup)
       return {
         forward: {
           targetGroups: [

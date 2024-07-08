@@ -6,18 +6,24 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { Instance, Peer, Port, SecurityGroup, Vpc } from 'aws-cdk-lib/aws-ec2';
 import { ApplicationLoadBalancedFargateService } from 'aws-cdk-lib/aws-ecs-patterns';
 import { Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
-import { AuthType, HTTPFixedResponse, ListenerProtocol, PathMatchType, Service, ServiceNetwork } from '../../../src';
+import { HTTPFixedResponse, ListenerProtocol, PathMatchType, Service, ServiceNetwork } from '../../../src';
 import { AlbTargetGroup, InstanceTargetGroup, LambdaTargetGroup, RequestProtocol, RequestProtocolVersion } from '../../../src/aws-vpclattice-targets';
+import { AuthType } from '../../../src/auth';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-vpclattice-integ-basic-e2e');
 
+// ------------------------------------------------------
+// VPCs
+// ------------------------------------------------------
 const ratesVpc = new Vpc(stack, 'RatesVPC', { natGateways: 1 });
 const reservationsVpc = new Vpc(stack, 'ReservationVPC', { natGateways: 1 });
 const clientsVpc = new Vpc(stack, 'ClientsVPC', { natGateways: 1 });
 const paymentsVpc = new Vpc(stack, 'PaymentsVPC', { natGateways: 1 });
 
-
+// ------------------------------------------------------
+// Security Group - Clients
+// ------------------------------------------------------
 const clientsSg = new SecurityGroup(stack, 'ResSG', {
   securityGroupName: 'reservation-sg',
   vpc: clientsVpc,
@@ -43,7 +49,7 @@ const reservationTg = new LambdaTargetGroup(stack, 'LambdaTG', {
 });
 
 // ------------------------------------------------------
-// EC2 TG
+// Security Group - ASG
 // ------------------------------------------------------
 const asgSecurityGroup = new SecurityGroup(stack, 'RatesSG', {
   securityGroupName: 'autoscaling-group-sg',
@@ -53,6 +59,9 @@ const asgSecurityGroup = new SecurityGroup(stack, 'RatesSG', {
 asgSecurityGroup.addIngressRule(Peer.ipv4('10.0.0.0/16'), Port.allTraffic());
 asgSecurityGroup.addIngressRule(Peer.ipv4('169.254.0.0/16'), Port.allTraffic());
 
+// ------------------------------------------------------
+// EC2 TG
+// ------------------------------------------------------
 const ratesTg = new InstanceTargetGroup(stack, 'Ec2TG', {
   vpc: ratesVpc,
   name: 'rates-tg',
@@ -81,7 +90,7 @@ const ratesTg = new InstanceTargetGroup(stack, 'Ec2TG', {
 });
 
 // ------------------------------------------------------
-// ALB TG
+// Security Group - ALB
 // ------------------------------------------------------
 const paymentsSecurityGroup = new SecurityGroup(stack, 'PaymentsSG', {
   securityGroupName: 'alb-group-sg',
@@ -91,6 +100,9 @@ const paymentsSecurityGroup = new SecurityGroup(stack, 'PaymentsSG', {
 paymentsSecurityGroup.addIngressRule(Peer.ipv4('10.0.0.0/16'), Port.allTraffic());
 paymentsSecurityGroup.addIngressRule(Peer.ipv4('169.254.0.0/16'), Port.allTraffic());
 
+// ------------------------------------------------------
+// ALB TG
+// ------------------------------------------------------
 const albSvc = new ApplicationLoadBalancedFargateService(stack, 'ALBService', {
   vpc: paymentsVpc,
   memoryLimitMiB: 1024,
@@ -195,6 +207,10 @@ new Instance(stack, 'Ec2Instance', {
   instanceType: new cdk.aws_ec2.InstanceType('t3.micro'),
   machineImage: new cdk.aws_ec2.AmazonLinuxImage({ generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 }),
   ssmSessionPermissions: true,
+  userData: cdk.aws_ec2.UserData.custom(`
+    #!/bin/bash
+    sudo yum install -y jq
+  `),
 });
 
 new integ.IntegTest(app, 'ServiceNetworkTest', {
