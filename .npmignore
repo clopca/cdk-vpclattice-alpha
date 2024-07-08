@@ -22,8 +22,10 @@ dist
 tsconfig.tsbuildinfo
 /.eslintrc.json
 !.jsii
-test/core/e2e/.tmp
 test/core/e2e/basic.integ.snapshot
+test/core/e2e/single-acct-custom-domain.integ.snapshot
+test/core/e2e/.tmp
+test/core/e2e/single-acct-flow.integ.snapshot
 test/core/integ/listener.integ.snapshot
 test/core/integ/service-network.integ.snapshot
 test/core/integ/.tmp

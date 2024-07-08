@@ -10,7 +10,7 @@ import { AuthType, HTTPFixedResponse, ListenerProtocol, PathMatchType, Service, 
 import { AlbTargetGroup, InstanceTargetGroup, LambdaTargetGroup, RequestProtocol, RequestProtocolVersion } from '../../../src/aws-vpclattice-targets';
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-cdk-vpclattice-integ-listener');
+const stack = new cdk.Stack(app, 'aws-cdk-vpclattice-integ-basic-e2e');
 
 const ratesVpc = new Vpc(stack, 'RatesVPC', { natGateways: 1 });
 const reservationsVpc = new Vpc(stack, 'ReservationVPC', { natGateways: 1 });

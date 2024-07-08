@@ -98,3 +98,26 @@ export enum AuthType {
   AWS_IAM = 'AWS_IAM',
 }
 
+/**
+ * AccessModes for the Service Network.
+ * @enum
+ */
+export enum AuthPolicyAccessMode {
+  /**
+   * Allows for Unauthenticated (Anonymous) Access to the Service Network.
+   * Anonymous principals are callers that don't sign their AWS requests
+   * with Signature Version 4 (SigV4), and are within a VPC that is connected
+   * to the service network.
+   */
+  UNAUTHENTICATED = 'UNAUTHENTICATED',
+
+  /**
+   * Authenticated Access to the Service Network.
+   */
+  AUTHENTICATED_ONLY = 'AUTHENTICATED',
+
+  /**
+   * Only principals from this Org can access the Service Network.
+   */
+  ORG_ONLY = 'ORG_ONLY',
+}

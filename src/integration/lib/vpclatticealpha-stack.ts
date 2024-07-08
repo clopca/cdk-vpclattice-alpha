@@ -75,7 +75,7 @@ export class VpcLatticeAlphaStack extends cdk.Stack {
     // associate the vpcs
     // associate the services with the servicenetwork
     new vpclattice.ServiceNetwork(this, 'ServiceNetwork', {
-      accessMode: vpclattice.ServiceNetworkAccessMode.UNAUTHENTICATED,
+      accessMode: vpclattice.AuthPolicyAccessMode.UNAUTHENTICATED,
       // authType: vpclattice.AuthType.NONE,
       vpcAssociations: [{ vpc: support.vpc1 }],
       services: [myLatticeService],

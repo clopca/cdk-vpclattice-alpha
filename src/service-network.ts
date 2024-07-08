@@ -7,31 +7,8 @@ import type { Construct, IConstruct } from 'constructs';
 import type { LoggingDestination } from './logging';
 import type { IService } from './service';
 import { ServiceNetworkAssociation } from './service-network-association';
-import { AuthType } from './util';
+import { AuthPolicyAccessMode, AuthType } from './util';
 
-/**
- * AccessModes for the Service Network.
- * @enum
- */
-export enum ServiceNetworkAccessMode {
-  /**
-   * Allows for Unauthenticated (Anonymous) Access to the Service Network.
-   * Anonymous principals are callers that don't sign their AWS requests
-   * with Signature Version 4 (SigV4), and are within a VPC that is connected
-   * to the service network.
-   */
-  UNAUTHENTICATED = 'UNAUTHENTICATED',
-
-  /**
-   * Authenticated Access to the Service Network.
-   */
-  AUTHENTICATED_ONLY = 'AUTHENTICATED',
-
-  /**
-   * Only principals from this Org can access the Service Network.
-   */
-  ORG_ONLY = 'ORG_ONLY',
-}
 
 /**
  * Represents a VPC Lattice Service Network.
@@ -149,7 +126,7 @@ export interface ServiceNetworkProps {
    * Allow external principals
    * @default ServiceNetworkAccessMode.NO_STATEMENT
    */
-  readonly accessMode?: ServiceNetworkAccessMode;
+  readonly accessMode?: AuthPolicyAccessMode;
 
   /**
    * Determine what happens to the repository when the resource/stack is deleted.
@@ -318,7 +295,7 @@ export class ServiceNetwork extends ServiceNetworkBase {
    * Access mode to the service network,
    * Authenticated, unauthenticated or only to org principals
    */
-  public readonly accessMode?: ServiceNetworkAccessMode;
+  public readonly accessMode?: AuthPolicyAccessMode;
   /**
    * Logging destinations of the service network
    */
@@ -416,7 +393,7 @@ export class ServiceNetwork extends ServiceNetworkBase {
         resources: ['*'],
         principals: [new iam.StarPrincipal()],
       });
-      if (props.accessMode === ServiceNetworkAccessMode.ORG_ONLY) {
+      if (props.accessMode === AuthPolicyAccessMode.ORG_ONLY) {
         const accessMode = props.accessMode;
         this.node.addValidation({ validate: () => this.validateAccessMode(accessMode, props.orgId) });
         if (props.orgId) {
@@ -424,7 +401,7 @@ export class ServiceNetwork extends ServiceNetworkBase {
           statement.addCondition('StringEquals', { 'aws:PrincipalOrgID': [orgId] });
           statement.addCondition('StringNotEqualsIgnoreCase', { 'aws:PrincipalType': 'anonymous' });
         }
-      } else if (props.accessMode === ServiceNetworkAccessMode.AUTHENTICATED_ONLY) {
+      } else if (props.accessMode === AuthPolicyAccessMode.AUTHENTICATED_ONLY) {
         statement.addCondition('StringNotEqualsIgnoreCase', { 'aws:PrincipalType': 'anonymous' });
       }
       this.authPolicy.addStatements(statement);
@@ -490,9 +467,9 @@ export class ServiceNetwork extends ServiceNetworkBase {
   /**
    * Validate that Access mode ORG_ONLY can be set only if orgId is provided
    */
-  protected validateAccessMode(accessMode: ServiceNetworkAccessMode, orgId?: string): string[] {
+  protected validateAccessMode(accessMode: AuthPolicyAccessMode, orgId?: string): string[] {
     const errors: string[] = [];
-    if (accessMode === ServiceNetworkAccessMode.ORG_ONLY && !orgId) {
+    if (accessMode === AuthPolicyAccessMode.ORG_ONLY && !orgId) {
       errors.push('orgId is required when accessMode is set to ORG_ONLY');
     }
     return errors;

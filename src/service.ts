@@ -8,7 +8,9 @@ import type { ListenerConfig } from './listener';
 import type { LoggingDestination } from './logging';
 import type { IServiceNetwork } from './service-network';
 import { ServiceNetworkAssociation } from './service-network-association';
-import { AuthType } from './util';
+import { AuthPolicyAccessMode, AuthType } from './util';
+import { ICertificate } from 'aws-cdk-lib/aws-certificatemanager';
+import { IHostedZone } from 'aws-cdk-lib/aws-route53';
 
 /**
  * Represents a Vpc Lattice Service.
@@ -59,6 +61,17 @@ export interface ShareServiceProps {
   readonly resourceArns?: string[];
 }
 
+interface DnsEntryProperty {
+  /**
+   * The domain name of the service.
+   */
+  readonly domainName?: string;
+  /**
+   * The Route53 Private Hosted Zone or Public Hosted Zone.
+   */
+  readonly hostedZone?: IHostedZone;
+}
+
 /**
  * Properties for defining a VPC Lattice Service
  */
@@ -87,28 +100,45 @@ export interface ServiceProps {
   readonly authType?: AuthType;
 
   /**
-   * A certificate that may be used by the service
-   * @default no custom certificate is used
+   * A certificate that may be used by the service. To receive HTTPS requests, 
+   * you must provide your own certificate in AWS Certificate Manager. 
+   * @default - No custom certificate is used.
+   * @see https://docs.aws.amazon.com/vpc-lattice/latest/ug/service-byoc.html
    */
-  readonly certificateArn?: string;
+  readonly certificate?: ICertificate;
+
+  /**
+   * Organization ID to allow access to the Service Network
+   * @default - no org id is used
+   * @example 'o-1234567890'
+   */
+  readonly orgId?: string;
 
   /**
    * A registered custom domain name for your service. Requests to the custom
    * domain are resolved by the DNS server to the VPC Lattice generated domain name.
+   * Note: **Changing it requires recreating the service.**
    * @default - Your service will be reachable only by the domain name that VPC Lattice generates
    * @see https://docs.aws.amazon.com/vpc-lattice/latest/ug/service-custom-domain-name.html
    */
   readonly customDomainName?: string;
 
   /**
-   * A custom DNS entry
-   * @default no custom DNS entry is used
+   * A custom DNS entry.
+   * Note Changing it requires recreating the service.
+   * @default - No custom DNS entry is used.
    */
-  readonly dnsEntry?: generated.CfnService.DnsEntryProperty;
+  readonly dnsEntry?: DnsEntryProperty;
+
+  /**
+ * Access mode to the service network,
+ * Authenticated, unauthenticated or only to org principals
+ */
+  readonly accessMode?: AuthPolicyAccessMode;
 
   /**
    * ServiceNetwork to associate with.
-   * @default will not associate with any serviceNetwork.
+   * @default - will not associate with any serviceNetwork.
    */
   readonly serviceNetwork?: IServiceNetwork;
 
@@ -247,6 +277,10 @@ export class Service extends ServiceBase {
    */
   public readonly authType: AuthType;
   /**
+   * The default access mode defined for the service
+   */
+  public readonly accessMode?: AuthPolicyAccessMode;
+  /**
    * Allowed principals to invoke the service
    */
   public readonly allowedPrincipals: iam.IPrincipal[];
@@ -258,6 +292,11 @@ export class Service extends ServiceBase {
    * Auth policy to be added to the service
    */
   public readonly authPolicy: iam.PolicyDocument;
+  /**
+   * VPC Lattice Domain Name
+   */
+  public readonly domainName: string;
+
   private readonly _resource: generated.CfnService;
 
   // ------------------------------------------------------
@@ -273,6 +312,7 @@ export class Service extends ServiceBase {
     this.allowedPrincipals = props.allowedPrincipals ?? [];
     this.loggingDestinations = props.loggingDestinations ?? [];
     this.authPolicy = props.authPolicy ?? new iam.PolicyDocument();
+    this.accessMode = props.accessMode;
 
     // ------------------------------------------------------
     // Validation
@@ -288,9 +328,12 @@ export class Service extends ServiceBase {
     // ------------------------------------------------------
     this._resource = new generated.CfnService(this, 'Resource', {
       authType: this.authType,
-      certificateArn: props.certificateArn,
+      certificateArn: props.certificate?.certificateArn,
       customDomainName: props.customDomainName,
-      dnsEntry: props.dnsEntry,
+      dnsEntry: {
+        domainName: props.dnsEntry?.domainName,
+        hostedZoneId: props.dnsEntry?.hostedZone?.hostedZoneId,
+      },
       name: this.physicalName,
     });
 
@@ -301,6 +344,7 @@ export class Service extends ServiceBase {
     this._resource.applyRemovalPolicy(props.removalPolicy);
     this.serviceArn = this._resource.attrArn;
     this.serviceId = this._resource.attrId;
+    this.domainName = this._resource.getAtt("DnsEntry.DomainName").toString()
 
     // ------------------------------------------------------
     // Service Network Association
@@ -330,6 +374,30 @@ export class Service extends ServiceBase {
       for (const propStatement of props.authStatements) {
         this.authPolicy.addStatements(propStatement);
       }
+    }
+
+    if (!this.authPolicy.isEmpty) {
+      this.node.addValidation({ validate: () => this.validateAuthPolicy(this.authPolicy) });
+    }
+    if (this.accessMode) {
+      const statement = new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        actions: ['vpc-lattice-svcs:Invoke'],
+        resources: ['*'],
+        principals: [new iam.StarPrincipal()],
+      });
+      if (props.accessMode === AuthPolicyAccessMode.ORG_ONLY) {
+        const accessMode = props.accessMode;
+        this.node.addValidation({ validate: () => this.validateAccessMode(accessMode, props.orgId) });
+        if (props.orgId) {
+          const orgId = props.orgId;
+          statement.addCondition('StringEquals', { 'aws:PrincipalOrgID': [orgId] });
+          statement.addCondition('StringNotEqualsIgnoreCase', { 'aws:PrincipalType': 'anonymous' });
+        }
+      } else if (props.accessMode === AuthPolicyAccessMode.AUTHENTICATED_ONLY) {
+        statement.addCondition('StringNotEqualsIgnoreCase', { 'aws:PrincipalType': 'anonymous' });
+      }
+      this.authPolicy.addStatements(statement);
     }
 
     if (!this.authPolicy.isEmpty) {
@@ -386,6 +454,17 @@ export class Service extends ServiceBase {
       if (new Set(destinationTypes).size !== destinationTypes.length) {
         errors.push('A service can only have one logging destination per destination type.');
       }
+    }
+    return errors;
+  }
+
+  /**
+   * Validate that Access mode ORG_ONLY can be set only if orgId is provided
+   */
+  protected validateAccessMode(accessMode: AuthPolicyAccessMode, orgId?: string): string[] {
+    const errors: string[] = [];
+    if (accessMode === AuthPolicyAccessMode.ORG_ONLY && !orgId) {
+      errors.push('orgId is required when accessMode is set to ORG_ONLY');
     }
     return errors;
   }

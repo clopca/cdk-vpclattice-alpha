@@ -148,6 +148,7 @@ Check whether the given construct is a Resource.
 | <code><a href="#cdk-vpclattice-alpha.AlbTargetGroup.property.targetGroupArn">targetGroupArn</a></code> | <code>string</code> | The Arn of the target group. |
 | <code><a href="#cdk-vpclattice-alpha.AlbTargetGroup.property.targetGroupId">targetGroupId</a></code> | <code>string</code> | The id of the target group. |
 | <code><a href="#cdk-vpclattice-alpha.AlbTargetGroup.property.targetType">targetType</a></code> | <code><a href="#cdk-vpclattice-alpha.TargetType">TargetType</a></code> | Targets. |
+| <code><a href="#cdk-vpclattice-alpha.AlbTargetGroup.property.listenerPort">listenerPort</a></code> | <code>number</code> | *No description.* |
 | <code><a href="#cdk-vpclattice-alpha.AlbTargetGroup.property.loadBalancer">loadBalancer</a></code> | <code>aws-cdk-lib.aws_elasticloadbalancingv2.IApplicationLoadBalancer</code> | *No description.* |
 | <code><a href="#cdk-vpclattice-alpha.AlbTargetGroup.property.port">port</a></code> | <code>number</code> | *No description.* |
 | <code><a href="#cdk-vpclattice-alpha.AlbTargetGroup.property.protocol">protocol</a></code> | <code><a href="#cdk-vpclattice-alpha.RequestProtocol">RequestProtocol</a></code> | *No description.* |
@@ -244,6 +245,16 @@ public readonly targetType: TargetType;
 - *Type:* <a href="#cdk-vpclattice-alpha.TargetType">TargetType</a>
 
 Targets.
+
+---
+
+##### `listenerPort`<sup>Required</sup> <a name="listenerPort" id="cdk-vpclattice-alpha.AlbTargetGroup.property.listenerPort"></a>
+
+```typescript
+public readonly listenerPort: number;
+```
+
+- *Type:* number
 
 ---
 
@@ -3051,8 +3062,9 @@ const albTargetGroupProps: AlbTargetGroupProps = { ... }
 | --- | --- | --- |
 | <code><a href="#cdk-vpclattice-alpha.AlbTargetGroupProps.property.loadBalancer">loadBalancer</a></code> | <code>aws-cdk-lib.aws_elasticloadbalancingv2.IApplicationLoadBalancer</code> | You can specify a single **internal** Application Load Balancer as the target. |
 | <code><a href="#cdk-vpclattice-alpha.AlbTargetGroupProps.property.vpc">vpc</a></code> | <code>aws-cdk-lib.aws_ec2.IVpc</code> | VPC. |
+| <code><a href="#cdk-vpclattice-alpha.AlbTargetGroupProps.property.listenerPort">listenerPort</a></code> | <code>number</code> | This port is used for routing traffic to the target,  and defaults to the target group port. |
 | <code><a href="#cdk-vpclattice-alpha.AlbTargetGroupProps.property.name">name</a></code> | <code>string</code> | The name of the target group. |
-| <code><a href="#cdk-vpclattice-alpha.AlbTargetGroupProps.property.port">port</a></code> | <code>number</code> | The port on which the target will listen. |
+| <code><a href="#cdk-vpclattice-alpha.AlbTargetGroupProps.property.port">port</a></code> | <code>number</code> | The port on which the target group will listen. |
 | <code><a href="#cdk-vpclattice-alpha.AlbTargetGroupProps.property.protocol">protocol</a></code> | <code><a href="#cdk-vpclattice-alpha.RequestProtocol">RequestProtocol</a></code> | The protocol to use for routing traffic to the targets. |
 | <code><a href="#cdk-vpclattice-alpha.AlbTargetGroupProps.property.protocolVersion">protocolVersion</a></code> | <code><a href="#cdk-vpclattice-alpha.RequestProtocolVersion">RequestProtocolVersion</a></code> | Choose the protocol version for requests to be sent to targets. |
 
@@ -3082,6 +3094,22 @@ VPC.
 
 ---
 
+##### `listenerPort`<sup>Optional</sup> <a name="listenerPort" id="cdk-vpclattice-alpha.AlbTargetGroupProps.property.listenerPort"></a>
+
+```typescript
+public readonly listenerPort: number;
+```
+
+- *Type:* number
+
+This port is used for routing traffic to the target,  and defaults to the target group port.
+
+However, you can 
+override the default and specify a custom port that matches 
+the port of your Application Load Balancer's listeners
+
+---
+
 ##### `name`<sup>Optional</sup> <a name="name" id="cdk-vpclattice-alpha.AlbTargetGroupProps.property.name"></a>
 
 ```typescript
@@ -3103,10 +3131,7 @@ public readonly port: number;
 - *Type:* number
 - *Default:* 443
 
-The port on which the target will listen.
-
-It should match the port
-of your Application Load Balancer's listeners.
+The port on which the target group will listen.
 
 ---
 
