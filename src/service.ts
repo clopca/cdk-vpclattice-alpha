@@ -275,7 +275,7 @@ export class Service extends ServiceBase {
    */
   public readonly loggingDestinations: LoggingDestination[];
   /**
-   * Auth policy to be added to the service
+   * Auth policy to be added to the service.
    */
   public readonly authPolicy: AuthPolicyDocument;
   /**

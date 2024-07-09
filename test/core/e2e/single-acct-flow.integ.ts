@@ -98,6 +98,7 @@ testSvc.addListener({
   defaultAction: {
     targetGroup: serviceTg,
   },
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
 // ------------------------------------------------------

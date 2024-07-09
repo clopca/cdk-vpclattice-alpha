@@ -70,16 +70,9 @@ export interface ListenerProps {
   readonly service: Service;
 
   /**
-   *
+   * The configuration properties for the listener.
    */
   readonly config?: ListenerConfig;
-
-  /**
-   * Determine what happens to the service when the resource/stack is deleted.
-   *
-   * @default RemovalPolicy.RETAIN
-   */
-  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -112,6 +105,13 @@ export interface ListenerConfig {
    * Rules to add to the listener.
    */
   readonly rules?: RuleProps[];
+
+  /**
+   * Determine what happens to the service when the resource/stack is deleted.
+   *
+   * @default RemovalPolicy.RETAIN
+   */
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -151,12 +151,13 @@ export class Listener extends Resource implements IListener {
   /**
    * The service this listener is attached to
    */
-  service: Service;
+  readonly service: Service;
 
   /**
    * The listener rules to add
    */
   rules: RuleProps[];
+
   private readonly _resource: generated.CfnListener;
 
   // ------------------------------------------------------
@@ -205,7 +206,7 @@ export class Listener extends Resource implements IListener {
     // ------------------------------------------------------
     // Construct properties
     // ------------------------------------------------------
-    this._resource.applyRemovalPolicy(props.removalPolicy);
+    this._resource.applyRemovalPolicy(props.config?.removalPolicy);
     this.listenerArn = this._resource.attrArn;
     this.listenerId = this._resource.attrId;
 
@@ -282,7 +283,7 @@ export class Listener extends Resource implements IListener {
     }
     if (ruleAction.weightedTargetGroups) {
       const targetGroups = ruleAction.weightedTargetGroups.map(weightedTargetGroup => {
-        //this._resource.node.addDependency(weightedTargetGroup);
+        //this.node.addDependency(weightedTargetGroup.targetGroup);
         return {
           targetGroupIdentifier: weightedTargetGroup.targetGroup.targetGroupId,
           weight: weightedTargetGroup.weight,
@@ -296,7 +297,7 @@ export class Listener extends Resource implements IListener {
       };
     }
     if (ruleAction.targetGroup) {
-      //this._resource.addDependency(ruleAction.targetGroup)
+      //this._resource.node.addDependency(ruleAction.targetGroup)
       return {
         forward: {
           targetGroups: [
@@ -369,4 +370,3 @@ export class Listener extends Resource implements IListener {
   }
 }
 
-// 175-176,178,321-323

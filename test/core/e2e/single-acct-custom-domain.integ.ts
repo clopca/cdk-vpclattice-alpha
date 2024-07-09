@@ -1,8 +1,9 @@
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import * as route53 from 'aws-cdk-lib/aws-route53';
-import { AuthType, Service, ServiceNetwork } from '../../../src';
+import { Service, ServiceNetwork } from '../../../src';
 import { Vpc } from 'aws-cdk-lib/aws-ec2';
+import { AuthType } from '../../../src/auth';
 
 // import * as acm from 'aws-cdk-lib/aws-certificatemanager';
 

@@ -806,8 +806,8 @@
      ]
     }
    },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "ParkingServiceAuthPolicy69D9B431": {
    "Type": "AWS::VpcLattice::AuthPolicy",
