@@ -17,7 +17,7 @@ export class VpcLatticeAlphaStack extends cdk.Stack {
       authType: vpclattice.AuthType.AWS_IAM,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       // allowedPrincipals: [new iam.ArnPrincipal('arn:aws:iam::123456789012:role/helloRole')],
-      allowedPrincipals: [support.helloRole],
+      //allowedPrincipals: [support.helloRole],
     });
 
     // // add a listener to the service

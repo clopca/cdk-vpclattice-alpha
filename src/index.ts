@@ -10,3 +10,4 @@ export * from './service-network-association';
 export * from './service-network';
 export * from './service';
 export * from './util';
+export * from './auth';

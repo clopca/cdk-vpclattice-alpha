@@ -1592,9 +1592,9 @@ Check whether the given construct is a Resource.
 | <code><a href="#cdk-vpclattice-alpha.Listener.property.listenerId">listenerId</a></code> | <code>string</code> | The Id of the Service Network. |
 | <code><a href="#cdk-vpclattice-alpha.Listener.property.port">port</a></code> | <code>number</code> | The listener port. |
 | <code><a href="#cdk-vpclattice-alpha.Listener.property.protocol">protocol</a></code> | <code><a href="#cdk-vpclattice-alpha.ListenerProtocol">ListenerProtocol</a></code> | The listener protocol. |
+| <code><a href="#cdk-vpclattice-alpha.Listener.property.service">service</a></code> | <code><a href="#cdk-vpclattice-alpha.Service">Service</a></code> | The service this listener is attached to. |
 | <code><a href="#cdk-vpclattice-alpha.Listener.property.name">name</a></code> | <code>string</code> | The name of the listener. |
 | <code><a href="#cdk-vpclattice-alpha.Listener.property.rules">rules</a></code> | <code><a href="#cdk-vpclattice-alpha.RuleProps">RuleProps</a>[]</code> | The listener rules to add. |
-| <code><a href="#cdk-vpclattice-alpha.Listener.property.service">service</a></code> | <code><a href="#cdk-vpclattice-alpha.Service">Service</a></code> | The service this listener is attached to. |
 
 ---
 
@@ -1701,6 +1701,18 @@ The listener protocol.
 
 ---
 
+##### `service`<sup>Required</sup> <a name="service" id="cdk-vpclattice-alpha.Listener.property.service"></a>
+
+```typescript
+public readonly service: Service;
+```
+
+- *Type:* <a href="#cdk-vpclattice-alpha.Service">Service</a>
+
+The service this listener is attached to.
+
+---
+
 ##### `name`<sup>Optional</sup> <a name="name" id="cdk-vpclattice-alpha.Listener.property.name"></a>
 
 ```typescript
@@ -1722,18 +1734,6 @@ public readonly rules: RuleProps[];
 - *Type:* <a href="#cdk-vpclattice-alpha.RuleProps">RuleProps</a>[]
 
 The listener rules to add.
-
----
-
-##### `service`<sup>Required</sup> <a name="service" id="cdk-vpclattice-alpha.Listener.property.service"></a>
-
-```typescript
-public readonly service: Service;
-```
-
-- *Type:* <a href="#cdk-vpclattice-alpha.Service">Service</a>
-
-The service this listener is attached to.
 
 ---
 
@@ -1784,7 +1784,6 @@ new Service(scope: Construct, id: string, props: ServiceProps)
 | --- | --- |
 | <code><a href="#cdk-vpclattice-alpha.Service.toString">toString</a></code> | Returns a string representation of this construct. |
 | <code><a href="#cdk-vpclattice-alpha.Service.applyRemovalPolicy">applyRemovalPolicy</a></code> | Apply the given removal policy to this resource. |
-| <code><a href="#cdk-vpclattice-alpha.Service.addAuthPolicyStatement">addAuthPolicyStatement</a></code> | Add a statement to the auth policy. |
 | <code><a href="#cdk-vpclattice-alpha.Service.addListener">addListener</a></code> | Add Listener. |
 | <code><a href="#cdk-vpclattice-alpha.Service.associateWithServiceNetwork">associateWithServiceNetwork</a></code> | Associate a Lattice Service with a Service Network. |
 | <code><a href="#cdk-vpclattice-alpha.Service.grantAccess">grantAccess</a></code> | .grantAccess on a lattice service, will permit the principals to access all of the service. Consider using more granular permissions at the rule level. |
@@ -1819,22 +1818,6 @@ account for data recovery and cleanup later (`RemovalPolicy.RETAIN`).
 ###### `policy`<sup>Required</sup> <a name="policy" id="cdk-vpclattice-alpha.Service.applyRemovalPolicy.parameter.policy"></a>
 
 - *Type:* aws-cdk-lib.RemovalPolicy
-
----
-
-##### `addAuthPolicyStatement` <a name="addAuthPolicyStatement" id="cdk-vpclattice-alpha.Service.addAuthPolicyStatement"></a>
-
-```typescript
-public addAuthPolicyStatement(statement: PolicyStatement): void
-```
-
-Add a statement to the auth policy.
-
-###### `statement`<sup>Required</sup> <a name="statement" id="cdk-vpclattice-alpha.Service.addAuthPolicyStatement.parameter.statement"></a>
-
-- *Type:* aws-cdk-lib.aws_iam.PolicyStatement
-
-The Policy Statement to add.
 
 ---
 
@@ -2017,13 +2000,14 @@ Service.fromServiceId(scope: Construct, id: string, serviceId: string)
 | <code><a href="#cdk-vpclattice-alpha.Service.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
 | <code><a href="#cdk-vpclattice-alpha.Service.property.env">env</a></code> | <code>aws-cdk-lib.ResourceEnvironment</code> | The environment this resource belongs to. |
 | <code><a href="#cdk-vpclattice-alpha.Service.property.stack">stack</a></code> | <code>aws-cdk-lib.Stack</code> | The stack in which this resource is defined. |
-| <code><a href="#cdk-vpclattice-alpha.Service.property.allowedPrincipals">allowedPrincipals</a></code> | <code>aws-cdk-lib.aws_iam.IPrincipal[]</code> | Allowed principals to invoke the service. |
-| <code><a href="#cdk-vpclattice-alpha.Service.property.authPolicy">authPolicy</a></code> | <code>aws-cdk-lib.aws_iam.PolicyDocument</code> | Auth policy to be added to the service. |
+| <code><a href="#cdk-vpclattice-alpha.Service.property.authPolicy">authPolicy</a></code> | <code><a href="#cdk-vpclattice-alpha.AuthPolicyDocument">AuthPolicyDocument</a></code> | Auth policy to be added to the service. |
 | <code><a href="#cdk-vpclattice-alpha.Service.property.authType">authType</a></code> | <code><a href="#cdk-vpclattice-alpha.AuthType">AuthType</a></code> | The auth type of the service. |
+| <code><a href="#cdk-vpclattice-alpha.Service.property.domainName">domainName</a></code> | <code>string</code> | VPC Lattice Domain Name. |
 | <code><a href="#cdk-vpclattice-alpha.Service.property.loggingDestinations">loggingDestinations</a></code> | <code><a href="#cdk-vpclattice-alpha.LoggingDestination">LoggingDestination</a>[]</code> | Logging destinations of the service. |
 | <code><a href="#cdk-vpclattice-alpha.Service.property.serviceArn">serviceArn</a></code> | <code>string</code> | The Amazon Resource Name (ARN) of the service. |
 | <code><a href="#cdk-vpclattice-alpha.Service.property.serviceId">serviceId</a></code> | <code>string</code> | The Id of the service. |
 | <code><a href="#cdk-vpclattice-alpha.Service.property.serviceName">serviceName</a></code> | <code>string</code> | The name of the service. |
+| <code><a href="#cdk-vpclattice-alpha.Service.property.accessMode">accessMode</a></code> | <code><a href="#cdk-vpclattice-alpha.AuthPolicyAccessMode">AuthPolicyAccessMode</a></code> | The default access mode defined for the service. |
 
 ---
 
@@ -2070,25 +2054,13 @@ The stack in which this resource is defined.
 
 ---
 
-##### `allowedPrincipals`<sup>Required</sup> <a name="allowedPrincipals" id="cdk-vpclattice-alpha.Service.property.allowedPrincipals"></a>
-
-```typescript
-public readonly allowedPrincipals: IPrincipal[];
-```
-
-- *Type:* aws-cdk-lib.aws_iam.IPrincipal[]
-
-Allowed principals to invoke the service.
-
----
-
 ##### `authPolicy`<sup>Required</sup> <a name="authPolicy" id="cdk-vpclattice-alpha.Service.property.authPolicy"></a>
 
 ```typescript
-public readonly authPolicy: PolicyDocument;
+public readonly authPolicy: AuthPolicyDocument;
 ```
 
-- *Type:* aws-cdk-lib.aws_iam.PolicyDocument
+- *Type:* <a href="#cdk-vpclattice-alpha.AuthPolicyDocument">AuthPolicyDocument</a>
 
 Auth policy to be added to the service.
 
@@ -2101,9 +2073,20 @@ public readonly authType: AuthType;
 ```
 
 - *Type:* <a href="#cdk-vpclattice-alpha.AuthType">AuthType</a>
-- *Default:* AuthType.NONE
 
 The auth type of the service.
+
+---
+
+##### `domainName`<sup>Required</sup> <a name="domainName" id="cdk-vpclattice-alpha.Service.property.domainName"></a>
+
+```typescript
+public readonly domainName: string;
+```
+
+- *Type:* string
+
+VPC Lattice Domain Name.
 
 ---
 
@@ -2152,6 +2135,18 @@ public readonly serviceName: string;
 - *Type:* string
 
 The name of the service.
+
+---
+
+##### `accessMode`<sup>Optional</sup> <a name="accessMode" id="cdk-vpclattice-alpha.Service.property.accessMode"></a>
+
+```typescript
+public readonly accessMode: AuthPolicyAccessMode;
+```
+
+- *Type:* <a href="#cdk-vpclattice-alpha.AuthPolicyAccessMode">AuthPolicyAccessMode</a>
+
+The default access mode defined for the service.
 
 ---
 
@@ -2461,7 +2456,7 @@ Import a Service Network by Id.
 | <code><a href="#cdk-vpclattice-alpha.ServiceNetwork.property.name">name</a></code> | <code>string</code> | The name of the service network. |
 | <code><a href="#cdk-vpclattice-alpha.ServiceNetwork.property.serviceNetworkArn">serviceNetworkArn</a></code> | <code>string</code> | The Amazon Resource Name (ARN) of the service network. |
 | <code><a href="#cdk-vpclattice-alpha.ServiceNetwork.property.serviceNetworkId">serviceNetworkId</a></code> | <code>string</code> | The Id of the Service Network. |
-| <code><a href="#cdk-vpclattice-alpha.ServiceNetwork.property.accessMode">accessMode</a></code> | <code><a href="#cdk-vpclattice-alpha.ServiceNetworkAccessMode">ServiceNetworkAccessMode</a></code> | Access mode to the service network, Authenticated, unauthenticated or only to org principals. |
+| <code><a href="#cdk-vpclattice-alpha.ServiceNetwork.property.accessMode">accessMode</a></code> | <code><a href="#cdk-vpclattice-alpha.AuthPolicyAccessMode">AuthPolicyAccessMode</a></code> | Access mode to the service network, Authenticated, unauthenticated or only to org principals. |
 
 ---
 
@@ -2596,10 +2591,10 @@ The Id of the Service Network.
 ##### `accessMode`<sup>Optional</sup> <a name="accessMode" id="cdk-vpclattice-alpha.ServiceNetwork.property.accessMode"></a>
 
 ```typescript
-public readonly accessMode: ServiceNetworkAccessMode;
+public readonly accessMode: AuthPolicyAccessMode;
 ```
 
-- *Type:* <a href="#cdk-vpclattice-alpha.ServiceNetworkAccessMode">ServiceNetworkAccessMode</a>
+- *Type:* <a href="#cdk-vpclattice-alpha.AuthPolicyAccessMode">AuthPolicyAccessMode</a>
 
 Access mode to the service network, Authenticated, unauthenticated or only to org principals.
 
@@ -3326,6 +3321,49 @@ determined automatically.
 
 ---
 
+### DnsEntryProperty <a name="DnsEntryProperty" id="cdk-vpclattice-alpha.DnsEntryProperty"></a>
+
+#### Initializer <a name="Initializer" id="cdk-vpclattice-alpha.DnsEntryProperty.Initializer"></a>
+
+```typescript
+import { DnsEntryProperty } from 'cdk-vpclattice-alpha'
+
+const dnsEntryProperty: DnsEntryProperty = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#cdk-vpclattice-alpha.DnsEntryProperty.property.domainName">domainName</a></code> | <code>string</code> | The domain name of the service. |
+| <code><a href="#cdk-vpclattice-alpha.DnsEntryProperty.property.hostedZone">hostedZone</a></code> | <code>aws-cdk-lib.aws_route53.IHostedZone</code> | The Route53 Private Hosted Zone or Public Hosted Zone. |
+
+---
+
+##### `domainName`<sup>Optional</sup> <a name="domainName" id="cdk-vpclattice-alpha.DnsEntryProperty.property.domainName"></a>
+
+```typescript
+public readonly domainName: string;
+```
+
+- *Type:* string
+
+The domain name of the service.
+
+---
+
+##### `hostedZone`<sup>Optional</sup> <a name="hostedZone" id="cdk-vpclattice-alpha.DnsEntryProperty.property.hostedZone"></a>
+
+```typescript
+public readonly hostedZone: IHostedZone;
+```
+
+- *Type:* aws-cdk-lib.aws_route53.IHostedZone
+
+The Route53 Private Hosted Zone or Public Hosted Zone.
+
+---
+
 ### HeaderMatch <a name="HeaderMatch" id="cdk-vpclattice-alpha.HeaderMatch"></a>
 
 Header Matches for creating rules.
@@ -3990,6 +4028,7 @@ const listenerConfig: ListenerConfig = { ... }
 | <code><a href="#cdk-vpclattice-alpha.ListenerConfig.property.name">name</a></code> | <code>string</code> | The Name of the listener. |
 | <code><a href="#cdk-vpclattice-alpha.ListenerConfig.property.port">port</a></code> | <code>number</code> | Optional port number for the listener. |
 | <code><a href="#cdk-vpclattice-alpha.ListenerConfig.property.protocol">protocol</a></code> | <code><a href="#cdk-vpclattice-alpha.ListenerProtocol">ListenerProtocol</a></code> | Protocol that the listener will listen on. |
+| <code><a href="#cdk-vpclattice-alpha.ListenerConfig.property.removalPolicy">removalPolicy</a></code> | <code>aws-cdk-lib.RemovalPolicy</code> | Determine what happens to the service when the resource/stack is deleted. |
 | <code><a href="#cdk-vpclattice-alpha.ListenerConfig.property.rules">rules</a></code> | <code><a href="#cdk-vpclattice-alpha.RuleProps">RuleProps</a>[]</code> | Rules to add to the listener. |
 
 ---
@@ -4046,6 +4085,19 @@ Protocol that the listener will listen on.
 
 ---
 
+##### `removalPolicy`<sup>Optional</sup> <a name="removalPolicy" id="cdk-vpclattice-alpha.ListenerConfig.property.removalPolicy"></a>
+
+```typescript
+public readonly removalPolicy: RemovalPolicy;
+```
+
+- *Type:* aws-cdk-lib.RemovalPolicy
+- *Default:* RemovalPolicy.RETAIN
+
+Determine what happens to the service when the resource/stack is deleted.
+
+---
+
 ##### `rules`<sup>Optional</sup> <a name="rules" id="cdk-vpclattice-alpha.ListenerConfig.property.rules"></a>
 
 ```typescript
@@ -4075,8 +4127,7 @@ const listenerProps: ListenerProps = { ... }
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
 | <code><a href="#cdk-vpclattice-alpha.ListenerProps.property.service">service</a></code> | <code><a href="#cdk-vpclattice-alpha.Service">Service</a></code> | The Id of the service that this listener is associated with. |
-| <code><a href="#cdk-vpclattice-alpha.ListenerProps.property.config">config</a></code> | <code><a href="#cdk-vpclattice-alpha.ListenerConfig">ListenerConfig</a></code> | *No description.* |
-| <code><a href="#cdk-vpclattice-alpha.ListenerProps.property.removalPolicy">removalPolicy</a></code> | <code>aws-cdk-lib.RemovalPolicy</code> | Determine what happens to the service when the resource/stack is deleted. |
+| <code><a href="#cdk-vpclattice-alpha.ListenerProps.property.config">config</a></code> | <code><a href="#cdk-vpclattice-alpha.ListenerConfig">ListenerConfig</a></code> | The configuration properties for the listener. |
 
 ---
 
@@ -4100,18 +4151,7 @@ public readonly config: ListenerConfig;
 
 - *Type:* <a href="#cdk-vpclattice-alpha.ListenerConfig">ListenerConfig</a>
 
----
-
-##### `removalPolicy`<sup>Optional</sup> <a name="removalPolicy" id="cdk-vpclattice-alpha.ListenerProps.property.removalPolicy"></a>
-
-```typescript
-public readonly removalPolicy: RemovalPolicy;
-```
-
-- *Type:* aws-cdk-lib.RemovalPolicy
-- *Default:* RemovalPolicy.RETAIN
-
-Determine what happens to the service when the resource/stack is deleted.
+The configuration properties for the listener.
 
 ---
 
@@ -4417,7 +4457,7 @@ const serviceNetworkProps: ServiceNetworkProps = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#cdk-vpclattice-alpha.ServiceNetworkProps.property.accessMode">accessMode</a></code> | <code><a href="#cdk-vpclattice-alpha.ServiceNetworkAccessMode">ServiceNetworkAccessMode</a></code> | Allow external principals. |
+| <code><a href="#cdk-vpclattice-alpha.ServiceNetworkProps.property.accessMode">accessMode</a></code> | <code><a href="#cdk-vpclattice-alpha.AuthPolicyAccessMode">AuthPolicyAccessMode</a></code> | Allow external principals. |
 | <code><a href="#cdk-vpclattice-alpha.ServiceNetworkProps.property.allowedPrincipals">allowedPrincipals</a></code> | <code>aws-cdk-lib.aws_iam.IPrincipal[]</code> | Allowed principals to access the service network. |
 | <code><a href="#cdk-vpclattice-alpha.ServiceNetworkProps.property.authPolicy">authPolicy</a></code> | <code>aws-cdk-lib.aws_iam.PolicyDocument</code> | Policy to apply to the service network. |
 | <code><a href="#cdk-vpclattice-alpha.ServiceNetworkProps.property.authStatements">authStatements</a></code> | <code>aws-cdk-lib.aws_iam.PolicyStatement[]</code> | Additional AuthStatements:. |
@@ -4434,10 +4474,10 @@ const serviceNetworkProps: ServiceNetworkProps = { ... }
 ##### `accessMode`<sup>Optional</sup> <a name="accessMode" id="cdk-vpclattice-alpha.ServiceNetworkProps.property.accessMode"></a>
 
 ```typescript
-public readonly accessMode: ServiceNetworkAccessMode;
+public readonly accessMode: AuthPolicyAccessMode;
 ```
 
-- *Type:* <a href="#cdk-vpclattice-alpha.ServiceNetworkAccessMode">ServiceNetworkAccessMode</a>
+- *Type:* <a href="#cdk-vpclattice-alpha.AuthPolicyAccessMode">AuthPolicyAccessMode</a>
 - *Default:* ServiceNetworkAccessMode.NO_STATEMENT
 
 Allow external principals.
@@ -4606,55 +4646,43 @@ const serviceProps: ServiceProps = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#cdk-vpclattice-alpha.ServiceProps.property.allowedPrincipals">allowedPrincipals</a></code> | <code>aws-cdk-lib.aws_iam.IPrincipal[]</code> | Allowed principals to access the service. |
-| <code><a href="#cdk-vpclattice-alpha.ServiceProps.property.authPolicy">authPolicy</a></code> | <code>aws-cdk-lib.aws_iam.PolicyDocument</code> | Policy to apply to the service. |
-| <code><a href="#cdk-vpclattice-alpha.ServiceProps.property.authStatements">authStatements</a></code> | <code>aws-cdk-lib.aws_iam.PolicyStatement[]</code> | Additional AuthStatements:. |
+| <code><a href="#cdk-vpclattice-alpha.ServiceProps.property.accessMode">accessMode</a></code> | <code><a href="#cdk-vpclattice-alpha.AuthPolicyAccessMode">AuthPolicyAccessMode</a></code> | The Auth Policy Acess Mode Setting this forces the auth policy to allow certain kind of access. |
+| <code><a href="#cdk-vpclattice-alpha.ServiceProps.property.authPolicy">authPolicy</a></code> | <code><a href="#cdk-vpclattice-alpha.AuthPolicyDocument">AuthPolicyDocument</a></code> | Policy to apply to the service. |
 | <code><a href="#cdk-vpclattice-alpha.ServiceProps.property.authType">authType</a></code> | <code><a href="#cdk-vpclattice-alpha.AuthType">AuthType</a></code> | The authType of the Service. |
-| <code><a href="#cdk-vpclattice-alpha.ServiceProps.property.certificateArn">certificateArn</a></code> | <code>string</code> | A certificate that may be used by the service. |
+| <code><a href="#cdk-vpclattice-alpha.ServiceProps.property.certificate">certificate</a></code> | <code>aws-cdk-lib.aws_certificatemanager.ICertificate</code> | A certificate that may be used by the service. |
 | <code><a href="#cdk-vpclattice-alpha.ServiceProps.property.customDomainName">customDomainName</a></code> | <code>string</code> | A registered custom domain name for your service. |
-| <code><a href="#cdk-vpclattice-alpha.ServiceProps.property.dnsEntry">dnsEntry</a></code> | <code>aws-cdk-lib.aws_vpclattice.CfnService.DnsEntryProperty</code> | A custom DNS entry. |
+| <code><a href="#cdk-vpclattice-alpha.ServiceProps.property.dnsEntry">dnsEntry</a></code> | <code><a href="#cdk-vpclattice-alpha.DnsEntryProperty">DnsEntryProperty</a></code> | A custom DNS entry. |
 | <code><a href="#cdk-vpclattice-alpha.ServiceProps.property.loggingDestinations">loggingDestinations</a></code> | <code><a href="#cdk-vpclattice-alpha.LoggingDestination">LoggingDestination</a>[]</code> | Where to send access logs. |
 | <code><a href="#cdk-vpclattice-alpha.ServiceProps.property.name">name</a></code> | <code>string</code> | The name to assign to the service. |
+| <code><a href="#cdk-vpclattice-alpha.ServiceProps.property.orgId">orgId</a></code> | <code>string</code> | Organization ID to allow access to the Service. |
 | <code><a href="#cdk-vpclattice-alpha.ServiceProps.property.removalPolicy">removalPolicy</a></code> | <code>aws-cdk-lib.RemovalPolicy</code> | Determine what happens to the service when the resource/stack is deleted. |
 | <code><a href="#cdk-vpclattice-alpha.ServiceProps.property.serviceNetwork">serviceNetwork</a></code> | <code><a href="#cdk-vpclattice-alpha.IServiceNetwork">IServiceNetwork</a></code> | ServiceNetwork to associate with. |
 
 ---
 
-##### `allowedPrincipals`<sup>Optional</sup> <a name="allowedPrincipals" id="cdk-vpclattice-alpha.ServiceProps.property.allowedPrincipals"></a>
+##### `accessMode`<sup>Optional</sup> <a name="accessMode" id="cdk-vpclattice-alpha.ServiceProps.property.accessMode"></a>
 
 ```typescript
-public readonly allowedPrincipals: IPrincipal[];
+public readonly accessMode: AuthPolicyAccessMode;
 ```
 
-- *Type:* aws-cdk-lib.aws_iam.IPrincipal[]
-- *Default:* No principals are allowed
+- *Type:* <a href="#cdk-vpclattice-alpha.AuthPolicyAccessMode">AuthPolicyAccessMode</a>
+- *Default:* No default access mode, thus no policy is attached.
 
-Allowed principals to access the service.
+The Auth Policy Acess Mode Setting this forces the auth policy to allow certain kind of access.
 
 ---
 
 ##### `authPolicy`<sup>Optional</sup> <a name="authPolicy" id="cdk-vpclattice-alpha.ServiceProps.property.authPolicy"></a>
 
 ```typescript
-public readonly authPolicy: PolicyDocument;
+public readonly authPolicy: AuthPolicyDocument;
 ```
 
-- *Type:* aws-cdk-lib.aws_iam.PolicyDocument
+- *Type:* <a href="#cdk-vpclattice-alpha.AuthPolicyDocument">AuthPolicyDocument</a>
 - *Default:* No policy is attached. All traffic is denied by default.
 
 Policy to apply to the service.
-
----
-
-##### `authStatements`<sup>Optional</sup> <a name="authStatements" id="cdk-vpclattice-alpha.ServiceProps.property.authStatements"></a>
-
-```typescript
-public readonly authStatements: PolicyStatement[];
-```
-
-- *Type:* aws-cdk-lib.aws_iam.PolicyStatement[]
-
-Additional AuthStatements:.
 
 ---
 
@@ -4671,16 +4699,21 @@ The authType of the Service.
 
 ---
 
-##### `certificateArn`<sup>Optional</sup> <a name="certificateArn" id="cdk-vpclattice-alpha.ServiceProps.property.certificateArn"></a>
+##### `certificate`<sup>Optional</sup> <a name="certificate" id="cdk-vpclattice-alpha.ServiceProps.property.certificate"></a>
 
 ```typescript
-public readonly certificateArn: string;
+public readonly certificate: ICertificate;
 ```
 
-- *Type:* string
-- *Default:* no custom certificate is used
+- *Type:* aws-cdk-lib.aws_certificatemanager.ICertificate
+- *Default:* No custom certificate is used.
 
 A certificate that may be used by the service.
+
+To receive HTTPS requests, 
+you must provide your own certificate in AWS Certificate Manager.
+
+> [https://docs.aws.amazon.com/vpc-lattice/latest/ug/service-byoc.html](https://docs.aws.amazon.com/vpc-lattice/latest/ug/service-byoc.html)
 
 ---
 
@@ -4697,6 +4730,7 @@ A registered custom domain name for your service.
 
 Requests to the custom
 domain are resolved by the DNS server to the VPC Lattice generated domain name.
+Note: **Changing it requires recreating the service.**
 
 > [https://docs.aws.amazon.com/vpc-lattice/latest/ug/service-custom-domain-name.html](https://docs.aws.amazon.com/vpc-lattice/latest/ug/service-custom-domain-name.html)
 
@@ -4708,10 +4742,12 @@ domain are resolved by the DNS server to the VPC Lattice generated domain name.
 public readonly dnsEntry: DnsEntryProperty;
 ```
 
-- *Type:* aws-cdk-lib.aws_vpclattice.CfnService.DnsEntryProperty
-- *Default:* no custom DNS entry is used
+- *Type:* <a href="#cdk-vpclattice-alpha.DnsEntryProperty">DnsEntryProperty</a>
+- *Default:* No custom DNS entry is used.
 
 A custom DNS entry.
+
+Note Changing it requires recreating the service.
 
 ---
 
@@ -4748,6 +4784,29 @@ the service DNS and can't be changed after the VPC Lattice service is created.
 > [https://docs.aws.amazon.com/vpc-lattice/latest/ug/services.html](https://docs.aws.amazon.com/vpc-lattice/latest/ug/services.html)
 
 ---
+
+##### `orgId`<sup>Optional</sup> <a name="orgId" id="cdk-vpclattice-alpha.ServiceProps.property.orgId"></a>
+
+```typescript
+public readonly orgId: string;
+```
+
+- *Type:* string
+- *Default:* no org id is used
+
+Organization ID to allow access to the Service.
+
+Will be used
+only if accessMode is equal to AuthPolicyAccessMode.ORG_ONLY
+
+---
+
+*Example*
+
+```typescript
+'o-1234567890'
+```
+
 
 ##### `removalPolicy`<sup>Optional</sup> <a name="removalPolicy" id="cdk-vpclattice-alpha.ServiceProps.property.removalPolicy"></a>
 
@@ -4967,6 +5026,220 @@ A weight for the target group.
 
 ## Classes <a name="Classes" id="Classes"></a>
 
+### AuthPolicyDocument <a name="AuthPolicyDocument" id="cdk-vpclattice-alpha.AuthPolicyDocument"></a>
+
+#### Initializers <a name="Initializers" id="cdk-vpclattice-alpha.AuthPolicyDocument.Initializer"></a>
+
+```typescript
+import { AuthPolicyDocument } from 'cdk-vpclattice-alpha'
+
+new AuthPolicyDocument(props?: IAuthPolicyProps)
+```
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#cdk-vpclattice-alpha.AuthPolicyDocument.Initializer.parameter.props">props</a></code> | <code><a href="#cdk-vpclattice-alpha.IAuthPolicyProps">IAuthPolicyProps</a></code> | *No description.* |
+
+---
+
+##### `props`<sup>Optional</sup> <a name="props" id="cdk-vpclattice-alpha.AuthPolicyDocument.Initializer.parameter.props"></a>
+
+- *Type:* <a href="#cdk-vpclattice-alpha.IAuthPolicyProps">IAuthPolicyProps</a>
+
+---
+
+#### Methods <a name="Methods" id="Methods"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#cdk-vpclattice-alpha.AuthPolicyDocument.addStatements">addStatements</a></code> | Adds a statement to the policy document. |
+| <code><a href="#cdk-vpclattice-alpha.AuthPolicyDocument.resolve">resolve</a></code> | Produce the Token's value at resolution time. |
+| <code><a href="#cdk-vpclattice-alpha.AuthPolicyDocument.toJSON">toJSON</a></code> | JSON-ify the document. |
+| <code><a href="#cdk-vpclattice-alpha.AuthPolicyDocument.toString">toString</a></code> | Encode the policy document as a string. |
+| <code><a href="#cdk-vpclattice-alpha.AuthPolicyDocument.validateForAnyPolicy">validateForAnyPolicy</a></code> | Validate that all policy statements in the policy document satisfies the requirements for any policy. |
+| <code><a href="#cdk-vpclattice-alpha.AuthPolicyDocument.validateForIdentityPolicy">validateForIdentityPolicy</a></code> | Validate that all policy statements in the policy document satisfies the requirements for an identity-based policy. |
+| <code><a href="#cdk-vpclattice-alpha.AuthPolicyDocument.validateForResourcePolicy">validateForResourcePolicy</a></code> | Validate that all policy statements in the policy document satisfies the requirements for a resource-based policy. |
+| <code><a href="#cdk-vpclattice-alpha.AuthPolicyDocument.validateAuthPolicy">validateAuthPolicy</a></code> | Must ensure Service has the correct AuthType and policy is a valid IAM Resource-based Policy for VPC Lattice. |
+
+---
+
+##### `addStatements` <a name="addStatements" id="cdk-vpclattice-alpha.AuthPolicyDocument.addStatements"></a>
+
+```typescript
+public addStatements(statement: PolicyStatement): void
+```
+
+Adds a statement to the policy document.
+
+###### `statement`<sup>Required</sup> <a name="statement" id="cdk-vpclattice-alpha.AuthPolicyDocument.addStatements.parameter.statement"></a>
+
+- *Type:* aws-cdk-lib.aws_iam.PolicyStatement
+
+the statement to add.
+
+---
+
+##### `resolve` <a name="resolve" id="cdk-vpclattice-alpha.AuthPolicyDocument.resolve"></a>
+
+```typescript
+public resolve(context: IResolveContext): any
+```
+
+Produce the Token's value at resolution time.
+
+###### `context`<sup>Required</sup> <a name="context" id="cdk-vpclattice-alpha.AuthPolicyDocument.resolve.parameter.context"></a>
+
+- *Type:* aws-cdk-lib.IResolveContext
+
+---
+
+##### `toJSON` <a name="toJSON" id="cdk-vpclattice-alpha.AuthPolicyDocument.toJSON"></a>
+
+```typescript
+public toJSON(): any
+```
+
+JSON-ify the document.
+
+Used when JSON.stringify() is called
+
+##### `toString` <a name="toString" id="cdk-vpclattice-alpha.AuthPolicyDocument.toString"></a>
+
+```typescript
+public toString(): string
+```
+
+Encode the policy document as a string.
+
+##### `validateForAnyPolicy` <a name="validateForAnyPolicy" id="cdk-vpclattice-alpha.AuthPolicyDocument.validateForAnyPolicy"></a>
+
+```typescript
+public validateForAnyPolicy(): string[]
+```
+
+Validate that all policy statements in the policy document satisfies the requirements for any policy.
+
+> [https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html#access_policies-json](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html#access_policies-json)
+
+##### `validateForIdentityPolicy` <a name="validateForIdentityPolicy" id="cdk-vpclattice-alpha.AuthPolicyDocument.validateForIdentityPolicy"></a>
+
+```typescript
+public validateForIdentityPolicy(): string[]
+```
+
+Validate that all policy statements in the policy document satisfies the requirements for an identity-based policy.
+
+> [https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html#access_policies-json](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html#access_policies-json)
+
+##### `validateForResourcePolicy` <a name="validateForResourcePolicy" id="cdk-vpclattice-alpha.AuthPolicyDocument.validateForResourcePolicy"></a>
+
+```typescript
+public validateForResourcePolicy(): string[]
+```
+
+Validate that all policy statements in the policy document satisfies the requirements for a resource-based policy.
+
+> [https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html#access_policies-json](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html#access_policies-json)
+
+##### `validateAuthPolicy` <a name="validateAuthPolicy" id="cdk-vpclattice-alpha.AuthPolicyDocument.validateAuthPolicy"></a>
+
+```typescript
+public validateAuthPolicy(): string[]
+```
+
+Must ensure Service has the correct AuthType and policy is a valid IAM Resource-based Policy for VPC Lattice.
+
+#### Static Functions <a name="Static Functions" id="Static Functions"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#cdk-vpclattice-alpha.AuthPolicyDocument.fromJson">fromJson</a></code> | Creates a new PolicyDocument based on the object provided. |
+
+---
+
+##### `fromJson` <a name="fromJson" id="cdk-vpclattice-alpha.AuthPolicyDocument.fromJson"></a>
+
+```typescript
+import { AuthPolicyDocument } from 'cdk-vpclattice-alpha'
+
+AuthPolicyDocument.fromJson(obj: any)
+```
+
+Creates a new PolicyDocument based on the object provided.
+
+This will accept an object created from the `.toJSON()` call
+
+###### `obj`<sup>Required</sup> <a name="obj" id="cdk-vpclattice-alpha.AuthPolicyDocument.fromJson.parameter.obj"></a>
+
+- *Type:* any
+
+the PolicyDocument in object form.
+
+---
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#cdk-vpclattice-alpha.AuthPolicyDocument.property.creationStack">creationStack</a></code> | <code>string[]</code> | The creation stack of this resolvable which will be appended to errors thrown during resolution. |
+| <code><a href="#cdk-vpclattice-alpha.AuthPolicyDocument.property.isEmpty">isEmpty</a></code> | <code>boolean</code> | Whether the policy document contains any statements. |
+| <code><a href="#cdk-vpclattice-alpha.AuthPolicyDocument.property.statementCount">statementCount</a></code> | <code>number</code> | The number of statements already added to this policy. |
+| <code><a href="#cdk-vpclattice-alpha.AuthPolicyDocument.property.accessMode">accessMode</a></code> | <code><a href="#cdk-vpclattice-alpha.AuthPolicyAccessMode">AuthPolicyAccessMode</a></code> | *No description.* |
+
+---
+
+##### `creationStack`<sup>Required</sup> <a name="creationStack" id="cdk-vpclattice-alpha.AuthPolicyDocument.property.creationStack"></a>
+
+```typescript
+public readonly creationStack: string[];
+```
+
+- *Type:* string[]
+
+The creation stack of this resolvable which will be appended to errors thrown during resolution.
+
+This may return an array with a single informational element indicating how
+to get this property populated, if it was skipped for performance reasons.
+
+---
+
+##### `isEmpty`<sup>Required</sup> <a name="isEmpty" id="cdk-vpclattice-alpha.AuthPolicyDocument.property.isEmpty"></a>
+
+```typescript
+public readonly isEmpty: boolean;
+```
+
+- *Type:* boolean
+
+Whether the policy document contains any statements.
+
+---
+
+##### `statementCount`<sup>Required</sup> <a name="statementCount" id="cdk-vpclattice-alpha.AuthPolicyDocument.property.statementCount"></a>
+
+```typescript
+public readonly statementCount: number;
+```
+
+- *Type:* number
+
+The number of statements already added to this policy.
+
+Can be used, for example, to generate unique "sid"s within the policy.
+
+---
+
+##### `accessMode`<sup>Optional</sup> <a name="accessMode" id="cdk-vpclattice-alpha.AuthPolicyDocument.property.accessMode"></a>
+
+```typescript
+public readonly accessMode: AuthPolicyAccessMode;
+```
+
+- *Type:* <a href="#cdk-vpclattice-alpha.AuthPolicyAccessMode">AuthPolicyAccessMode</a>
+
+---
+
+
 ### LoggingDestination <a name="LoggingDestination" id="cdk-vpclattice-alpha.LoggingDestination"></a>
 
 Enables access logs to be sent to Amazon CloudWatch, Amazon S3, and/or Amazon Kinesis Data Firehose.
@@ -5116,6 +5389,65 @@ A name of the destination.
 
 
 ## Protocols <a name="Protocols" id="Protocols"></a>
+
+### IAuthPolicyProps <a name="IAuthPolicyProps" id="cdk-vpclattice-alpha.IAuthPolicyProps"></a>
+
+- *Implemented By:* <a href="#cdk-vpclattice-alpha.IAuthPolicyProps">IAuthPolicyProps</a>
+
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#cdk-vpclattice-alpha.IAuthPolicyProps.property.accessMode">accessMode</a></code> | <code><a href="#cdk-vpclattice-alpha.AuthPolicyAccessMode">AuthPolicyAccessMode</a></code> | The Access Mode. |
+| <code><a href="#cdk-vpclattice-alpha.IAuthPolicyProps.property.config">config</a></code> | <code>aws-cdk-lib.aws_iam.PolicyDocumentProps</code> | Policy document config. |
+| <code><a href="#cdk-vpclattice-alpha.IAuthPolicyProps.property.orgId">orgId</a></code> | <code>string</code> | Organization ID to limit access to. |
+
+---
+
+##### `accessMode`<sup>Optional</sup> <a name="accessMode" id="cdk-vpclattice-alpha.IAuthPolicyProps.property.accessMode"></a>
+
+```typescript
+public readonly accessMode: AuthPolicyAccessMode;
+```
+
+- *Type:* <a href="#cdk-vpclattice-alpha.AuthPolicyAccessMode">AuthPolicyAccessMode</a>
+
+The Access Mode.
+
+---
+
+##### `config`<sup>Optional</sup> <a name="config" id="cdk-vpclattice-alpha.IAuthPolicyProps.property.config"></a>
+
+```typescript
+public readonly config: PolicyDocumentProps;
+```
+
+- *Type:* aws-cdk-lib.aws_iam.PolicyDocumentProps
+
+Policy document config.
+
+---
+
+##### `orgId`<sup>Optional</sup> <a name="orgId" id="cdk-vpclattice-alpha.IAuthPolicyProps.property.orgId"></a>
+
+```typescript
+public readonly orgId: string;
+```
+
+- *Type:* string
+- *Default:* no org id is used
+
+Organization ID to limit access to.
+
+---
+
+*Example*
+
+```typescript
+'o-1234567890'
+```
+
 
 ### IListener <a name="IListener" id="cdk-vpclattice-alpha.IListener"></a>
 
@@ -5562,6 +5894,45 @@ The id of the target group.
 
 ## Enums <a name="Enums" id="Enums"></a>
 
+### AuthPolicyAccessMode <a name="AuthPolicyAccessMode" id="cdk-vpclattice-alpha.AuthPolicyAccessMode"></a>
+
+AccessModes for the Service Network.
+
+#### Members <a name="Members" id="Members"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#cdk-vpclattice-alpha.AuthPolicyAccessMode.UNAUTHENTICATED">UNAUTHENTICATED</a></code> | Allows for Unauthenticated (Anonymous) Access to the Service Network. |
+| <code><a href="#cdk-vpclattice-alpha.AuthPolicyAccessMode.AUTHENTICATED_ONLY">AUTHENTICATED_ONLY</a></code> | Authenticated Access to the Service Network. |
+| <code><a href="#cdk-vpclattice-alpha.AuthPolicyAccessMode.ORG_ONLY">ORG_ONLY</a></code> | Only principals from this Org can access the Service Network. |
+
+---
+
+##### `UNAUTHENTICATED` <a name="UNAUTHENTICATED" id="cdk-vpclattice-alpha.AuthPolicyAccessMode.UNAUTHENTICATED"></a>
+
+Allows for Unauthenticated (Anonymous) Access to the Service Network.
+
+Anonymous principals are callers that don't sign their AWS requests
+with Signature Version 4 (SigV4), and are within a VPC that is connected
+to the service network.
+
+---
+
+
+##### `AUTHENTICATED_ONLY` <a name="AUTHENTICATED_ONLY" id="cdk-vpclattice-alpha.AuthPolicyAccessMode.AUTHENTICATED_ONLY"></a>
+
+Authenticated Access to the Service Network.
+
+---
+
+
+##### `ORG_ONLY` <a name="ORG_ONLY" id="cdk-vpclattice-alpha.AuthPolicyAccessMode.ORG_ONLY"></a>
+
+Only principals from this Org can access the Service Network.
+
+---
+
+
 ### AuthType <a name="AuthType" id="cdk-vpclattice-alpha.AuthType"></a>
 
 AuthTypes.
@@ -5571,7 +5942,7 @@ AuthTypes.
 | **Name** | **Description** |
 | --- | --- |
 | <code><a href="#cdk-vpclattice-alpha.AuthType.NONE">NONE</a></code> | No Authorization. |
-| <code><a href="#cdk-vpclattice-alpha.AuthType.AWS_IAM">AWS_IAM</a></code> | Use IAM Policy as. |
+| <code><a href="#cdk-vpclattice-alpha.AuthType.AWS_IAM">AWS_IAM</a></code> | Use VPC Lattice Auth Policy to control access. |
 
 ---
 
@@ -5584,7 +5955,7 @@ No Authorization.
 
 ##### `AWS_IAM` <a name="AWS_IAM" id="cdk-vpclattice-alpha.AuthType.AWS_IAM"></a>
 
-Use IAM Policy as.
+Use VPC Lattice Auth Policy to control access.
 
 ---
 
@@ -6078,45 +6449,6 @@ THIS Org only.
 ##### `NO_STATEMENT` <a name="NO_STATEMENT" id="cdk-vpclattice-alpha.RuleAccessMode.NO_STATEMENT"></a>
 
 Do not create a statement.
-
----
-
-
-### ServiceNetworkAccessMode <a name="ServiceNetworkAccessMode" id="cdk-vpclattice-alpha.ServiceNetworkAccessMode"></a>
-
-AccessModes for the Service Network.
-
-#### Members <a name="Members" id="Members"></a>
-
-| **Name** | **Description** |
-| --- | --- |
-| <code><a href="#cdk-vpclattice-alpha.ServiceNetworkAccessMode.UNAUTHENTICATED">UNAUTHENTICATED</a></code> | Allows for Unauthenticated (Anonymous) Access to the Service Network. |
-| <code><a href="#cdk-vpclattice-alpha.ServiceNetworkAccessMode.AUTHENTICATED_ONLY">AUTHENTICATED_ONLY</a></code> | Authenticated Access to the Service Network. |
-| <code><a href="#cdk-vpclattice-alpha.ServiceNetworkAccessMode.ORG_ONLY">ORG_ONLY</a></code> | Only principals from this Org can access the Service Network. |
-
----
-
-##### `UNAUTHENTICATED` <a name="UNAUTHENTICATED" id="cdk-vpclattice-alpha.ServiceNetworkAccessMode.UNAUTHENTICATED"></a>
-
-Allows for Unauthenticated (Anonymous) Access to the Service Network.
-
-Anonymous principals are callers that don't sign their AWS requests
-with Signature Version 4 (SigV4), and are within a VPC that is connected
-to the service network.
-
----
-
-
-##### `AUTHENTICATED_ONLY` <a name="AUTHENTICATED_ONLY" id="cdk-vpclattice-alpha.ServiceNetworkAccessMode.AUTHENTICATED_ONLY"></a>
-
-Authenticated Access to the Service Network.
-
----
-
-
-##### `ORG_ONLY` <a name="ORG_ONLY" id="cdk-vpclattice-alpha.ServiceNetworkAccessMode.ORG_ONLY"></a>
-
-Only principals from this Org can access the Service Network.
 
 ---
 

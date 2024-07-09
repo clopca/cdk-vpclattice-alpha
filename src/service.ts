@@ -61,7 +61,7 @@ export interface ShareServiceProps {
   readonly resourceArns?: string[];
 }
 
-interface DnsEntryProperty {
+export interface DnsEntryProperty {
   /**
    * The domain name of the service.
    */

@@ -45,7 +45,7 @@ export enum AuthType {
   AWS_IAM = 'AWS_IAM'
 }
 
-export interface IAuthPolicyProps extends PolicyDocumentProps {
+export interface IAuthPolicyProps {
   /**
    * The Access Mode
   */
@@ -57,6 +57,11 @@ export interface IAuthPolicyProps extends PolicyDocumentProps {
    * @example 'o-1234567890'
    */
   readonly orgId?: string;
+
+  /**
+   * Policy document config
+   */
+  readonly config?: PolicyDocumentProps;
 }
 
 export class AuthPolicyDocument extends PolicyDocument {
@@ -65,7 +70,7 @@ export class AuthPolicyDocument extends PolicyDocument {
 
   constructor(props?: IAuthPolicyProps) {
 
-    super(props);
+    super(props?.config);
     this.accessMode = props?.accessMode;
 
     // If access mode is defined
@@ -118,32 +123,33 @@ export class AuthPolicyDocument extends PolicyDocument {
    */
   public validateAuthPolicy(): string[] {
     const errors: string[] = [];
+    if (!this.isEmpty) {
+      const policyJson = this.toJSON();
+      for (const statement of policyJson.Statement) {
+        // Check for valid VPC Lattice actions
+        if (!this.validateActions(statement.Action, validActions)) {
+          errors.push(`Invalid action detected. Allowed actions for VPC Lattice are: ${validActions.join(', ')} or '*'.`);
+        }
 
-    const policyJson = this.toJSON();
-    for (const statement of policyJson.Statement) {
-      // Check for valid VPC Lattice actions
-      if (!this.validateActions(statement.Action, validActions)) {
-        errors.push(`Invalid action detected. Allowed actions for VPC Lattice are: ${validActions.join(', ')} or '*'.`);
-      }
-
-      // Check for valid principal types
-      if (statement.Principal && typeof statement.Principal === 'object') {
-        for (const key of Object.keys(statement.Principal)) {
-          if (!validPrincipalTypes.includes(key)) {
-            errors.push(`Invalid principal type: ${key}. Allowed types are: ${validPrincipalTypes.join(', ')}.`);
+        // Check for valid principal types
+        if (statement.Principal && typeof statement.Principal === 'object') {
+          for (const key of Object.keys(statement.Principal)) {
+            if (!validPrincipalTypes.includes(key)) {
+              errors.push(`Invalid principal type: ${key}. Allowed types are: ${validPrincipalTypes.join(', ')}.`);
+            }
           }
+        }
+
+        // Check for valid resource format
+        if (!this.validateResources(statement.Resource)) {
+          errors.push('Invalid resource format. Resources should be "*" or start with "arn:aws:vpc-lattice:".');
         }
       }
 
-      // Check for valid resource format
-      if (!this.validateResources(statement.Resource)) {
-        errors.push('Invalid resource format. Resources should be "*" or start with "arn:aws:vpc-lattice:".');
+      // Error message
+      if (errors.length > 0) {
+        errors.unshift(`The following errors were found in the VPC Lattice auth policy:${EOL}${JSON.stringify(policyJson, null, 2)}`);
       }
-    }
-
-    // Error message
-    if (errors.length > 0) {
-      errors.unshift(`The following errors were found in the VPC Lattice auth policy:${EOL}${JSON.stringify(policyJson, null, 2)}`);
     }
     return errors;
   }
