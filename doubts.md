@@ -17,19 +17,11 @@ throw new Error('It is not possible to share an imported Service Network');
 
 }
 
-2. Is it better to define the class Import in each method of import (by arn, by id) like in ecr module of cdk, or to have an ImportedService class with its constructor and have it instanciated in the import methods?
-   public static fromServiceArn(scope: Construct, id: string, arn: string): IService {
-   class Import extends ServiceBase {
-   public readonly serviceArn = arn;
-   public readonly serviceId = core.Arn.extractResourceName(arn, 'service');
-   }
-   return new Import(scope, id);
-   }
 
-vs
+1. Do we prefer default AuthType in Service and ServiceNetwork to be AWS_IAM or NONE?
 
-public static fromServiceArn(scope: Construct, id: string, arn: string): IService {
-return new ImportedService(scope, id, { serviceArn: arn });
-}
 
-3. Do we prefer default AuthType in Service and ServiceNetwork to be AWS_IAM or NONE?
+
+- Retain vs destroy default
+- interfaces de auth (si permitir que se añadan políticas o no si se selecciona el accessmode)
+- 
