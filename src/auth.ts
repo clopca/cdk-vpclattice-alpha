@@ -1,8 +1,10 @@
-import { PolicyDocument, PolicyDocumentProps } from 'aws-cdk-lib/aws-iam';
-import * as iam from 'aws-cdk-lib/aws-iam';
 import { EOL } from 'node:os';
+import type { PolicyDocumentProps } from 'aws-cdk-lib/aws-iam';
+import { PolicyDocument } from 'aws-cdk-lib/aws-iam';
 
-const validActions = ['vpc-lattice-svcs:Invoke', 'vpc-lattice-svcs:Connect', 'vpc-lattice-svcs:*']
+import * as iam from 'aws-cdk-lib/aws-iam';
+
+const validActions = ['vpc-lattice-svcs:Invoke', 'vpc-lattice-svcs:Connect', 'vpc-lattice-svcs:*'];
 //const validConditionKeys = ['vpc-lattice-svcs:Port']
 const validPrincipalTypes = ['AWS', 'Service'];
 
@@ -42,13 +44,13 @@ export enum AuthType {
   /**
    * Use VPC Lattice Auth Policy to control access.
    */
-  AWS_IAM = 'AWS_IAM'
+  AWS_IAM = 'AWS_IAM',
 }
 
 export interface IAuthPolicyProps {
   /**
    * The Access Mode
-  */
+   */
   readonly accessMode?: AuthPolicyAccessMode;
 
   /**
@@ -65,17 +67,14 @@ export interface IAuthPolicyProps {
 }
 
 export class AuthPolicyDocument extends PolicyDocument {
-
-  public readonly accessMode?: AuthPolicyAccessMode
+  public readonly accessMode?: AuthPolicyAccessMode;
 
   constructor(props?: IAuthPolicyProps) {
-
     super(props?.config);
     this.accessMode = props?.accessMode;
 
     // If access mode is defined
     if (this.accessMode) {
-
       // Validate it is a valid combination of params
       this.validateAccessMode(props?.orgId);
 
@@ -95,16 +94,14 @@ export class AuthPolicyDocument extends PolicyDocument {
         }
       }
       // ------- Auth Only Access ------------------------------
-      else if (this.accessMode === AuthPolicyAccessMode.AUTHENTICATED_ONLY) {
+      if (this.accessMode === AuthPolicyAccessMode.AUTHENTICATED_ONLY) {
         statement.addCondition('StringNotEqualsIgnoreCase', { 'aws:PrincipalType': 'anonymous' });
       }
 
       // Add the built statement
       this.addStatements(statement);
     }
-
   }
-
 
   /**
    * Validate that Access mode ORG_ONLY can be set only if orgId is provided
@@ -165,8 +162,7 @@ export class AuthPolicyDocument extends PolicyDocument {
   }
 
   private validateResources(resources: string | string[]): boolean {
-    const isValidResource = (resource: string): boolean =>
-      resource === '*' || resource.startsWith('arn:aws:vpc-lattice:');
+    const isValidResource = (resource: string): boolean => resource === '*' || resource.startsWith('arn:aws:vpc-lattice:');
     // When only one resource is specified
     if (typeof resources === 'string') {
       return isValidResource(resources);
@@ -177,6 +173,4 @@ export class AuthPolicyDocument extends PolicyDocument {
     }
     return false;
   }
-
-
 }
