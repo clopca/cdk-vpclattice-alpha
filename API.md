@@ -4710,7 +4710,7 @@ public readonly certificate: ICertificate;
 
 A certificate that may be used by the service.
 
-To receive HTTPS requests, 
+To receive HTTPS requests,
 you must provide your own certificate in AWS Certificate Manager.
 
 > [https://docs.aws.amazon.com/vpc-lattice/latest/ug/service-byoc.html](https://docs.aws.amazon.com/vpc-lattice/latest/ug/service-byoc.html)

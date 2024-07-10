@@ -6,8 +6,8 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import { Stream } from 'aws-cdk-lib/aws-kinesis';
 import { LogGroup } from 'aws-cdk-lib/aws-logs';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
-import { Service, LoggingDestination, AuthType } from '../../../src';
-import { ServiceNetwork, ServiceNetworkAccessMode } from '../../../src/service-network';
+import { Service, LoggingDestination, AuthType, AuthPolicyAccessMode } from '../../../src';
+import { ServiceNetwork } from '../../../src/service-network';
 
 describe('Service network', () => {
   // default service
@@ -140,7 +140,7 @@ describe('Service network', () => {
     const stack = new cdk.Stack(app, 'TestStack');
     new ServiceNetwork(stack, 'ServiceNetwork', {
       name: 'my-service-network',
-      accessMode: ServiceNetworkAccessMode.AUTHENTICATED_ONLY,
+      accessMode: AuthPolicyAccessMode.AUTHENTICATED_ONLY,
     });
 
     // THEN
@@ -167,7 +167,7 @@ describe('Service network', () => {
     const stack = new cdk.Stack(app, 'TestStack');
     new ServiceNetwork(stack, 'ServiceNetwork', {
       name: 'my-service-network',
-      accessMode: ServiceNetworkAccessMode.ORG_ONLY,
+      accessMode: AuthPolicyAccessMode.ORG_ONLY,
       orgId: 'o-1234567890',
     });
 
@@ -194,7 +194,7 @@ describe('Service network', () => {
     const stack = new cdk.Stack(app, 'TestStack');
     new ServiceNetwork(stack, 'ServiceNetwork', {
       name: 'my-service-network',
-      accessMode: ServiceNetworkAccessMode.ORG_ONLY,
+      accessMode: AuthPolicyAccessMode.ORG_ONLY,
     });
 
     // THEN
