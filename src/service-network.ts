@@ -96,7 +96,9 @@ export interface ServiceNetworkProps {
   readonly name?: string;
 
   /**
-   * The type of authentication to use with the Service Network
+   * The authentication and authorization that manages client access to the network.
+   * If `AuthType.AWS_IAM` is selected, and a policy is not attached, all traffic will be denied 
+   * by default regardless of the identity or service level permissions.
    * @default AuthType.NONE
    */
   readonly authType?: AuthType;

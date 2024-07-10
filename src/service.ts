@@ -4,7 +4,6 @@ import type { ICertificate } from 'aws-cdk-lib/aws-certificatemanager';
 import type { IHostedZone } from 'aws-cdk-lib/aws-route53';
 import * as generated from 'aws-cdk-lib/aws-vpclattice';
 import type { Construct, IConstruct } from 'constructs';
-import type { AuthPolicyAccessMode } from './auth';
 import { AuthType, AuthPolicyDocument } from './auth';
 import { Listener } from './listener';
 import type { ListenerConfig } from './listener';
@@ -94,7 +93,10 @@ export interface ServiceProps {
   readonly removalPolicy?: RemovalPolicy;
 
   /**
-   * The authType of the Service
+   * The authentication and authorization that manages client access to the service.
+   * If AuthType.AWS_IAM is selected, and an auth policy is not attached or an access mode 
+   * is not specified, all traffic will be denied to the service, regardless of the identity 
+   * or permissions associated with the service network-level policy.
    * @default AuthType.NONE
    */
   readonly authType?: AuthType;
@@ -142,20 +144,20 @@ export interface ServiceProps {
    */
   readonly authPolicy?: AuthPolicyDocument;
 
-  /**
-   * The Auth Policy Acess Mode
-   * Setting this forces the auth policy to allow certain kind of access.
-   * @default - No default access mode, thus no policy is attached.
-   */
-  readonly accessMode?: AuthPolicyAccessMode;
+  // /**
+  //  * The Auth Policy Acess Mode
+  //  * Setting this forces the auth policy to allow certain kind of access.
+  //  * @default - No default access mode, thus no policy is attached.
+  //  */
+  // readonly accessMode?: AuthPolicyAccessMode;
 
-  /**
-   * Organization ID to allow access to the Service. Will be used
-   * only if accessMode is equal to AuthPolicyAccessMode.ORG_ONLY
-   * @default - no org id is used
-   * @example 'o-1234567890'
-   */
-  readonly orgId?: string;
+  // /**
+  //  * Organization ID to allow access to the Service. Will be used
+  //  * only if accessMode is equal to AuthPolicyAccessMode.ORG_ONLY
+  //  * @default - no org id is used
+  //  * @example 'o-1234567890'
+  //  */
+  // readonly orgId?: string;
 }
 
 /**
@@ -267,10 +269,6 @@ export class Service extends ServiceBase {
    */
   public readonly authType: AuthType;
   /**
-   * The default access mode defined for the service
-   */
-  public readonly accessMode?: AuthPolicyAccessMode;
-  /**
    * Logging destinations of the service
    */
   public readonly loggingDestinations: LoggingDestination[];
@@ -297,15 +295,8 @@ export class Service extends ServiceBase {
     // Set properties or defaults
     // ------------------------------------------------------
     this.serviceName = this.physicalName;
-    //this.allowedPrincipals = props.allowedPrincipals ?? [];
-    this.accessMode = props.accessMode;
     this.loggingDestinations = props.loggingDestinations ?? [];
-    this.authPolicy =
-      props.authPolicy ??
-      new AuthPolicyDocument({
-        accessMode: this.accessMode,
-        orgId: props?.orgId,
-      });
+    this.authPolicy = props.authPolicy ?? new AuthPolicyDocument();
     this.authType = props.authType ?? AuthType.NONE;
 
     // ------------------------------------------------------
@@ -461,7 +452,7 @@ export class Service extends ServiceBase {
    * resource sharing across AWS accounts or through AWS Organizations.
    */
   public shareResource(props: ShareServiceProps): void {
-    new ram.CfnResourceShare(this, 'ServiceShare', {
+    new ram.CfnResourceShare(this, `ServiceShare-${props.name}`, {
       name: props.name,
       resourceArns: [this.serviceArn],
       allowExternalPrincipals: props.allowExternalPrincipals,

@@ -8,7 +8,7 @@ import { Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { Instance, Peer, Port, SecurityGroup, Vpc } from 'aws-cdk-lib/aws-ec2';
 import { LambdaTargetGroup, ListenerProtocol, Service, ServiceNetwork } from '../../../src';
 import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
-import { AuthPolicyAccessMode, AuthType } from '../../../src/auth';
+import { AuthPolicyAccessMode, AuthPolicyDocument, AuthType } from '../../../src/auth';
 
 export class VpcLatticeAlphaStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -52,7 +52,7 @@ serviceSecurityGroup.addIngressRule(Peer.ipv4('169.254.0.0/16'), Port.allTraffic
 const testSvc = new Service(stack, 'Parking', {
   name: 'test-svc',
   authType: AuthType.AWS_IAM,
-  accessMode: AuthPolicyAccessMode.AUTHENTICATED_ONLY,
+  authPolicy: AuthPolicyDocument.AUTHENTICATED_ONLY,
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
