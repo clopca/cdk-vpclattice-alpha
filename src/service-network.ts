@@ -125,11 +125,11 @@ export interface ServiceNetworkProps {
    */
   readonly vpcAssociations?: AssociateVPCProps[];
 
-  /**
-   * Allow external principals
-   * @default ServiceNetworkAccessMode.NO_STATEMENT
-   */
-  readonly accessMode?: AuthPolicyAccessMode;
+  // /**
+  //  * Allow external principals
+  //  * @default ServiceNetworkAccessMode.NO_STATEMENT
+  //  */
+  // readonly accessMode?: AuthPolicyAccessMode;
 
   /**
    * Determine what happens to the repository when the resource/stack is deleted.
@@ -138,16 +138,16 @@ export interface ServiceNetworkProps {
    */
   readonly removalPolicy?: core.RemovalPolicy;
 
-  /**
-   * Allowed principals to access the service network
-   * @default - No principals are allowed
-   */
-  readonly allowedPrincipals?: iam.IPrincipal[];
+  // /**
+  //  * Allowed principals to access the service network
+  //  * @default - No principals are allowed
+  //  */
+  // readonly allowedPrincipals?: iam.IPrincipal[];
 
-  /**
-   * Additional AuthStatements:
-   */
-  readonly authStatements?: iam.PolicyStatement[];
+  // /**
+  //  * Additional AuthStatements:
+  //  */
+  // readonly authStatements?: iam.PolicyStatement[];
 
   /**
    * Policy to apply to the service network
@@ -155,12 +155,12 @@ export interface ServiceNetworkProps {
    */
   readonly authPolicy?: iam.PolicyDocument;
 
-  /**
-   * Organization ID to allow access to the Service Network
-   * @default - no org id is used
-   * @example 'o-1234567890'
-   */
-  readonly orgId?: string;
+  // /**
+  //  * Organization ID to allow access to the Service Network
+  //  * @default - no org id is used
+  //  * @example 'o-1234567890'
+  //  */
+  // readonly orgId?: string;
 }
 
 /**
@@ -290,15 +290,15 @@ export class ServiceNetwork extends ServiceNetworkBase {
    * @default AuthType.NONE
    */
   public readonly authType: AuthType;
-  /**
-   * Allowed principals to invoke services in the service network
-   */
-  public readonly allowedPrincipals: iam.IPrincipal[];
-  /**
-   * Access mode to the service network,
-   * Authenticated, unauthenticated or only to org principals
-   */
-  public readonly accessMode?: AuthPolicyAccessMode;
+  // /**
+  //  * Allowed principals to invoke services in the service network
+  //  */
+  // public readonly allowedPrincipals: iam.IPrincipal[];
+  // /**
+  //  * Access mode to the service network,
+  //  * Authenticated, unauthenticated or only to org principals
+  //  */
+  // public readonly accessMode?: AuthPolicyAccessMode;
   /**
    * Logging destinations of the service network
    */
@@ -321,11 +321,11 @@ export class ServiceNetwork extends ServiceNetworkBase {
     // Set properties or defaults
     // ------------------------------------------------------
     this.name = this.physicalName;
-    this.allowedPrincipals = props.allowedPrincipals ?? [];
+    // this.allowedPrincipals = props.allowedPrincipals ?? [];
     this.loggingDestinations = props.loggingDestinations ?? [];
     this.authPolicy = props.authPolicy ?? new iam.PolicyDocument();
     this.authType = props.authType ?? AuthType.NONE;
-    this.accessMode = props.accessMode;
+    // this.accessMode = props.accessMode;
 
     // ------------------------------------------------------
     // Validation
@@ -379,41 +379,6 @@ export class ServiceNetwork extends ServiceNetworkBase {
     // ------------------------------------------------------
     // Auth Policy
     // ------------------------------------------------------
-    if (this.allowedPrincipals.length) {
-      this.grantAccess(this.allowedPrincipals);
-    }
-
-    if (props.authStatements) {
-      for (const propStatement of props.authStatements) {
-        this.authPolicy.addStatements(propStatement);
-      }
-    }
-
-    if (this.accessMode) {
-      const statement = new iam.PolicyStatement({
-        effect: iam.Effect.ALLOW,
-        actions: ['vpc-lattice-svcs:Invoke'],
-        resources: ['*'],
-        principals: [new iam.StarPrincipal()],
-      });
-      if (props.accessMode === AuthPolicyAccessMode.ORG_ONLY) {
-        const accessMode = props.accessMode;
-        this.node.addValidation({ validate: () => this.validateAccessMode(accessMode, props.orgId) });
-        if (props.orgId) {
-          const orgId = props.orgId;
-          statement.addCondition('StringEquals', { 'aws:PrincipalOrgID': [orgId] });
-          statement.addCondition('StringNotEqualsIgnoreCase', { 'aws:PrincipalType': 'anonymous' });
-        }
-      } else if (props.accessMode === AuthPolicyAccessMode.AUTHENTICATED_ONLY) {
-        statement.addCondition('StringNotEqualsIgnoreCase', { 'aws:PrincipalType': 'anonymous' });
-      }
-      this.authPolicy.addStatements(statement);
-    }
-
-    if (!this.authPolicy.isEmpty) {
-      this.node.addValidation({ validate: () => this.validateAuthPolicy(this.authPolicy) });
-    }
-
     core.Aspects.of(this).add({
       visit: (node: IConstruct) => {
         if (node === this && !this.authPolicy.isEmpty) {
