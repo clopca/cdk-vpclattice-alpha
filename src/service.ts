@@ -1,16 +1,16 @@
-
 import { aws_iam as iam, aws_ram as ram, Resource, Aspects, Arn, Stack } from 'aws-cdk-lib';
 import type { IResource, RemovalPolicy } from 'aws-cdk-lib';
+import type { ICertificate } from 'aws-cdk-lib/aws-certificatemanager';
+import type { IHostedZone } from 'aws-cdk-lib/aws-route53';
 import * as generated from 'aws-cdk-lib/aws-vpclattice';
 import type { Construct, IConstruct } from 'constructs';
+import type { AuthPolicyAccessMode } from './auth';
+import { AuthType, AuthPolicyDocument } from './auth';
 import { Listener } from './listener';
 import type { ListenerConfig } from './listener';
 import type { LoggingDestination } from './logging';
 import type { IServiceNetwork } from './service-network';
 import { ServiceNetworkAssociation } from './service-network-association';
-import { AuthPolicyDocument, AuthType, AuthPolicyAccessMode } from "./auth";
-import { ICertificate } from 'aws-cdk-lib/aws-certificatemanager';
-import { IHostedZone } from 'aws-cdk-lib/aws-route53';
 
 /**
  * Represents a Vpc Lattice Service.
@@ -100,8 +100,8 @@ export interface ServiceProps {
   readonly authType?: AuthType;
 
   /**
-   * A certificate that may be used by the service. To receive HTTPS requests, 
-   * you must provide your own certificate in AWS Certificate Manager. 
+   * A certificate that may be used by the service. To receive HTTPS requests,
+   * you must provide your own certificate in AWS Certificate Manager.
    * @default - No custom certificate is used.
    * @see https://docs.aws.amazon.com/vpc-lattice/latest/ug/service-byoc.html
    */
@@ -147,7 +147,7 @@ export interface ServiceProps {
    * Setting this forces the auth policy to allow certain kind of access.
    * @default - No default access mode, thus no policy is attached.
    */
-  readonly accessMode?: AuthPolicyAccessMode
+  readonly accessMode?: AuthPolicyAccessMode;
 
   /**
    * Organization ID to allow access to the Service. Will be used
@@ -300,10 +300,12 @@ export class Service extends ServiceBase {
     //this.allowedPrincipals = props.allowedPrincipals ?? [];
     this.accessMode = props.accessMode;
     this.loggingDestinations = props.loggingDestinations ?? [];
-    this.authPolicy = props.authPolicy ?? new AuthPolicyDocument({
-      accessMode: this.accessMode,
-      orgId: props?.orgId
-    });;
+    this.authPolicy =
+      props.authPolicy ??
+      new AuthPolicyDocument({
+        accessMode: this.accessMode,
+        orgId: props?.orgId,
+      });
     this.authType = props.authType ?? AuthType.NONE;
 
     // ------------------------------------------------------
@@ -313,7 +315,7 @@ export class Service extends ServiceBase {
       const name = props.name;
       this.node.addValidation({ validate: () => this.validateServiceName(name) });
     }
-    this.node.addValidation({ validate: () => this.authPolicy.validateAuthPolicy() })
+    this.node.addValidation({ validate: () => this.authPolicy.validateAuthPolicy() });
 
     // ------------------------------------------------------
     // L1 Instantiation
@@ -336,7 +338,7 @@ export class Service extends ServiceBase {
     this._resource.applyRemovalPolicy(props.removalPolicy);
     this.serviceArn = this._resource.attrArn;
     this.serviceId = this._resource.attrId;
-    this.domainName = this._resource.getAtt("DnsEntry.DomainName").toString()
+    this.domainName = this._resource.getAtt('DnsEntry.DomainName').toString();
 
     // ------------------------------------------------------
     // Service Network Association
@@ -412,8 +414,6 @@ export class Service extends ServiceBase {
     return errors;
   }
 
-
-
   // ------------------------------------------------------
   // Methods
   // ------------------------------------------------------
@@ -433,7 +433,7 @@ export class Service extends ServiceBase {
         resources: ['*'],
         principals: principals,
       }),
-    )
+    );
   }
 
   /**

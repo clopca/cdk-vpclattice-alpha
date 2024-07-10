@@ -124,7 +124,7 @@ export class AuthPolicyDocument extends PolicyDocument {
       const policyJson = this.toJSON();
       for (const statement of policyJson.Statement) {
         // Check for valid VPC Lattice actions
-        if (!this.validateActions(statement.Action, validActions)) {
+        if (!this.validateActions(statement.Action)) {
           errors.push(`Invalid action detected. Allowed actions for VPC Lattice are: ${validActions.join(', ')} or '*'.`);
         }
 
@@ -151,7 +151,7 @@ export class AuthPolicyDocument extends PolicyDocument {
     return errors;
   }
 
-  private validateActions(action: string | string[], validActions: string[]): boolean {
+  private validateActions(action: string | string[]): boolean {
     if (typeof action === 'string') {
       return action === '*' || validActions.includes(action);
     }
