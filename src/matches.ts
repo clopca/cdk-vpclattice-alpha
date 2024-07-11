@@ -1,5 +1,24 @@
-import type { MatchOperator } from './rules';
 import type { HTTPMethod } from './util';
+
+/**
+ * Rule Conditions can leverage different operators for Matches
+ */
+export enum MatchOperator {
+  /**
+   * Contains Match
+   */
+  CONTAINS = 'CONTAINS',
+
+  /**
+   * Exact Match
+   */
+  EXACT = 'EXACT',
+
+  /**
+   * Prefix Match
+   */
+  PREFIX = 'PREFIX',
+}
 
 export interface RuleConditions {
   /**

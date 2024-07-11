@@ -120,12 +120,20 @@ ec2Client.addToRolePolicy(
 );
 
 // ------------------------------------------------------
-// Service Domain Name
+// Outputs
 // ------------------------------------------------------
 new cdk.CfnOutput(stack, 'SvcDomainName', {
-  value: `https://${testSvc.domainName}`,
+  value: `https://${testSvc.domainName}/`,
 });
 
+new cdk.CfnOutput(stack, 'ClientSsmUrl', {
+  description: 'SSM Session to the client instance where to run test commands',
+  value: `https://${stack.region}.console.aws.amazon.com/systems-manager/session-manager/${ec2Client.instanceId}?region=${stack.region}`,
+});
+
+// ------------------------------------------------------
+// Integ Test Runner
+// ------------------------------------------------------
 new integ.IntegTest(app, 'ServiceNetworkTest', {
   testCases: [stack],
 });

@@ -1,14 +1,17 @@
-import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import * as path from 'path';
 import * as route53 from 'aws-cdk-lib/aws-route53';
 import * as acmpca from 'aws-cdk-lib/aws-acmpca';
-import { HTTPFixedResponse, LambdaTargetGroup, ListenerProtocol, PathMatchType, Service, ServiceNetwork } from '../../../src';
-import { AmazonLinuxGeneration, Instance, Peer, Port, SecurityGroup, UserData, Vpc } from 'aws-cdk-lib/aws-ec2';
-import { AuthType } from '../../../src/auth';
+import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as acm from 'aws-cdk-lib/aws-certificatemanager';
+import { AuthType } from '../../../src/auth';
 import { Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
+import { AmazonLinuxGeneration, Instance, Peer, Port, SecurityGroup, UserData, Vpc } from 'aws-cdk-lib/aws-ec2';
+import { HTTPFixedResponse, LambdaTargetGroup, ListenerProtocol, PathMatchType, Service, ServiceNetwork } from '../../../src';
 
+// ------------------------------------------------------
+// Create Resource Stack
+// ------------------------------------------------------
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-vpclattice-e2e-custom-domain');
 
@@ -202,11 +205,13 @@ const clientEc2 = new Instance(stack, 'Ec2Instance', {
 // ------------------------------------------------------
 // Outputs
 // ------------------------------------------------------
-new cdk.CfnOutput(stack, 'DnsName', {
-  value: `http://${parkingSvc.domainName}`,
+new cdk.CfnOutput(stack, 'TestingUrl', {
+  description: 'Curl to this URL must work',
+  value: `http://${parkingSvc.domainName}/reservation`,
 });
 
 new cdk.CfnOutput(stack, 'ClientSsmUrl', {
+  description: 'SSM Session to a client instance where to run the command',
   value: `https://${stack.region}.console.aws.amazon.com/systems-manager/session-manager/${clientEc2.instanceId}?region=${stack.region}`,
 });
 

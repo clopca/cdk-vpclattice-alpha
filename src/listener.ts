@@ -3,9 +3,8 @@ import { Resource } from 'aws-cdk-lib';
 import * as generated from 'aws-cdk-lib/aws-vpclattice';
 import type { Construct } from 'constructs';
 import type { RuleConditions } from './matches';
-import { PathMatchType } from './matches';
+import { PathMatchType, MatchOperator } from './matches';
 import type { RuleAction, RuleProps } from './rules';
-import { MatchOperator } from './rules';
 import type { Service } from './service';
 import { HTTPFixedResponse } from './util';
 
