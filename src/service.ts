@@ -19,12 +19,14 @@ export interface IService extends IResource {
   /**
    * The Amazon Resource Name (ARN) of the service.
    * @attribute
+   * @example "arn:aws:vpc-lattice:eu-central-1:123456789123:service/svc-03537cbda06ea0823"
    */
   readonly serviceArn: string;
 
   /**
    * The Id of the service.
    * @attribute
+   * @example "svc-03537cbda06ea0823"
    */
   readonly serviceId: string;
 

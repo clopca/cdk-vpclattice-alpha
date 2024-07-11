@@ -5107,7 +5107,7 @@ Can be used, for example, to generate unique "sid"s within the policy.
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
 | <code><a href="#cdk-vpclattice-alpha.AuthPolicyDocument.property.AUTHENTICATED_ONLY">AUTHENTICATED_ONLY</a></code> | <code><a href="#cdk-vpclattice-alpha.AuthPolicyDocument">AuthPolicyDocument</a></code> | Means that any request to the service or service network must contain a valid request signature that is computed using Signature Version 4 (SigV4). |
-| <code><a href="#cdk-vpclattice-alpha.AuthPolicyDocument.property.unauthenticated">unauthenticated</a></code> | <code><a href="#cdk-vpclattice-alpha.AuthPolicyDocument">AuthPolicyDocument</a></code> | Allows for Unauthenticated (Anonymous) Access to the Service Network. |
+| <code><a href="#cdk-vpclattice-alpha.AuthPolicyDocument.property.UNAUTHENTICATED">UNAUTHENTICATED</a></code> | <code><a href="#cdk-vpclattice-alpha.AuthPolicyDocument">AuthPolicyDocument</a></code> | Allows for Unauthenticated (Anonymous) Access to the Service Network. |
 
 ---
 
@@ -5125,10 +5125,10 @@ Means that any request to the service or service network must contain a valid re
 
 ---
 
-##### `unauthenticated`<sup>Required</sup> <a name="unauthenticated" id="cdk-vpclattice-alpha.AuthPolicyDocument.property.unauthenticated"></a>
+##### `UNAUTHENTICATED`<sup>Required</sup> <a name="UNAUTHENTICATED" id="cdk-vpclattice-alpha.AuthPolicyDocument.property.UNAUTHENTICATED"></a>
 
 ```typescript
-public readonly unauthenticated: AuthPolicyDocument;
+public readonly UNAUTHENTICATED: AuthPolicyDocument;
 ```
 
 - *Type:* <a href="#cdk-vpclattice-alpha.AuthPolicyDocument">AuthPolicyDocument</a>

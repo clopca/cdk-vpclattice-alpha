@@ -190,17 +190,6 @@ export class AuthPolicyDocument extends PolicyDocument {
     super(props);
   }
 
-  // /**
-  //  * Validate that Access mode ORG_ONLY can be set only if orgId is provided
-  //  */
-  // protected validateAccessMode(orgId?: string): string[] {
-  //   const errors: string[] = [];
-  //   if (this.accessMode === AuthPolicyAccessMode.ORG_ONLY && !orgId) {
-  //     errors.push('orgId is required when accessMode is set to ORG_ONLY');
-  //   }
-  //   return errors;
-  // }
-
   /**
    * Must ensure Service has the correct AuthType and policy is a
    * valid IAM Resource-based Policy for VPC Lattice

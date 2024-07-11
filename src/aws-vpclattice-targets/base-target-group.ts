@@ -108,11 +108,12 @@ export interface ITargetGroup extends core.IResource {
  */
 export abstract class TargetGroupBase extends core.Resource implements ITargetGroup {
   /**
-   * The id of the target group
+   * The ID of the target group
+   * @example "tg-1332423"
    */
   public abstract readonly targetGroupId: string;
   /**
-   * The Arn of the target group
+   * The ARN of the target group
    */
   public abstract readonly targetGroupArn: string;
   /**
@@ -120,7 +121,7 @@ export abstract class TargetGroupBase extends core.Resource implements ITargetGr
    */
   public abstract readonly name: string;
   /**
-   * Targets
+   * The type of target group
    */
   public abstract readonly targetType: TargetType;
   // ------------------------------------------------------
