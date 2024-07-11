@@ -115,19 +115,15 @@ const parkingSvc = new Service(stack, 'Parking', {
   name: 'parking',
   authType: AuthType.NONE,
   removalPolicy: cdk.RemovalPolicy.DESTROY,
-  customDomainName: 'parking.cdktests.com',
-  certificate: privateCertificate,
-  dnsEntry: {
+  customDomain: {
     domainName: 'parking.cdktests.com',
+    certificate: privateCertificate,
+  },
+  dnsEntry: {
+    domainName: 'parking',
     hostedZone: privateHostedZone,
   },
 });
-
-new route53.CnameRecord(stack, 'cname', {
-  recordName: 'parking',
-  zone: privateHostedZone,
-  domainName: parkingSvc.domainName,
-})
 
 // ------------------------------------------------------
 // Lambda TG

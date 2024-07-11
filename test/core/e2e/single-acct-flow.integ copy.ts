@@ -5,13 +5,9 @@ import { Instance, Peer, Port, SecurityGroup, Vpc, AmazonLinuxGeneration } from 
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { Code, Function as LambdaFunction, Runtime } from 'aws-cdk-lib/aws-lambda';
-import { LambdaTargetGroup, ListenerProtocol, Service, ServiceNetwork, AuthPolicyDocument, AuthType } from '../../../src';
+import { LambdaTargetGroup, ListenerProtocol, Service, ServiceNetwork, AuthPolicyDocument, AuthType, AuthPolicyStatement } from '../../../src';
 
-export class VpcLatticeAlphaStack extends cdk.Stack {
-  // constructor(scope: Construct, id: string, props?: cdk.StackProps) {
-  //   super(scope, id, props);
-  // }
-}
+
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-vpclattice-e2e-single-acct-auth');
 
@@ -47,7 +43,7 @@ for (const sg of [clientsSg, serviceSecurityGroup]) {
 const testSvc = new Service(stack, 'Parking', {
   name: 'test-svc',
   authType: AuthType.AWS_IAM,
-  authPolicy: AuthPolicyDocument.AUTHENTICATED_ONLY,
+  authPolicy: AuthPolicyDocument.UNAUTHENTICATED,
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 

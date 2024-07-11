@@ -189,7 +189,7 @@ abstract class ServiceNetworkBase extends core.Resource implements IServiceNetwo
    * Apply the VPC to the Service Network
    */
   public associateVPC(props: AssociateVPCProps): void {
-    new AssociateVpc(this, `AssociateVPC${props.vpc.node.addr}`, {
+    new ServiceNetworkVpcAssociation(this, `AssociateVPC${props.vpc.node.addr}`, {
       vpc: props.vpc,
       securityGroups: props.securityGroups,
       serviceNetworkId: this.serviceNetworkId,
@@ -486,7 +486,7 @@ export class ServiceNetwork extends ServiceNetworkBase {
 /**
  * Props to Associate a VPC with a Service Network
  */
-export interface AssociateVpcProps {
+export interface ServiceNetworkVpcAssociationProps {
   /**
    * security groups for the lattice endpoint
    * @default - a security group that will permit inbound 443
@@ -507,8 +507,8 @@ export interface AssociateVpcProps {
 /**
  * Associate a VPC with Lattice Service Network
  */
-export class AssociateVpc extends core.Resource {
-  constructor(scope: Construct, id: string, props: AssociateVpcProps) {
+export class ServiceNetworkVpcAssociation extends core.Resource {
+  constructor(scope: Construct, id: string, props: ServiceNetworkVpcAssociationProps) {
     super(scope, id);
 
     const securityGroupIds: string[] = [];
@@ -518,7 +518,7 @@ export class AssociateVpc extends core.Resource {
       }
     }
 
-    new generated.CfnServiceNetworkVpcAssociation(this, `VpcAssociation${this.node.addr}`, {
+    new generated.CfnServiceNetworkVpcAssociation(this, `VpcAssociation-${props.serviceNetworkId}-${props.vpc.vpcId}`, {
       securityGroupIds: securityGroupIds,
       serviceNetworkIdentifier: props.serviceNetworkId,
       vpcIdentifier: props.vpc.vpcId,

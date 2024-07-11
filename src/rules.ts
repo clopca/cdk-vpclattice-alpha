@@ -1,25 +1,6 @@
 import type { ITargetGroup, WeightedTargetGroup } from './aws-vpclattice-targets';
 import type { RuleConditions } from './matches';
 import type { HTTPFixedResponse } from './util';
-/**
- * Rule Conditions can leverage different operators for Matches
- */
-export enum MatchOperator {
-  /**
-   * Contains Match
-   */
-  CONTAINS = 'CONTAINS',
-
-  /**
-   * Exact Match
-   */
-  EXACT = 'EXACT',
-
-  /**
-   * Prefix Match
-   */
-  PREFIX = 'PREFIX',
-}
 
 /**
  * Access mode for the rule.
@@ -39,11 +20,6 @@ export enum RuleAccessMode {
    * THIS Org only
    */
   ORG_ONLY = 'ORG_ONLY',
-
-  /**
-   * Do not create a statement
-   */
-  NO_STATEMENT = 'NO_STATEMENT',
 }
 
 export interface RuleAction {

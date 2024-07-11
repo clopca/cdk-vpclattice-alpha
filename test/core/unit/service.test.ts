@@ -51,12 +51,14 @@ describe('Service', () => {
     // WHEN
     new Service(stack, 'Service', {
       name: 'my-service',
-      customDomainName: 'example.com',
-      certificate: Certificate.fromCertificateArn(
-        stack,
-        'Certificate',
-        'arn:aws:acm:us-west-2:123456789012:certificate/12345678-1234-1234-1234-123456789012',
-      ),
+      customDomain: {
+        domainName: 'example.com',
+        certificate: Certificate.fromCertificateArn(
+          stack,
+          'Certificate',
+          'arn:aws:acm:us-west-2:123456789012:certificate/12345678-1234-1234-1234-123456789012',
+        ),
+      }
     });
 
     // THEN

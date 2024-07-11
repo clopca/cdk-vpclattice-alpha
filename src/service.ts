@@ -3,6 +3,7 @@ import type { IResource, RemovalPolicy } from 'aws-cdk-lib';
 import type { ICertificate } from 'aws-cdk-lib/aws-certificatemanager';
 import type { IHostedZone } from 'aws-cdk-lib/aws-route53';
 import * as generated from 'aws-cdk-lib/aws-vpclattice';
+import * as route53 from 'aws-cdk-lib/aws-route53';
 import type { Construct, IConstruct } from 'constructs';
 import { AuthType, AuthPolicyDocument } from './auth';
 import { Listener } from './listener';
@@ -73,6 +74,33 @@ export interface DnsEntryProperty {
   readonly hostedZone?: IHostedZone;
 }
 
+export interface CustomDomainProps {
+  /**
+   * A registered custom domain name for your service. Requests to the custom
+   * domain are resolved by the DNS server to the VPC Lattice generated domain 
+   * name. Note: **Changing it requires recreating the service.**
+   * @default - Your service will be reachable only by the domain name that VPC Lattice generates
+   * @see https://docs.aws.amazon.com/vpc-lattice/latest/ug/service-custom-domain-name.html
+   */
+  readonly domainName: string;
+
+  /**
+   * The Route53 Private Hosted Zone or Public Hosted Zone.
+   * This will add a CNAME record between the custom domain name and the VPC
+   * Lattice service generated DNS name. Leave empty if DNS is managed outside
+   * of Route53 or if you want to manually add the Route53 CNAME record.
+   */
+  readonly hostedZone?: IHostedZone;
+
+  /**
+   * A certificate that may be used by the service. To receive HTTPS requests,
+   * you must provide your own certificate in AWS Certificate Manager.
+   * @default - No custom certificate is used.
+   * @see https://docs.aws.amazon.com/vpc-lattice/latest/ug/service-byoc.html
+   */
+  readonly certificate?: ICertificate;
+}
+
 /**
  * Properties for defining a VPC Lattice Service
  */
@@ -104,21 +132,13 @@ export interface ServiceProps {
   readonly authType?: AuthType;
 
   /**
-   * A certificate that may be used by the service. To receive HTTPS requests,
-   * you must provide your own certificate in AWS Certificate Manager.
-   * @default - No custom certificate is used.
-   * @see https://docs.aws.amazon.com/vpc-lattice/latest/ug/service-byoc.html
-   */
-  readonly certificate?: ICertificate;
-
-  /**
    * A registered custom domain name for your service. Requests to the custom
    * domain are resolved by the DNS server to the VPC Lattice generated domain name.
    * Note: **Changing it requires recreating the service.**
    * @default - Your service will be reachable only by the domain name that VPC Lattice generates
    * @see https://docs.aws.amazon.com/vpc-lattice/latest/ug/service-custom-domain-name.html
    */
-  readonly customDomainName?: string;
+  readonly customDomain?: CustomDomainProps;
 
   /**
    * A custom DNS entry.
@@ -146,20 +166,6 @@ export interface ServiceProps {
    */
   readonly authPolicy?: AuthPolicyDocument;
 
-  // /**
-  //  * The Auth Policy Acess Mode
-  //  * Setting this forces the auth policy to allow certain kind of access.
-  //  * @default - No default access mode, thus no policy is attached.
-  //  */
-  // readonly accessMode?: AuthPolicyAccessMode;
-
-  // /**
-  //  * Organization ID to allow access to the Service. Will be used
-  //  * only if accessMode is equal to AuthPolicyAccessMode.ORG_ONLY
-  //  * @default - no org id is used
-  //  * @example 'o-1234567890'
-  //  */
-  // readonly orgId?: string;
 }
 
 /**
@@ -283,6 +289,10 @@ export class Service extends ServiceBase {
    */
   public readonly domainName: string;
   /**
+   * Custom Domain Name
+   */
+  public readonly customDomainName?: string;
+  /**
    * L1 resource
    */
   private readonly _resource: generated.CfnService;
@@ -300,6 +310,7 @@ export class Service extends ServiceBase {
     this.loggingDestinations = props.loggingDestinations ?? [];
     this.authPolicy = props.authPolicy ?? new AuthPolicyDocument();
     this.authType = props.authType ?? AuthType.NONE;
+    this.customDomainName = props.customDomain?.domainName;
 
     // ------------------------------------------------------
     // Validation
@@ -315,8 +326,8 @@ export class Service extends ServiceBase {
     // ------------------------------------------------------
     this._resource = new generated.CfnService(this, 'Resource', {
       authType: this.authType,
-      certificateArn: props.certificate?.certificateArn,
-      customDomainName: props.customDomainName,
+      certificateArn: props.customDomain?.certificate?.certificateArn,
+      customDomainName: props.customDomain?.domainName,
       dnsEntry: {
         domainName: props.dnsEntry?.domainName,
         hostedZoneId: props.dnsEntry?.hostedZone?.hostedZoneId,
@@ -332,6 +343,18 @@ export class Service extends ServiceBase {
     this.serviceArn = this._resource.attrArn;
     this.serviceId = this._resource.attrId;
     this.domainName = this._resource.getAtt('DnsEntry.DomainName').toString();
+
+    // ------------------------------------------------------
+    // Custom Domain CNAME creation
+    // ------------------------------------------------------
+    if (props.customDomain?.hostedZone) {
+      new route53.CnameRecord(this, 'CNAME-${}', {
+        recordName: props.customDomain?.domainName + ".",
+        zone: props.customDomain?.hostedZone,
+        domainName: this.domainName,
+
+      })
+    }
 
     // ------------------------------------------------------
     // Service Network Association

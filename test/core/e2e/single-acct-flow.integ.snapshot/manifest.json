@@ -1,0 +1,473 @@
+{
+  "version": "36.0.0",
+  "artifacts": {
+    "aws-cdk-vpclattice-e2e-single-acct-auth.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-vpclattice-e2e-single-acct-auth.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-cdk-vpclattice-e2e-single-acct-auth": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-vpclattice-e2e-single-acct-auth.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/180c140ded35acfa4f30c093e3f90dbe62ddc6c150c03792107ba52eb7de2e5d.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-vpclattice-e2e-single-acct-auth.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-vpclattice-e2e-single-acct-auth.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-vpclattice-e2e-single-acct-auth/ServiceVPC/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceVPC2EDFAACA"
+          }
+        ],
+        "/aws-cdk-vpclattice-e2e-single-acct-auth/ServiceVPC/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceVPCPublicSubnet1SubnetEF6BAD22"
+          }
+        ],
+        "/aws-cdk-vpclattice-e2e-single-acct-auth/ServiceVPC/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceVPCPublicSubnet1RouteTable805A2C83"
+          }
+        ],
+        "/aws-cdk-vpclattice-e2e-single-acct-auth/ServiceVPC/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceVPCPublicSubnet1RouteTableAssociationA56541AB"
+          }
+        ],
+        "/aws-cdk-vpclattice-e2e-single-acct-auth/ServiceVPC/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceVPCPublicSubnet1DefaultRoute1478B70C"
+          }
+        ],
+        "/aws-cdk-vpclattice-e2e-single-acct-auth/ServiceVPC/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceVPCPublicSubnet1EIP3CB84611"
+          }
+        ],
+        "/aws-cdk-vpclattice-e2e-single-acct-auth/ServiceVPC/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceVPCPublicSubnet1NATGatewayCDCC51E1"
+          }
+        ],
+        "/aws-cdk-vpclattice-e2e-single-acct-auth/ServiceVPC/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceVPCPublicSubnet2SubnetE833450A"
+          }
+        ],
+        "/aws-cdk-vpclattice-e2e-single-acct-auth/ServiceVPC/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceVPCPublicSubnet2RouteTable47778387"
+          }
+        ],
+        "/aws-cdk-vpclattice-e2e-single-acct-auth/ServiceVPC/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceVPCPublicSubnet2RouteTableAssociation87A32462"
+          }
+        ],
+        "/aws-cdk-vpclattice-e2e-single-acct-auth/ServiceVPC/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceVPCPublicSubnet2DefaultRoute44C700CC"
+          }
+        ],
+        "/aws-cdk-vpclattice-e2e-single-acct-auth/ServiceVPC/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceVPCPrivateSubnet1SubnetD5E693D0"
+          }
+        ],
+        "/aws-cdk-vpclattice-e2e-single-acct-auth/ServiceVPC/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceVPCPrivateSubnet1RouteTable44B0E20B"
+          }
+        ],
+        "/aws-cdk-vpclattice-e2e-single-acct-auth/ServiceVPC/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceVPCPrivateSubnet1RouteTableAssociation3560433A"
+          }
+        ],
+        "/aws-cdk-vpclattice-e2e-single-acct-auth/ServiceVPC/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceVPCPrivateSubnet1DefaultRouteAC5C4D26"
+          }
+        ],
+        "/aws-cdk-vpclattice-e2e-single-acct-auth/ServiceVPC/PrivateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceVPCPrivateSubnet2Subnet1C3DB1A3"
+          }
+        ],
+        "/aws-cdk-vpclattice-e2e-single-acct-auth/ServiceVPC/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceVPCPrivateSubnet2RouteTable253A2D2F"
+          }
+        ],
+        "/aws-cdk-vpclattice-e2e-single-acct-auth/ServiceVPC/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceVPCPrivateSubnet2RouteTableAssociation32000FAC"
+          }
+        ],
+        "/aws-cdk-vpclattice-e2e-single-acct-auth/ServiceVPC/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceVPCPrivateSubnet2DefaultRoute89845233"
+          }
+        ],
+        "/aws-cdk-vpclattice-e2e-single-acct-auth/ServiceVPC/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceVPCIGW3D60E7E3"
+          }
+        ],
+        "/aws-cdk-vpclattice-e2e-single-acct-auth/ServiceVPC/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceVPCVPCGWBA0446DD"
+          }
+        ],
+        "/aws-cdk-vpclattice-e2e-single-acct-auth/ClientVPC/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClientVPC9BBAC0E1"
+          }
+        ],
+        "/aws-cdk-vpclattice-e2e-single-acct-auth/ClientVPC/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClientVPCPublicSubnet1SubnetFD59F178"
+          }
+        ],
+        "/aws-cdk-vpclattice-e2e-single-acct-auth/ClientVPC/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClientVPCPublicSubnet1RouteTable783DDE25"
+          }
+        ],
+        "/aws-cdk-vpclattice-e2e-single-acct-auth/ClientVPC/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClientVPCPublicSubnet1RouteTableAssociation221067BC"
+          }
+        ],
+        "/aws-cdk-vpclattice-e2e-single-acct-auth/ClientVPC/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClientVPCPublicSubnet1DefaultRoute09A9F007"
+          }
+        ],
+        "/aws-cdk-vpclattice-e2e-single-acct-auth/ClientVPC/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClientVPCPublicSubnet1EIP7BC29677"
+          }
+        ],
+        "/aws-cdk-vpclattice-e2e-single-acct-auth/ClientVPC/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClientVPCPublicSubnet1NATGatewayB83F6E86"
+          }
+        ],
+        "/aws-cdk-vpclattice-e2e-single-acct-auth/ClientVPC/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClientVPCPublicSubnet2SubnetF0A0A352"
+          }
+        ],
+        "/aws-cdk-vpclattice-e2e-single-acct-auth/ClientVPC/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClientVPCPublicSubnet2RouteTable2C374B0E"
+          }
+        ],
+        "/aws-cdk-vpclattice-e2e-single-acct-auth/ClientVPC/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClientVPCPublicSubnet2RouteTableAssociation6DD83576"
+          }
+        ],
+        "/aws-cdk-vpclattice-e2e-single-acct-auth/ClientVPC/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClientVPCPublicSubnet2DefaultRoute2D866838"
+          }
+        ],
+        "/aws-cdk-vpclattice-e2e-single-acct-auth/ClientVPC/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClientVPCPrivateSubnet1SubnetE3E5FFFE"
+          }
+        ],
+        "/aws-cdk-vpclattice-e2e-single-acct-auth/ClientVPC/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClientVPCPrivateSubnet1RouteTableED250F92"
+          }
+        ],
+        "/aws-cdk-vpclattice-e2e-single-acct-auth/ClientVPC/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClientVPCPrivateSubnet1RouteTableAssociation18CF7EA9"
+          }
+        ],
+        "/aws-cdk-vpclattice-e2e-single-acct-auth/ClientVPC/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClientVPCPrivateSubnet1DefaultRouteBD99772E"
+          }
+        ],
+        "/aws-cdk-vpclattice-e2e-single-acct-auth/ClientVPC/PrivateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClientVPCPrivateSubnet2Subnet9656AFCB"
+          }
+        ],
+        "/aws-cdk-vpclattice-e2e-single-acct-auth/ClientVPC/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClientVPCPrivateSubnet2RouteTable490353D0"
+          }
+        ],
+        "/aws-cdk-vpclattice-e2e-single-acct-auth/ClientVPC/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClientVPCPrivateSubnet2RouteTableAssociation1DA4EFC7"
+          }
+        ],
+        "/aws-cdk-vpclattice-e2e-single-acct-auth/ClientVPC/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClientVPCPrivateSubnet2DefaultRouteC565362F"
+          }
+        ],
+        "/aws-cdk-vpclattice-e2e-single-acct-auth/ClientVPC/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClientVPCIGWF105B9C1"
+          }
+        ],
+        "/aws-cdk-vpclattice-e2e-single-acct-auth/ClientVPC/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClientVPCVPCGW6B5994D8"
+          }
+        ],
+        "/aws-cdk-vpclattice-e2e-single-acct-auth/ResSG/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ResSGE9E4FDE5"
+          }
+        ],
+        "/aws-cdk-vpclattice-e2e-single-acct-auth/ServiceSG/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceSG3DD30CA4"
+          }
+        ],
+        "/aws-cdk-vpclattice-e2e-single-acct-auth/Parking/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Parking6000F0C6"
+          }
+        ],
+        "/aws-cdk-vpclattice-e2e-single-acct-auth/Parking/Listenerlistener1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ParkingListenerlistener1AACA213C"
+          }
+        ],
+        "/aws-cdk-vpclattice-e2e-single-acct-auth/Parking/ServiceAuthPolicy": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ParkingServiceAuthPolicy69D9B431"
+          }
+        ],
+        "/aws-cdk-vpclattice-e2e-single-acct-auth/ServiceNetwork/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceNetworkEF29AF70"
+          }
+        ],
+        "/aws-cdk-vpclattice-e2e-single-acct-auth/ServiceNetwork/AssociateVPCc82109ec4f50c659081928dce8e8815b12ebd3cfc6/VpcAssociationc8201a61ce848455ba897a63301b1e56b016367e4e": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceNetworkAssociateVPCc82109ec4f50c659081928dce8e8815b12ebd3cfc6VpcAssociationc8201a61ce848455ba897a63301b1e56b016367e4eF9992C9C"
+          }
+        ],
+        "/aws-cdk-vpclattice-e2e-single-acct-auth/ServiceNetwork/AssociateVPCc8c4413997c6ea78d48ac0d4f42733f9f7d757d6e3/VpcAssociationc85cc3687d232b3ef31ed79ed747c9d1ffd5fc654e": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceNetworkAssociateVPCc8c4413997c6ea78d48ac0d4f42733f9f7d757d6e3VpcAssociationc85cc3687d232b3ef31ed79ed747c9d1ffd5fc654e93CECCF9"
+          }
+        ],
+        "/aws-cdk-vpclattice-e2e-single-acct-auth/ServiceNetwork/ServiceAssociationc807e308ffd1ea5ea17d63c68c6f5b6b5ec44244af/LatticeAssociationc858cdf9b944219e9d50b44eaf889c38555e954b0a": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceNetworkServiceAssociationc807e308ffd1ea5ea17d63c68c6f5b6b5ec44244afLatticeAssociationc858cdf9b944219e9d50b44eaf889c38555e954b0a199A15A9"
+          }
+        ],
+        "/aws-cdk-vpclattice-e2e-single-acct-auth/LatticeLambdaReservation/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatticeLambdaReservationServiceRole4BB66298"
+          }
+        ],
+        "/aws-cdk-vpclattice-e2e-single-acct-auth/LatticeLambdaReservation/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatticeLambdaReservationSecurityGroupDACFDAFC"
+          }
+        ],
+        "/aws-cdk-vpclattice-e2e-single-acct-auth/LatticeLambdaReservation/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatticeLambdaReservation6C7DA18B"
+          }
+        ],
+        "/aws-cdk-vpclattice-e2e-single-acct-auth/LambdaTG/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaTGF1D88294"
+          }
+        ],
+        "/aws-cdk-vpclattice-e2e-single-acct-auth/Ec2Instance/InstanceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2InstanceInstanceRole0047324B"
+          }
+        ],
+        "/aws-cdk-vpclattice-e2e-single-acct-auth/Ec2Instance/InstanceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2InstanceInstanceRoleDefaultPolicy053E367E"
+          }
+        ],
+        "/aws-cdk-vpclattice-e2e-single-acct-auth/Ec2Instance/InstanceProfile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2InstanceInstanceProfileDA451126"
+          }
+        ],
+        "/aws-cdk-vpclattice-e2e-single-acct-auth/Ec2Instance/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2InstanceD6444E3D"
+          }
+        ],
+        "/aws-cdk-vpclattice-e2e-single-acct-auth/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
+          }
+        ],
+        "/aws-cdk-vpclattice-e2e-single-acct-auth/SvcDomainName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SvcDomainName"
+          }
+        ],
+        "/aws-cdk-vpclattice-e2e-single-acct-auth/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-vpclattice-e2e-single-acct-auth/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-vpclattice-e2e-single-acct-auth"
+    },
+    "ServiceNetworkTestDefaultTestDeployAssert62481699.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "ServiceNetworkTestDefaultTestDeployAssert62481699.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "ServiceNetworkTestDefaultTestDeployAssert62481699": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "ServiceNetworkTestDefaultTestDeployAssert62481699.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "ServiceNetworkTestDefaultTestDeployAssert62481699.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "ServiceNetworkTestDefaultTestDeployAssert62481699.assets"
+      ],
+      "metadata": {
+        "/ServiceNetworkTest/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/ServiceNetworkTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "ServiceNetworkTest/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}
