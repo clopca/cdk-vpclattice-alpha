@@ -2,9 +2,8 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import { Vpc } from 'aws-cdk-lib/aws-ec2';
 import { Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
-import { AuthType, HTTPFixedResponse, HTTPMethod, ListenerProtocol, Service, ServiceNetwork, ServiceNetworkAccessMode } from '../../../src';
+import { AuthPolicyDocument, AuthType, HTTPFixedResponse, HTTPMethod, ListenerProtocol, MatchOperator, Service, ServiceNetwork } from '../../../src';
 import { LambdaTargetGroup } from '../../../src/aws-vpclattice-targets';
-import { MatchOperator } from '../../../src/rules';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-vpclattice-integ-listener');
@@ -20,7 +19,7 @@ new ServiceNetwork(stack, 'ServiceNetwork', {
   authType: AuthType.AWS_IAM,
   name: 'my-custom-name',
   removalPolicy: cdk.RemovalPolicy.DESTROY,
-  accessMode: ServiceNetworkAccessMode.AUTHENTICATED_ONLY,
+  authPolicy: AuthPolicyDocument.AUTHENTICATED_ONLY,
   vpcAssociations: [{ vpc }],
   services: [sampleSvc],
 });
@@ -59,7 +58,9 @@ const listener1 = sampleSvc.addListener({
         caseSensitive: true,
       }],
     },
-    action: tg1,
+    action: {
+      targetGroup: tg1
+    }
   },
   {
     name: 'second-rule',
@@ -67,10 +68,12 @@ const listener1 = sampleSvc.addListener({
     conditions: {
       methodMatch: HTTPMethod.GET,
     },
-    action: [{
-      targetGroup: tg1,
-      weight: 50,
-    }],
+    action: {
+      weightedTargetGroups: [{
+        targetGroup: tg1,
+        weight: 50,
+      }]
+    }
   }],
 });
 
@@ -82,7 +85,9 @@ listener1.addListenerRule({
       path: '/test',
     },
   },
-  action: HTTPFixedResponse.NOT_FOUND,
+  action: {
+    httpFixedResponse: HTTPFixedResponse.NOT_FOUND
+  }
 });
 
 new integ.IntegTest(app, 'ServiceNetworkTest', {

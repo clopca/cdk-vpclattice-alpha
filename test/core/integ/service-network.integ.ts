@@ -3,7 +3,7 @@ import * as cdk from 'aws-cdk-lib';
 import { Vpc } from 'aws-cdk-lib/aws-ec2';
 import { LogGroup, RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
-import { AuthType, LoggingDestination, Service, ServiceNetwork, ServiceNetworkAccessMode } from '../../../src';
+import { AuthPolicyDocument, AuthType, LoggingDestination, Service, ServiceNetwork } from '../../../src';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-vpclattice-integ-svcn');
@@ -33,7 +33,7 @@ const network = new ServiceNetwork(stack, 'ServiceNetwork', {
   name: 'my-custom-name',
   removalPolicy: cdk.RemovalPolicy.DESTROY,
   loggingDestinations: [LoggingDestination.cloudwatch(logGroup), LoggingDestination.s3(logBucket)],
-  accessMode: ServiceNetworkAccessMode.AUTHENTICATED_ONLY,
+  authPolicy: AuthPolicyDocument.AUTHENTICATED_ONLY,
   vpcAssociations: [{ vpc }],
   services: [sampleSvc],
 });
