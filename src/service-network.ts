@@ -8,7 +8,6 @@ import type { IService } from './service';
 import { ServiceNetworkServiceAssociation } from './service-network-association';
 import { AuthPolicyDocument, AuthType } from "./auth";
 
-
 /**
  * Represents a VPC Lattice Service Network.
  * Implemented by `ServiceNetwork`.
@@ -518,7 +517,6 @@ export class ServiceNetworkVpcAssociation extends core.Resource {
     new generated.CfnServiceNetworkVpcAssociation(this, `VpcAssociation-${props.vpc.node.addr}`, {
       securityGroupIds: props.securityGroups?.flatMap(sg => sg.securityGroupId),
       serviceNetworkIdentifier: props.serviceNetworkId,
-
       vpcIdentifier: props.vpc.vpcId,
     });
   }

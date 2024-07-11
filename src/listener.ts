@@ -4,7 +4,7 @@ import * as generated from 'aws-cdk-lib/aws-vpclattice';
 import type { Construct } from 'constructs';
 import type { RuleConditions } from './matches';
 import { PathMatchType, MatchOperator } from './matches';
-import type { RuleAction, RuleProps } from './rules';
+import type { RuleAction, RuleProps } from './';
 import type { Service } from './service';
 import { HTTPFixedResponse } from './util';
 
