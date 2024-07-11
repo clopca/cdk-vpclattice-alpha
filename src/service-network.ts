@@ -1,4 +1,3 @@
-import { EOL } from 'node:os';
 import type { aws_ec2 as ec2 } from 'aws-cdk-lib';
 import { aws_iam as iam, aws_ram as ram } from 'aws-cdk-lib';
 import * as core from 'aws-cdk-lib';
@@ -7,8 +6,7 @@ import type { Construct, IConstruct } from 'constructs';
 import type { LoggingDestination } from './logging';
 import type { IService } from './service';
 import { ServiceNetworkAssociation } from './service-network-association';
-import { AuthPolicyAccessMode } from './auth';
-import { AuthType } from "./auth";
+import { AuthPolicyDocument, AuthType } from "./auth";
 
 
 /**
@@ -153,7 +151,7 @@ export interface ServiceNetworkProps {
    * Policy to apply to the service network
    * @default - No policy is applied
    */
-  readonly authPolicy?: iam.PolicyDocument;
+  readonly authPolicy?: AuthPolicyDocument;
 
   // /**
   //  * Organization ID to allow access to the Service Network
@@ -306,7 +304,7 @@ export class ServiceNetwork extends ServiceNetworkBase {
   /**
    * Auth policy to be added to the service network
    */
-  public readonly authPolicy: iam.PolicyDocument;
+  public readonly authPolicy: AuthPolicyDocument;
   private readonly _resource: generated.CfnServiceNetwork;
 
   // ------------------------------------------------------
@@ -323,7 +321,7 @@ export class ServiceNetwork extends ServiceNetworkBase {
     this.name = this.physicalName;
     // this.allowedPrincipals = props.allowedPrincipals ?? [];
     this.loggingDestinations = props.loggingDestinations ?? [];
-    this.authPolicy = props.authPolicy ?? new iam.PolicyDocument();
+    this.authPolicy = props.authPolicy ?? new AuthPolicyDocument();
     this.authType = props.authType ?? AuthType.NONE;
     // this.accessMode = props.accessMode;
 
@@ -379,6 +377,7 @@ export class ServiceNetwork extends ServiceNetworkBase {
     // ------------------------------------------------------
     // Auth Policy
     // ------------------------------------------------------
+    this.node.addValidation({ validate: () => this.authPolicy.validateAuthPolicy() })
     core.Aspects.of(this).add({
       visit: (node: IConstruct) => {
         if (node === this && !this.authPolicy.isEmpty) {
@@ -432,78 +431,6 @@ export class ServiceNetwork extends ServiceNetworkBase {
     return errors;
   }
 
-  /**
-   * Validate that Access mode ORG_ONLY can be set only if orgId is provided
-   */
-  protected validateAccessMode(accessMode: AuthPolicyAccessMode, orgId?: string): string[] {
-    const errors: string[] = [];
-    if (accessMode === AuthPolicyAccessMode.ORG_ONLY && !orgId) {
-      errors.push('orgId is required when accessMode is set to ORG_ONLY');
-    }
-    return errors;
-  }
-
-  /**
-   * Must ensure Service has the correct AuthType and policy is a
-   * valid IAM Resource-based Policy for VPC Lattice
-   */
-  /**
-   * Must ensure Service has the correct AuthType and policy is a
-   * valid IAM Resource-based Policy for VPC Lattice
-   */
-  protected validateAuthPolicy(authPolicy: iam.PolicyDocument): string[] {
-    const errors: string[] = [];
-
-    const policyJson = authPolicy.toJSON();
-    for (const statement of policyJson.Statement) {
-      // Check for valid VPC Lattice actions
-      const validActions = ['vpc-lattice-svcs:Invoke'];
-      if (!this.validateActions(statement.Action, validActions)) {
-        errors.push(`Invalid action detected. Allowed actions for VPC Lattice are: ${validActions.join(', ')} or '*'.`);
-      }
-
-      // Check for valid principal types
-      if (statement.Principal && typeof statement.Principal === 'object') {
-        const validPrincipalTypes = ['AWS', 'Service'];
-        for (const key of Object.keys(statement.Principal)) {
-          if (!validPrincipalTypes.includes(key)) {
-            errors.push(`Invalid principal type: ${key}. Allowed types are: ${validPrincipalTypes.join(', ')}.`);
-          }
-        }
-      }
-
-      // Check for valid resource format
-      if (!this.validateResources(statement.Resource)) {
-        errors.push('Invalid resource format. Resources should be "*" or start with "arn:aws:vpc-lattice:".');
-      }
-    }
-
-    if (errors.length > 0) {
-      errors.unshift(`The following errors were found in the VPC Lattice auth policy:${EOL}${JSON.stringify(policyJson, null, 2)}`);
-    }
-    return errors;
-  }
-
-  private validateActions(action: string | string[], validActions: string[]): boolean {
-    if (typeof action === 'string') {
-      return action === '*' || validActions.includes(action);
-    }
-    if (Array.isArray(action)) {
-      return action.every(a => a === '*' || validActions.includes(a));
-    }
-    return false;
-  }
-
-  private validateResources(resource: string | string[]): boolean {
-    const isValidResource = (r: string) => r === '*' || r.startsWith('arn:aws:vpc-lattice:');
-    if (typeof resource === 'string') {
-      return isValidResource(resource);
-    }
-    if (Array.isArray(resource)) {
-      return resource.every(isValidResource);
-    }
-    return false;
-  }
 
   // ------------------------------------------------------
   // Methods
@@ -524,16 +451,7 @@ export class ServiceNetwork extends ServiceNetworkBase {
       principals: principals,
     });
     this.authPolicy.addStatements(policyStatement);
-    this.node.addValidation({ validate: () => this.validateAuthPolicy(this.authPolicy) });
-  }
-
-  /**
-   * Add a statement to the auth policy
-   * @param statement - The Policy Statement to add
-   */
-  public addAuthPolicyStatement(statement: iam.PolicyStatement): void {
-    this.authPolicy.addStatements(statement);
-    this.node.addValidation({ validate: () => this.validateAuthPolicy(this.authPolicy) });
+    this.node.addValidation({ validate: () => this.authPolicy.validateAuthPolicy() })
   }
 
   /**

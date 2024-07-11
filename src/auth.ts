@@ -9,41 +9,41 @@ const validActions = ['vpc-lattice-svcs:Invoke', 'vpc-lattice-svcs:Connect', 'vp
 //const validConditionKeys = ['vpc-lattice-svcs:Port']
 const validPrincipalTypes = ['AWS', 'Service'];
 
-/**
- * AccessModes for the Service / Service Network.
- * @enum
- */
-export enum AuthPolicyAccessMode {
-  /**
-   * Allows for Unauthenticated (Anonymous) Access to the Service Network.
-   * Anonymous principals are callers that don't sign their AWS requests
-   * with Signature Version 4 (SigV4), and are within a VPC that is connected
-   * to the service network.
-   */
-  UNAUTHENTICATED = 'UNAUTHENTICATED',
+// /**
+//  * AccessModes for the Service / Service Network.
+//  * @enum
+//  */
+// export enum AuthPolicyAccessMode {
+//   /**
+//    * Allows for Unauthenticated (Anonymous) Access to the Service Network.
+//    * Anonymous principals are callers that don't sign their AWS requests
+//    * with Signature Version 4 (SigV4), and are within a VPC that is connected
+//    * to the service network.
+//    */
+//   UNAUTHENTICATED = 'UNAUTHENTICATED',
 
-  /**
-   * Means that any request to the service or service network must contain
-   * a valid request signature that is computed using Signature Version 4
-   * (SigV4).
-   * @see https://docs.aws.amazon.com/AmazonS3/latest/API/sig-v4-authenticating-requests.html
-   */
-  AUTHENTICATED_ONLY = 'AUTHENTICATED',
+//   /**
+//    * Means that any request to the service or service network must contain
+//    * a valid request signature that is computed using Signature Version 4
+//    * (SigV4).
+//    * @see https://docs.aws.amazon.com/AmazonS3/latest/API/sig-v4-authenticating-requests.html
+//    */
+//   AUTHENTICATED_ONLY = 'AUTHENTICATED',
 
-  /**
-   * Grants permissions to any authenticated request to access as long as
-   * the request originates from principals that belong to the AWS
-   * organization specified in the `orgId` parameter.
-   */
-  ORG_ONLY = 'ORG_ONLY',
+//   /**
+//    * Grants permissions to any authenticated request to access as long as
+//    * the request originates from principals that belong to the AWS
+//    * organization specified in the `orgId` parameter.
+//    */
+//   ORG_ONLY = 'ORG_ONLY',
 
-  /**
-   * Do not create a statement. If AWS IAM selected, and an additional policy is
-   * not attached, all traffic will be denied by default regardless of the
-   * identity or service level permissions.
-   */
-  NO_STATEMENT = 'NO_STATEMENT',
-}
+//   /**
+//    * Do not create a statement. If AWS IAM selected, and an additional policy is
+//    * not attached, all traffic will be denied by default regardless of the
+//    * identity or service level permissions.
+//    */
+//   NO_STATEMENT = 'NO_STATEMENT',
+// }
 
 /**
  * Specifies the authentication and authorization that manages client access to
@@ -78,7 +78,7 @@ export class AuthPolicyStatement extends iam.PolicyStatement {
    * @returns `AuthPolicyStatement`
    */
   public static allowOnlyOrganization(orgId: string, resources?: string[]): AuthPolicyStatement {
-    const statement = AuthPolicyStatement.getBaseStatement();
+    const statement = AuthPolicyStatement.buildBaseStatement();
     statement.addCondition('StringEquals', { 'aws:PrincipalOrgID': [orgId] });
     // if (authenticated ?? true) {
     //   statement.addCondition('StringNotEqualsIgnoreCase', { 'aws:PrincipalType': 'anonymous' });
@@ -96,7 +96,7 @@ export class AuthPolicyStatement extends iam.PolicyStatement {
    * @returns `AuthPolicyStatement`
    */
   public static allowOnlyRole(role: iam.IRole, resources?: string[]): AuthPolicyStatement {
-    const statement = AuthPolicyStatement.getBaseStatement();
+    const statement = AuthPolicyStatement.buildBaseStatement();
     statement.addResources(...(resources ?? ['*']));
     statement.addArnPrincipal(role.roleArn);
     return statement;
@@ -108,7 +108,7 @@ export class AuthPolicyStatement extends iam.PolicyStatement {
    * @returns `AuthPolicyStatement`
    */
   public static allowOnlyAuthenticated(resources?: string[]): AuthPolicyStatement {
-    const statement = AuthPolicyStatement.getBaseStatement();
+    const statement = AuthPolicyStatement.buildBaseStatement();
     statement.addCondition('StringNotEqualsIgnoreCase', { 'aws:PrincipalType': 'anonymous' });
     statement.addPrincipals(new iam.StarPrincipal());
     statement.addResources(...(resources ?? ['*']));
@@ -122,7 +122,7 @@ export class AuthPolicyStatement extends iam.PolicyStatement {
    * @returns `AuthPolicyStatement`
    */
   public static allowAnonymous(resources?: string[]): AuthPolicyStatement {
-    const statement = AuthPolicyStatement.getBaseStatement();
+    const statement = AuthPolicyStatement.buildBaseStatement();
     statement.addPrincipals(new iam.StarPrincipal());
     statement.addResources(...(resources ?? ['*']));
     return statement;
@@ -136,7 +136,7 @@ export class AuthPolicyStatement extends iam.PolicyStatement {
    * @returns `AuthPolicyStatement`
    */
   public static allowVpc(vpc: IVpc, resources?: string[], authenticated?: boolean): AuthPolicyStatement {
-    const statement = AuthPolicyStatement.getBaseStatement();
+    const statement = AuthPolicyStatement.buildBaseStatement();
     if (authenticated ?? true) {
       statement.addCondition('StringNotEqualsIgnoreCase', { 'aws:PrincipalType': 'anonymous' });
     }
@@ -146,7 +146,7 @@ export class AuthPolicyStatement extends iam.PolicyStatement {
     return statement;
   }
 
-  protected static getBaseStatement(): AuthPolicyStatement {
+  protected static buildBaseStatement(): AuthPolicyStatement {
     return new AuthPolicyStatement({
       effect: iam.Effect.ALLOW,
       actions: ['vpc-lattice-svcs:*'],
@@ -165,7 +165,7 @@ export class AuthPolicyDocument extends PolicyDocument {
    * (SigV4).
    * @see https://docs.aws.amazon.com/AmazonS3/latest/API/sig-v4-authenticating-requests.html
    */
-  public static readonly authenticatedOnly = new AuthPolicyDocument({ statements: [AuthPolicyStatement.allowOnlyAuthenticated()] });
+  public static readonly AUTHENTICATED_ONLY = new AuthPolicyDocument({ statements: [AuthPolicyStatement.allowOnlyAuthenticated()] });
 
   /**
    * Allows for Unauthenticated (Anonymous) Access to the Service Network.
@@ -173,7 +173,7 @@ export class AuthPolicyDocument extends PolicyDocument {
    * with Signature Version 4 (SigV4), and are within a VPC that is connected
    * to the service network.
    */
-  public static readonly unauthenticated = new AuthPolicyDocument({ statements: [AuthPolicyStatement.allowAnonymous()] });
+  public static readonly UNAUTHENTICATED = new AuthPolicyDocument({ statements: [AuthPolicyStatement.allowAnonymous()] });
 
   /**
    * Grants permissions to any authenticated request to access as long as
@@ -184,22 +184,22 @@ export class AuthPolicyDocument extends PolicyDocument {
     return new AuthPolicyDocument({ statements: [AuthPolicyStatement.allowOnlyOrganization(orgId, resources)] });
   }
 
-  public readonly accessMode?: AuthPolicyAccessMode;
+  // public readonly accessMode?: AuthPolicyAccessMode;
 
   constructor(props?: PolicyDocumentProps) {
     super(props);
   }
 
-  /**
-   * Validate that Access mode ORG_ONLY can be set only if orgId is provided
-   */
-  protected validateAccessMode(orgId?: string): string[] {
-    const errors: string[] = [];
-    if (this.accessMode === AuthPolicyAccessMode.ORG_ONLY && !orgId) {
-      errors.push('orgId is required when accessMode is set to ORG_ONLY');
-    }
-    return errors;
-  }
+  // /**
+  //  * Validate that Access mode ORG_ONLY can be set only if orgId is provided
+  //  */
+  // protected validateAccessMode(orgId?: string): string[] {
+  //   const errors: string[] = [];
+  //   if (this.accessMode === AuthPolicyAccessMode.ORG_ONLY && !orgId) {
+  //     errors.push('orgId is required when accessMode is set to ORG_ONLY');
+  //   }
+  //   return errors;
+  // }
 
   /**
    * Must ensure Service has the correct AuthType and policy is a

@@ -348,15 +348,13 @@ describe('Service', () => {
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'TestStack');
       const customPolicy = new AuthPolicyDocument({
-        config: {
-          statements: [
-            new iam.PolicyStatement({
-              actions: ['vpc-lattice-svcs:Invoke'],
-              effect: iam.Effect.ALLOW,
-              resources: ['*'],
-            }),
-          ],
-        },
+        statements: [
+          new iam.PolicyStatement({
+            actions: ['vpc-lattice-svcs:Invoke'],
+            effect: iam.Effect.ALLOW,
+            resources: ['*'],
+          }),
+        ],
       });
 
       new Service(stack, 'Service', {
@@ -390,9 +388,7 @@ describe('Service', () => {
       });
 
       const invalidActionPolicy = new AuthPolicyDocument({
-        config: {
-          statements: [invalidActionStatement],
-        },
+        statements: [invalidActionStatement],
       });
 
       // WHEN & THEN
@@ -416,9 +412,7 @@ describe('Service', () => {
       });
 
       const invalidPrincipalPolicy = new AuthPolicyDocument({
-        config: {
-          statements: [invalidPrincipalStatement],
-        },
+        statements: [invalidPrincipalStatement],
       });
 
       // WHEN & THEN
@@ -440,9 +434,7 @@ describe('Service', () => {
         resources: ['arn:aws:s3:::my-bucket'],
       });
       const invalidResourcePolicy = new AuthPolicyDocument({
-        config: {
-          statements: [invalidResourceStatement],
-        },
+        statements: [invalidResourceStatement],
       });
 
       // WHEN & THEN
@@ -466,9 +458,7 @@ describe('Service', () => {
       });
 
       const invalidPolicy = new AuthPolicyDocument({
-        config: {
-          statements: [multipleInvalidStatement],
-        },
+        statements: [multipleInvalidStatement],
       });
 
       // WHEN & THEN
@@ -492,9 +482,7 @@ describe('Service', () => {
       });
 
       const validPolicy = new AuthPolicyDocument({
-        config: {
-          statements: [validStatement],
-        },
+        statements: [validStatement],
       });
 
       // WHEN & THEN
@@ -518,9 +506,7 @@ describe('Service', () => {
       });
 
       const customPolicy = new AuthPolicyDocument({
-        config: {
-          statements: [customStatement],
-        },
+        statements: [customStatement],
       });
 
       // WHEN
