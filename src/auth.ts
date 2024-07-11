@@ -1,9 +1,9 @@
 import { EOL } from 'node:os';
+import type { IVpc } from 'aws-cdk-lib/aws-ec2';
 import type { PolicyDocumentProps } from 'aws-cdk-lib/aws-iam';
 import { PolicyDocument } from 'aws-cdk-lib/aws-iam';
 
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { IVpc } from 'aws-cdk-lib/aws-ec2';
 
 const validActions = ['vpc-lattice-svcs:Invoke', 'vpc-lattice-svcs:Connect', 'vpc-lattice-svcs:*'];
 //const validConditionKeys = ['vpc-lattice-svcs:Port']
@@ -23,8 +23,8 @@ export enum AuthPolicyAccessMode {
   UNAUTHENTICATED = 'UNAUTHENTICATED',
 
   /**
-   * Means that any request to the service or service network must contain 
-   * a valid request signature that is computed using Signature Version 4 
+   * Means that any request to the service or service network must contain
+   * a valid request signature that is computed using Signature Version 4
    * (SigV4).
    * @see https://docs.aws.amazon.com/AmazonS3/latest/API/sig-v4-authenticating-requests.html
    */
@@ -32,145 +32,140 @@ export enum AuthPolicyAccessMode {
 
   /**
    * Grants permissions to any authenticated request to access as long as
-   * the request originates from principals that belong to the AWS 
+   * the request originates from principals that belong to the AWS
    * organization specified in the `orgId` parameter.
    */
   ORG_ONLY = 'ORG_ONLY',
 
   /**
-   * Do not create a statement. If AWS IAM selected, and an additional policy is 
-   * not attached, all traffic will be denied by default regardless of the 
-   * identity or service level permissions. 
+   * Do not create a statement. If AWS IAM selected, and an additional policy is
+   * not attached, all traffic will be denied by default regardless of the
+   * identity or service level permissions.
    */
   NO_STATEMENT = 'NO_STATEMENT',
 }
 
 /**
- * Specifies the authentication and authorization that manages client access to 
+ * Specifies the authentication and authorization that manages client access to
  * the service or service network.
  */
 export enum AuthType {
   /**
-   * No Authentication or Authorization. If an auth policy is present, 
-   * it is inactive. 
+   * No Authentication or Authorization. If an auth policy is present,
+   * it is inactive.
    */
   NONE = 'NONE',
 
   /**
-   * Use VPC Lattice Auth Policy to control access. If enabled and a policy is 
-   * not attached, all traffic will be denied by default regardless of the 
-   * identity or service level permissions. 
+   * Use VPC Lattice Auth Policy to control access. If enabled and a policy is
+   * not attached, all traffic will be denied by default regardless of the
+   * identity or service level permissions.
    */
   AWS_IAM = 'AWS_IAM',
 }
 
 /**
  * Helps you create Auth Policies using higher level abstractions which reflect
- * common use cases. 
+ * common use cases.
  * @see https://docs.aws.amazon.com/vpc-lattice/latest/ug/auth-policies.html#example-auth-policies
  */
 export class AuthPolicyStatement extends iam.PolicyStatement {
   /**
-   * Creates an IAM Auth policy which limits access to requests which orginate 
+   * Creates an IAM Auth policy which limits access to requests which originate
    * from principals that belong to the AWS organization specified.
    * @param orgId The AWS Organization ID to limit access to.
    * @param resources optional list of resources to limit the statement to (defaults to "*")
-   * @returns `AuthPolicyStatement`   
+   * @returns `AuthPolicyStatement`
    */
   public static allowOnlyOrganization(orgId: string, resources?: string[]): AuthPolicyStatement {
-    const statement = this.getBaseStatement()
+    const statement = AuthPolicyStatement.getBaseStatement();
     statement.addCondition('StringEquals', { 'aws:PrincipalOrgID': [orgId] });
     // if (authenticated ?? true) {
     //   statement.addCondition('StringNotEqualsIgnoreCase', { 'aws:PrincipalType': 'anonymous' });
     // }
-    statement.addPrincipals(new iam.StarPrincipal())
-    statement.addResources(...(resources ?? ["*"]))
-    return statement
+    statement.addPrincipals(new iam.StarPrincipal());
+    statement.addResources(...(resources ?? ['*']));
+    return statement;
   }
 
   /**
-   * Grants permissions to any authenticated request that uses the IAM role 
+   * Grants permissions to any authenticated request that uses the IAM role
    * specified.
    * @param role the AWS IAM Role
    * @param resources optional list of resources to limit the statement to (defaults to "*")
-   * @returns `AuthPolicyStatement`  
+   * @returns `AuthPolicyStatement`
    */
   public static allowOnlyRole(role: iam.IRole, resources?: string[]): AuthPolicyStatement {
-    const statement = this.getBaseStatement()
-    statement.addResources(...(resources ?? ["*"]))
+    const statement = AuthPolicyStatement.getBaseStatement();
+    statement.addResources(...(resources ?? ['*']));
     statement.addArnPrincipal(role.roleArn);
-    return statement
+    return statement;
   }
 
   /**
    * Grants permissions to any authenticated request.
    * @param resources optional list of resources to limit the statement to (defaults to "*")
-   * @returns `AuthPolicyStatement`  
+   * @returns `AuthPolicyStatement`
    */
   public static allowOnlyAuthenticated(resources?: string[]): AuthPolicyStatement {
-    const statement = this.getBaseStatement()
+    const statement = AuthPolicyStatement.getBaseStatement();
     statement.addCondition('StringNotEqualsIgnoreCase', { 'aws:PrincipalType': 'anonymous' });
-    statement.addPrincipals(new iam.StarPrincipal())
-    statement.addResources(...(resources ?? ["*"]))
-    return statement
+    statement.addPrincipals(new iam.StarPrincipal());
+    statement.addResources(...(resources ?? ['*']));
+    return statement;
   }
 
   /**
-   * Grants permissions to both authenticated and unauthenticated (anonymous) 
+   * Grants permissions to both authenticated and unauthenticated (anonymous)
    * requests.
    * @param resources optional list of resources to limit the statement to (defaults to "*")
-   * @returns `AuthPolicyStatement`  
+   * @returns `AuthPolicyStatement`
    */
   public static allowAnonymous(resources?: string[]): AuthPolicyStatement {
-    const statement = this.getBaseStatement()
-    statement.addPrincipals(new iam.StarPrincipal())
-    statement.addResources(...(resources ?? ["*"]))
-    return statement
+    const statement = AuthPolicyStatement.getBaseStatement();
+    statement.addPrincipals(new iam.StarPrincipal());
+    statement.addResources(...(resources ?? ['*']));
+    return statement;
   }
 
   /**
-   * Grants permissions to authenticated requests originating from principals 
-   * in the specified VPC 
+   * Grants permissions to authenticated requests originating from principals
+   * in the specified VPC
    * @param vpc the VPC to restrict requests from
    * @param resources optional list of resources to limit the statement to (defaults to "*")
-   * @returns `AuthPolicyStatement`  
+   * @returns `AuthPolicyStatement`
    */
   public static allowVpc(vpc: IVpc, resources?: string[], authenticated?: boolean): AuthPolicyStatement {
-    const statement = this.getBaseStatement()
+    const statement = AuthPolicyStatement.getBaseStatement();
     if (authenticated ?? true) {
       statement.addCondition('StringNotEqualsIgnoreCase', { 'aws:PrincipalType': 'anonymous' });
     }
     statement.addCondition('StringEquals', { 'vpc-lattice-svcs:SourceVpc': vpc.vpcId });
-    statement.addPrincipals(new iam.StarPrincipal())
-    statement.addResources(...(resources ?? ["*"]))
-    return statement
+    statement.addPrincipals(new iam.StarPrincipal());
+    statement.addResources(...(resources ?? ['*']));
+    return statement;
   }
 
   protected static getBaseStatement(): AuthPolicyStatement {
     return new AuthPolicyStatement({
       effect: iam.Effect.ALLOW,
       actions: ['vpc-lattice-svcs:*'],
-    })
+    });
   }
 
   constructor(props?: iam.PolicyStatementProps) {
-    super(props)
+    super(props);
   }
 }
 
 export class AuthPolicyDocument extends PolicyDocument {
-
-  public readonly accessMode?: AuthPolicyAccessMode;
-
   /**
-   * Means that any request to the service or service network must contain 
-   * a valid request signature that is computed using Signature Version 4 
+   * Means that any request to the service or service network must contain
+   * a valid request signature that is computed using Signature Version 4
    * (SigV4).
    * @see https://docs.aws.amazon.com/AmazonS3/latest/API/sig-v4-authenticating-requests.html
    */
-  public static AUTHENTICATED_ONLY = new AuthPolicyDocument(
-    { statements: [AuthPolicyStatement.allowOnlyAuthenticated()] }
-  )
+  public static readonly authenticatedOnly = new AuthPolicyDocument({ statements: [AuthPolicyStatement.allowOnlyAuthenticated()] });
 
   /**
    * Allows for Unauthenticated (Anonymous) Access to the Service Network.
@@ -178,19 +173,18 @@ export class AuthPolicyDocument extends PolicyDocument {
    * with Signature Version 4 (SigV4), and are within a VPC that is connected
    * to the service network.
    */
-  public static UNAUTHENTICATED = new AuthPolicyDocument(
-    { statements: [AuthPolicyStatement.allowAnonymous()] }
-  )
+  public static readonly unauthenticated = new AuthPolicyDocument({ statements: [AuthPolicyStatement.allowAnonymous()] });
 
   /**
    * Grants permissions to any authenticated request to access as long as
-   * the request originates from principals that belong to the AWS 
+   * the request originates from principals that belong to the AWS
    * organization specified in the `orgId` parameter.
    */
   public static organizationOnly(orgId: string, resources?: string[]): AuthPolicyDocument {
-    return new AuthPolicyDocument(
-      { statements: [AuthPolicyStatement.allowOnlyOrganization(orgId, resources)] })
+    return new AuthPolicyDocument({ statements: [AuthPolicyStatement.allowOnlyOrganization(orgId, resources)] });
   }
+
+  public readonly accessMode?: AuthPolicyAccessMode;
 
   constructor(props?: PolicyDocumentProps) {
     super(props);
@@ -267,4 +261,3 @@ export class AuthPolicyDocument extends PolicyDocument {
     return false;
   }
 }
-
