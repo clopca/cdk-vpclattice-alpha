@@ -5,8 +5,7 @@ import { Instance, Peer, Port, SecurityGroup, Vpc, AmazonLinuxGeneration } from 
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { Code, Function as LambdaFunction, Runtime } from 'aws-cdk-lib/aws-lambda';
-import { LambdaTargetGroup, ListenerProtocol, Service, ServiceNetwork } from '../../../src';
-import { AuthPolicyDocument, AuthPolicyStatement, AuthType } from '../../../src/auth';
+import { LambdaTargetGroup, ListenerProtocol, Service, ServiceNetwork, AuthPolicyDocument, AuthType } from '../../../src';
 
 export class VpcLatticeAlphaStack extends cdk.Stack {
   // constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -25,21 +24,23 @@ const clientVpc = new Vpc(stack, 'ClientVPC', { natGateways: 1 });
 // ------------------------------------------------------
 // Security Groups
 // ------------------------------------------------------
+const ipv4LinkLocalCidrBlock = '169.254.0.0/16'
 const clientsSg = new SecurityGroup(stack, 'ResSG', {
   securityGroupName: 'client-sg',
   vpc: clientVpc,
 });
-clientsSg.addIngressRule(Peer.ipv4('10.0.0.0/16'), Port.allTraffic());
-clientsSg.addIngressRule(Peer.ipv4('169.254.0.0/16'), Port.allTraffic());
 
 const serviceSecurityGroup = new SecurityGroup(stack, 'ServiceSG', {
   securityGroupName: 'service-sg',
   vpc: serviceVpc,
 });
 
-serviceSecurityGroup.addIngressRule(Peer.ipv4('10.0.0.0/16'), Port.allTraffic());
-serviceSecurityGroup.addIngressRule(Peer.ipv4('169.254.0.0/16'), Port.allTraffic());
-
+// Add rules to SGs
+for (const sg of [clientsSg, serviceSecurityGroup]) {
+  for (const cidr of [ipv4LinkLocalCidrBlock, '10.0.0.0/16']) {
+    sg.addIngressRule(Peer.ipv4(cidr), Port.allTraffic());
+  }
+}
 // ------------------------------------------------------
 // Service
 // ------------------------------------------------------

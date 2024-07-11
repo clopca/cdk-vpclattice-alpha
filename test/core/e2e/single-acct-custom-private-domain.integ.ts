@@ -4,10 +4,9 @@ import * as route53 from 'aws-cdk-lib/aws-route53';
 import * as acmpca from 'aws-cdk-lib/aws-acmpca';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as acm from 'aws-cdk-lib/aws-certificatemanager';
-import { AuthType } from '../../../src/auth';
 import { Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { AmazonLinuxGeneration, Instance, Peer, Port, SecurityGroup, UserData, Vpc } from 'aws-cdk-lib/aws-ec2';
-import { HTTPFixedResponse, LambdaTargetGroup, ListenerProtocol, PathMatchType, Service, ServiceNetwork } from '../../../src';
+import { HTTPFixedResponse, LambdaTargetGroup, ListenerProtocol, PathMatchType, Service, ServiceNetwork, AuthType } from '../../../src';
 
 // ------------------------------------------------------
 // Create Resource Stack
@@ -30,18 +29,16 @@ const clientsVpc = new Vpc(stack, 'ClientsVPC', { natGateways: 1 });
 // ------------------------------------------------------
 // Security Groups
 // ------------------------------------------------------
+const ipv4LinkLocalCidrBlock = '169.254.0.0/16'
+//const ipv6LinkLocalCidrBlock = "fe80::/10"
 const clientsSg = new SecurityGroup(stack, 'ResSG', {
   securityGroupName: 'reservation-sg',
   vpc: clientsVpc,
 });
-// const lambdaSg = new SecurityGroup(stack, 'LambdaSg', {
-//   securityGroupName: 'lambda-sg',
-//   vpc: svcVpc,
-// });
 
 for (const sg of [clientsSg]) {
   sg.addIngressRule(Peer.ipv4('10.0.0.0/16'), Port.allTraffic());
-  sg.addIngressRule(Peer.ipv4('169.254.0.0/16'), Port.allTraffic());
+  sg.addIngressRule(Peer.ipv4(ipv4LinkLocalCidrBlock), Port.allTraffic());
 }
 // ------------------------------------------------------
 // Private CA for domain

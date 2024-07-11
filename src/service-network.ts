@@ -23,6 +23,7 @@ export interface IServiceNetwork extends core.IResource {
   /**
    * The Id of the Service Network
    * @attribute
+   * @example "sn-0123456789abcdef0"
    */
   readonly serviceNetworkId: string;
 

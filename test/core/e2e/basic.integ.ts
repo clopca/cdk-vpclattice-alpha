@@ -6,9 +6,8 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { Instance, Peer, Port, SecurityGroup, Vpc } from 'aws-cdk-lib/aws-ec2';
 import { ApplicationLoadBalancedFargateService } from 'aws-cdk-lib/aws-ecs-patterns';
 import { Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
-import { HTTPFixedResponse, ListenerProtocol, PathMatchType, Service, ServiceNetwork } from '../../../src';
+import { HTTPFixedResponse, ListenerProtocol, PathMatchType, Service, ServiceNetwork, AuthType } from '../../../src';
 import { AlbTargetGroup, InstanceTargetGroup, LambdaTargetGroup, RequestProtocol, RequestProtocolVersion } from '../../../src/aws-vpclattice-targets';
-import { AuthType } from '../../../src/auth';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-vpclattice-integ-basic-e2e');
@@ -142,7 +141,9 @@ const parkingListener = svcParking.addListener({
   },
 });
 
-
+// ------------------------------------------------------
+// Listener & Rules
+// ------------------------------------------------------
 parkingListener.addListenerRule({
   name: 'rates-rule',
   priority: 10,
@@ -200,6 +201,9 @@ new ServiceNetwork(stack, 'ServiceNetwork', {
   vpcAssociations: [{ vpc: clientsVpc, securityGroups: [clientsSg] }],
 });
 
+// ------------------------------------------------------
+// Testing Instance
+// ------------------------------------------------------
 new Instance(stack, 'Ec2Instance', {
   instanceName: 'client-instance',
   vpc: clientsVpc,
@@ -213,6 +217,9 @@ new Instance(stack, 'Ec2Instance', {
   `),
 });
 
+// ------------------------------------------------------
+// Integ Test Runner
+// ------------------------------------------------------
 new integ.IntegTest(app, 'ServiceNetworkTest', {
   testCases: [stack],
 });
