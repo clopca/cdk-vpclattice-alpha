@@ -118,11 +118,8 @@ const parkingSvc = new Service(stack, 'Parking', {
   customDomain: {
     domainName: 'parking.cdktests.com',
     certificate: privateCertificate,
-  },
-  dnsEntry: {
-    domainName: 'parking',
     hostedZone: privateHostedZone,
-  },
+  }
 });
 
 // ------------------------------------------------------

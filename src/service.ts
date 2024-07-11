@@ -10,7 +10,7 @@ import { Listener } from './listener';
 import type { ListenerConfig } from './listener';
 import type { LoggingDestination } from './logging';
 import type { IServiceNetwork } from './service-network';
-import { ServiceNetworkAssociation } from './service-network-association';
+import { ServiceNetworkServiceAssociation } from './service-network-association';
 
 /**
  * Represents a Vpc Lattice Service.
@@ -186,7 +186,7 @@ abstract class ServiceBase extends Resource implements IService {
    * Associate a Lattice Service with a Service Network
    */
   public associateWithServiceNetwork(serviceNetwork: IServiceNetwork): void {
-    new ServiceNetworkAssociation(this, `ServiceAssociation${serviceNetwork.node.addr}`, {
+    new ServiceNetworkServiceAssociation(this, `ServiceAssociation${serviceNetwork.node.addr}`, {
       service: this,
       serviceNetwork: serviceNetwork,
     });

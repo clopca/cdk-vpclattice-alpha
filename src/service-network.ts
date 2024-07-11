@@ -5,7 +5,7 @@ import * as generated from 'aws-cdk-lib/aws-vpclattice';
 import type { Construct, IConstruct } from 'constructs';
 import type { LoggingDestination } from './logging';
 import type { IService } from './service';
-import { ServiceNetworkAssociation } from './service-network-association';
+import { ServiceNetworkServiceAssociation } from './service-network-association';
 import { AuthPolicyDocument, AuthType } from "./auth";
 
 
@@ -40,6 +40,7 @@ export interface IServiceNetwork extends core.IResource {
 
 /**
  * Properties to share a Service Network
+ * @see https://docs.aws.amazon.com/ram/latest/userguide/shareable.html#shareable-vpc-lattice
  */
 export interface ShareServiceNetworkProps {
   /**
@@ -48,8 +49,12 @@ export interface ShareServiceNetworkProps {
   readonly name: string;
 
   /**
-   * Whether external principals are allowed.
-   * @default false;
+   * Specifies whether principals outside your organization in AWS Organizations 
+   * can be associated with a resource share. A value of `true` lets you share 
+   * with individual AWS accounts that are *not* in your organization. A value 
+   * of `false` only has meaning if your account is a member of an AWS 
+   * Organization.
+   * @default true;
    */
   readonly allowExternalPrincipals?: boolean;
 
@@ -180,7 +185,7 @@ abstract class ServiceNetworkBase extends core.Resource implements IServiceNetwo
    * Associate a Lattice Service with a Service Network
    */
   public associateService(service: IService): void {
-    new ServiceNetworkAssociation(this, `ServiceAssociation${service.node.addr}`, {
+    new ServiceNetworkServiceAssociation(this, `ServiceAssociation${service.node.addr}`, {
       service: service,
       serviceNetwork: this,
     });
@@ -488,8 +493,7 @@ export class ServiceNetwork extends ServiceNetworkBase {
  */
 export interface ServiceNetworkVpcAssociationProps {
   /**
-   * security groups for the lattice endpoint
-   * @default - a security group that will permit inbound 443
+   * Security groups for the lattice endpoint
    */
   readonly securityGroups?: ec2.ISecurityGroup[];
 
@@ -511,16 +515,10 @@ export class ServiceNetworkVpcAssociation extends core.Resource {
   constructor(scope: Construct, id: string, props: ServiceNetworkVpcAssociationProps) {
     super(scope, id);
 
-    const securityGroupIds: string[] = [];
-    if (props.securityGroups) {
-      for (const sg of props.securityGroups) {
-        securityGroupIds.push(sg.securityGroupId);
-      }
-    }
-
-    new generated.CfnServiceNetworkVpcAssociation(this, `VpcAssociation-${props.serviceNetworkId}-${props.vpc.vpcId}`, {
-      securityGroupIds: securityGroupIds,
+    new generated.CfnServiceNetworkVpcAssociation(this, `VpcAssociation-${props.vpc.node.addr}`, {
+      securityGroupIds: props.securityGroups?.flatMap(sg => sg.securityGroupId),
       serviceNetworkIdentifier: props.serviceNetworkId,
+
       vpcIdentifier: props.vpc.vpcId,
     });
   }

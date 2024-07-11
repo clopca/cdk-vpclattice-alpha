@@ -3293,8 +3293,9 @@ public readonly hostedZone: IHostedZone;
 
 The Route53 Private Hosted Zone or Public Hosted Zone.
 
-This will add a CNAME record between the custom domain name and the service
-VPC Lattice generated DNS name.
+This will add a CNAME record between the custom domain name and the VPC
+Lattice service generated DNS name. Leave empty if DNS is managed outside
+of Route53 or if you want to manually add the Route53 CNAME record.
 
 ---
 
@@ -4762,6 +4763,8 @@ ServiceNetwork to associate with.
 
 Properties to share a Service Network.
 
+> [https://docs.aws.amazon.com/ram/latest/userguide/shareable.html#shareable-vpc-lattice](https://docs.aws.amazon.com/ram/latest/userguide/shareable.html#shareable-vpc-lattice)
+
 #### Initializer <a name="Initializer" id="cdk-vpclattice-alpha.ShareServiceNetworkProps.Initializer"></a>
 
 ```typescript
@@ -4775,7 +4778,7 @@ const shareServiceNetworkProps: ShareServiceNetworkProps = { ... }
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
 | <code><a href="#cdk-vpclattice-alpha.ShareServiceNetworkProps.property.name">name</a></code> | <code>string</code> | The name of the share. |
-| <code><a href="#cdk-vpclattice-alpha.ShareServiceNetworkProps.property.allowExternalPrincipals">allowExternalPrincipals</a></code> | <code>boolean</code> | Whether external principals are allowed. |
+| <code><a href="#cdk-vpclattice-alpha.ShareServiceNetworkProps.property.allowExternalPrincipals">allowExternalPrincipals</a></code> | <code>boolean</code> | Specifies whether principals outside your organization in AWS Organizations  can be associated with a resource share. |
 | <code><a href="#cdk-vpclattice-alpha.ShareServiceNetworkProps.property.principals">principals</a></code> | <code>string[]</code> | Principals to share the Service Network with. |
 | <code><a href="#cdk-vpclattice-alpha.ShareServiceNetworkProps.property.resourceArns">resourceArns</a></code> | <code>string[]</code> | Resources to share the Service Network with. |
 
@@ -4800,9 +4803,14 @@ public readonly allowExternalPrincipals: boolean;
 ```
 
 - *Type:* boolean
-- *Default:* false;
+- *Default:* true;
 
-Whether external principals are allowed.
+Specifies whether principals outside your organization in AWS Organizations  can be associated with a resource share.
+
+A value of `true` lets you share 
+with individual AWS accounts that are *not* in your organization. A value 
+of `false` only has meaning if your account is a member of an AWS 
+Organization.
 
 ---
 
