@@ -20,7 +20,7 @@ const clientVpc = new Vpc(stack, 'ClientVPC', { natGateways: 1 });
 // ------------------------------------------------------
 // Security Groups
 // ------------------------------------------------------
-const ipv4LinkLocalCidrBlock = '169.254.0.0/16'
+const ipv4LinkLocalCidrBlock = '169.254.0.0/16';
 const clientsSg = new SecurityGroup(stack, 'ResSG', {
   securityGroupName: 'client-sg',
   vpc: clientVpc,

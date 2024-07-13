@@ -1,11 +1,11 @@
-import * as cdk from 'aws-cdk-lib';
 import * as path from 'path';
-import * as route53 from 'aws-cdk-lib/aws-route53';
-import * as acmpca from 'aws-cdk-lib/aws-acmpca';
 import * as integ from '@aws-cdk/integ-tests-alpha';
+import * as cdk from 'aws-cdk-lib';
+import * as acmpca from 'aws-cdk-lib/aws-acmpca';
 import * as acm from 'aws-cdk-lib/aws-certificatemanager';
-import { Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { AmazonLinuxGeneration, Instance, Peer, Port, SecurityGroup, UserData, Vpc } from 'aws-cdk-lib/aws-ec2';
+import { Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
+import * as route53 from 'aws-cdk-lib/aws-route53';
 import { HTTPFixedResponse, LambdaTargetGroup, ListenerProtocol, PathMatchType, Service, ServiceNetwork, AuthType } from '../../../src';
 
 // ------------------------------------------------------
@@ -29,7 +29,7 @@ const clientsVpc = new Vpc(stack, 'ClientsVPC', { natGateways: 1 });
 // ------------------------------------------------------
 // Security Groups
 // ------------------------------------------------------
-const ipv4LinkLocalCidrBlock = '169.254.0.0/16'
+const ipv4LinkLocalCidrBlock = '169.254.0.0/16';
 //const ipv6LinkLocalCidrBlock = "fe80::/10"
 const clientsSg = new SecurityGroup(stack, 'ResSG', {
   securityGroupName: 'reservation-sg',
@@ -59,22 +59,22 @@ const cfnCertificateAuthority = new acmpca.CfnCertificateAuthority(stack, 'Priva
 
 // L2 construct
 const certificateAuthority = acmpca.CertificateAuthority.fromCertificateAuthorityArn(
-  stack, 'PrivateCA-L2', cfnCertificateAuthority.attrArn
-)
+  stack, 'PrivateCA-L2', cfnCertificateAuthority.attrArn,
+);
 
 // ACM Authorization to Manage Certificates
 new acmpca.CfnPermission(stack, 'CAPermission', {
-  actions: ['IssueCertificate', 'GetCertificate', "ListPermissions"],
+  actions: ['IssueCertificate', 'GetCertificate', 'ListPermissions'],
   principal: 'acm.amazonaws.com',
   certificateAuthorityArn: cfnCertificateAuthority.attrArn,
-})
+});
 
 // Root CA certificate
 const cfnCertificate = new acmpca.CfnCertificate(stack, 'Certificate', {
   certificateAuthorityArn: cfnCertificateAuthority.attrArn,
   certificateSigningRequest: cfnCertificateAuthority.attrCertificateSigningRequest,
   signingAlgorithm: 'SHA256WITHRSA',
-  templateArn: "arn:aws:acm-pca:::template/RootCACertificate/V1",
+  templateArn: 'arn:aws:acm-pca:::template/RootCACertificate/V1',
   validity: {
     type: 'YEARS',
     value: 10,
@@ -85,7 +85,7 @@ const cfnCertificate = new acmpca.CfnCertificate(stack, 'Certificate', {
 new acmpca.CfnCertificateAuthorityActivation(stack, 'CertActivation-PAA', {
   certificateAuthorityArn: cfnCertificateAuthority.attrArn,
   certificate: cfnCertificate.attrCertificate,
-  status: "ACTIVE"
+  status: 'ACTIVE',
 });
 
 
@@ -106,7 +106,7 @@ const privateHostedZone = new route53.PrivateHostedZone(stack, 'PrivateHostedZon
   vpc: svcVpc,
   comment: 'Private hosted zone for CDK tests',
 });
-privateHostedZone.addVpc(clientsVpc)
+privateHostedZone.addVpc(clientsVpc);
 
 // ------------------------------------------------------
 // Service
@@ -119,7 +119,7 @@ const parkingSvc = new Service(stack, 'Parking', {
     domainName: 'parking.cdktests.com',
     certificate: privateCertificate,
     hostedZone: privateHostedZone,
-  }
+  },
 });
 
 // ------------------------------------------------------

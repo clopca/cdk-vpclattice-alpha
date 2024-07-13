@@ -153,6 +153,7 @@ export class AuthPolicyStatement extends iam.PolicyStatement {
     });
   }
 
+  // biome-ignore lint/complexity/noUselessConstructor: <explanation>
   constructor(props?: iam.PolicyStatementProps) {
     super(props);
   }
@@ -181,11 +182,13 @@ export class AuthPolicyDocument extends PolicyDocument {
    * organization specified in the `orgId` parameter.
    */
   public static organizationOnly(orgId: string, resources?: string[]): AuthPolicyDocument {
+    if (!/^o-[a-z0-9]{12}$/.test(orgId)) {
+      throw new Error('Invalid AWS Organization ID');
+    }
     return new AuthPolicyDocument({ statements: [AuthPolicyStatement.allowOnlyOrganization(orgId, resources)] });
   }
 
-  // public readonly accessMode?: AuthPolicyAccessMode;
-
+  // biome-ignore lint/complexity/noUselessConstructor: <explanation>
   constructor(props?: PolicyDocumentProps) {
     super(props);
   }

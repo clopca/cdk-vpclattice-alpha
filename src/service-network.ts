@@ -3,10 +3,10 @@ import { aws_iam as iam, aws_ram as ram } from 'aws-cdk-lib';
 import * as core from 'aws-cdk-lib';
 import * as generated from 'aws-cdk-lib/aws-vpclattice';
 import type { Construct, IConstruct } from 'constructs';
+import { AuthPolicyDocument, AuthType } from './auth';
 import type { LoggingDestination } from './logging';
 import type { IService } from './service';
 import { ServiceNetworkServiceAssociation } from './service-network-association';
-import { AuthPolicyDocument, AuthType } from "./auth";
 
 /**
  * Represents a VPC Lattice Service Network.
@@ -48,10 +48,10 @@ export interface ShareServiceNetworkProps {
   readonly name: string;
 
   /**
-   * Specifies whether principals outside your organization in AWS Organizations 
-   * can be associated with a resource share. A value of `true` lets you share 
-   * with individual AWS accounts that are *not* in your organization. A value 
-   * of `false` only has meaning if your account is a member of an AWS 
+   * Specifies whether principals outside your organization in AWS Organizations
+   * can be associated with a resource share. A value of `true` lets you share
+   * with individual AWS accounts that are *not* in your organization. A value
+   * of `false` only has meaning if your account is a member of an AWS
    * Organization.
    * @default true;
    */
@@ -100,7 +100,7 @@ export interface ServiceNetworkProps {
 
   /**
    * The authentication and authorization that manages client access to the network.
-   * If `AuthType.AWS_IAM` is selected, and a policy is not attached, all traffic will be denied 
+   * If `AuthType.AWS_IAM` is selected, and a policy is not attached, all traffic will be denied
    * by default regardless of the identity or service level permissions.
    * @default AuthType.NONE
    */
@@ -382,7 +382,7 @@ export class ServiceNetwork extends ServiceNetworkBase {
     // ------------------------------------------------------
     // Auth Policy
     // ------------------------------------------------------
-    this.node.addValidation({ validate: () => this.authPolicy.validateAuthPolicy() })
+    this.node.addValidation({ validate: () => this.authPolicy.validateAuthPolicy() });
     core.Aspects.of(this).add({
       visit: (node: IConstruct) => {
         if (node === this && !this.authPolicy.isEmpty) {
@@ -436,7 +436,6 @@ export class ServiceNetwork extends ServiceNetworkBase {
     return errors;
   }
 
-
   // ------------------------------------------------------
   // Methods
   // ------------------------------------------------------
@@ -456,7 +455,7 @@ export class ServiceNetwork extends ServiceNetworkBase {
       principals: principals,
     });
     this.authPolicy.addStatements(policyStatement);
-    this.node.addValidation({ validate: () => this.authPolicy.validateAuthPolicy() })
+    this.node.addValidation({ validate: () => this.authPolicy.validateAuthPolicy() });
   }
 
   /**

@@ -842,6 +842,69 @@
         }
       ]
     },
+    "integ:single-acct-flow:assert": {
+      "name": "integ:single-acct-flow:assert",
+      "description": "assert the snapshot of integration test 'single-acct-flow'",
+      "steps": [
+        {
+          "exec": "[ -d \"test/core/e2e/single-acct-flow.integ.snapshot\" ] || (echo \"No snapshot available for integration test 'single-acct-flow'. Run 'projen integ:single-acct-flow:deploy' to capture.\" && exit 1)"
+        },
+        {
+          "exec": "cdk synth --app \"ts-node -P tsconfig.dev.json test/core/e2e/single-acct-flow.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata -o test/core/e2e/.tmp/single-acct-flow.integ/assert.cdk.out > /dev/null"
+        },
+        {
+          "exec": "diff -r -x asset.* -x cdk.out -x manifest.json -x tree.json test/core/e2e/single-acct-flow.integ.snapshot/ test/core/e2e/.tmp/single-acct-flow.integ/assert.cdk.out/"
+        }
+      ]
+    },
+    "integ:single-acct-flow:deploy": {
+      "name": "integ:single-acct-flow:deploy",
+      "description": "deploy integration test 'single-acct-flow' and capture snapshot",
+      "steps": [
+        {
+          "exec": "rm -fr test/core/e2e/.tmp/single-acct-flow.integ/deploy.cdk.out"
+        },
+        {
+          "exec": "cdk deploy --app \"ts-node -P tsconfig.dev.json test/core/e2e/single-acct-flow.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata '**' --require-approval=never -o test/core/e2e/.tmp/single-acct-flow.integ/deploy.cdk.out"
+        },
+        {
+          "exec": "rm -fr test/core/e2e/single-acct-flow.integ.snapshot"
+        },
+        {
+          "exec": "mv test/core/e2e/.tmp/single-acct-flow.integ/deploy.cdk.out test/core/e2e/single-acct-flow.integ.snapshot"
+        },
+        {
+          "spawn": "integ:single-acct-flow:destroy"
+        }
+      ]
+    },
+    "integ:single-acct-flow:destroy": {
+      "name": "integ:single-acct-flow:destroy",
+      "description": "destroy integration test 'single-acct-flow'",
+      "steps": [
+        {
+          "exec": "cdk destroy --app test/core/e2e/single-acct-flow.integ.snapshot '**' --no-version-reporting"
+        }
+      ]
+    },
+    "integ:single-acct-flow:snapshot": {
+      "name": "integ:single-acct-flow:snapshot",
+      "description": "update snapshot for integration test \"single-acct-flow\"",
+      "steps": [
+        {
+          "exec": "cdk synth --app \"ts-node -P tsconfig.dev.json test/core/e2e/single-acct-flow.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata -o test/core/e2e/single-acct-flow.integ.snapshot > /dev/null"
+        }
+      ]
+    },
+    "integ:single-acct-flow:watch": {
+      "name": "integ:single-acct-flow:watch",
+      "description": "watch integration test 'single-acct-flow' (without updating snapshots)",
+      "steps": [
+        {
+          "exec": "cdk watch --app \"ts-node -P tsconfig.dev.json test/core/e2e/single-acct-flow.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata '**' -o test/core/e2e/.tmp/single-acct-flow.integ/deploy.cdk.out"
+        }
+      ]
+    },
     "integ:snapshot-all": {
       "name": "integ:snapshot-all",
       "description": "update snapshot for all integration tests",
@@ -857,6 +920,9 @@
         },
         {
           "spawn": "integ:single-acct-custom-private-domain:snapshot"
+        },
+        {
+          "spawn": "integ:single-acct-flow:snapshot"
         },
         {
           "spawn": "integ:test-1:snapshot"
@@ -1037,6 +1103,9 @@
         },
         {
           "spawn": "integ:single-acct-custom-private-domain:assert"
+        },
+        {
+          "spawn": "integ:single-acct-flow:assert"
         },
         {
           "spawn": "integ:test-1:assert"

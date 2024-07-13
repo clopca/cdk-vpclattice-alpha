@@ -3,7 +3,7 @@
   "testCases": {
     "ServiceNetworkTest/DefaultTest": {
       "stacks": [
-        "aws-cdk-vpclattice-integ-listener"
+        "aws-cdk-vpclattice-integ-basic-e2e"
       ],
       "assertionStack": "ServiceNetworkTest/DefaultTest/DeployAssert",
       "assertionStackName": "ServiceNetworkTestDefaultTestDeployAssert62481699"

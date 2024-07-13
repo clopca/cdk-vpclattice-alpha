@@ -59,8 +59,8 @@ const listener1 = sampleSvc.addListener({
       }],
     },
     action: {
-      targetGroup: tg1
-    }
+      targetGroup: tg1,
+    },
   },
   {
     name: 'second-rule',
@@ -72,8 +72,8 @@ const listener1 = sampleSvc.addListener({
       weightedTargetGroups: [{
         targetGroup: tg1,
         weight: 50,
-      }]
-    }
+      }],
+    },
   }],
 });
 
@@ -86,8 +86,8 @@ listener1.addListenerRule({
     },
   },
   action: {
-    httpFixedResponse: HTTPFixedResponse.NOT_FOUND
-  }
+    httpFixedResponse: HTTPFixedResponse.NOT_FOUND,
+  },
 });
 
 new integ.IntegTest(app, 'ServiceNetworkTest', {

@@ -5,8 +5,8 @@ import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { ServiceNetworkVpcAssociation } from '../../../src';
 
 const app2 = new cdk.App();
-const ipv4LinkLocalCidrBlock = '169.254.0.0/16'
-const consumerAccount = "249522321342"
+const ipv4LinkLocalCidrBlock = '169.254.0.0/16';
+const consumerAccount = '249522321342';
 
 // -----------------------------------------------------------------------------
 // Account 2 - Service Consumer
@@ -57,7 +57,7 @@ ec2Client.addToRolePolicy(
 // ------------------------------------------------------
 new ServiceNetworkVpcAssociation(stack_consumer, 'ClientVpcAssociation', {
   vpc: clientVpc,
-  serviceNetworkId: "arn:aws:vpc-lattice:eu-central-1:694275606777:servicenetwork/sn-02be8e925365dafb4",
+  serviceNetworkId: 'arn:aws:vpc-lattice:eu-central-1:694275606777:servicenetwork/sn-02be8e925365dafb4',
 });
 
 // ------------------------------------------------------

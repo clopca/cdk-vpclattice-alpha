@@ -5,26 +5,30 @@ import { InstanceTargetGroup, RequestProtocol, RequestProtocolVersion } from '..
 describe('InstanceTG', () => {
   test('DeniesInvalidProtocolVersionCombo', () => {
     // GIVEN
-    const stack = new cdk.Stack();
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
     const vpc = new Vpc(stack, 'VPC', {});
 
     // WHEN & THEN
-    const tg1 = new InstanceTargetGroup(stack, 'InstanceTG', {
+    new InstanceTargetGroup(stack, 'InstanceTG', {
       vpc,
       protocol: RequestProtocol.TCP,
       protocolVersion: RequestProtocolVersion.GRPC,
     });
 
-    expect(tg1.node.validate).toHaveLength(1);
+    expect(() => app.synth()).toThrow(
+      /Validation failed with the following errors:.*\[Stack\/InstanceTG\] Invalid Protocol Version: GRPC \(must not be set if protocol is TCP\)/s,
+    );
   });
 
   test('DeniesInvalidHealthCheckParams', () => {
     // GIVEN
-    const stack = new cdk.Stack();
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
     const vpc = new Vpc(stack, 'VPC', {});
 
     // WHEN & THEN
-    const tg = new InstanceTargetGroup(stack, 'InstanceTG', {
+    new InstanceTargetGroup(stack, 'InstanceTG', {
       vpc,
       protocol: RequestProtocol.HTTPS,
       protocolVersion: RequestProtocolVersion.HTTP1,
@@ -34,7 +38,6 @@ describe('InstanceTG', () => {
         healthCheckTimeout: cdk.Duration.seconds(10),
       },
     });
-
-    expect(tg.node.validate).toHaveLength(1);
+    expect(() => app.synth()).toThrow('HealthCheck parameter "HealthCheckTimeout" set to 10');
   });
 });

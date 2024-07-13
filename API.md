@@ -2367,41 +2367,41 @@ The Id of the Service Network.
 ---
 
 
-### ServiceNetworkAssociation <a name="ServiceNetworkAssociation" id="cdk-vpclattice-alpha.ServiceNetworkAssociation"></a>
+### ServiceNetworkServiceAssociation <a name="ServiceNetworkServiceAssociation" id="cdk-vpclattice-alpha.ServiceNetworkServiceAssociation"></a>
 
 Creates an Association Between a Lattice Service and a Service Network.
 
 Consider using `.addService` of the ServiceNetwork construct
 
-#### Initializers <a name="Initializers" id="cdk-vpclattice-alpha.ServiceNetworkAssociation.Initializer"></a>
+#### Initializers <a name="Initializers" id="cdk-vpclattice-alpha.ServiceNetworkServiceAssociation.Initializer"></a>
 
 ```typescript
-import { ServiceNetworkAssociation } from 'cdk-vpclattice-alpha'
+import { ServiceNetworkServiceAssociation } from 'cdk-vpclattice-alpha'
 
-new ServiceNetworkAssociation(scope: Construct, id: string, props: ServiceNetworkAssociationProps)
+new ServiceNetworkServiceAssociation(scope: Construct, id: string, props: ServiceNetworkAssociationProps)
 ```
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#cdk-vpclattice-alpha.ServiceNetworkAssociation.Initializer.parameter.scope">scope</a></code> | <code>constructs.Construct</code> | *No description.* |
-| <code><a href="#cdk-vpclattice-alpha.ServiceNetworkAssociation.Initializer.parameter.id">id</a></code> | <code>string</code> | *No description.* |
-| <code><a href="#cdk-vpclattice-alpha.ServiceNetworkAssociation.Initializer.parameter.props">props</a></code> | <code><a href="#cdk-vpclattice-alpha.ServiceNetworkAssociationProps">ServiceNetworkAssociationProps</a></code> | *No description.* |
+| <code><a href="#cdk-vpclattice-alpha.ServiceNetworkServiceAssociation.Initializer.parameter.scope">scope</a></code> | <code>constructs.Construct</code> | *No description.* |
+| <code><a href="#cdk-vpclattice-alpha.ServiceNetworkServiceAssociation.Initializer.parameter.id">id</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#cdk-vpclattice-alpha.ServiceNetworkServiceAssociation.Initializer.parameter.props">props</a></code> | <code><a href="#cdk-vpclattice-alpha.ServiceNetworkAssociationProps">ServiceNetworkAssociationProps</a></code> | *No description.* |
 
 ---
 
-##### `scope`<sup>Required</sup> <a name="scope" id="cdk-vpclattice-alpha.ServiceNetworkAssociation.Initializer.parameter.scope"></a>
+##### `scope`<sup>Required</sup> <a name="scope" id="cdk-vpclattice-alpha.ServiceNetworkServiceAssociation.Initializer.parameter.scope"></a>
 
 - *Type:* constructs.Construct
 
 ---
 
-##### `id`<sup>Required</sup> <a name="id" id="cdk-vpclattice-alpha.ServiceNetworkAssociation.Initializer.parameter.id"></a>
+##### `id`<sup>Required</sup> <a name="id" id="cdk-vpclattice-alpha.ServiceNetworkServiceAssociation.Initializer.parameter.id"></a>
 
 - *Type:* string
 
 ---
 
-##### `props`<sup>Required</sup> <a name="props" id="cdk-vpclattice-alpha.ServiceNetworkAssociation.Initializer.parameter.props"></a>
+##### `props`<sup>Required</sup> <a name="props" id="cdk-vpclattice-alpha.ServiceNetworkServiceAssociation.Initializer.parameter.props"></a>
 
 - *Type:* <a href="#cdk-vpclattice-alpha.ServiceNetworkAssociationProps">ServiceNetworkAssociationProps</a>
 
@@ -2411,12 +2411,12 @@ new ServiceNetworkAssociation(scope: Construct, id: string, props: ServiceNetwor
 
 | **Name** | **Description** |
 | --- | --- |
-| <code><a href="#cdk-vpclattice-alpha.ServiceNetworkAssociation.toString">toString</a></code> | Returns a string representation of this construct. |
-| <code><a href="#cdk-vpclattice-alpha.ServiceNetworkAssociation.applyRemovalPolicy">applyRemovalPolicy</a></code> | Apply the given removal policy to this resource. |
+| <code><a href="#cdk-vpclattice-alpha.ServiceNetworkServiceAssociation.toString">toString</a></code> | Returns a string representation of this construct. |
+| <code><a href="#cdk-vpclattice-alpha.ServiceNetworkServiceAssociation.applyRemovalPolicy">applyRemovalPolicy</a></code> | Apply the given removal policy to this resource. |
 
 ---
 
-##### `toString` <a name="toString" id="cdk-vpclattice-alpha.ServiceNetworkAssociation.toString"></a>
+##### `toString` <a name="toString" id="cdk-vpclattice-alpha.ServiceNetworkServiceAssociation.toString"></a>
 
 ```typescript
 public toString(): string
@@ -2424,7 +2424,7 @@ public toString(): string
 
 Returns a string representation of this construct.
 
-##### `applyRemovalPolicy` <a name="applyRemovalPolicy" id="cdk-vpclattice-alpha.ServiceNetworkAssociation.applyRemovalPolicy"></a>
+##### `applyRemovalPolicy` <a name="applyRemovalPolicy" id="cdk-vpclattice-alpha.ServiceNetworkServiceAssociation.applyRemovalPolicy"></a>
 
 ```typescript
 public applyRemovalPolicy(policy: RemovalPolicy): void
@@ -2440,7 +2440,7 @@ to be replaced.
 The resource can be deleted (`RemovalPolicy.DESTROY`), or left in your AWS
 account for data recovery and cleanup later (`RemovalPolicy.RETAIN`).
 
-###### `policy`<sup>Required</sup> <a name="policy" id="cdk-vpclattice-alpha.ServiceNetworkAssociation.applyRemovalPolicy.parameter.policy"></a>
+###### `policy`<sup>Required</sup> <a name="policy" id="cdk-vpclattice-alpha.ServiceNetworkServiceAssociation.applyRemovalPolicy.parameter.policy"></a>
 
 - *Type:* aws-cdk-lib.RemovalPolicy
 
@@ -2450,23 +2450,23 @@ account for data recovery and cleanup later (`RemovalPolicy.RETAIN`).
 
 | **Name** | **Description** |
 | --- | --- |
-| <code><a href="#cdk-vpclattice-alpha.ServiceNetworkAssociation.isConstruct">isConstruct</a></code> | Checks if `x` is a construct. |
-| <code><a href="#cdk-vpclattice-alpha.ServiceNetworkAssociation.isOwnedResource">isOwnedResource</a></code> | Returns true if the construct was created by CDK, and false otherwise. |
-| <code><a href="#cdk-vpclattice-alpha.ServiceNetworkAssociation.isResource">isResource</a></code> | Check whether the given construct is a Resource. |
+| <code><a href="#cdk-vpclattice-alpha.ServiceNetworkServiceAssociation.isConstruct">isConstruct</a></code> | Checks if `x` is a construct. |
+| <code><a href="#cdk-vpclattice-alpha.ServiceNetworkServiceAssociation.isOwnedResource">isOwnedResource</a></code> | Returns true if the construct was created by CDK, and false otherwise. |
+| <code><a href="#cdk-vpclattice-alpha.ServiceNetworkServiceAssociation.isResource">isResource</a></code> | Check whether the given construct is a Resource. |
 
 ---
 
-##### ~~`isConstruct`~~ <a name="isConstruct" id="cdk-vpclattice-alpha.ServiceNetworkAssociation.isConstruct"></a>
+##### ~~`isConstruct`~~ <a name="isConstruct" id="cdk-vpclattice-alpha.ServiceNetworkServiceAssociation.isConstruct"></a>
 
 ```typescript
-import { ServiceNetworkAssociation } from 'cdk-vpclattice-alpha'
+import { ServiceNetworkServiceAssociation } from 'cdk-vpclattice-alpha'
 
-ServiceNetworkAssociation.isConstruct(x: any)
+ServiceNetworkServiceAssociation.isConstruct(x: any)
 ```
 
 Checks if `x` is a construct.
 
-###### `x`<sup>Required</sup> <a name="x" id="cdk-vpclattice-alpha.ServiceNetworkAssociation.isConstruct.parameter.x"></a>
+###### `x`<sup>Required</sup> <a name="x" id="cdk-vpclattice-alpha.ServiceNetworkServiceAssociation.isConstruct.parameter.x"></a>
 
 - *Type:* any
 
@@ -2474,33 +2474,33 @@ Any object.
 
 ---
 
-##### `isOwnedResource` <a name="isOwnedResource" id="cdk-vpclattice-alpha.ServiceNetworkAssociation.isOwnedResource"></a>
+##### `isOwnedResource` <a name="isOwnedResource" id="cdk-vpclattice-alpha.ServiceNetworkServiceAssociation.isOwnedResource"></a>
 
 ```typescript
-import { ServiceNetworkAssociation } from 'cdk-vpclattice-alpha'
+import { ServiceNetworkServiceAssociation } from 'cdk-vpclattice-alpha'
 
-ServiceNetworkAssociation.isOwnedResource(construct: IConstruct)
+ServiceNetworkServiceAssociation.isOwnedResource(construct: IConstruct)
 ```
 
 Returns true if the construct was created by CDK, and false otherwise.
 
-###### `construct`<sup>Required</sup> <a name="construct" id="cdk-vpclattice-alpha.ServiceNetworkAssociation.isOwnedResource.parameter.construct"></a>
+###### `construct`<sup>Required</sup> <a name="construct" id="cdk-vpclattice-alpha.ServiceNetworkServiceAssociation.isOwnedResource.parameter.construct"></a>
 
 - *Type:* constructs.IConstruct
 
 ---
 
-##### `isResource` <a name="isResource" id="cdk-vpclattice-alpha.ServiceNetworkAssociation.isResource"></a>
+##### `isResource` <a name="isResource" id="cdk-vpclattice-alpha.ServiceNetworkServiceAssociation.isResource"></a>
 
 ```typescript
-import { ServiceNetworkAssociation } from 'cdk-vpclattice-alpha'
+import { ServiceNetworkServiceAssociation } from 'cdk-vpclattice-alpha'
 
-ServiceNetworkAssociation.isResource(construct: IConstruct)
+ServiceNetworkServiceAssociation.isResource(construct: IConstruct)
 ```
 
 Check whether the given construct is a Resource.
 
-###### `construct`<sup>Required</sup> <a name="construct" id="cdk-vpclattice-alpha.ServiceNetworkAssociation.isResource.parameter.construct"></a>
+###### `construct`<sup>Required</sup> <a name="construct" id="cdk-vpclattice-alpha.ServiceNetworkServiceAssociation.isResource.parameter.construct"></a>
 
 - *Type:* constructs.IConstruct
 
@@ -2510,13 +2510,13 @@ Check whether the given construct is a Resource.
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#cdk-vpclattice-alpha.ServiceNetworkAssociation.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
-| <code><a href="#cdk-vpclattice-alpha.ServiceNetworkAssociation.property.env">env</a></code> | <code>aws-cdk-lib.ResourceEnvironment</code> | The environment this resource belongs to. |
-| <code><a href="#cdk-vpclattice-alpha.ServiceNetworkAssociation.property.stack">stack</a></code> | <code>aws-cdk-lib.Stack</code> | The stack in which this resource is defined. |
+| <code><a href="#cdk-vpclattice-alpha.ServiceNetworkServiceAssociation.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
+| <code><a href="#cdk-vpclattice-alpha.ServiceNetworkServiceAssociation.property.env">env</a></code> | <code>aws-cdk-lib.ResourceEnvironment</code> | The environment this resource belongs to. |
+| <code><a href="#cdk-vpclattice-alpha.ServiceNetworkServiceAssociation.property.stack">stack</a></code> | <code>aws-cdk-lib.Stack</code> | The stack in which this resource is defined. |
 
 ---
 
-##### `node`<sup>Required</sup> <a name="node" id="cdk-vpclattice-alpha.ServiceNetworkAssociation.property.node"></a>
+##### `node`<sup>Required</sup> <a name="node" id="cdk-vpclattice-alpha.ServiceNetworkServiceAssociation.property.node"></a>
 
 ```typescript
 public readonly node: Node;
@@ -2528,7 +2528,7 @@ The tree node.
 
 ---
 
-##### `env`<sup>Required</sup> <a name="env" id="cdk-vpclattice-alpha.ServiceNetworkAssociation.property.env"></a>
+##### `env`<sup>Required</sup> <a name="env" id="cdk-vpclattice-alpha.ServiceNetworkServiceAssociation.property.env"></a>
 
 ```typescript
 public readonly env: ResourceEnvironment;
@@ -2547,7 +2547,7 @@ that might be different than the stack they were imported into.
 
 ---
 
-##### `stack`<sup>Required</sup> <a name="stack" id="cdk-vpclattice-alpha.ServiceNetworkAssociation.property.stack"></a>
+##### `stack`<sup>Required</sup> <a name="stack" id="cdk-vpclattice-alpha.ServiceNetworkServiceAssociation.property.stack"></a>
 
 ```typescript
 public readonly stack: Stack;
@@ -3258,7 +3258,7 @@ public readonly domainName: string;
 A registered custom domain name for your service.
 
 Requests to the custom
-domain are resolved by the DNS server to the VPC Lattice generated domain 
+domain are resolved by the DNS server to the VPC Lattice generated domain
 name. Note: **Changing it requires recreating the service.**
 
 > [https://docs.aws.amazon.com/vpc-lattice/latest/ug/service-custom-domain-name.html](https://docs.aws.amazon.com/vpc-lattice/latest/ug/service-custom-domain-name.html)
@@ -4469,7 +4469,7 @@ public readonly authType: AuthType;
 
 The authentication and authorization that manages client access to the network.
 
-If `AuthType.AWS_IAM` is selected, and a policy is not attached, all traffic will be denied 
+If `AuthType.AWS_IAM` is selected, and a policy is not attached, all traffic will be denied
 by default regardless of the identity or service level permissions.
 
 ---
@@ -4567,7 +4567,7 @@ const serviceNetworkVpcAssociationProps: ServiceNetworkVpcAssociationProps = { .
 | --- | --- | --- |
 | <code><a href="#cdk-vpclattice-alpha.ServiceNetworkVpcAssociationProps.property.serviceNetworkId">serviceNetworkId</a></code> | <code>string</code> | Service Network Identifier. |
 | <code><a href="#cdk-vpclattice-alpha.ServiceNetworkVpcAssociationProps.property.vpc">vpc</a></code> | <code>aws-cdk-lib.aws_ec2.IVpc</code> | The VPC to associate with. |
-| <code><a href="#cdk-vpclattice-alpha.ServiceNetworkVpcAssociationProps.property.securityGroups">securityGroups</a></code> | <code>aws-cdk-lib.aws_ec2.ISecurityGroup[]</code> | security groups for the lattice endpoint. |
+| <code><a href="#cdk-vpclattice-alpha.ServiceNetworkVpcAssociationProps.property.securityGroups">securityGroups</a></code> | <code>aws-cdk-lib.aws_ec2.ISecurityGroup[]</code> | Security groups for the lattice endpoint. |
 
 ---
 
@@ -4602,9 +4602,8 @@ public readonly securityGroups: ISecurityGroup[];
 ```
 
 - *Type:* aws-cdk-lib.aws_ec2.ISecurityGroup[]
-- *Default:* a security group that will permit inbound 443
 
-security groups for the lattice endpoint.
+Security groups for the lattice endpoint.
 
 ---
 
@@ -4659,8 +4658,8 @@ public readonly authType: AuthType;
 
 The authentication and authorization that manages client access to the service.
 
-If AuthType.AWS_IAM is selected, and an auth policy is not attached or an access mode 
-is not specified, all traffic will be denied to the service, regardless of the identity 
+If AuthType.AWS_IAM is selected, and an auth policy is not attached or an access mode
+is not specified, all traffic will be denied to the service, regardless of the identity
 or permissions associated with the service network-level policy.
 
 ---
@@ -4778,7 +4777,7 @@ const shareServiceNetworkProps: ShareServiceNetworkProps = { ... }
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
 | <code><a href="#cdk-vpclattice-alpha.ShareServiceNetworkProps.property.name">name</a></code> | <code>string</code> | The name of the share. |
-| <code><a href="#cdk-vpclattice-alpha.ShareServiceNetworkProps.property.allowExternalPrincipals">allowExternalPrincipals</a></code> | <code>boolean</code> | Specifies whether principals outside your organization in AWS Organizations  can be associated with a resource share. |
+| <code><a href="#cdk-vpclattice-alpha.ShareServiceNetworkProps.property.allowExternalPrincipals">allowExternalPrincipals</a></code> | <code>boolean</code> | Specifies whether principals outside your organization in AWS Organizations can be associated with a resource share. |
 | <code><a href="#cdk-vpclattice-alpha.ShareServiceNetworkProps.property.principals">principals</a></code> | <code>string[]</code> | Principals to share the Service Network with. |
 | <code><a href="#cdk-vpclattice-alpha.ShareServiceNetworkProps.property.resourceArns">resourceArns</a></code> | <code>string[]</code> | Resources to share the Service Network with. |
 
@@ -4805,11 +4804,11 @@ public readonly allowExternalPrincipals: boolean;
 - *Type:* boolean
 - *Default:* true;
 
-Specifies whether principals outside your organization in AWS Organizations  can be associated with a resource share.
+Specifies whether principals outside your organization in AWS Organizations can be associated with a resource share.
 
-A value of `true` lets you share 
-with individual AWS accounts that are *not* in your organization. A value 
-of `false` only has meaning if your account is a member of an AWS 
+A value of `true` lets you share
+with individual AWS accounts that are *not* in your organization. A value
+of `false` only has meaning if your account is a member of an AWS
 Organization.
 
 ---

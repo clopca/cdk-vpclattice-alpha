@@ -10,9 +10,9 @@ import { LambdaTargetGroup, ListenerProtocol, Service, ServiceNetwork, AuthPolic
 
 const app1 = new cdk.App();
 
-const ipv4LinkLocalCidrBlock = '169.254.0.0/16'
-const providerAccount = "694275606777"
-const consumerAccount = "249522321342"
+const ipv4LinkLocalCidrBlock = '169.254.0.0/16';
+const providerAccount = '694275606777';
+const consumerAccount = '249522321342';
 
 // -----------------------------------------------------------------------------
 // Account 1 - Service Provider
@@ -94,8 +94,8 @@ const serviceNetwork = new ServiceNetwork(stack_provider, 'ServiceNetwork', {
 
 serviceNetwork.shareResource({
   name: 'ServiceNetwork-Share',
-  principals: [consumerAccount]
-})
+  principals: [consumerAccount],
+});
 
 // ------------------------------------------------------
 // Outputs

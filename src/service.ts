@@ -2,8 +2,8 @@ import { aws_iam as iam, aws_ram as ram, Resource, Aspects, Arn, Stack } from 'a
 import type { IResource, RemovalPolicy } from 'aws-cdk-lib';
 import type { ICertificate } from 'aws-cdk-lib/aws-certificatemanager';
 import type { IHostedZone } from 'aws-cdk-lib/aws-route53';
-import * as generated from 'aws-cdk-lib/aws-vpclattice';
 import * as route53 from 'aws-cdk-lib/aws-route53';
+import * as generated from 'aws-cdk-lib/aws-vpclattice';
 import type { Construct, IConstruct } from 'constructs';
 import { AuthType, AuthPolicyDocument } from './auth';
 import { Listener } from './listener';
@@ -77,7 +77,7 @@ export interface DnsEntryProperty {
 export interface CustomDomainProps {
   /**
    * A registered custom domain name for your service. Requests to the custom
-   * domain are resolved by the DNS server to the VPC Lattice generated domain 
+   * domain are resolved by the DNS server to the VPC Lattice generated domain
    * name. Note: **Changing it requires recreating the service.**
    * @default - Your service will be reachable only by the domain name that VPC Lattice generates
    * @see https://docs.aws.amazon.com/vpc-lattice/latest/ug/service-custom-domain-name.html
@@ -124,8 +124,8 @@ export interface ServiceProps {
 
   /**
    * The authentication and authorization that manages client access to the service.
-   * If AuthType.AWS_IAM is selected, and an auth policy is not attached or an access mode 
-   * is not specified, all traffic will be denied to the service, regardless of the identity 
+   * If AuthType.AWS_IAM is selected, and an auth policy is not attached or an access mode
+   * is not specified, all traffic will be denied to the service, regardless of the identity
    * or permissions associated with the service network-level policy.
    * @default AuthType.NONE
    */
@@ -165,7 +165,6 @@ export interface ServiceProps {
    * @default - No policy is attached. All traffic is denied by default.
    */
   readonly authPolicy?: AuthPolicyDocument;
-
 }
 
 /**
@@ -349,11 +348,10 @@ export class Service extends ServiceBase {
     // ------------------------------------------------------
     if (props.customDomain?.hostedZone) {
       new route53.CnameRecord(this, 'CNAME-${}', {
-        recordName: props.customDomain?.domainName + ".",
+        recordName: `${props.customDomain?.domainName}.`,
         zone: props.customDomain?.hostedZone,
         domainName: this.domainName,
-
-      })
+      });
     }
 
     // ------------------------------------------------------

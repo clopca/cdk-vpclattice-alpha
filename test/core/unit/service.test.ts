@@ -1,14 +1,14 @@
 import { EOL } from 'node:os';
 import * as cdk from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
+import { Certificate } from 'aws-cdk-lib/aws-certificatemanager';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { Stream } from 'aws-cdk-lib/aws-kinesis';
 import { LogGroup } from 'aws-cdk-lib/aws-logs';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
 import { Service, LoggingDestination, AuthType, ListenerProtocol } from '../../../src';
-import { ServiceNetwork } from '../../../src/service-network';
 import { AuthPolicyDocument } from '../../../src/auth';
-import { Certificate } from 'aws-cdk-lib/aws-certificatemanager';
+import { ServiceNetwork } from '../../../src/service-network';
 
 describe('Service', () => {
   test('Default service', () => {
@@ -58,7 +58,7 @@ describe('Service', () => {
           'Certificate',
           'arn:aws:acm:us-west-2:123456789012:certificate/12345678-1234-1234-1234-123456789012',
         ),
-      }
+      },
     });
 
     // THEN

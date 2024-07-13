@@ -6,7 +6,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import { Stream } from 'aws-cdk-lib/aws-kinesis';
 import { LogGroup } from 'aws-cdk-lib/aws-logs';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
-import { Service, LoggingDestination, AuthType, AuthPolicyAccessMode } from '../../../src';
+import { Service, LoggingDestination, AuthType, AuthPolicyDocument } from '../../../src';
 import { ServiceNetwork } from '../../../src/service-network';
 
 describe('Service network', () => {
@@ -140,7 +140,7 @@ describe('Service network', () => {
     const stack = new cdk.Stack(app, 'TestStack');
     new ServiceNetwork(stack, 'ServiceNetwork', {
       name: 'my-service-network',
-      accessMode: AuthPolicyAccessMode.AUTHENTICATED_ONLY,
+      authPolicy: AuthPolicyDocument.AUTHENTICATED_ONLY,
     });
 
     // THEN
@@ -149,7 +149,7 @@ describe('Service network', () => {
         Statement: [
           {
             Effect: 'Allow',
-            Action: 'vpc-lattice-svcs:Invoke',
+            Action: 'vpc-lattice-svcs:*',
             Resource: '*',
             Condition: {
               StringNotEqualsIgnoreCase: { 'aws:PrincipalType': 'anonymous' },
@@ -167,8 +167,7 @@ describe('Service network', () => {
     const stack = new cdk.Stack(app, 'TestStack');
     new ServiceNetwork(stack, 'ServiceNetwork', {
       name: 'my-service-network',
-      accessMode: AuthPolicyAccessMode.ORG_ONLY,
-      orgId: 'o-1234567890',
+      authPolicy: AuthPolicyDocument.organizationOnly('o-123456789012'),
     });
 
     // THEN
@@ -177,10 +176,10 @@ describe('Service network', () => {
         Statement: [
           {
             Effect: 'Allow',
-            Action: 'vpc-lattice-svcs:Invoke',
+            Action: 'vpc-lattice-svcs:*',
             Resource: '*',
             Condition: {
-              StringEquals: { 'aws:PrincipalOrgID': ['o-1234567890'] },
+              StringEquals: { 'aws:PrincipalOrgID': ['o-123456789012'] },
             },
           },
         ],
@@ -188,24 +187,25 @@ describe('Service network', () => {
     });
   });
 
-  test('Service network with org only access mode set and no orgId provided', () => {
+  test('Service network with org only access mode set and bad orgId provided', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'TestStack');
-    new ServiceNetwork(stack, 'ServiceNetwork', {
-      name: 'my-service-network',
-      accessMode: AuthPolicyAccessMode.ORG_ONLY,
-    });
 
-    // THEN
-    expect(() => app.synth()).toThrow(/orgId is required when accessMode is set to ORG_ONLY/);
+    // WHEN & THEN
+    expect(() => {
+      new ServiceNetwork(stack, 'ServiceNetwork', {
+        name: 'my-service-network',
+        authPolicy: AuthPolicyDocument.organizationOnly(''),
+      });
+    }).toThrow('Invalid AWS Organization ID');
   });
 
   test('Service network with provided auth policy', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'TestStack');
-    const customPolicy = new iam.PolicyDocument({
+    const customPolicy = new AuthPolicyDocument({
       statements: [
         new iam.PolicyStatement({
           actions: ['vpc-lattice-svcs:Invoke'],
@@ -242,7 +242,7 @@ describe('Service network', () => {
         name: 'my-service-network',
       });
 
-      serviceNetwork.addAuthPolicyStatement(
+      serviceNetwork.authPolicy.addStatements(
         new iam.PolicyStatement({
           effect: iam.Effect.ALLOW,
           actions: ['vpc-lattice-svcs:Invoke'],
@@ -271,7 +271,7 @@ describe('Service network', () => {
         name: 'my-service-network',
       });
 
-      serviceNetwork.addAuthPolicyStatement(
+      serviceNetwork.authPolicy.addStatements(
         new iam.PolicyStatement({
           effect: iam.Effect.ALLOW,
           actions: ['s3:GetObject'],
@@ -290,7 +290,7 @@ describe('Service network', () => {
         name: 'my-service-network',
       });
 
-      serviceNetwork.addAuthPolicyStatement(
+      serviceNetwork.authPolicy.addStatements(
         new iam.PolicyStatement({
           effect: iam.Effect.ALLOW,
           actions: ['vpc-lattice-svcs:Invoke'],
@@ -310,7 +310,7 @@ describe('Service network', () => {
         name: 'my-service-network',
       });
 
-      serviceNetwork.addAuthPolicyStatement(
+      serviceNetwork.authPolicy.addStatements(
         new iam.PolicyStatement({
           effect: iam.Effect.ALLOW,
           actions: ['vpc-lattice-svcs:Invoke'],
@@ -414,7 +414,7 @@ describe('Service network', () => {
         authType: AuthType.AWS_IAM,
       });
 
-      serviceNetwork.addAuthPolicyStatement(new iam.PolicyStatement());
+      serviceNetwork.authPolicy.addStatements(new iam.PolicyStatement());
 
       // WHEN & THEN
       expect(() => app.synth()).toThrow(/Validation failed with the following errors:.*Invalid action detected.*Invalid resource format/s);
@@ -434,7 +434,16 @@ describe('Service network', () => {
       new ServiceNetwork(stack, 'ServiceNetwork', {
         name: 'my-service',
         authType: AuthType.AWS_IAM,
-        allowedPrincipals: [role],
+        authPolicy: new AuthPolicyDocument({
+          statements: [
+            new iam.PolicyStatement({
+              actions: ['vpc-lattice-svcs:Invoke'],
+              effect: iam.Effect.ALLOW,
+              resources: ['*'],
+              principals: [new iam.ArnPrincipal(role.roleArn)],
+            }),
+          ],
+        }),
       });
 
       // THEN
@@ -475,7 +484,9 @@ describe('Service network', () => {
       new ServiceNetwork(stack, 'ServiceInvalidAction', {
         name: 'my-service-invalid-action',
         authType: AuthType.AWS_IAM,
-        authStatements: [invalidActionStatement],
+        authPolicy: new AuthPolicyDocument({
+          statements: [invalidActionStatement],
+        }),
       });
       expect(() => {
         app.synth();
@@ -497,7 +508,9 @@ describe('Service network', () => {
       new ServiceNetwork(stack, 'ServiceInvalidPrincipal', {
         name: 'my-service-invalid-principal',
         authType: AuthType.AWS_IAM,
-        authStatements: [invalidPrincipalStatement],
+        authPolicy: new AuthPolicyDocument({
+          statements: [invalidPrincipalStatement],
+        }),
       });
       expect(() => {
         app.synth();
@@ -518,7 +531,9 @@ describe('Service network', () => {
       new ServiceNetwork(stack, 'ServiceInvalidResource', {
         name: 'my-service-invalid-resource',
         authType: AuthType.AWS_IAM,
-        authStatements: [invalidResourceStatement],
+        authPolicy: new AuthPolicyDocument({
+          statements: [invalidResourceStatement],
+        }),
       });
       expect(() => {
         app.synth();
@@ -540,7 +555,9 @@ describe('Service network', () => {
       new ServiceNetwork(stack, 'ServiceMultipleInvalid', {
         name: 'my-service-multiple-invalid',
         authType: AuthType.AWS_IAM,
-        authStatements: [multipleInvalidStatement],
+        authPolicy: new AuthPolicyDocument({
+          statements: [multipleInvalidStatement],
+        }),
       });
       expect(() => {
         app.synth();
@@ -562,7 +579,9 @@ describe('Service network', () => {
       new ServiceNetwork(stack, 'ServiceValid', {
         name: 'my-service-valid',
         authType: AuthType.AWS_IAM,
-        authStatements: [validStatement],
+        authPolicy: new AuthPolicyDocument({
+          statements: [validStatement],
+        }),
       });
       expect(() => {
         app.synth();
@@ -584,7 +603,9 @@ describe('Service network', () => {
       new ServiceNetwork(stack, 'ServiceNetwork', {
         name: 'my-service',
         authType: AuthType.AWS_IAM,
-        authStatements: [customStatement],
+        authPolicy: new AuthPolicyDocument({
+          statements: [customStatement],
+        }),
       });
 
       // THEN

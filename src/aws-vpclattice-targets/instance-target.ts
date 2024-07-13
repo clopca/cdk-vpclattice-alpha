@@ -1,11 +1,12 @@
 import { Duration, Lazy, aws_vpclattice } from 'aws-cdk-lib';
-import { IAutoScalingGroup } from 'aws-cdk-lib/aws-autoscaling';
-import { IInstance, IVpc } from 'aws-cdk-lib/aws-ec2';
+import type { IAutoScalingGroup } from 'aws-cdk-lib/aws-autoscaling';
+import type { IInstance, IVpc } from 'aws-cdk-lib/aws-ec2';
 import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from 'aws-cdk-lib/custom-resources';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { RequestProtocol, RequestProtocolVersion, TargetGroupBase, TargetType } from './base-target-group';
-import { HealthCheck, HealthCheckProtocol, HealthCheckProtocolVersion } from './health-check';
+import { HealthCheckProtocolVersion, HealthCheckProtocol } from './health-check';
+import type { HealthCheck } from './health-check';
 import { HTTPFixedResponse } from '../util';
 
 export interface InstanceTarget {
@@ -74,7 +75,6 @@ export interface InstanceTargetGroupProps {
  * Supports creating a Target group with instances within a specific VPC
  */
 export class InstanceTargetGroup extends TargetGroupBase {
-
   public readonly name: string;
   public readonly targetType = TargetType.INSTANCE;
   public readonly protocol: RequestProtocol;
@@ -119,7 +119,9 @@ export class InstanceTargetGroup extends TargetGroupBase {
     // ------------------------------------------------------
     // Validation
     // ------------------------------------------------------
-    if (props.name) { this.node.addValidation({ validate: () => this.validateTargetGroupName(this.name) }); }
+    if (props.name) {
+      this.node.addValidation({ validate: () => this.validateTargetGroupName(this.name) });
+    }
     this.node.addValidation({ validate: () => this.validateProtocol(this.protocol, this.targetType) });
     this.node.addValidation({ validate: () => this.validateProtocolVersion(this.protocol, this.protocolVersion) });
     this.node.addValidation({ validate: () => this.validateHealthCheck(this.healthCheck) });
@@ -127,7 +129,7 @@ export class InstanceTargetGroup extends TargetGroupBase {
     // ------------------------------------------------------
     // L1 Properties
     // ------------------------------------------------------
-    let config: aws_vpclattice.CfnTargetGroup.TargetGroupConfigProperty = {
+    const config: aws_vpclattice.CfnTargetGroup.TargetGroupConfigProperty = {
       vpcIdentifier: this.vpc.vpcId,
       protocol: this.protocol,
       port: this.port,
@@ -146,7 +148,6 @@ export class InstanceTargetGroup extends TargetGroupBase {
           httpCode: (this.healthCheck.matchers ?? HTTPFixedResponse.OK).toString(),
         },
       },
-
     };
 
     // ------------------------------------------------------
@@ -169,7 +170,7 @@ export class InstanceTargetGroup extends TargetGroupBase {
     // ASG Associations
     // ------------------------------------------------------
     if (this.autoScalingGroups.length > 0) {
-      this.autoScalingGroups.forEach(asg => {
+      for (const asg of this.autoScalingGroups) {
         new AwsCustomResource(this, `AsgLatticeAssociation${asg.node.addr}`, {
           installLatestAwsSdk: true,
           onCreate: {
@@ -177,9 +178,11 @@ export class InstanceTargetGroup extends TargetGroupBase {
             action: 'attachTrafficSources',
             parameters: {
               AutoScalingGroupName: asg.autoScalingGroupName,
-              TrafficSources: [{
-                Identifier: this.targetGroupArn,
-              }],
+              TrafficSources: [
+                {
+                  Identifier: this.targetGroupArn,
+                },
+              ],
             },
             physicalResourceId: PhysicalResourceId.of(`${this.targetGroupId}-${asg.autoScalingGroupName}`),
           },
@@ -188,9 +191,11 @@ export class InstanceTargetGroup extends TargetGroupBase {
             action: 'detachTrafficSources',
             parameters: {
               AutoScalingGroupName: asg.autoScalingGroupName,
-              TrafficSources: [{
-                Identifier: this.targetGroupArn,
-              }],
+              TrafficSources: [
+                {
+                  Identifier: this.targetGroupArn,
+                },
+              ],
             },
           },
           policy: AwsCustomResourcePolicy.fromStatements([
@@ -208,7 +213,7 @@ export class InstanceTargetGroup extends TargetGroupBase {
             }),
           ]),
         });
-      });
+      }
     }
   }
 

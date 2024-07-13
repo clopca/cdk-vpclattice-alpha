@@ -42,9 +42,9 @@ export interface AlbTargetGroupProps {
   readonly port?: number;
 
   /**
-   * This port is used for routing traffic to the target, 
-   * and defaults to the target group port. However, you can 
-   * override the default and specify a custom port that matches 
+   * This port is used for routing traffic to the target,
+   * and defaults to the target group port. However, you can
+   * override the default and specify a custom port that matches
    * the port of your Application Load Balancer's listeners
    * @defaultv the Target Group Port
    */

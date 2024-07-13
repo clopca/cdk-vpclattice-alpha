@@ -2,9 +2,9 @@ import type { IResource, RemovalPolicy } from 'aws-cdk-lib';
 import { Resource } from 'aws-cdk-lib';
 import * as generated from 'aws-cdk-lib/aws-vpclattice';
 import type { Construct } from 'constructs';
+import type { RuleAction, RuleProps } from './';
 import type { RuleConditions } from './matches';
 import { PathMatchType, MatchOperator } from './matches';
-import type { RuleAction, RuleProps } from './';
 import type { Service } from './service';
 import { HTTPFixedResponse } from './util';
 
@@ -286,7 +286,7 @@ export class Listener extends Resource implements IListener {
         return {
           targetGroupIdentifier: weightedTargetGroup.targetGroup.targetGroupId,
           weight: weightedTargetGroup.weight,
-        }
+        };
       });
 
       return {

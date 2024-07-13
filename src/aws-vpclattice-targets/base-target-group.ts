@@ -167,9 +167,9 @@ export abstract class TargetGroupBase extends core.Resource implements ITargetGr
    * Verifies a valid protocol / protocol version combination
    */
   protected validateProtocolVersion(protocol: RequestProtocol, protocolVersion?: RequestProtocolVersion): string[] {
-    const errors = new Array<string>();
+    const errors = [];
     // Ensure that protocol version is undefined if protocol is TCP
-    if (protocol === RequestProtocol.TCP && protocolVersion) {
+    if (protocol === RequestProtocol.TCP && protocolVersion !== undefined) {
       errors.push(`Invalid Protocol Version: ${protocolVersion} (must not be set if protocol is TCP)`);
     }
     return errors;
