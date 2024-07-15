@@ -4,7 +4,6 @@ import * as acm from 'aws-cdk-lib/aws-certificatemanager';
 import * as route53 from 'aws-cdk-lib/aws-route53';
 import { AuthType, Service } from '../../../src';
 
-
 // ------------------------------------------------------
 // Create Resource Stack
 // ------------------------------------------------------
@@ -20,7 +19,11 @@ new Service(stack, 'Wowza', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
   customDomain: {
     domainName: 'wowza.cdktests.com',
-    certificate: acm.Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:eu-central-1:249522321342:certificate/6a8b25b4-0e16-4eeb-8bf3-8e674c2eb529'),
+    certificate: acm.Certificate.fromCertificateArn(
+      stack,
+      'Cert',
+      'arn:aws:acm:eu-central-1:249522321342:certificate/6a8b25b4-0e16-4eeb-8bf3-8e674c2eb529',
+    ),
     hostedZone: route53.HostedZone.fromHostedZoneId(stack, 'phz', 'Z09645912NXYR4SWWM1J7'),
   },
 });

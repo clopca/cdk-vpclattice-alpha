@@ -1,7 +1,9 @@
 {
 	"cSpell.words": [
+		"acmpca",
 		"ALBTG",
 		"bitnami",
+		"cdktests",
 		"certificatemanager",
 		"elasticloadbalancingv",
 		"Fargate",
@@ -9,8 +11,14 @@
 		"mycustomlatticelistener",
 		"mycustomlatticeservicename",
 		"mycustomlatticeservicenetworkname",
+		"NXYR",
 		"servicenetwork",
+		"svcn",
 		"svcs",
-		"vpclattice"
+		"SWWM",
+		"vpclattice",
+		"WITHRSA",
+		"wowza",
+		"Wowza"
 	]
 }

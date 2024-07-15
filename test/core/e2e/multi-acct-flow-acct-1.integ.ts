@@ -7,7 +7,6 @@ import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { Code, Function as LambdaFunction, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { LambdaTargetGroup, ListenerProtocol, Service, ServiceNetwork, AuthPolicyDocument, AuthType } from '../../../src';
 
-
 const app1 = new cdk.App();
 
 const ipv4LinkLocalCidrBlock = '169.254.0.0/16';

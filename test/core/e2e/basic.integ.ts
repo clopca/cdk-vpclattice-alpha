@@ -1,11 +1,11 @@
-import * as path from 'path';
+import * as path from 'node:path';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import * as autoscaling from 'aws-cdk-lib/aws-autoscaling';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { Instance, Peer, Port, SecurityGroup, Vpc } from 'aws-cdk-lib/aws-ec2';
 import { ApplicationLoadBalancedFargateService } from 'aws-cdk-lib/aws-ecs-patterns';
-import { Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
+import { Code, Function as LambdaFunction, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { HTTPFixedResponse, ListenerProtocol, PathMatchType, Service, ServiceNetwork, AuthType } from '../../../src';
 import { AlbTargetGroup, InstanceTargetGroup, LambdaTargetGroup, RequestProtocol, RequestProtocolVersion } from '../../../src/aws-vpclattice-targets';
 
@@ -34,7 +34,7 @@ clientsSg.addIngressRule(Peer.ipv4('169.254.0.0/16'), Port.allTraffic());
 // ------------------------------------------------------
 // Lambda TG
 // ------------------------------------------------------
-const lambdaFunction = new Function(stack, 'LatticeLambdaReservation', {
+const lambdaFunction = new LambdaFunction(stack, 'LatticeLambdaReservation', {
   runtime: Runtime.PYTHON_3_12,
   code: Code.fromAsset(path.join(__dirname, 'lambda')),
   handler: 'index.lambda_handler',
@@ -189,7 +189,6 @@ svcReservation.addListener({
     targetGroup: reservationTg,
   },
 });
-
 
 // ------------------------------------------------------
 // Service Network

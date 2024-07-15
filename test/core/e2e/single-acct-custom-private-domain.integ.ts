@@ -1,10 +1,10 @@
-import * as path from 'path';
+import * as path from 'node:path';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import * as acmpca from 'aws-cdk-lib/aws-acmpca';
 import * as acm from 'aws-cdk-lib/aws-certificatemanager';
 import { AmazonLinuxGeneration, Instance, Peer, Port, SecurityGroup, UserData, Vpc } from 'aws-cdk-lib/aws-ec2';
-import { Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
+import { Code, Function as LambdaFunction, Runtime } from 'aws-cdk-lib/aws-lambda';
 import * as route53 from 'aws-cdk-lib/aws-route53';
 import { HTTPFixedResponse, LambdaTargetGroup, ListenerProtocol, PathMatchType, Service, ServiceNetwork, AuthType } from '../../../src';
 
@@ -58,9 +58,7 @@ const cfnCertificateAuthority = new acmpca.CfnCertificateAuthority(stack, 'Priva
 });
 
 // L2 construct
-const certificateAuthority = acmpca.CertificateAuthority.fromCertificateAuthorityArn(
-  stack, 'PrivateCA-L2', cfnCertificateAuthority.attrArn,
-);
+const certificateAuthority = acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'PrivateCA-L2', cfnCertificateAuthority.attrArn);
 
 // ACM Authorization to Manage Certificates
 new acmpca.CfnPermission(stack, 'CAPermission', {
@@ -87,7 +85,6 @@ new acmpca.CfnCertificateAuthorityActivation(stack, 'CertActivation-PAA', {
   certificate: cfnCertificate.attrCertificate,
   status: 'ACTIVE',
 });
-
 
 // ------------------------------------------------------
 // Private Certificate
@@ -125,7 +122,7 @@ const parkingSvc = new Service(stack, 'Parking', {
 // ------------------------------------------------------
 // Lambda TG
 // ------------------------------------------------------
-const lambdaFunction = new Function(stack, 'LatticeLambdaReservation', {
+const lambdaFunction = new LambdaFunction(stack, 'LatticeLambdaReservation', {
   runtime: Runtime.PYTHON_3_12,
   code: Code.fromAsset(path.join(__dirname, 'lambda')),
   handler: 'index.lambda_handler',
@@ -151,7 +148,6 @@ const parkingListener = parkingSvc.addListener({
   },
 });
 
-
 parkingListener.addListenerRule({
   name: 'reservation',
   priority: 10,
@@ -170,7 +166,7 @@ parkingListener.addListenerRule({
 // Service Network
 // ------------------------------------------------------
 new ServiceNetwork(stack, 'ServiceNetwork', {
-  name: 'superapps-vcnetwork',
+  name: 'superApps-vpcNetwork',
   services: [parkingSvc],
   removalPolicy: cdk.RemovalPolicy.DESTROY,
   vpcAssociations: [{ vpc: svcVpc }, { vpc: clientsVpc }],

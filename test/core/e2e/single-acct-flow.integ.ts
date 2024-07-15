@@ -7,7 +7,6 @@ import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { Code, Function as LambdaFunction, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { LambdaTargetGroup, ListenerProtocol, Service, ServiceNetwork, AuthPolicyDocument, AuthType, AuthPolicyStatement } from '../../../src';
 
-
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-vpclattice-e2e-single-acct-auth');
 
