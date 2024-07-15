@@ -1,13 +1,12 @@
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import { Vpc } from 'aws-cdk-lib/aws-ec2';
-import { Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
+import { Code, Function as LambdaFunction, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { AuthPolicyDocument, AuthType, HTTPFixedResponse, HTTPMethod, ListenerProtocol, MatchOperator, Service, ServiceNetwork } from '../../../src';
 import { LambdaTargetGroup } from '../../../src/aws-vpclattice-targets';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-vpclattice-integ-listener');
-
 
 const vpc = new Vpc(stack, 'VPC', {});
 
@@ -24,7 +23,7 @@ new ServiceNetwork(stack, 'ServiceNetwork', {
   services: [sampleSvc],
 });
 
-const lambdaFunction = new Function(stack, 'LambdaTargetFunction', {
+const lambdaFunction = new LambdaFunction(stack, 'LambdaTargetFunction', {
   runtime: Runtime.NODEJS_18_X,
   code: Code.fromInline(`
 		  exports.handler = async (event) => {
@@ -35,7 +34,7 @@ const lambdaFunction = new Function(stack, 'LambdaTargetFunction', {
 			  };
 		  };
 	  `),
-  handler: 'index.function_name',
+  handler: 'index.handler',
 });
 
 const tg1 = new LambdaTargetGroup(stack, 'LambdaTG', {
@@ -47,34 +46,40 @@ const listener1 = sampleSvc.addListener({
   name: 'listener1',
   protocol: ListenerProtocol.HTTP,
   port: 80,
-  rules: [{
-    name: 'first-rule',
-    priority: 1,
-    conditions: {
-      headerMatches: [{
-        headerName: 'x-custom-header',
-        matchOperator: MatchOperator.EXACT,
-        matchValue: 'some-value',
-        caseSensitive: true,
-      }],
-    },
-    action: {
-      targetGroup: tg1,
-    },
-  },
-  {
-    name: 'second-rule',
-    priority: 2,
-    conditions: {
-      methodMatch: HTTPMethod.GET,
-    },
-    action: {
-      weightedTargetGroups: [{
+  rules: [
+    {
+      name: 'first-rule',
+      priority: 1,
+      conditions: {
+        headerMatches: [
+          {
+            headerName: 'x-custom-header',
+            matchOperator: MatchOperator.EXACT,
+            matchValue: 'some-value',
+            caseSensitive: true,
+          },
+        ],
+      },
+      action: {
         targetGroup: tg1,
-        weight: 50,
-      }],
+      },
     },
-  }],
+    {
+      name: 'second-rule',
+      priority: 2,
+      conditions: {
+        methodMatch: HTTPMethod.GET,
+      },
+      action: {
+        weightedTargetGroups: [
+          {
+            targetGroup: tg1,
+            weight: 50,
+          },
+        ],
+      },
+    },
+  ],
 });
 
 listener1.addListenerRule({

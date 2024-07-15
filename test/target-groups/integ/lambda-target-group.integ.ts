@@ -1,12 +1,12 @@
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
-import { Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
+import { Code, Function as LambdaFunction, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { LambdaTargetGroup } from '../../../src/aws-vpclattice-targets';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-vpclattice-integ-target-group-lambda');
 
-const lambdaFunction = new Function(stack, 'LambdaTargetFunction', {
+const lambdaFunction = new LambdaFunction(stack, 'LambdaTargetFunction', {
   runtime: Runtime.NODEJS_18_X,
   code: Code.fromInline(`
         exports.handler = async (event) => {
@@ -17,7 +17,7 @@ const lambdaFunction = new Function(stack, 'LambdaTargetFunction', {
             };
         };
     `),
-  handler: 'index.function_name',
+  handler: 'index.handler',
 });
 
 const tg1 = new LambdaTargetGroup(stack, 'LambdaTG', {

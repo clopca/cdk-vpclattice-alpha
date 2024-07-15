@@ -37,7 +37,7 @@ export interface InstanceTargetGroupProps {
   /**
    * The targets to associate with the target group
    */
-  readonly intances?: InstanceTarget[];
+  readonly instances?: InstanceTarget[];
 
   /**
    * The ASGs to associate with the target group
@@ -101,7 +101,7 @@ export class InstanceTargetGroup extends TargetGroupBase {
     this.protocol = props.protocol ?? RequestProtocol.HTTPS;
     this.protocolVersion = props.protocolVersion ?? (props.protocol !== RequestProtocol.TCP ? RequestProtocolVersion.HTTP1 : undefined);
     this.port = props.port ?? (props.protocol === RequestProtocol.HTTP ? 80 : 443);
-    this.instances = props.intances ?? [];
+    this.instances = props.instances ?? [];
     this.autoScalingGroups = props.autoScalingGroups ?? [];
     this.healthCheck = {
       enabled: props.healthCheck?.enabled ?? true,
