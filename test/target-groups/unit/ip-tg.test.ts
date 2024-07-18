@@ -1,7 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { Vpc } from 'aws-cdk-lib/aws-ec2';
-import { HTTPFixedResponse } from '../../../src';
+import { HttpFixedResponse } from '../../../src';
 import {
   HealthCheckProtocol,
   HealthCheckProtocolVersion,
@@ -73,7 +73,7 @@ describe('IP Target Group', () => {
       },
     });
   });
-  test('Add target with ipv6 and healthcheck', () => {
+  test('Add target with ipv6 and healthCheck', () => {
     // WHEN & THEN
     new IpTargetGroup(stack, 'IpTG', {
       vpc,
@@ -90,7 +90,7 @@ describe('IP Target Group', () => {
         protocolVersion: HealthCheckProtocolVersion.HTTP2,
         unhealthyThresholdCount: 2,
         healthyThresholdCount: 5,
-        matchers: HTTPFixedResponse.OK,
+        matchers: HttpFixedResponse.OK,
       },
     });
     // Check the target has been added

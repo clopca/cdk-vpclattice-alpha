@@ -1,5 +1,5 @@
 import type { Duration } from 'aws-cdk-lib';
-import type { HTTPFixedResponse } from '../util';
+import type { HttpFixedResponse } from '../util';
 
 export enum HealthCheckProtocol {
   /**
@@ -73,7 +73,7 @@ export interface HealthCheck {
    *
    * @default FixedResponse.OK
    */
-  readonly matchers?: HTTPFixedResponse | string;
+  readonly matchers?: HttpFixedResponse | string;
 
   /**
    * The ping path to the destination on the targets for health checks.

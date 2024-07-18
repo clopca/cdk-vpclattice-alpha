@@ -5,7 +5,7 @@ import type * as constructs from 'constructs';
 import { TargetGroupBase, RequestProtocol, TargetType, RequestProtocolVersion } from './base-target-group';
 import { HealthCheckProtocol, HealthCheckProtocolVersion } from './health-check';
 import type { HealthCheck } from './health-check';
-import { HTTPFixedResponse } from '../util';
+import { HttpFixedResponse } from '../util';
 
 /**
  * The type of IP Address Protocol
@@ -120,7 +120,7 @@ export class IpTargetGroup extends TargetGroupBase {
       protocolVersion: props.healthCheck?.protocolVersion ?? HealthCheckProtocolVersion.HTTP1,
       unhealthyThresholdCount: props.healthCheck?.unhealthyThresholdCount ?? 2,
       healthyThresholdCount: props.healthCheck?.healthyThresholdCount ?? 5,
-      matchers: props.healthCheck?.matchers ?? HTTPFixedResponse.OK,
+      matchers: props.healthCheck?.matchers ?? HttpFixedResponse.OK,
     };
 
     // ------------------------------------------------------
@@ -158,7 +158,7 @@ export class IpTargetGroup extends TargetGroupBase {
           unhealthyThresholdCount: this.healthCheck.unhealthyThresholdCount,
           healthyThresholdCount: this.healthCheck.healthyThresholdCount,
           matcher: {
-            httpCode: (this.healthCheck.matchers ?? HTTPFixedResponse.OK).toString(),
+            httpCode: (this.healthCheck.matchers ?? HttpFixedResponse.OK).toString(),
           },
         },
       },

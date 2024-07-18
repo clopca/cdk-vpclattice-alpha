@@ -2,11 +2,10 @@ import type { IResource, RemovalPolicy } from 'aws-cdk-lib';
 import { Resource } from 'aws-cdk-lib';
 import * as generated from 'aws-cdk-lib/aws-vpclattice';
 import type { Construct } from 'constructs';
-import type { RuleAction, RuleProps } from './';
-import type { RuleConditions } from './matches';
-import { PathMatchType, MatchOperator } from './matches';
+import type { RuleAction } from './rule-action';
+import type { RuleMatch } from './rule-match';
 import type { Service } from './service';
-import { HTTPFixedResponse } from './util';
+import { HttpFixedResponse } from './util';
 
 /**
  * It is not required that the listener and target group protocols match.
@@ -54,9 +53,9 @@ export interface IListener extends IResource {
   readonly listenerId: string;
 
   /**
-   * Add A Listener Rule to the Listener
+   * Add A Rule to the Listener
    */
-  addListenerRule(rule: RuleProps): void;
+  addRule(rule: AddRuleProps): void;
 }
 
 /**
@@ -67,17 +66,6 @@ export interface ListenerProps {
    * The Id of the service that this listener is associated with.
    */
   readonly service: Service;
-
-  /**
-   * The configuration properties for the listener.
-   */
-  readonly config?: ListenerConfig;
-}
-
-/**
- * Listener Config
- */
-export interface ListenerConfig {
   /**
    * The Name of the listener.
    */
@@ -103,7 +91,7 @@ export interface ListenerConfig {
   /**
    * Rules to add to the listener.
    */
-  readonly rules?: RuleProps[];
+  readonly rules?: AddRuleProps[];
 
   /**
    * Determine what happens to the service when the resource/stack is deleted.
@@ -155,7 +143,7 @@ export class Listener extends Resource implements IListener {
   /**
    * The listener rules to add
    */
-  rules: RuleProps[];
+  rules: AddRuleProps[];
 
   private readonly _resource: generated.CfnListener;
 
@@ -164,7 +152,7 @@ export class Listener extends Resource implements IListener {
   // ------------------------------------------------------
   constructor(scope: Construct, id: string, props: ListenerProps) {
     super(scope, id, {
-      physicalName: props.config?.name,
+      physicalName: props?.name,
     });
 
     // ------------------------------------------------------
@@ -172,21 +160,23 @@ export class Listener extends Resource implements IListener {
     // ------------------------------------------------------
     this.name = this.physicalName;
     this.service = props.service;
-    this.protocol = props.config?.protocol ?? ListenerProtocol.HTTPS;
-    this.port = props.config?.port ?? (props.config?.protocol === ListenerProtocol.HTTP ? 80 : 443);
-    this.rules = props.config?.rules ?? [];
-    this.defaultAction = props.config?.defaultAction ?? {
-      httpFixedResponse: HTTPFixedResponse.NOT_FOUND,
+    this.protocol = props?.protocol ?? ListenerProtocol.HTTPS;
+    this.port = props?.port ?? (this.protocol === ListenerProtocol.HTTP ? 80 : 443);
+    this.rules = props?.rules ?? [];
+    this.defaultAction = props?.defaultAction ?? {
+      fixedResponse: {
+        statusCode: HttpFixedResponse.NOT_FOUND,
+      },
     };
 
     // ------------------------------------------------------
     // Validation
     // ------------------------------------------------------
-    if (props.config?.name) {
-      const name = props.config.name;
+    if (props?.name) {
+      const name = props.name;
       this.node.addValidation({ validate: () => this.validateListenerName(name) });
     }
-    if (props.config?.rules) {
+    if (props?.rules) {
       this.node.addValidation({ validate: () => this.validateRulePriorities() });
     }
     this.node.addValidation({ validate: () => this.validatePort() });
@@ -195,8 +185,8 @@ export class Listener extends Resource implements IListener {
     // L1 Instantiation
     // ------------------------------------------------------
     this._resource = new generated.CfnListener(this, 'Resource', {
-      name: props.config?.name,
-      defaultAction: this.transformRuleActionToCfnProperty(this.defaultAction),
+      name: props?.name,
+      defaultAction: this.defaultAction,
       protocol: this.protocol,
       port: this.port,
       serviceIdentifier: this.service.serviceId,
@@ -205,16 +195,16 @@ export class Listener extends Resource implements IListener {
     // ------------------------------------------------------
     // Construct properties
     // ------------------------------------------------------
-    this._resource.applyRemovalPolicy(props.config?.removalPolicy);
+    this._resource.applyRemovalPolicy(props?.removalPolicy);
     this.listenerArn = this._resource.attrArn;
     this.listenerId = this._resource.attrId;
 
     // ------------------------------------------------------
     // Adds Listener Rules
     // ------------------------------------------------------
-    if (props.config?.rules) {
-      for (const rule of props.config.rules) {
-        this.addListenerRule(rule);
+    if (props?.rules) {
+      for (const rule of props.rules) {
+        this.addRule(rule);
       }
     }
   }
@@ -268,104 +258,38 @@ export class Listener extends Resource implements IListener {
   // ------------------------------------------------------
   // Util Methods
   // ------------------------------------------------------
-  /**
-   * Transforms the L2 Rule Action to the CFN-L1 format
-   */
-  private transformRuleActionToCfnProperty(ruleAction: RuleAction): generated.CfnListener.DefaultActionProperty {
-    if (ruleAction.httpFixedResponse) {
-      // RuleAction is an HTTPFixedResponse
-      return {
-        fixedResponse: {
-          statusCode: ruleAction.httpFixedResponse,
-        },
-      };
-    }
-    if (ruleAction.weightedTargetGroups) {
-      const targetGroups = ruleAction.weightedTargetGroups.map(weightedTargetGroup => {
-        //this.node.addDependency(weightedTargetGroup.targetGroup);
-        return {
-          targetGroupIdentifier: weightedTargetGroup.targetGroup.targetGroupId,
-          weight: weightedTargetGroup.weight,
-        };
-      });
-
-      return {
-        forward: {
-          targetGroups,
-        },
-      };
-    }
-    if (ruleAction.targetGroup) {
-      //this._resource.node.addDependency(ruleAction.targetGroup)
-      return {
-        forward: {
-          targetGroups: [
-            {
-              targetGroupIdentifier: ruleAction.targetGroup.targetGroupId,
-              weight: 100,
-            },
-          ],
-        },
-      };
-    }
-    return {};
-  }
-
-  private transformRuleConditionsToCfnProperty(ruleConditions?: RuleConditions): generated.CfnRule.MatchProperty {
-    const { headerMatches, methodMatch, pathMatch } = ruleConditions ?? {};
-
-    const matchProperty: generated.CfnRule.MatchProperty = {
-      httpMatch: {
-        headerMatches: headerMatches?.map(({ headerName, matchValue, caseSensitive = false, matchOperator }) => ({
-          name: headerName,
-          match: { [MatchOperator[matchOperator].toLowerCase()]: matchValue },
-          caseSensitive,
-        })),
-        method: methodMatch,
-        pathMatch: pathMatch && {
-          caseSensitive: pathMatch?.caseSensitive ?? false,
-          match: {
-            [(pathMatch?.pathMatchType ?? PathMatchType.EXACT).toLowerCase()]: pathMatch?.path,
-          },
-        },
-      },
-    };
-
-    return matchProperty;
-  }
-
-  // /**
-  //  * In case a weight is not specified, a default weight is created
-  //  * E.g. generateDefaultWeight(7); // Output: [15, 15, 14, 14, 14, 14, 14]
-  //  */
-  // private generateDefaultWeight(numberOfTargets: number): number[] {
-  //   const defaultWeights: number[] = Array(numberOfTargets).fill(100 / numberOfTargets);
-
-  //   const remainder = 100 % numberOfTargets;
-  //   for (let i = 0; i < remainder; i++) {
-  //     defaultWeights[i]++;
-  //   }
-
-  //   return defaultWeights;
-  // }
 
   /**
    * Adds a rule to the listener
    * @param rule
    */
-  public addListenerRule(rule: RuleProps) {
-    new generated.CfnRule(this, `${rule.name}Rule`, {
+  public addRule(rule: AddRuleProps) {
+    new generated.CfnRule(this, `Rule${rule.name}`, {
       name: rule.name,
-      action: this.transformRuleActionToCfnProperty(rule.action),
+      action: rule.action,
       priority: rule.priority,
-      match: this.transformRuleConditionsToCfnProperty(rule.conditions),
+      match: { httpMatch: rule.match ?? {} },
       listenerIdentifier: this.listenerId,
       serviceIdentifier: this.service.serviceId,
     });
-
-    // TODO Modify the Auth Policy of the service
-    // this ruleStatement = this.buildStatement()
-    //this.service.authPolicy.addStatements({})
   }
 }
 
+export interface AddRuleProps {
+  /**
+   * the action for the rule, is either a fixed Response, or a being sent to  Weighted TargetGroup
+   */
+  readonly action: RuleAction;
+  /**
+   * The listener to attach the rule to
+   */
+  readonly match?: RuleMatch;
+  /**
+   * A name for the the Rule
+   */
+  readonly name: string;
+  /**
+   * The priority of this rule, a lower priority will be processed first
+   */
+  readonly priority: number;
+}

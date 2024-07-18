@@ -388,7 +388,7 @@ export class ServiceNetwork extends ServiceNetworkBase {
         if (node === this && !this.authPolicy.isEmpty) {
           new generated.CfnAuthPolicy(this, 'ServiceNetworkAuthPolicy', {
             policy: this.authPolicy.toJSON(),
-            resourceIdentifier: this.serviceNetworkId,
+            resourceIdentifier: this.serviceNetworkArn,
           });
         }
       },

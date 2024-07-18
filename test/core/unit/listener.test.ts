@@ -2,7 +2,7 @@ import { EOL } from 'node:os';
 import * as cdk from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { Vpc } from 'aws-cdk-lib/aws-ec2';
-import { HTTPFixedResponse, IpTargetGroup, Listener, ListenerProtocol, MatchOperator, PathMatchType, Service } from '../../../src';
+import { HttpFixedResponse, RuleMatch, IpTargetGroup, Listener, ListenerProtocol, RuleAction, Service } from '../../../src';
 
 describe('Listener', () => {
   test('Default listener', () => {
@@ -26,9 +26,7 @@ describe('Listener', () => {
     const stack = new cdk.Stack(app, 'TestStack');
     new Listener(stack, 'Listener', {
       service: new Service(stack, 'Service', {}),
-      config: {
-        name: 'mycustomlatticelistener',
-      },
+      name: 'mycustomlatticelistener',
     });
 
     //THEN
@@ -43,9 +41,7 @@ describe('Listener', () => {
     const stack = new cdk.Stack(app, 'TestStack');
     new Listener(stack, 'Listener', {
       service: new Service(stack, 'Service', {}),
-      config: {
-        protocol: ListenerProtocol.HTTP,
-      },
+      protocol: ListenerProtocol.HTTP,
     });
 
     //THEN
@@ -61,9 +57,7 @@ describe('Listener', () => {
     const stack = new cdk.Stack(app, 'TestStack');
     new Listener(stack, 'Listener', {
       service: new Service(stack, 'Service', {}),
-      config: {
-        port: 443,
-      },
+      port: 443,
     });
 
     //THEN
@@ -79,11 +73,7 @@ describe('Listener', () => {
     const stack = new cdk.Stack(app, 'TestStack');
     new Listener(stack, 'Listener', {
       service: new Service(stack, 'Service', {}),
-      config: {
-        defaultAction: {
-          httpFixedResponse: HTTPFixedResponse.NOT_FOUND,
-        },
-      },
+      defaultAction: RuleAction.fixedResponseAction(HttpFixedResponse.NOT_FOUND),
     });
 
     //THEN
@@ -102,17 +92,13 @@ describe('Listener', () => {
     const stack = new cdk.Stack(app, 'TestStack');
     new Listener(stack, 'Listener', {
       service: new Service(stack, 'Service', {}),
-      config: {
-        rules: [
-          {
-            name: 'test',
-            action: {
-              httpFixedResponse: HTTPFixedResponse.NOT_FOUND,
-            },
-            priority: 1,
-          },
-        ],
-      },
+      rules: [
+        {
+          name: 'test',
+          action: RuleAction.fixedResponseAction(HttpFixedResponse.NOT_FOUND),
+          priority: 1,
+        },
+      ],
     });
 
     // THEN
@@ -133,24 +119,18 @@ describe('Listener', () => {
     const stack = new cdk.Stack(app, 'TestStack');
     new Listener(stack, 'Listener', {
       service: new Service(stack, 'Service', {}),
-      config: {
-        rules: [
-          {
-            name: 'test1',
-            action: {
-              httpFixedResponse: HTTPFixedResponse.NOT_FOUND,
-            },
-            priority: 1,
-          },
-          {
-            name: 'test2',
-            action: {
-              httpFixedResponse: HTTPFixedResponse.NOT_FOUND,
-            },
-            priority: 1,
-          },
-        ],
-      },
+      rules: [
+        {
+          name: 'test1',
+          action: RuleAction.fixedResponseAction(HttpFixedResponse.NOT_FOUND),
+          priority: 1,
+        },
+        {
+          name: 'test2',
+          action: RuleAction.fixedResponseAction(HttpFixedResponse.NOT_FOUND),
+          priority: 1,
+        },
+      ],
     });
 
     // THEN
@@ -165,17 +145,13 @@ describe('Listener', () => {
     for (const priority of invalidPriorities) {
       new Listener(stack, `Listener-${priority}`, {
         service: new Service(stack, `Service-${priority}`, {}),
-        config: {
-          rules: [
-            {
-              name: 'test',
-              action: {
-                httpFixedResponse: HTTPFixedResponse.NOT_FOUND,
-              },
-              priority: priority,
-            },
-          ],
-        },
+        rules: [
+          {
+            name: 'test',
+            action: RuleAction.fixedResponseAction(HttpFixedResponse.NOT_FOUND),
+            priority: priority,
+          },
+        ],
       });
       expect(() => app.synth()).toThrow('Invalid rule priorities: Rule priorities must be between 1 and 100');
     }
@@ -190,29 +166,25 @@ describe('Listener', () => {
     for (const port of invalidPorts) {
       new Listener(stack, `Listener-${port}`, {
         service: new Service(stack, `Service-${port}`, {}),
-        config: {
-          port: port,
-        },
+        port: port,
       });
       expect(() => app.synth()).toThrow(`Invalid port ${port}: Out of range (0-65535)`);
     }
   });
 
-  test('Listener creation with no target group', () => {
+  test('Listener creation with no action', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'TestStack');
     new Listener(stack, 'Listener', {
       service: new Service(stack, 'Service', {}),
-      config: {
-        rules: [
-          {
-            name: 'test-rule',
-            priority: 10,
-            action: {},
-          },
-        ],
-      },
+      rules: [
+        {
+          name: 'test-rule',
+          priority: 10,
+          action: {},
+        },
+      ],
     });
 
     // THEN
@@ -223,26 +195,22 @@ describe('Listener', () => {
     });
   });
 
-  test('Listener creation with path match condition default props', () => {
+  test('Listener creation with path match default props', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'TestStack');
     new Listener(stack, 'Listener', {
       service: new Service(stack, 'Service', {}),
-      config: {
-        rules: [
-          {
-            name: 'test-rule',
-            priority: 10,
-            action: {},
-            conditions: {
-              pathMatch: {
-                path: '/',
-              },
-            },
+      rules: [
+        {
+          name: 'test-rule',
+          priority: 10,
+          action: {},
+          match: {
+            pathMatch: RuleMatch.pathExact('/'),
           },
-        ],
-      },
+        },
+      ],
     });
 
     // THEN
@@ -263,28 +231,22 @@ describe('Listener', () => {
     });
   });
 
-  test('Listener creation with path match condition', () => {
+  test('Listener creation with path match', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'TestStack');
     new Listener(stack, 'Listener', {
       service: new Service(stack, 'Service', {}),
-      config: {
-        rules: [
-          {
-            name: 'test-rule',
-            priority: 10,
-            action: {},
-            conditions: {
-              pathMatch: {
-                path: '/test',
-                caseSensitive: true,
-                pathMatchType: PathMatchType.PREFIX,
-              },
-            },
+      rules: [
+        {
+          name: 'test-rule',
+          priority: 10,
+          action: {},
+          match: {
+            pathMatch: RuleMatch.pathPrefix('/test', true),
           },
-        ],
-      },
+        },
+      ],
     });
 
     // THEN
@@ -305,31 +267,22 @@ describe('Listener', () => {
     });
   });
 
-  test('Listener creation with header match condition', () => {
+  test('Listener creation with header match', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'TestStack');
     new Listener(stack, 'Listener', {
       service: new Service(stack, 'Service', {}),
-      config: {
-        rules: [
-          {
-            name: 'test-rule',
-            priority: 10,
-            action: {},
-            conditions: {
-              headerMatches: [
-                {
-                  headerName: 'x-test',
-                  matchOperator: MatchOperator.PREFIX,
-                  matchValue: 'test',
-                  caseSensitive: false,
-                },
-              ],
-            },
+      rules: [
+        {
+          name: 'test-rule',
+          priority: 10,
+          action: {},
+          match: {
+            headerMatches: [RuleMatch.headerPrefix('test', 'x-test', false)],
           },
-        ],
-      },
+        },
+      ],
     });
 
     // THEN
@@ -352,30 +305,24 @@ describe('Listener', () => {
     });
   });
 
-  test('Listener creation with weighted target groups', () => {
+  test('Listener creation with forward action to target group', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'TestStack');
     new Listener(stack, 'Listener', {
       service: new Service(stack, 'Service', {}),
-      config: {
-        rules: [
-          {
-            name: 'test-rule',
-            priority: 10,
-            action: {
-              weightedTargetGroups: [
-                {
-                  weight: 100,
-                  targetGroup: new IpTargetGroup(stack, 'TargetGroup', {
-                    vpc: new Vpc(stack, 'Vpc', {}),
-                  }),
-                },
-              ],
-            },
-          },
-        ],
-      },
+      rules: [
+        {
+          name: 'test-rule',
+          priority: 10,
+          action: RuleAction.forwardAction(
+            new IpTargetGroup(stack, 'TargetGroup', {
+              vpc: new Vpc(stack, 'Vpc', {}),
+            }),
+            100,
+          ),
+        },
+      ],
     });
 
     // THEN
@@ -397,25 +344,32 @@ describe('Listener', () => {
     });
   });
 
-  test('Listener creation with target group', () => {
+  test('Listener creation with weight forward action to target group', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'TestStack');
     new Listener(stack, 'Listener', {
       service: new Service(stack, 'Service', {}),
-      config: {
-        rules: [
-          {
-            name: 'test-rule',
-            priority: 10,
-            action: {
+      rules: [
+        {
+          name: 'test-rule',
+          priority: 10,
+          action: RuleAction.weightedForwardAction([
+            {
               targetGroup: new IpTargetGroup(stack, 'TargetGroup', {
                 vpc: new Vpc(stack, 'Vpc', {}),
               }),
+              weight: 50,
             },
-          },
-        ],
-      },
+            {
+              targetGroup: new IpTargetGroup(stack, 'TargetGroup2', {
+                vpc: new Vpc(stack, 'Vpc2', {}),
+              }),
+              weight: 50,
+            },
+          ]),
+        },
+      ],
     });
 
     // THEN
@@ -429,6 +383,13 @@ describe('Listener', () => {
               TargetGroupIdentifier: {
                 'Fn::GetAtt': ['TargetGroup3D7CD9B8', 'Id'],
               },
+              Weight: 50,
+            },
+            {
+              TargetGroupIdentifier: {
+                'Fn::GetAtt': ['TargetGroup2D571E5D7', 'Id'],
+              },
+              Weight: 50,
             },
           ],
         },
@@ -445,9 +406,7 @@ describe('Listener', () => {
       // WHEN
       new Listener(stack, 'Listener1', {
         service: new Service(stack, 'Service1', {}),
-        config: {
-          name: 'abc-xyz-34ab',
-        },
+        name: 'abc-xyz-34ab',
       });
 
       // THEN
@@ -456,9 +415,7 @@ describe('Listener', () => {
       // WHEN
       new Listener(stack, 'Listener2', {
         service: new Service(stack, 'Service2', {}),
-        config: {
-          name: '124pp-33',
-        },
+        name: '124pp-33',
       });
 
       // THEN
@@ -479,9 +436,7 @@ describe('Listener', () => {
       // WHEN
       new Listener(stack, 'Listener', {
         service: new Service(stack, 'Service', {}),
-        config: {
-          name,
-        },
+        name,
       });
 
       // THEN
@@ -496,9 +451,7 @@ describe('Listener', () => {
       // WHEN
       new Listener(stack, 'Listener1', {
         service: new Service(stack, 'Service1', {}),
-        config: {
-          name: 'a',
-        },
+        name: 'a',
       });
 
       // THEN
@@ -507,9 +460,7 @@ describe('Listener', () => {
       // WHEN
       new Listener(stack, 'Listener2', {
         service: new Service(stack, 'Service2', {}),
-        config: {
-          name: 'x'.repeat(64),
-        },
+        name: 'x'.repeat(64),
       });
 
       // THEN
@@ -526,9 +477,7 @@ describe('Listener', () => {
       for (const name of invalidNames) {
         new Listener(stack, `Listener-${name}`, {
           service: new Service(stack, `Service-${name}`, {}),
-          config: {
-            name,
-          },
+          name,
         });
 
         // THEN

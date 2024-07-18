@@ -2,7 +2,17 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import { Vpc } from 'aws-cdk-lib/aws-ec2';
 import { Code, Function as LambdaFunction, Runtime } from 'aws-cdk-lib/aws-lambda';
-import { AuthPolicyDocument, AuthType, HTTPFixedResponse, HTTPMethod, ListenerProtocol, MatchOperator, Service, ServiceNetwork } from '../../../src';
+import {
+  AuthPolicyDocument,
+  AuthType,
+  HttpFixedResponse,
+  RuleMatch,
+  HttpMethod,
+  ListenerProtocol,
+  RuleAction,
+  Service,
+  ServiceNetwork,
+} from '../../../src';
 import { LambdaTargetGroup } from '../../../src/aws-vpclattice-targets';
 
 const app = new cdk.App();
@@ -50,49 +60,29 @@ const listener1 = sampleSvc.addListener({
     {
       name: 'first-rule',
       priority: 1,
-      conditions: {
-        headerMatches: [
-          {
-            headerName: 'x-custom-header',
-            matchOperator: MatchOperator.EXACT,
-            matchValue: 'some-value',
-            caseSensitive: true,
-          },
-        ],
+      match: {
+        headerMatches: [RuleMatch.headerExact('some-value', 'x-custom-header', true)],
       },
-      action: {
-        targetGroup: tg1,
-      },
+      action: RuleAction.forwardAction(tg1),
     },
     {
       name: 'second-rule',
       priority: 2,
-      conditions: {
-        methodMatch: HTTPMethod.GET,
+      match: {
+        method: RuleMatch.methodMatch(HttpMethod.GET),
       },
-      action: {
-        weightedTargetGroups: [
-          {
-            targetGroup: tg1,
-            weight: 50,
-          },
-        ],
-      },
+      action: RuleAction.forwardAction(tg1, 50),
     },
   ],
 });
 
-listener1.addListenerRule({
+listener1.addRule({
   name: 'third-rule',
   priority: 3,
-  conditions: {
-    pathMatch: {
-      path: '/test',
-    },
+  match: {
+    pathMatch: RuleMatch.pathExact('/test'),
   },
-  action: {
-    httpFixedResponse: HTTPFixedResponse.NOT_FOUND,
-  },
+  action: RuleAction.fixedResponseAction(HttpFixedResponse.NOT_FOUND),
 });
 
 new integ.IntegTest(app, 'ServiceNetworkTest', {

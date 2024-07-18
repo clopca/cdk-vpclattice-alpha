@@ -6,7 +6,7 @@ import * as acm from 'aws-cdk-lib/aws-certificatemanager';
 import { AmazonLinuxGeneration, Instance, Peer, Port, SecurityGroup, UserData, Vpc } from 'aws-cdk-lib/aws-ec2';
 import { Code, Function as LambdaFunction, Runtime } from 'aws-cdk-lib/aws-lambda';
 import * as route53 from 'aws-cdk-lib/aws-route53';
-import { HTTPFixedResponse, LambdaTargetGroup, ListenerProtocol, PathMatchType, Service, ServiceNetwork, AuthType } from '../../../src';
+import { HttpFixedResponse, LambdaTargetGroup, ListenerProtocol, Service, ServiceNetwork, AuthType, RuleAction, RuleMatch } from '../../../src';
 
 // ------------------------------------------------------
 // Create Resource Stack
@@ -143,23 +143,14 @@ const parkingListener = parkingSvc.addListener({
   name: 'listener1',
   protocol: ListenerProtocol.HTTP,
   port: 80,
-  defaultAction: {
-    httpFixedResponse: HTTPFixedResponse.NOT_FOUND,
-  },
+  defaultAction: RuleAction.fixedResponseAction(HttpFixedResponse.NOT_FOUND),
 });
 
-parkingListener.addListenerRule({
+parkingListener.addRule({
   name: 'reservation',
   priority: 10,
-  conditions: {
-    pathMatch: {
-      pathMatchType: PathMatchType.EXACT,
-      path: '/reservation',
-    },
-  },
-  action: {
-    targetGroup: reservationTg,
-  },
+  match: { pathMatch: RuleMatch.pathExact('/reservation') },
+  action: RuleAction.forwardAction(reservationTg),
 });
 
 // ------------------------------------------------------

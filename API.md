@@ -1281,7 +1281,7 @@ new Listener(scope: Construct, id: string, props: ListenerProps)
 | --- | --- |
 | <code><a href="#cdk-vpclattice-alpha.Listener.toString">toString</a></code> | Returns a string representation of this construct. |
 | <code><a href="#cdk-vpclattice-alpha.Listener.applyRemovalPolicy">applyRemovalPolicy</a></code> | Apply the given removal policy to this resource. |
-| <code><a href="#cdk-vpclattice-alpha.Listener.addListenerRule">addListenerRule</a></code> | Adds a rule to the listener. |
+| <code><a href="#cdk-vpclattice-alpha.Listener.addRule">addRule</a></code> | Adds a rule to the listener. |
 
 ---
 
@@ -1315,17 +1315,17 @@ account for data recovery and cleanup later (`RemovalPolicy.RETAIN`).
 
 ---
 
-##### `addListenerRule` <a name="addListenerRule" id="cdk-vpclattice-alpha.Listener.addListenerRule"></a>
+##### `addRule` <a name="addRule" id="cdk-vpclattice-alpha.Listener.addRule"></a>
 
 ```typescript
-public addListenerRule(rule: RuleProps): void
+public addRule(rule: AddRuleProps): void
 ```
 
 Adds a rule to the listener.
 
-###### `rule`<sup>Required</sup> <a name="rule" id="cdk-vpclattice-alpha.Listener.addListenerRule.parameter.rule"></a>
+###### `rule`<sup>Required</sup> <a name="rule" id="cdk-vpclattice-alpha.Listener.addRule.parameter.rule"></a>
 
-- *Type:* <a href="#cdk-vpclattice-alpha.RuleProps">RuleProps</a>
+- *Type:* <a href="#cdk-vpclattice-alpha.AddRuleProps">AddRuleProps</a>
 
 ---
 
@@ -1403,7 +1403,7 @@ Check whether the given construct is a Resource.
 | <code><a href="#cdk-vpclattice-alpha.Listener.property.protocol">protocol</a></code> | <code><a href="#cdk-vpclattice-alpha.ListenerProtocol">ListenerProtocol</a></code> | The listener protocol. |
 | <code><a href="#cdk-vpclattice-alpha.Listener.property.service">service</a></code> | <code><a href="#cdk-vpclattice-alpha.Service">Service</a></code> | The service this listener is attached to. |
 | <code><a href="#cdk-vpclattice-alpha.Listener.property.name">name</a></code> | <code>string</code> | The name of the listener. |
-| <code><a href="#cdk-vpclattice-alpha.Listener.property.rules">rules</a></code> | <code><a href="#cdk-vpclattice-alpha.RuleProps">RuleProps</a>[]</code> | The listener rules to add. |
+| <code><a href="#cdk-vpclattice-alpha.Listener.property.rules">rules</a></code> | <code><a href="#cdk-vpclattice-alpha.AddRuleProps">AddRuleProps</a>[]</code> | The listener rules to add. |
 
 ---
 
@@ -1537,10 +1537,10 @@ The name of the listener.
 ##### `rules`<sup>Required</sup> <a name="rules" id="cdk-vpclattice-alpha.Listener.property.rules"></a>
 
 ```typescript
-public readonly rules: RuleProps[];
+public readonly rules: AddRuleProps[];
 ```
 
-- *Type:* <a href="#cdk-vpclattice-alpha.RuleProps">RuleProps</a>[]
+- *Type:* <a href="#cdk-vpclattice-alpha.AddRuleProps">AddRuleProps</a>[]
 
 The listener rules to add.
 
@@ -1633,14 +1633,14 @@ account for data recovery and cleanup later (`RemovalPolicy.RETAIN`).
 ##### `addListener` <a name="addListener" id="cdk-vpclattice-alpha.Service.addListener"></a>
 
 ```typescript
-public addListener(config: ListenerConfig): Listener
+public addListener(listener: AddListenerProps): Listener
 ```
 
 Add Listener.
 
-###### `config`<sup>Required</sup> <a name="config" id="cdk-vpclattice-alpha.Service.addListener.parameter.config"></a>
+###### `listener`<sup>Required</sup> <a name="listener" id="cdk-vpclattice-alpha.Service.addListener.parameter.listener"></a>
 
-- *Type:* <a href="#cdk-vpclattice-alpha.ListenerConfig">ListenerConfig</a>
+- *Type:* <a href="#cdk-vpclattice-alpha.AddListenerProps">AddListenerProps</a>
 
 ---
 
@@ -3005,6 +3005,175 @@ The type of target group.
 
 ## Structs <a name="Structs" id="Structs"></a>
 
+### AddListenerProps <a name="AddListenerProps" id="cdk-vpclattice-alpha.AddListenerProps"></a>
+
+#### Initializer <a name="Initializer" id="cdk-vpclattice-alpha.AddListenerProps.Initializer"></a>
+
+```typescript
+import { AddListenerProps } from 'cdk-vpclattice-alpha'
+
+const addListenerProps: AddListenerProps = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#cdk-vpclattice-alpha.AddListenerProps.property.defaultAction">defaultAction</a></code> | <code><a href="#cdk-vpclattice-alpha.RuleAction">RuleAction</a></code> | * A default action that will be taken if no rules match. |
+| <code><a href="#cdk-vpclattice-alpha.AddListenerProps.property.name">name</a></code> | <code>string</code> | The Name of the listener. |
+| <code><a href="#cdk-vpclattice-alpha.AddListenerProps.property.port">port</a></code> | <code>number</code> | Optional port number for the listener. |
+| <code><a href="#cdk-vpclattice-alpha.AddListenerProps.property.protocol">protocol</a></code> | <code><a href="#cdk-vpclattice-alpha.ListenerProtocol">ListenerProtocol</a></code> | Protocol that the listener will listen on. |
+| <code><a href="#cdk-vpclattice-alpha.AddListenerProps.property.removalPolicy">removalPolicy</a></code> | <code>aws-cdk-lib.RemovalPolicy</code> | Determine what happens to the service when the resource/stack is deleted. |
+| <code><a href="#cdk-vpclattice-alpha.AddListenerProps.property.rules">rules</a></code> | <code><a href="#cdk-vpclattice-alpha.AddRuleProps">AddRuleProps</a>[]</code> | Rules to add to the listener. |
+
+---
+
+##### `defaultAction`<sup>Optional</sup> <a name="defaultAction" id="cdk-vpclattice-alpha.AddListenerProps.property.defaultAction"></a>
+
+```typescript
+public readonly defaultAction: RuleAction;
+```
+
+- *Type:* <a href="#cdk-vpclattice-alpha.RuleAction">RuleAction</a>
+- *Default:* HTTPFixedResponse.NOT_FOUND
+
+* A default action that will be taken if no rules match.
+
+---
+
+##### `name`<sup>Optional</sup> <a name="name" id="cdk-vpclattice-alpha.AddListenerProps.property.name"></a>
+
+```typescript
+public readonly name: string;
+```
+
+- *Type:* string
+
+The Name of the listener.
+
+---
+
+##### `port`<sup>Optional</sup> <a name="port" id="cdk-vpclattice-alpha.AddListenerProps.property.port"></a>
+
+```typescript
+public readonly port: number;
+```
+
+- *Type:* number
+- *Default:* 80 or 443 depending on the Protocol
+
+Optional port number for the listener.
+
+If not supplied, will default to 80 or 443, depending on the Protocol.
+
+---
+
+##### `protocol`<sup>Optional</sup> <a name="protocol" id="cdk-vpclattice-alpha.AddListenerProps.property.protocol"></a>
+
+```typescript
+public readonly protocol: ListenerProtocol;
+```
+
+- *Type:* <a href="#cdk-vpclattice-alpha.ListenerProtocol">ListenerProtocol</a>
+
+Protocol that the listener will listen on.
+
+---
+
+##### `removalPolicy`<sup>Optional</sup> <a name="removalPolicy" id="cdk-vpclattice-alpha.AddListenerProps.property.removalPolicy"></a>
+
+```typescript
+public readonly removalPolicy: RemovalPolicy;
+```
+
+- *Type:* aws-cdk-lib.RemovalPolicy
+- *Default:* RemovalPolicy.RETAIN
+
+Determine what happens to the service when the resource/stack is deleted.
+
+---
+
+##### `rules`<sup>Optional</sup> <a name="rules" id="cdk-vpclattice-alpha.AddListenerProps.property.rules"></a>
+
+```typescript
+public readonly rules: AddRuleProps[];
+```
+
+- *Type:* <a href="#cdk-vpclattice-alpha.AddRuleProps">AddRuleProps</a>[]
+
+Rules to add to the listener.
+
+---
+
+### AddRuleProps <a name="AddRuleProps" id="cdk-vpclattice-alpha.AddRuleProps"></a>
+
+#### Initializer <a name="Initializer" id="cdk-vpclattice-alpha.AddRuleProps.Initializer"></a>
+
+```typescript
+import { AddRuleProps } from 'cdk-vpclattice-alpha'
+
+const addRuleProps: AddRuleProps = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#cdk-vpclattice-alpha.AddRuleProps.property.action">action</a></code> | <code><a href="#cdk-vpclattice-alpha.RuleAction">RuleAction</a></code> | the action for the rule, is either a fixed Response, or a being sent to  Weighted TargetGroup. |
+| <code><a href="#cdk-vpclattice-alpha.AddRuleProps.property.name">name</a></code> | <code>string</code> | A name for the the Rule. |
+| <code><a href="#cdk-vpclattice-alpha.AddRuleProps.property.priority">priority</a></code> | <code>number</code> | The priority of this rule, a lower priority will be processed first. |
+| <code><a href="#cdk-vpclattice-alpha.AddRuleProps.property.match">match</a></code> | <code><a href="#cdk-vpclattice-alpha.RuleMatch">RuleMatch</a></code> | The listener to attach the rule to. |
+
+---
+
+##### `action`<sup>Required</sup> <a name="action" id="cdk-vpclattice-alpha.AddRuleProps.property.action"></a>
+
+```typescript
+public readonly action: RuleAction;
+```
+
+- *Type:* <a href="#cdk-vpclattice-alpha.RuleAction">RuleAction</a>
+
+the action for the rule, is either a fixed Response, or a being sent to  Weighted TargetGroup.
+
+---
+
+##### `name`<sup>Required</sup> <a name="name" id="cdk-vpclattice-alpha.AddRuleProps.property.name"></a>
+
+```typescript
+public readonly name: string;
+```
+
+- *Type:* string
+
+A name for the the Rule.
+
+---
+
+##### `priority`<sup>Required</sup> <a name="priority" id="cdk-vpclattice-alpha.AddRuleProps.property.priority"></a>
+
+```typescript
+public readonly priority: number;
+```
+
+- *Type:* number
+
+The priority of this rule, a lower priority will be processed first.
+
+---
+
+##### `match`<sup>Optional</sup> <a name="match" id="cdk-vpclattice-alpha.AddRuleProps.property.match"></a>
+
+```typescript
+public readonly match: RuleMatch;
+```
+
+- *Type:* <a href="#cdk-vpclattice-alpha.RuleMatch">RuleMatch</a>
+
+The listener to attach the rule to.
+
+---
+
 ### AlbTargetGroupProps <a name="AlbTargetGroupProps" id="cdk-vpclattice-alpha.AlbTargetGroupProps"></a>
 
 #### Initializer <a name="Initializer" id="cdk-vpclattice-alpha.AlbTargetGroupProps.Initializer"></a>
@@ -3021,7 +3190,7 @@ const albTargetGroupProps: AlbTargetGroupProps = { ... }
 | --- | --- | --- |
 | <code><a href="#cdk-vpclattice-alpha.AlbTargetGroupProps.property.loadBalancer">loadBalancer</a></code> | <code>aws-cdk-lib.aws_elasticloadbalancingv2.IApplicationLoadBalancer</code> | You can specify a single **internal** Application Load Balancer as the target. |
 | <code><a href="#cdk-vpclattice-alpha.AlbTargetGroupProps.property.vpc">vpc</a></code> | <code>aws-cdk-lib.aws_ec2.IVpc</code> | VPC. |
-| <code><a href="#cdk-vpclattice-alpha.AlbTargetGroupProps.property.listenerPort">listenerPort</a></code> | <code>number</code> | This port is used for routing traffic to the target,  and defaults to the target group port. |
+| <code><a href="#cdk-vpclattice-alpha.AlbTargetGroupProps.property.listenerPort">listenerPort</a></code> | <code>number</code> | This port is used for routing traffic to the target, and defaults to the target group port. |
 | <code><a href="#cdk-vpclattice-alpha.AlbTargetGroupProps.property.name">name</a></code> | <code>string</code> | The name of the target group. |
 | <code><a href="#cdk-vpclattice-alpha.AlbTargetGroupProps.property.port">port</a></code> | <code>number</code> | The port on which the target group will listen. |
 | <code><a href="#cdk-vpclattice-alpha.AlbTargetGroupProps.property.protocol">protocol</a></code> | <code><a href="#cdk-vpclattice-alpha.RequestProtocol">RequestProtocol</a></code> | The protocol to use for routing traffic to the targets. |
@@ -3061,10 +3230,10 @@ public readonly listenerPort: number;
 
 - *Type:* number
 
-This port is used for routing traffic to the target,  and defaults to the target group port.
+This port is used for routing traffic to the target, and defaults to the target group port.
 
-However, you can 
-override the default and specify a custom port that matches 
+However, you can
+override the default and specify a custom port that matches
 the port of your Application Load Balancer's listeners
 
 ---
@@ -3342,78 +3511,6 @@ The Route53 Private Hosted Zone or Public Hosted Zone.
 
 ---
 
-### HeaderMatch <a name="HeaderMatch" id="cdk-vpclattice-alpha.HeaderMatch"></a>
-
-Header Matches for creating rules.
-
-#### Initializer <a name="Initializer" id="cdk-vpclattice-alpha.HeaderMatch.Initializer"></a>
-
-```typescript
-import { HeaderMatch } from 'cdk-vpclattice-alpha'
-
-const headerMatch: HeaderMatch = { ... }
-```
-
-#### Properties <a name="Properties" id="Properties"></a>
-
-| **Name** | **Type** | **Description** |
-| --- | --- | --- |
-| <code><a href="#cdk-vpclattice-alpha.HeaderMatch.property.headerName">headerName</a></code> | <code>string</code> | The name of the header to match. |
-| <code><a href="#cdk-vpclattice-alpha.HeaderMatch.property.matchOperator">matchOperator</a></code> | <code><a href="#cdk-vpclattice-alpha.MatchOperator">MatchOperator</a></code> | Type of match to make. |
-| <code><a href="#cdk-vpclattice-alpha.HeaderMatch.property.matchValue">matchValue</a></code> | <code>string</code> | Value to match against. |
-| <code><a href="#cdk-vpclattice-alpha.HeaderMatch.property.caseSensitive">caseSensitive</a></code> | <code>boolean</code> | Whether the match should be case sensitive or not. |
-
----
-
-##### `headerName`<sup>Required</sup> <a name="headerName" id="cdk-vpclattice-alpha.HeaderMatch.property.headerName"></a>
-
-```typescript
-public readonly headerName: string;
-```
-
-- *Type:* string
-
-The name of the header to match.
-
----
-
-##### `matchOperator`<sup>Required</sup> <a name="matchOperator" id="cdk-vpclattice-alpha.HeaderMatch.property.matchOperator"></a>
-
-```typescript
-public readonly matchOperator: MatchOperator;
-```
-
-- *Type:* <a href="#cdk-vpclattice-alpha.MatchOperator">MatchOperator</a>
-
-Type of match to make.
-
----
-
-##### `matchValue`<sup>Required</sup> <a name="matchValue" id="cdk-vpclattice-alpha.HeaderMatch.property.matchValue"></a>
-
-```typescript
-public readonly matchValue: string;
-```
-
-- *Type:* string
-
-Value to match against.
-
----
-
-##### `caseSensitive`<sup>Optional</sup> <a name="caseSensitive" id="cdk-vpclattice-alpha.HeaderMatch.property.caseSensitive"></a>
-
-```typescript
-public readonly caseSensitive: boolean;
-```
-
-- *Type:* boolean
-- *Default:* true
-
-Whether the match should be case sensitive or not.
-
----
-
 ### HealthCheck <a name="HealthCheck" id="cdk-vpclattice-alpha.HealthCheck"></a>
 
 Create a Health Check for a target.
@@ -3436,7 +3533,7 @@ const healthCheck: HealthCheck = { ... }
 | <code><a href="#cdk-vpclattice-alpha.HealthCheck.property.healthCheckInterval">healthCheckInterval</a></code> | <code>aws-cdk-lib.Duration</code> | The approximate amount of time, in seconds, between health checks of an individual target. |
 | <code><a href="#cdk-vpclattice-alpha.HealthCheck.property.healthCheckTimeout">healthCheckTimeout</a></code> | <code>aws-cdk-lib.Duration</code> | The amount of time, in seconds, during which no response from a target means a failed health check. |
 | <code><a href="#cdk-vpclattice-alpha.HealthCheck.property.healthyThresholdCount">healthyThresholdCount</a></code> | <code>number</code> | The number of consecutive successful health checks required before an unhealthy target is considered healthy. |
-| <code><a href="#cdk-vpclattice-alpha.HealthCheck.property.matchers">matchers</a></code> | <code>string \| <a href="#cdk-vpclattice-alpha.HTTPFixedResponse">HTTPFixedResponse</a></code> | The codes to use when checking for a successful response from a target. |
+| <code><a href="#cdk-vpclattice-alpha.HealthCheck.property.matchers">matchers</a></code> | <code>string \| <a href="#cdk-vpclattice-alpha.HttpFixedResponse">HttpFixedResponse</a></code> | The codes to use when checking for a successful response from a target. |
 | <code><a href="#cdk-vpclattice-alpha.HealthCheck.property.path">path</a></code> | <code>string</code> | The ping path to the destination on the targets for health checks. |
 | <code><a href="#cdk-vpclattice-alpha.HealthCheck.property.port">port</a></code> | <code>number</code> | The port the service uses when performing health checks on targets. |
 | <code><a href="#cdk-vpclattice-alpha.HealthCheck.property.protocol">protocol</a></code> | <code><a href="#cdk-vpclattice-alpha.HealthCheckProtocol">HealthCheckProtocol</a></code> | The protocol the service uses when performing health checks on targets. |
@@ -3506,10 +3603,10 @@ The range is 2–10.
 ##### `matchers`<sup>Optional</sup> <a name="matchers" id="cdk-vpclattice-alpha.HealthCheck.property.matchers"></a>
 
 ```typescript
-public readonly matchers: string | HTTPFixedResponse;
+public readonly matchers: string | HttpFixedResponse;
 ```
 
-- *Type:* string | <a href="#cdk-vpclattice-alpha.HTTPFixedResponse">HTTPFixedResponse</a>
+- *Type:* string | <a href="#cdk-vpclattice-alpha.HttpFixedResponse">HttpFixedResponse</a>
 - *Default:* FixedResponse.OK
 
 The codes to use when checking for a successful response from a target.
@@ -3649,7 +3746,7 @@ const instanceTargetGroupProps: InstanceTargetGroupProps = { ... }
 | <code><a href="#cdk-vpclattice-alpha.InstanceTargetGroupProps.property.vpc">vpc</a></code> | <code>aws-cdk-lib.aws_ec2.IVpc</code> | The VPC where the target instances reside. |
 | <code><a href="#cdk-vpclattice-alpha.InstanceTargetGroupProps.property.autoScalingGroups">autoScalingGroups</a></code> | <code>aws-cdk-lib.aws_autoscaling.IAutoScalingGroup[]</code> | The ASGs to associate with the target group. |
 | <code><a href="#cdk-vpclattice-alpha.InstanceTargetGroupProps.property.healthCheck">healthCheck</a></code> | <code><a href="#cdk-vpclattice-alpha.HealthCheck">HealthCheck</a></code> | Healthcheck. |
-| <code><a href="#cdk-vpclattice-alpha.InstanceTargetGroupProps.property.intances">intances</a></code> | <code><a href="#cdk-vpclattice-alpha.InstanceTarget">InstanceTarget</a>[]</code> | The targets to associate with the target group. |
+| <code><a href="#cdk-vpclattice-alpha.InstanceTargetGroupProps.property.instances">instances</a></code> | <code><a href="#cdk-vpclattice-alpha.InstanceTarget">InstanceTarget</a>[]</code> | The targets to associate with the target group. |
 | <code><a href="#cdk-vpclattice-alpha.InstanceTargetGroupProps.property.name">name</a></code> | <code>string</code> | The name of the target group. |
 | <code><a href="#cdk-vpclattice-alpha.InstanceTargetGroupProps.property.port">port</a></code> | <code>number</code> | *No description.* |
 | <code><a href="#cdk-vpclattice-alpha.InstanceTargetGroupProps.property.protocol">protocol</a></code> | <code><a href="#cdk-vpclattice-alpha.RequestProtocol">RequestProtocol</a></code> | The protocol to use for routing traffic to the targets. |
@@ -3693,10 +3790,10 @@ Healthcheck.
 
 ---
 
-##### `intances`<sup>Optional</sup> <a name="intances" id="cdk-vpclattice-alpha.InstanceTargetGroupProps.property.intances"></a>
+##### `instances`<sup>Optional</sup> <a name="instances" id="cdk-vpclattice-alpha.InstanceTargetGroupProps.property.instances"></a>
 
 ```typescript
-public readonly intances: InstanceTarget[];
+public readonly instances: InstanceTarget[];
 ```
 
 - *Type:* <a href="#cdk-vpclattice-alpha.InstanceTarget">InstanceTarget</a>[]
@@ -3986,108 +4083,6 @@ The name of the target group.
 
 ---
 
-### ListenerConfig <a name="ListenerConfig" id="cdk-vpclattice-alpha.ListenerConfig"></a>
-
-Listener Config.
-
-#### Initializer <a name="Initializer" id="cdk-vpclattice-alpha.ListenerConfig.Initializer"></a>
-
-```typescript
-import { ListenerConfig } from 'cdk-vpclattice-alpha'
-
-const listenerConfig: ListenerConfig = { ... }
-```
-
-#### Properties <a name="Properties" id="Properties"></a>
-
-| **Name** | **Type** | **Description** |
-| --- | --- | --- |
-| <code><a href="#cdk-vpclattice-alpha.ListenerConfig.property.defaultAction">defaultAction</a></code> | <code><a href="#cdk-vpclattice-alpha.RuleAction">RuleAction</a></code> | * A default action that will be taken if no rules match. |
-| <code><a href="#cdk-vpclattice-alpha.ListenerConfig.property.name">name</a></code> | <code>string</code> | The Name of the listener. |
-| <code><a href="#cdk-vpclattice-alpha.ListenerConfig.property.port">port</a></code> | <code>number</code> | Optional port number for the listener. |
-| <code><a href="#cdk-vpclattice-alpha.ListenerConfig.property.protocol">protocol</a></code> | <code><a href="#cdk-vpclattice-alpha.ListenerProtocol">ListenerProtocol</a></code> | Protocol that the listener will listen on. |
-| <code><a href="#cdk-vpclattice-alpha.ListenerConfig.property.removalPolicy">removalPolicy</a></code> | <code>aws-cdk-lib.RemovalPolicy</code> | Determine what happens to the service when the resource/stack is deleted. |
-| <code><a href="#cdk-vpclattice-alpha.ListenerConfig.property.rules">rules</a></code> | <code><a href="#cdk-vpclattice-alpha.RuleProps">RuleProps</a>[]</code> | Rules to add to the listener. |
-
----
-
-##### `defaultAction`<sup>Optional</sup> <a name="defaultAction" id="cdk-vpclattice-alpha.ListenerConfig.property.defaultAction"></a>
-
-```typescript
-public readonly defaultAction: RuleAction;
-```
-
-- *Type:* <a href="#cdk-vpclattice-alpha.RuleAction">RuleAction</a>
-- *Default:* HTTPFixedResponse.NOT_FOUND
-
-* A default action that will be taken if no rules match.
-
----
-
-##### `name`<sup>Optional</sup> <a name="name" id="cdk-vpclattice-alpha.ListenerConfig.property.name"></a>
-
-```typescript
-public readonly name: string;
-```
-
-- *Type:* string
-
-The Name of the listener.
-
----
-
-##### `port`<sup>Optional</sup> <a name="port" id="cdk-vpclattice-alpha.ListenerConfig.property.port"></a>
-
-```typescript
-public readonly port: number;
-```
-
-- *Type:* number
-- *Default:* 80 or 443 depending on the Protocol
-
-Optional port number for the listener.
-
-If not supplied, will default to 80 or 443, depending on the Protocol.
-
----
-
-##### `protocol`<sup>Optional</sup> <a name="protocol" id="cdk-vpclattice-alpha.ListenerConfig.property.protocol"></a>
-
-```typescript
-public readonly protocol: ListenerProtocol;
-```
-
-- *Type:* <a href="#cdk-vpclattice-alpha.ListenerProtocol">ListenerProtocol</a>
-
-Protocol that the listener will listen on.
-
----
-
-##### `removalPolicy`<sup>Optional</sup> <a name="removalPolicy" id="cdk-vpclattice-alpha.ListenerConfig.property.removalPolicy"></a>
-
-```typescript
-public readonly removalPolicy: RemovalPolicy;
-```
-
-- *Type:* aws-cdk-lib.RemovalPolicy
-- *Default:* RemovalPolicy.RETAIN
-
-Determine what happens to the service when the resource/stack is deleted.
-
----
-
-##### `rules`<sup>Optional</sup> <a name="rules" id="cdk-vpclattice-alpha.ListenerConfig.property.rules"></a>
-
-```typescript
-public readonly rules: RuleProps[];
-```
-
-- *Type:* <a href="#cdk-vpclattice-alpha.RuleProps">RuleProps</a>[]
-
-Rules to add to the listener.
-
----
-
 ### ListenerProps <a name="ListenerProps" id="cdk-vpclattice-alpha.ListenerProps"></a>
 
 Properties to Create a Lattice Listener.
@@ -4105,7 +4100,12 @@ const listenerProps: ListenerProps = { ... }
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
 | <code><a href="#cdk-vpclattice-alpha.ListenerProps.property.service">service</a></code> | <code><a href="#cdk-vpclattice-alpha.Service">Service</a></code> | The Id of the service that this listener is associated with. |
-| <code><a href="#cdk-vpclattice-alpha.ListenerProps.property.config">config</a></code> | <code><a href="#cdk-vpclattice-alpha.ListenerConfig">ListenerConfig</a></code> | The configuration properties for the listener. |
+| <code><a href="#cdk-vpclattice-alpha.ListenerProps.property.defaultAction">defaultAction</a></code> | <code><a href="#cdk-vpclattice-alpha.RuleAction">RuleAction</a></code> | * A default action that will be taken if no rules match. |
+| <code><a href="#cdk-vpclattice-alpha.ListenerProps.property.name">name</a></code> | <code>string</code> | The Name of the listener. |
+| <code><a href="#cdk-vpclattice-alpha.ListenerProps.property.port">port</a></code> | <code>number</code> | Optional port number for the listener. |
+| <code><a href="#cdk-vpclattice-alpha.ListenerProps.property.protocol">protocol</a></code> | <code><a href="#cdk-vpclattice-alpha.ListenerProtocol">ListenerProtocol</a></code> | Protocol that the listener will listen on. |
+| <code><a href="#cdk-vpclattice-alpha.ListenerProps.property.removalPolicy">removalPolicy</a></code> | <code>aws-cdk-lib.RemovalPolicy</code> | Determine what happens to the service when the resource/stack is deleted. |
+| <code><a href="#cdk-vpclattice-alpha.ListenerProps.property.rules">rules</a></code> | <code><a href="#cdk-vpclattice-alpha.AddRuleProps">AddRuleProps</a>[]</code> | Rules to add to the listener. |
 
 ---
 
@@ -4121,221 +4121,20 @@ The Id of the service that this listener is associated with.
 
 ---
 
-##### `config`<sup>Optional</sup> <a name="config" id="cdk-vpclattice-alpha.ListenerProps.property.config"></a>
+##### `defaultAction`<sup>Optional</sup> <a name="defaultAction" id="cdk-vpclattice-alpha.ListenerProps.property.defaultAction"></a>
 
 ```typescript
-public readonly config: ListenerConfig;
-```
-
-- *Type:* <a href="#cdk-vpclattice-alpha.ListenerConfig">ListenerConfig</a>
-
-The configuration properties for the listener.
-
----
-
-### PathMatch <a name="PathMatch" id="cdk-vpclattice-alpha.PathMatch"></a>
-
-Properties to create a PathMatch.
-
-#### Initializer <a name="Initializer" id="cdk-vpclattice-alpha.PathMatch.Initializer"></a>
-
-```typescript
-import { PathMatch } from 'cdk-vpclattice-alpha'
-
-const pathMatch: PathMatch = { ... }
-```
-
-#### Properties <a name="Properties" id="Properties"></a>
-
-| **Name** | **Type** | **Description** |
-| --- | --- | --- |
-| <code><a href="#cdk-vpclattice-alpha.PathMatch.property.path">path</a></code> | <code>string</code> | Value to match against. |
-| <code><a href="#cdk-vpclattice-alpha.PathMatch.property.caseSensitive">caseSensitive</a></code> | <code>boolean</code> | Whether the match should be case sensitive or not. |
-| <code><a href="#cdk-vpclattice-alpha.PathMatch.property.pathMatchType">pathMatchType</a></code> | <code><a href="#cdk-vpclattice-alpha.PathMatchType">PathMatchType</a></code> | Type of match to make. |
-
----
-
-##### `path`<sup>Required</sup> <a name="path" id="cdk-vpclattice-alpha.PathMatch.property.path"></a>
-
-```typescript
-public readonly path: string;
-```
-
-- *Type:* string
-
-Value to match against.
-
----
-
-##### `caseSensitive`<sup>Optional</sup> <a name="caseSensitive" id="cdk-vpclattice-alpha.PathMatch.property.caseSensitive"></a>
-
-```typescript
-public readonly caseSensitive: boolean;
-```
-
-- *Type:* boolean
-- *Default:* true
-
-Whether the match should be case sensitive or not.
-
----
-
-##### `pathMatchType`<sup>Optional</sup> <a name="pathMatchType" id="cdk-vpclattice-alpha.PathMatch.property.pathMatchType"></a>
-
-```typescript
-public readonly pathMatchType: PathMatchType;
-```
-
-- *Type:* <a href="#cdk-vpclattice-alpha.PathMatchType">PathMatchType</a>
-- *Default:* PathMatchType.EXACT
-
-Type of match to make.
-
----
-
-### RuleAction <a name="RuleAction" id="cdk-vpclattice-alpha.RuleAction"></a>
-
-#### Initializer <a name="Initializer" id="cdk-vpclattice-alpha.RuleAction.Initializer"></a>
-
-```typescript
-import { RuleAction } from 'cdk-vpclattice-alpha'
-
-const ruleAction: RuleAction = { ... }
-```
-
-#### Properties <a name="Properties" id="Properties"></a>
-
-| **Name** | **Type** | **Description** |
-| --- | --- | --- |
-| <code><a href="#cdk-vpclattice-alpha.RuleAction.property.httpFixedResponse">httpFixedResponse</a></code> | <code><a href="#cdk-vpclattice-alpha.HTTPFixedResponse">HTTPFixedResponse</a></code> | *No description.* |
-| <code><a href="#cdk-vpclattice-alpha.RuleAction.property.targetGroup">targetGroup</a></code> | <code><a href="#cdk-vpclattice-alpha.ITargetGroup">ITargetGroup</a></code> | *No description.* |
-| <code><a href="#cdk-vpclattice-alpha.RuleAction.property.weightedTargetGroups">weightedTargetGroups</a></code> | <code><a href="#cdk-vpclattice-alpha.WeightedTargetGroup">WeightedTargetGroup</a>[]</code> | *No description.* |
-
----
-
-##### `httpFixedResponse`<sup>Optional</sup> <a name="httpFixedResponse" id="cdk-vpclattice-alpha.RuleAction.property.httpFixedResponse"></a>
-
-```typescript
-public readonly httpFixedResponse: HTTPFixedResponse;
-```
-
-- *Type:* <a href="#cdk-vpclattice-alpha.HTTPFixedResponse">HTTPFixedResponse</a>
-
----
-
-##### `targetGroup`<sup>Optional</sup> <a name="targetGroup" id="cdk-vpclattice-alpha.RuleAction.property.targetGroup"></a>
-
-```typescript
-public readonly targetGroup: ITargetGroup;
-```
-
-- *Type:* <a href="#cdk-vpclattice-alpha.ITargetGroup">ITargetGroup</a>
-
----
-
-##### `weightedTargetGroups`<sup>Optional</sup> <a name="weightedTargetGroups" id="cdk-vpclattice-alpha.RuleAction.property.weightedTargetGroups"></a>
-
-```typescript
-public readonly weightedTargetGroups: WeightedTargetGroup[];
-```
-
-- *Type:* <a href="#cdk-vpclattice-alpha.WeightedTargetGroup">WeightedTargetGroup</a>[]
-
----
-
-### RuleConditions <a name="RuleConditions" id="cdk-vpclattice-alpha.RuleConditions"></a>
-
-#### Initializer <a name="Initializer" id="cdk-vpclattice-alpha.RuleConditions.Initializer"></a>
-
-```typescript
-import { RuleConditions } from 'cdk-vpclattice-alpha'
-
-const ruleConditions: RuleConditions = { ... }
-```
-
-#### Properties <a name="Properties" id="Properties"></a>
-
-| **Name** | **Type** | **Description** |
-| --- | --- | --- |
-| <code><a href="#cdk-vpclattice-alpha.RuleConditions.property.headerMatches">headerMatches</a></code> | <code><a href="#cdk-vpclattice-alpha.HeaderMatch">HeaderMatch</a>[]</code> | Properties to Create A HeaderMatch. |
-| <code><a href="#cdk-vpclattice-alpha.RuleConditions.property.methodMatch">methodMatch</a></code> | <code><a href="#cdk-vpclattice-alpha.HTTPMethod">HTTPMethod</a></code> | Method to match against. |
-| <code><a href="#cdk-vpclattice-alpha.RuleConditions.property.pathMatch">pathMatch</a></code> | <code><a href="#cdk-vpclattice-alpha.PathMatch">PathMatch</a></code> | Properties to Create A PathMatch. |
-
----
-
-##### `headerMatches`<sup>Optional</sup> <a name="headerMatches" id="cdk-vpclattice-alpha.RuleConditions.property.headerMatches"></a>
-
-```typescript
-public readonly headerMatches: HeaderMatch[];
-```
-
-- *Type:* <a href="#cdk-vpclattice-alpha.HeaderMatch">HeaderMatch</a>[]
-- *Default:* No header match
-
-Properties to Create A HeaderMatch.
-
----
-
-##### `methodMatch`<sup>Optional</sup> <a name="methodMatch" id="cdk-vpclattice-alpha.RuleConditions.property.methodMatch"></a>
-
-```typescript
-public readonly methodMatch: HTTPMethod;
-```
-
-- *Type:* <a href="#cdk-vpclattice-alpha.HTTPMethod">HTTPMethod</a>
-- *Default:* No header match
-
-Method to match against.
-
----
-
-##### `pathMatch`<sup>Optional</sup> <a name="pathMatch" id="cdk-vpclattice-alpha.RuleConditions.property.pathMatch"></a>
-
-```typescript
-public readonly pathMatch: PathMatch;
-```
-
-- *Type:* <a href="#cdk-vpclattice-alpha.PathMatch">PathMatch</a>
-- *Default:* No path match
-
-Properties to Create A PathMatch.
-
----
-
-### RuleProps <a name="RuleProps" id="cdk-vpclattice-alpha.RuleProps"></a>
-
-#### Initializer <a name="Initializer" id="cdk-vpclattice-alpha.RuleProps.Initializer"></a>
-
-```typescript
-import { RuleProps } from 'cdk-vpclattice-alpha'
-
-const ruleProps: RuleProps = { ... }
-```
-
-#### Properties <a name="Properties" id="Properties"></a>
-
-| **Name** | **Type** | **Description** |
-| --- | --- | --- |
-| <code><a href="#cdk-vpclattice-alpha.RuleProps.property.action">action</a></code> | <code><a href="#cdk-vpclattice-alpha.RuleAction">RuleAction</a></code> | the action for the rule, is either a fixed Response, or a being sent to  Weighted TargetGroup. |
-| <code><a href="#cdk-vpclattice-alpha.RuleProps.property.name">name</a></code> | <code>string</code> | A name for the the Rule. |
-| <code><a href="#cdk-vpclattice-alpha.RuleProps.property.priority">priority</a></code> | <code>number</code> | The priority of this rule, a lower priority will be processed first. |
-| <code><a href="#cdk-vpclattice-alpha.RuleProps.property.conditions">conditions</a></code> | <code><a href="#cdk-vpclattice-alpha.RuleConditions">RuleConditions</a></code> | the Matching criteria for the rule. |
-
----
-
-##### `action`<sup>Required</sup> <a name="action" id="cdk-vpclattice-alpha.RuleProps.property.action"></a>
-
-```typescript
-public readonly action: RuleAction;
+public readonly defaultAction: RuleAction;
 ```
 
 - *Type:* <a href="#cdk-vpclattice-alpha.RuleAction">RuleAction</a>
+- *Default:* HTTPFixedResponse.NOT_FOUND
 
-the action for the rule, is either a fixed Response, or a being sent to  Weighted TargetGroup.
+* A default action that will be taken if no rules match.
 
 ---
 
-##### `name`<sup>Required</sup> <a name="name" id="cdk-vpclattice-alpha.RuleProps.property.name"></a>
+##### `name`<sup>Optional</sup> <a name="name" id="cdk-vpclattice-alpha.ListenerProps.property.name"></a>
 
 ```typescript
 public readonly name: string;
@@ -4343,34 +4142,59 @@ public readonly name: string;
 
 - *Type:* string
 
-A name for the the Rule.
+The Name of the listener.
 
 ---
 
-##### `priority`<sup>Required</sup> <a name="priority" id="cdk-vpclattice-alpha.RuleProps.property.priority"></a>
+##### `port`<sup>Optional</sup> <a name="port" id="cdk-vpclattice-alpha.ListenerProps.property.port"></a>
 
 ```typescript
-public readonly priority: number;
+public readonly port: number;
 ```
 
 - *Type:* number
+- *Default:* 80 or 443 depending on the Protocol
 
-The priority of this rule, a lower priority will be processed first.
+Optional port number for the listener.
+
+If not supplied, will default to 80 or 443, depending on the Protocol.
 
 ---
 
-##### `conditions`<sup>Optional</sup> <a name="conditions" id="cdk-vpclattice-alpha.RuleProps.property.conditions"></a>
+##### `protocol`<sup>Optional</sup> <a name="protocol" id="cdk-vpclattice-alpha.ListenerProps.property.protocol"></a>
 
 ```typescript
-public readonly conditions: RuleConditions;
+public readonly protocol: ListenerProtocol;
 ```
 
-- *Type:* <a href="#cdk-vpclattice-alpha.RuleConditions">RuleConditions</a>
+- *Type:* <a href="#cdk-vpclattice-alpha.ListenerProtocol">ListenerProtocol</a>
 
-the Matching criteria for the rule.
+Protocol that the listener will listen on.
 
-This must contain at least one of
-header, method or patchMatches
+---
+
+##### `removalPolicy`<sup>Optional</sup> <a name="removalPolicy" id="cdk-vpclattice-alpha.ListenerProps.property.removalPolicy"></a>
+
+```typescript
+public readonly removalPolicy: RemovalPolicy;
+```
+
+- *Type:* aws-cdk-lib.RemovalPolicy
+- *Default:* RemovalPolicy.RETAIN
+
+Determine what happens to the service when the resource/stack is deleted.
+
+---
+
+##### `rules`<sup>Optional</sup> <a name="rules" id="cdk-vpclattice-alpha.ListenerProps.property.rules"></a>
+
+```typescript
+public readonly rules: AddRuleProps[];
+```
+
+- *Type:* <a href="#cdk-vpclattice-alpha.AddRuleProps">AddRuleProps</a>[]
+
+Rules to add to the listener.
 
 ---
 
@@ -4913,6 +4737,8 @@ Resources to share the Service Network with.
 
 ### WeightedTargetGroup <a name="WeightedTargetGroup" id="cdk-vpclattice-alpha.WeightedTargetGroup"></a>
 
+A Target Group and weight combination.
+
 #### Initializer <a name="Initializer" id="cdk-vpclattice-alpha.WeightedTargetGroup.Initializer"></a>
 
 ```typescript
@@ -4925,8 +4751,8 @@ const weightedTargetGroup: WeightedTargetGroup = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#cdk-vpclattice-alpha.WeightedTargetGroup.property.targetGroup">targetGroup</a></code> | <code><a href="#cdk-vpclattice-alpha.ITargetGroup">ITargetGroup</a></code> | A target Group. |
-| <code><a href="#cdk-vpclattice-alpha.WeightedTargetGroup.property.weight">weight</a></code> | <code>number</code> | A weight for the target group. |
+| <code><a href="#cdk-vpclattice-alpha.WeightedTargetGroup.property.targetGroup">targetGroup</a></code> | <code><a href="#cdk-vpclattice-alpha.ITargetGroup">ITargetGroup</a></code> | The target group. |
+| <code><a href="#cdk-vpclattice-alpha.WeightedTargetGroup.property.weight">weight</a></code> | <code>number</code> | The target group's weight. |
 
 ---
 
@@ -4938,7 +4764,7 @@ public readonly targetGroup: ITargetGroup;
 
 - *Type:* <a href="#cdk-vpclattice-alpha.ITargetGroup">ITargetGroup</a>
 
-A target Group.
+The target group.
 
 ---
 
@@ -4949,9 +4775,11 @@ public readonly weight: number;
 ```
 
 - *Type:* number
-- *Default:* 100
+- *Default:* 1
 
-A weight for the target group.
+The target group's weight.
+
+Range is [0..1000).
 
 ---
 
@@ -6173,7 +6001,413 @@ A name of the destination.
 ---
 
 
+### RuleAction <a name="RuleAction" id="cdk-vpclattice-alpha.RuleAction"></a>
+
+#### Initializers <a name="Initializers" id="cdk-vpclattice-alpha.RuleAction.Initializer"></a>
+
+```typescript
+import { RuleAction } from 'cdk-vpclattice-alpha'
+
+new RuleAction(action: RuleAction)
+```
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#cdk-vpclattice-alpha.RuleAction.Initializer.parameter.action">action</a></code> | <code><a href="#cdk-vpclattice-alpha.RuleAction">RuleAction</a></code> | *No description.* |
+
+---
+
+##### `action`<sup>Required</sup> <a name="action" id="cdk-vpclattice-alpha.RuleAction.Initializer.parameter.action"></a>
+
+- *Type:* <a href="#cdk-vpclattice-alpha.RuleAction">RuleAction</a>
+
+---
+
+
+#### Static Functions <a name="Static Functions" id="Static Functions"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#cdk-vpclattice-alpha.RuleAction.fixedResponseAction">fixedResponseAction</a></code> | Return a fixed response. |
+| <code><a href="#cdk-vpclattice-alpha.RuleAction.forwardAction">forwardAction</a></code> | Forward to one or more Target Groups. |
+| <code><a href="#cdk-vpclattice-alpha.RuleAction.weightedForwardAction">weightedForwardAction</a></code> | Forward to one or more Target Groups which are weighted differently. |
+
+---
+
+##### `fixedResponseAction` <a name="fixedResponseAction" id="cdk-vpclattice-alpha.RuleAction.fixedResponseAction"></a>
+
+```typescript
+import { RuleAction } from 'cdk-vpclattice-alpha'
+
+RuleAction.fixedResponseAction(statusCode: HttpFixedResponse)
+```
+
+Return a fixed response.
+
+> [https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-vpclattice-rule-fixedresponse.html](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-vpclattice-rule-fixedresponse.html)
+
+###### `statusCode`<sup>Required</sup> <a name="statusCode" id="cdk-vpclattice-alpha.RuleAction.fixedResponseAction.parameter.statusCode"></a>
+
+- *Type:* <a href="#cdk-vpclattice-alpha.HttpFixedResponse">HttpFixedResponse</a>
+
+---
+
+##### `forwardAction` <a name="forwardAction" id="cdk-vpclattice-alpha.RuleAction.forwardAction"></a>
+
+```typescript
+import { RuleAction } from 'cdk-vpclattice-alpha'
+
+RuleAction.forwardAction(targetGroup: ITargetGroup, weight?: number)
+```
+
+Forward to one or more Target Groups.
+
+> [https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-vpclattice-rule-forward.html](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-vpclattice-rule-forward.html)
+
+###### `targetGroup`<sup>Required</sup> <a name="targetGroup" id="cdk-vpclattice-alpha.RuleAction.forwardAction.parameter.targetGroup"></a>
+
+- *Type:* <a href="#cdk-vpclattice-alpha.ITargetGroup">ITargetGroup</a>
+
+---
+
+###### `weight`<sup>Optional</sup> <a name="weight" id="cdk-vpclattice-alpha.RuleAction.forwardAction.parameter.weight"></a>
+
+- *Type:* number
+
+---
+
+##### `weightedForwardAction` <a name="weightedForwardAction" id="cdk-vpclattice-alpha.RuleAction.weightedForwardAction"></a>
+
+```typescript
+import { RuleAction } from 'cdk-vpclattice-alpha'
+
+RuleAction.weightedForwardAction(weightedTargetGroups: WeightedTargetGroup[])
+```
+
+Forward to one or more Target Groups which are weighted differently.
+
+> [https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-vpclattice-rule-forward.html](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-vpclattice-rule-forward.html)
+
+###### `weightedTargetGroups`<sup>Required</sup> <a name="weightedTargetGroups" id="cdk-vpclattice-alpha.RuleAction.weightedForwardAction.parameter.weightedTargetGroups"></a>
+
+- *Type:* <a href="#cdk-vpclattice-alpha.WeightedTargetGroup">WeightedTargetGroup</a>[]
+
+---
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#cdk-vpclattice-alpha.RuleAction.property.fixedResponse">fixedResponse</a></code> | <code>aws-cdk-lib.aws_vpclattice.CfnRule.FixedResponseProperty</code> | *No description.* |
+| <code><a href="#cdk-vpclattice-alpha.RuleAction.property.forward">forward</a></code> | <code>aws-cdk-lib.aws_vpclattice.CfnRule.ForwardProperty</code> | *No description.* |
+
+---
+
+##### `fixedResponse`<sup>Optional</sup> <a name="fixedResponse" id="cdk-vpclattice-alpha.RuleAction.property.fixedResponse"></a>
+
+```typescript
+public readonly fixedResponse: FixedResponseProperty;
+```
+
+- *Type:* aws-cdk-lib.aws_vpclattice.CfnRule.FixedResponseProperty
+
+---
+
+##### `forward`<sup>Optional</sup> <a name="forward" id="cdk-vpclattice-alpha.RuleAction.property.forward"></a>
+
+```typescript
+public readonly forward: ForwardProperty;
+```
+
+- *Type:* aws-cdk-lib.aws_vpclattice.CfnRule.ForwardProperty
+
+---
+
+
+### RuleMatch <a name="RuleMatch" id="cdk-vpclattice-alpha.RuleMatch"></a>
+
+#### Initializers <a name="Initializers" id="cdk-vpclattice-alpha.RuleMatch.Initializer"></a>
+
+```typescript
+import { RuleMatch } from 'cdk-vpclattice-alpha'
+
+new RuleMatch()
+```
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+
+---
+
+
+#### Static Functions <a name="Static Functions" id="Static Functions"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#cdk-vpclattice-alpha.RuleMatch.headerContains">headerContains</a></code> | Matches if the header value contains the given value. |
+| <code><a href="#cdk-vpclattice-alpha.RuleMatch.headerExact">headerExact</a></code> | Matches if the header value is exactly the given value. |
+| <code><a href="#cdk-vpclattice-alpha.RuleMatch.headerPrefix">headerPrefix</a></code> | Matches if the header value starts with the given value. |
+| <code><a href="#cdk-vpclattice-alpha.RuleMatch.methodMatch">methodMatch</a></code> | *No description.* |
+| <code><a href="#cdk-vpclattice-alpha.RuleMatch.pathExact">pathExact</a></code> | Matches if the path is exactly the given value. |
+| <code><a href="#cdk-vpclattice-alpha.RuleMatch.pathPrefix">pathPrefix</a></code> | Matches if the path starts with the given value. |
+
+---
+
+##### `headerContains` <a name="headerContains" id="cdk-vpclattice-alpha.RuleMatch.headerContains"></a>
+
+```typescript
+import { RuleMatch } from 'cdk-vpclattice-alpha'
+
+RuleMatch.headerContains(header: string, ruleMatchName?: string, caseSensitive?: boolean)
+```
+
+Matches if the header value contains the given value.
+
+###### `header`<sup>Required</sup> <a name="header" id="cdk-vpclattice-alpha.RuleMatch.headerContains.parameter.header"></a>
+
+- *Type:* string
+
+The header to match.
+
+---
+
+###### `ruleMatchName`<sup>Optional</sup> <a name="ruleMatchName" id="cdk-vpclattice-alpha.RuleMatch.headerContains.parameter.ruleMatchName"></a>
+
+- *Type:* string
+
+The name of the rule match.
+
+---
+
+###### `caseSensitive`<sup>Optional</sup> <a name="caseSensitive" id="cdk-vpclattice-alpha.RuleMatch.headerContains.parameter.caseSensitive"></a>
+
+- *Type:* boolean
+
+Whether the match should be case sensitive.
+
+---
+
+##### `headerExact` <a name="headerExact" id="cdk-vpclattice-alpha.RuleMatch.headerExact"></a>
+
+```typescript
+import { RuleMatch } from 'cdk-vpclattice-alpha'
+
+RuleMatch.headerExact(header: string, ruleMatchName?: string, caseSensitive?: boolean)
+```
+
+Matches if the header value is exactly the given value.
+
+###### `header`<sup>Required</sup> <a name="header" id="cdk-vpclattice-alpha.RuleMatch.headerExact.parameter.header"></a>
+
+- *Type:* string
+
+The header to match.
+
+---
+
+###### `ruleMatchName`<sup>Optional</sup> <a name="ruleMatchName" id="cdk-vpclattice-alpha.RuleMatch.headerExact.parameter.ruleMatchName"></a>
+
+- *Type:* string
+
+The name of the rule match.
+
+---
+
+###### `caseSensitive`<sup>Optional</sup> <a name="caseSensitive" id="cdk-vpclattice-alpha.RuleMatch.headerExact.parameter.caseSensitive"></a>
+
+- *Type:* boolean
+
+Whether the match should be case sensitive.
+
+---
+
+##### `headerPrefix` <a name="headerPrefix" id="cdk-vpclattice-alpha.RuleMatch.headerPrefix"></a>
+
+```typescript
+import { RuleMatch } from 'cdk-vpclattice-alpha'
+
+RuleMatch.headerPrefix(header: string, ruleMatchName?: string, caseSensitive?: boolean)
+```
+
+Matches if the header value starts with the given value.
+
+###### `header`<sup>Required</sup> <a name="header" id="cdk-vpclattice-alpha.RuleMatch.headerPrefix.parameter.header"></a>
+
+- *Type:* string
+
+The header to match.
+
+---
+
+###### `ruleMatchName`<sup>Optional</sup> <a name="ruleMatchName" id="cdk-vpclattice-alpha.RuleMatch.headerPrefix.parameter.ruleMatchName"></a>
+
+- *Type:* string
+
+The name of the rule match.
+
+---
+
+###### `caseSensitive`<sup>Optional</sup> <a name="caseSensitive" id="cdk-vpclattice-alpha.RuleMatch.headerPrefix.parameter.caseSensitive"></a>
+
+- *Type:* boolean
+
+Whether the match should be case sensitive.
+
+---
+
+##### `methodMatch` <a name="methodMatch" id="cdk-vpclattice-alpha.RuleMatch.methodMatch"></a>
+
+```typescript
+import { RuleMatch } from 'cdk-vpclattice-alpha'
+
+RuleMatch.methodMatch(method: HttpMethod)
+```
+
+###### `method`<sup>Required</sup> <a name="method" id="cdk-vpclattice-alpha.RuleMatch.methodMatch.parameter.method"></a>
+
+- *Type:* <a href="#cdk-vpclattice-alpha.HttpMethod">HttpMethod</a>
+
+---
+
+##### `pathExact` <a name="pathExact" id="cdk-vpclattice-alpha.RuleMatch.pathExact"></a>
+
+```typescript
+import { RuleMatch } from 'cdk-vpclattice-alpha'
+
+RuleMatch.pathExact(path: string, caseSensitive?: boolean)
+```
+
+Matches if the path is exactly the given value.
+
+###### `path`<sup>Required</sup> <a name="path" id="cdk-vpclattice-alpha.RuleMatch.pathExact.parameter.path"></a>
+
+- *Type:* string
+
+The path to match.
+
+---
+
+###### `caseSensitive`<sup>Optional</sup> <a name="caseSensitive" id="cdk-vpclattice-alpha.RuleMatch.pathExact.parameter.caseSensitive"></a>
+
+- *Type:* boolean
+
+Whether the match should be case sensitive.
+
+---
+
+##### `pathPrefix` <a name="pathPrefix" id="cdk-vpclattice-alpha.RuleMatch.pathPrefix"></a>
+
+```typescript
+import { RuleMatch } from 'cdk-vpclattice-alpha'
+
+RuleMatch.pathPrefix(path: string, caseSensitive?: boolean)
+```
+
+Matches if the path starts with the given value.
+
+###### `path`<sup>Required</sup> <a name="path" id="cdk-vpclattice-alpha.RuleMatch.pathPrefix.parameter.path"></a>
+
+- *Type:* string
+
+The path to match.
+
+---
+
+###### `caseSensitive`<sup>Optional</sup> <a name="caseSensitive" id="cdk-vpclattice-alpha.RuleMatch.pathPrefix.parameter.caseSensitive"></a>
+
+- *Type:* boolean
+
+Whether the match should be case sensitive.
+
+---
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#cdk-vpclattice-alpha.RuleMatch.property.headerMatches">headerMatches</a></code> | <code><a href="#cdk-vpclattice-alpha.IHeaderMatch">IHeaderMatch</a>[]</code> | *No description.* |
+| <code><a href="#cdk-vpclattice-alpha.RuleMatch.property.method">method</a></code> | <code><a href="#cdk-vpclattice-alpha.HttpMethod">HttpMethod</a></code> | *No description.* |
+| <code><a href="#cdk-vpclattice-alpha.RuleMatch.property.pathMatch">pathMatch</a></code> | <code><a href="#cdk-vpclattice-alpha.IPathMatch">IPathMatch</a></code> | *No description.* |
+
+---
+
+##### `headerMatches`<sup>Optional</sup> <a name="headerMatches" id="cdk-vpclattice-alpha.RuleMatch.property.headerMatches"></a>
+
+```typescript
+public readonly headerMatches: IHeaderMatch[];
+```
+
+- *Type:* <a href="#cdk-vpclattice-alpha.IHeaderMatch">IHeaderMatch</a>[]
+
+---
+
+##### `method`<sup>Optional</sup> <a name="method" id="cdk-vpclattice-alpha.RuleMatch.property.method"></a>
+
+```typescript
+public readonly method: HttpMethod;
+```
+
+- *Type:* <a href="#cdk-vpclattice-alpha.HttpMethod">HttpMethod</a>
+
+---
+
+##### `pathMatch`<sup>Optional</sup> <a name="pathMatch" id="cdk-vpclattice-alpha.RuleMatch.property.pathMatch"></a>
+
+```typescript
+public readonly pathMatch: IPathMatch;
+```
+
+- *Type:* <a href="#cdk-vpclattice-alpha.IPathMatch">IPathMatch</a>
+
+---
+
+
 ## Protocols <a name="Protocols" id="Protocols"></a>
+
+### IHeaderMatch <a name="IHeaderMatch" id="cdk-vpclattice-alpha.IHeaderMatch"></a>
+
+- *Implemented By:* <a href="#cdk-vpclattice-alpha.IHeaderMatch">IHeaderMatch</a>
+
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#cdk-vpclattice-alpha.IHeaderMatch.property.caseSensitive">caseSensitive</a></code> | <code>boolean</code> | *No description.* |
+| <code><a href="#cdk-vpclattice-alpha.IHeaderMatch.property.match">match</a></code> | <code>{[ key: string ]: string}</code> | *No description.* |
+| <code><a href="#cdk-vpclattice-alpha.IHeaderMatch.property.name">name</a></code> | <code>string</code> | *No description.* |
+
+---
+
+##### `caseSensitive`<sup>Required</sup> <a name="caseSensitive" id="cdk-vpclattice-alpha.IHeaderMatch.property.caseSensitive"></a>
+
+```typescript
+public readonly caseSensitive: boolean;
+```
+
+- *Type:* boolean
+
+---
+
+##### `match`<sup>Required</sup> <a name="match" id="cdk-vpclattice-alpha.IHeaderMatch.property.match"></a>
+
+```typescript
+public readonly match: {[ key: string ]: string};
+```
+
+- *Type:* {[ key: string ]: string}
+
+---
+
+##### `name`<sup>Required</sup> <a name="name" id="cdk-vpclattice-alpha.IHeaderMatch.property.name"></a>
+
+```typescript
+public readonly name: string;
+```
+
+- *Type:* string
+
+---
 
 ### IListener <a name="IListener" id="cdk-vpclattice-alpha.IListener"></a>
 
@@ -6194,21 +6428,21 @@ Implemented by `Listener`.
 
 | **Name** | **Description** |
 | --- | --- |
-| <code><a href="#cdk-vpclattice-alpha.IListener.addListenerRule">addListenerRule</a></code> | Add A Listener Rule to the Listener. |
+| <code><a href="#cdk-vpclattice-alpha.IListener.addRule">addRule</a></code> | Add A Rule to the Listener. |
 
 ---
 
-##### `addListenerRule` <a name="addListenerRule" id="cdk-vpclattice-alpha.IListener.addListenerRule"></a>
+##### `addRule` <a name="addRule" id="cdk-vpclattice-alpha.IListener.addRule"></a>
 
 ```typescript
-public addListenerRule(rule: RuleProps): void
+public addRule(rule: AddRuleProps): void
 ```
 
-Add A Listener Rule to the Listener.
+Add A Rule to the Listener.
 
-###### `rule`<sup>Required</sup> <a name="rule" id="cdk-vpclattice-alpha.IListener.addListenerRule.parameter.rule"></a>
+###### `rule`<sup>Required</sup> <a name="rule" id="cdk-vpclattice-alpha.IListener.addRule.parameter.rule"></a>
 
-- *Type:* <a href="#cdk-vpclattice-alpha.RuleProps">RuleProps</a>
+- *Type:* <a href="#cdk-vpclattice-alpha.AddRuleProps">AddRuleProps</a>
 
 ---
 
@@ -6290,6 +6524,70 @@ public readonly listenerId: string;
 The Id of the Service Network.
 
 ---
+
+### IPathMatch <a name="IPathMatch" id="cdk-vpclattice-alpha.IPathMatch"></a>
+
+- *Implemented By:* <a href="#cdk-vpclattice-alpha.IPathMatch">IPathMatch</a>
+
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#cdk-vpclattice-alpha.IPathMatch.property.caseSensitive">caseSensitive</a></code> | <code>boolean</code> | *No description.* |
+| <code><a href="#cdk-vpclattice-alpha.IPathMatch.property.match">match</a></code> | <code>{[ key: string ]: string}</code> | *No description.* |
+
+---
+
+##### `caseSensitive`<sup>Required</sup> <a name="caseSensitive" id="cdk-vpclattice-alpha.IPathMatch.property.caseSensitive"></a>
+
+```typescript
+public readonly caseSensitive: boolean;
+```
+
+- *Type:* boolean
+
+---
+
+##### `match`<sup>Required</sup> <a name="match" id="cdk-vpclattice-alpha.IPathMatch.property.match"></a>
+
+```typescript
+public readonly match: {[ key: string ]: string};
+```
+
+- *Type:* {[ key: string ]: string}
+
+---
+
+### IRuleAction <a name="IRuleAction" id="cdk-vpclattice-alpha.IRuleAction"></a>
+
+- *Implemented By:* <a href="#cdk-vpclattice-alpha.IRuleAction">IRuleAction</a>
+
+#### Methods <a name="Methods" id="Methods"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#cdk-vpclattice-alpha.IRuleAction.renderListenerDefaultAction">renderListenerDefaultAction</a></code> | Render the listener default action. |
+| <code><a href="#cdk-vpclattice-alpha.IRuleAction.renderRuleAction">renderRuleAction</a></code> | Render the listener rule action. |
+
+---
+
+##### `renderListenerDefaultAction` <a name="renderListenerDefaultAction" id="cdk-vpclattice-alpha.IRuleAction.renderListenerDefaultAction"></a>
+
+```typescript
+public renderListenerDefaultAction(): DefaultActionProperty
+```
+
+Render the listener default action.
+
+##### `renderRuleAction` <a name="renderRuleAction" id="cdk-vpclattice-alpha.IRuleAction.renderRuleAction"></a>
+
+```typescript
+public renderRuleAction(): ActionProperty
+```
+
+Render the listener rule action.
+
 
 ### IService <a name="IService" id="cdk-vpclattice-alpha.IService"></a>
 
@@ -6675,6 +6973,41 @@ identity or service level permissions.
 ---
 
 
+### HeaderMatchType <a name="HeaderMatchType" id="cdk-vpclattice-alpha.HeaderMatchType"></a>
+
+Rule Conditions can leverage different operators for Matches.
+
+#### Members <a name="Members" id="Members"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#cdk-vpclattice-alpha.HeaderMatchType.CONTAINS">CONTAINS</a></code> | Contains Match. |
+| <code><a href="#cdk-vpclattice-alpha.HeaderMatchType.EXACT">EXACT</a></code> | Exact Match. |
+| <code><a href="#cdk-vpclattice-alpha.HeaderMatchType.PREFIX">PREFIX</a></code> | Prefix Match. |
+
+---
+
+##### `CONTAINS` <a name="CONTAINS" id="cdk-vpclattice-alpha.HeaderMatchType.CONTAINS"></a>
+
+Contains Match.
+
+---
+
+
+##### `EXACT` <a name="EXACT" id="cdk-vpclattice-alpha.HeaderMatchType.EXACT"></a>
+
+Exact Match.
+
+---
+
+
+##### `PREFIX` <a name="PREFIX" id="cdk-vpclattice-alpha.HeaderMatchType.PREFIX"></a>
+
+Prefix Match.
+
+---
+
+
 ### HealthCheckProtocol <a name="HealthCheckProtocol" id="cdk-vpclattice-alpha.HealthCheckProtocol"></a>
 
 #### Members <a name="Members" id="Members"></a>
@@ -6728,7 +7061,7 @@ protocol is HTTP/2 or gRPC, but gRPC-specific features are not available.
 ---
 
 
-### HTTPFixedResponse <a name="HTTPFixedResponse" id="cdk-vpclattice-alpha.HTTPFixedResponse"></a>
+### HttpFixedResponse <a name="HttpFixedResponse" id="cdk-vpclattice-alpha.HttpFixedResponse"></a>
 
 Fixed response codes.
 
@@ -6736,58 +7069,58 @@ Fixed response codes.
 
 | **Name** | **Description** |
 | --- | --- |
-| <code><a href="#cdk-vpclattice-alpha.HTTPFixedResponse.OK">OK</a></code> | OK 200. |
-| <code><a href="#cdk-vpclattice-alpha.HTTPFixedResponse.CREATED">CREATED</a></code> | Created 201. |
-| <code><a href="#cdk-vpclattice-alpha.HTTPFixedResponse.ACCEPTED">ACCEPTED</a></code> | Accepted. |
-| <code><a href="#cdk-vpclattice-alpha.HTTPFixedResponse.NO_CONTENT">NO_CONTENT</a></code> | No Content 204. |
-| <code><a href="#cdk-vpclattice-alpha.HTTPFixedResponse.NOT_FOUND">NOT_FOUND</a></code> | Not Found 404. |
-| <code><a href="#cdk-vpclattice-alpha.HTTPFixedResponse.INTERNAL_SERVER_ERROR">INTERNAL_SERVER_ERROR</a></code> | Internal server error 500. |
+| <code><a href="#cdk-vpclattice-alpha.HttpFixedResponse.OK">OK</a></code> | OK 200. |
+| <code><a href="#cdk-vpclattice-alpha.HttpFixedResponse.CREATED">CREATED</a></code> | Created 201. |
+| <code><a href="#cdk-vpclattice-alpha.HttpFixedResponse.ACCEPTED">ACCEPTED</a></code> | Accepted. |
+| <code><a href="#cdk-vpclattice-alpha.HttpFixedResponse.NO_CONTENT">NO_CONTENT</a></code> | No Content 204. |
+| <code><a href="#cdk-vpclattice-alpha.HttpFixedResponse.NOT_FOUND">NOT_FOUND</a></code> | Not Found 404. |
+| <code><a href="#cdk-vpclattice-alpha.HttpFixedResponse.INTERNAL_SERVER_ERROR">INTERNAL_SERVER_ERROR</a></code> | Internal server error 500. |
 
 ---
 
-##### `OK` <a name="OK" id="cdk-vpclattice-alpha.HTTPFixedResponse.OK"></a>
+##### `OK` <a name="OK" id="cdk-vpclattice-alpha.HttpFixedResponse.OK"></a>
 
 OK 200.
 
 ---
 
 
-##### `CREATED` <a name="CREATED" id="cdk-vpclattice-alpha.HTTPFixedResponse.CREATED"></a>
+##### `CREATED` <a name="CREATED" id="cdk-vpclattice-alpha.HttpFixedResponse.CREATED"></a>
 
 Created 201.
 
 ---
 
 
-##### `ACCEPTED` <a name="ACCEPTED" id="cdk-vpclattice-alpha.HTTPFixedResponse.ACCEPTED"></a>
+##### `ACCEPTED` <a name="ACCEPTED" id="cdk-vpclattice-alpha.HttpFixedResponse.ACCEPTED"></a>
 
 Accepted.
 
 ---
 
 
-##### `NO_CONTENT` <a name="NO_CONTENT" id="cdk-vpclattice-alpha.HTTPFixedResponse.NO_CONTENT"></a>
+##### `NO_CONTENT` <a name="NO_CONTENT" id="cdk-vpclattice-alpha.HttpFixedResponse.NO_CONTENT"></a>
 
 No Content 204.
 
 ---
 
 
-##### `NOT_FOUND` <a name="NOT_FOUND" id="cdk-vpclattice-alpha.HTTPFixedResponse.NOT_FOUND"></a>
+##### `NOT_FOUND` <a name="NOT_FOUND" id="cdk-vpclattice-alpha.HttpFixedResponse.NOT_FOUND"></a>
 
 Not Found 404.
 
 ---
 
 
-##### `INTERNAL_SERVER_ERROR` <a name="INTERNAL_SERVER_ERROR" id="cdk-vpclattice-alpha.HTTPFixedResponse.INTERNAL_SERVER_ERROR"></a>
+##### `INTERNAL_SERVER_ERROR` <a name="INTERNAL_SERVER_ERROR" id="cdk-vpclattice-alpha.HttpFixedResponse.INTERNAL_SERVER_ERROR"></a>
 
 Internal server error 500.
 
 ---
 
 
-### HTTPMethod <a name="HTTPMethod" id="cdk-vpclattice-alpha.HTTPMethod"></a>
+### HttpMethod <a name="HttpMethod" id="cdk-vpclattice-alpha.HttpMethod"></a>
 
 HTTP Methods.
 
@@ -6795,75 +7128,75 @@ HTTP Methods.
 
 | **Name** | **Description** |
 | --- | --- |
-| <code><a href="#cdk-vpclattice-alpha.HTTPMethod.GET">GET</a></code> | GET Method. |
-| <code><a href="#cdk-vpclattice-alpha.HTTPMethod.POST">POST</a></code> | POST Method. |
-| <code><a href="#cdk-vpclattice-alpha.HTTPMethod.PUT">PUT</a></code> | PUT Method. |
-| <code><a href="#cdk-vpclattice-alpha.HTTPMethod.DELETE">DELETE</a></code> | Delete Method. |
-| <code><a href="#cdk-vpclattice-alpha.HTTPMethod.PATCH">PATCH</a></code> | PATCH Method. |
-| <code><a href="#cdk-vpclattice-alpha.HTTPMethod.HEAD">HEAD</a></code> | Head Method. |
-| <code><a href="#cdk-vpclattice-alpha.HTTPMethod.CONNECT">CONNECT</a></code> | Connect Method. |
-| <code><a href="#cdk-vpclattice-alpha.HTTPMethod.OPTIONS">OPTIONS</a></code> | Options Method. |
-| <code><a href="#cdk-vpclattice-alpha.HTTPMethod.TRACE">TRACE</a></code> | Trace Method. |
+| <code><a href="#cdk-vpclattice-alpha.HttpMethod.GET">GET</a></code> | GET Method. |
+| <code><a href="#cdk-vpclattice-alpha.HttpMethod.POST">POST</a></code> | POST Method. |
+| <code><a href="#cdk-vpclattice-alpha.HttpMethod.PUT">PUT</a></code> | PUT Method. |
+| <code><a href="#cdk-vpclattice-alpha.HttpMethod.DELETE">DELETE</a></code> | Delete Method. |
+| <code><a href="#cdk-vpclattice-alpha.HttpMethod.PATCH">PATCH</a></code> | PATCH Method. |
+| <code><a href="#cdk-vpclattice-alpha.HttpMethod.HEAD">HEAD</a></code> | Head Method. |
+| <code><a href="#cdk-vpclattice-alpha.HttpMethod.CONNECT">CONNECT</a></code> | Connect Method. |
+| <code><a href="#cdk-vpclattice-alpha.HttpMethod.OPTIONS">OPTIONS</a></code> | Options Method. |
+| <code><a href="#cdk-vpclattice-alpha.HttpMethod.TRACE">TRACE</a></code> | Trace Method. |
 
 ---
 
-##### `GET` <a name="GET" id="cdk-vpclattice-alpha.HTTPMethod.GET"></a>
+##### `GET` <a name="GET" id="cdk-vpclattice-alpha.HttpMethod.GET"></a>
 
 GET Method.
 
 ---
 
 
-##### `POST` <a name="POST" id="cdk-vpclattice-alpha.HTTPMethod.POST"></a>
+##### `POST` <a name="POST" id="cdk-vpclattice-alpha.HttpMethod.POST"></a>
 
 POST Method.
 
 ---
 
 
-##### `PUT` <a name="PUT" id="cdk-vpclattice-alpha.HTTPMethod.PUT"></a>
+##### `PUT` <a name="PUT" id="cdk-vpclattice-alpha.HttpMethod.PUT"></a>
 
 PUT Method.
 
 ---
 
 
-##### `DELETE` <a name="DELETE" id="cdk-vpclattice-alpha.HTTPMethod.DELETE"></a>
+##### `DELETE` <a name="DELETE" id="cdk-vpclattice-alpha.HttpMethod.DELETE"></a>
 
 Delete Method.
 
 ---
 
 
-##### `PATCH` <a name="PATCH" id="cdk-vpclattice-alpha.HTTPMethod.PATCH"></a>
+##### `PATCH` <a name="PATCH" id="cdk-vpclattice-alpha.HttpMethod.PATCH"></a>
 
 PATCH Method.
 
 ---
 
 
-##### `HEAD` <a name="HEAD" id="cdk-vpclattice-alpha.HTTPMethod.HEAD"></a>
+##### `HEAD` <a name="HEAD" id="cdk-vpclattice-alpha.HttpMethod.HEAD"></a>
 
 Head Method.
 
 ---
 
 
-##### `CONNECT` <a name="CONNECT" id="cdk-vpclattice-alpha.HTTPMethod.CONNECT"></a>
+##### `CONNECT` <a name="CONNECT" id="cdk-vpclattice-alpha.HttpMethod.CONNECT"></a>
 
 Connect Method.
 
 ---
 
 
-##### `OPTIONS` <a name="OPTIONS" id="cdk-vpclattice-alpha.HTTPMethod.OPTIONS"></a>
+##### `OPTIONS` <a name="OPTIONS" id="cdk-vpclattice-alpha.HttpMethod.OPTIONS"></a>
 
 Options Method.
 
 ---
 
 
-##### `TRACE` <a name="TRACE" id="cdk-vpclattice-alpha.HTTPMethod.TRACE"></a>
+##### `TRACE` <a name="TRACE" id="cdk-vpclattice-alpha.HttpMethod.TRACE"></a>
 
 Trace Method.
 
@@ -6993,41 +7326,6 @@ decrypts the encrypted traffic instead of VPC Lattice.
 ---
 
 
-### MatchOperator <a name="MatchOperator" id="cdk-vpclattice-alpha.MatchOperator"></a>
-
-Rule Conditions can leverage different operators for Matches.
-
-#### Members <a name="Members" id="Members"></a>
-
-| **Name** | **Description** |
-| --- | --- |
-| <code><a href="#cdk-vpclattice-alpha.MatchOperator.CONTAINS">CONTAINS</a></code> | Contains Match. |
-| <code><a href="#cdk-vpclattice-alpha.MatchOperator.EXACT">EXACT</a></code> | Exact Match. |
-| <code><a href="#cdk-vpclattice-alpha.MatchOperator.PREFIX">PREFIX</a></code> | Prefix Match. |
-
----
-
-##### `CONTAINS` <a name="CONTAINS" id="cdk-vpclattice-alpha.MatchOperator.CONTAINS"></a>
-
-Contains Match.
-
----
-
-
-##### `EXACT` <a name="EXACT" id="cdk-vpclattice-alpha.MatchOperator.EXACT"></a>
-
-Exact Match.
-
----
-
-
-##### `PREFIX` <a name="PREFIX" id="cdk-vpclattice-alpha.MatchOperator.PREFIX"></a>
-
-Prefix Match.
-
----
-
-
 ### PathMatchType <a name="PathMatchType" id="cdk-vpclattice-alpha.PathMatchType"></a>
 
 Operators for Path Matches.
@@ -7121,41 +7419,6 @@ Http2.
 ##### `GRPC` <a name="GRPC" id="cdk-vpclattice-alpha.RequestProtocolVersion.GRPC"></a>
 
 GRPC.
-
----
-
-
-### RuleAccessMode <a name="RuleAccessMode" id="cdk-vpclattice-alpha.RuleAccessMode"></a>
-
-Access mode for the rule.
-
-#### Members <a name="Members" id="Members"></a>
-
-| **Name** | **Description** |
-| --- | --- |
-| <code><a href="#cdk-vpclattice-alpha.RuleAccessMode.UNAUTHENTICATED">UNAUTHENTICATED</a></code> | Unauthenticated Access. |
-| <code><a href="#cdk-vpclattice-alpha.RuleAccessMode.AUTHENTICATED_ONLY">AUTHENTICATED_ONLY</a></code> | Unauthenticated Access. |
-| <code><a href="#cdk-vpclattice-alpha.RuleAccessMode.ORG_ONLY">ORG_ONLY</a></code> | THIS Org only. |
-
----
-
-##### `UNAUTHENTICATED` <a name="UNAUTHENTICATED" id="cdk-vpclattice-alpha.RuleAccessMode.UNAUTHENTICATED"></a>
-
-Unauthenticated Access.
-
----
-
-
-##### `AUTHENTICATED_ONLY` <a name="AUTHENTICATED_ONLY" id="cdk-vpclattice-alpha.RuleAccessMode.AUTHENTICATED_ONLY"></a>
-
-Unauthenticated Access.
-
----
-
-
-##### `ORG_ONLY` <a name="ORG_ONLY" id="cdk-vpclattice-alpha.RuleAccessMode.ORG_ONLY"></a>
-
-THIS Org only.
 
 ---
 

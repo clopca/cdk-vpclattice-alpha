@@ -7,8 +7,9 @@ import * as generated from 'aws-cdk-lib/aws-vpclattice';
 import type { Construct, IConstruct } from 'constructs';
 import { AuthType, AuthPolicyDocument } from './auth';
 import { Listener } from './listener';
-import type { ListenerConfig } from './listener';
+import type { AddRuleProps, ListenerProtocol } from './listener';
 import type { LoggingDestination } from './logging';
+import type { RuleAction } from './rule-action';
 import type { IServiceNetwork } from './service-network';
 import { ServiceNetworkServiceAssociation } from './service-network-association';
 
@@ -61,6 +62,42 @@ export interface ShareServiceProps {
    * @default none
    */
   readonly resourceArns?: string[];
+}
+
+export interface AddListenerProps {
+  /**
+   * The Name of the listener.
+   */
+  readonly name?: string;
+
+  /**
+   * Protocol that the listener will listen on
+   */
+  readonly protocol?: ListenerProtocol;
+
+  /**
+   * Optional port number for the listener. If not supplied, will default to 80 or 443, depending on the Protocol.
+   * @default - 80 or 443 depending on the Protocol
+   */
+  readonly port?: number;
+
+  /**
+   *  * A default action that will be taken if no rules match.
+   *  @default HTTPFixedResponse.NOT_FOUND
+   */
+  readonly defaultAction?: RuleAction;
+
+  /**
+   * Rules to add to the listener.
+   */
+  readonly rules?: AddRuleProps[];
+
+  /**
+   * Determine what happens to the service when the resource/stack is deleted.
+   *
+   * @default RemovalPolicy.RETAIN
+   */
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 export interface DnsEntryProperty {
@@ -379,7 +416,7 @@ export class Service extends ServiceBase {
         if (node === this && !this.authPolicy.isEmpty) {
           new generated.CfnAuthPolicy(this, 'ServiceAuthPolicy', {
             policy: this.authPolicy.toJSON(),
-            resourceIdentifier: this.serviceId,
+            resourceIdentifier: this.serviceArn,
           });
         }
       },
@@ -463,10 +500,15 @@ export class Service extends ServiceBase {
   /**
    * Add Listener
    */
-  public addListener(config: ListenerConfig): Listener {
-    return new Listener(this, `Listener${config.name}`, {
+  public addListener(listener: AddListenerProps): Listener {
+    return new Listener(this, `Listener${listener.name}`, {
+      name: listener.name,
+      defaultAction: listener.defaultAction,
+      port: listener.port,
+      protocol: listener.protocol,
+      rules: listener.rules,
+      removalPolicy: listener.removalPolicy,
       service: this,
-      config,
     });
   }
 

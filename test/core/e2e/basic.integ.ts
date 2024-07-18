@@ -6,8 +6,9 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { Instance, Peer, Port, SecurityGroup, Vpc } from 'aws-cdk-lib/aws-ec2';
 import { ApplicationLoadBalancedFargateService } from 'aws-cdk-lib/aws-ecs-patterns';
 import { Code, Function as LambdaFunction, Runtime } from 'aws-cdk-lib/aws-lambda';
-import { HTTPFixedResponse, ListenerProtocol, PathMatchType, Service, ServiceNetwork, AuthType } from '../../../src';
+import { HttpFixedResponse, ListenerProtocol, Service, ServiceNetwork, AuthType, RuleAction, RuleMatch, HttpMethod } from '../../../src';
 import { AlbTargetGroup, InstanceTargetGroup, LambdaTargetGroup, RequestProtocol, RequestProtocolVersion } from '../../../src/aws-vpclattice-targets';
+import { ListenerRule } from '../../../src/rule';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-vpclattice-integ-basic-e2e');
@@ -136,40 +137,32 @@ const parkingListener = svcParking.addListener({
   name: 'listener1',
   protocol: ListenerProtocol.HTTP,
   port: 80,
-  defaultAction: {
-    httpFixedResponse: HTTPFixedResponse.NOT_FOUND,
-  },
+  defaultAction: RuleAction.fixedResponseAction(HttpFixedResponse.NOT_FOUND),
 });
 
 // ------------------------------------------------------
 // Listener & Rules
 // ------------------------------------------------------
-parkingListener.addListenerRule({
-  name: 'rates-rule',
+
+new ListenerRule(stack, 'MyRule', {
   priority: 10,
-  conditions: {
-    pathMatch: {
-      pathMatchType: PathMatchType.EXACT,
-      path: '/rates',
-    },
+  listener: parkingListener,
+  name: 'header-match-rule',
+  service: svcParking,
+  match: {
+    pathMatch: RuleMatch.pathExact('/rates', false),
   },
-  action: {
-    targetGroup: ratesTg,
-  },
+  action: RuleAction.forwardAction(ratesTg),
 });
 
-parkingListener.addListenerRule({
+parkingListener.addRule({
+  action: RuleAction.forwardAction(paymentsTg),
+  match: {
+    method: RuleMatch.methodMatch(HttpMethod.GET),
+    pathMatch: RuleMatch.pathExact('/payments', false),
+  },
   name: 'payments-rule',
   priority: 20,
-  conditions: {
-    pathMatch: {
-      pathMatchType: PathMatchType.EXACT,
-      path: '/payments',
-    },
-  },
-  action: {
-    targetGroup: paymentsTg,
-  },
 });
 
 // ------------------------------------------------------
@@ -185,16 +178,14 @@ svcReservation.addListener({
   name: 'listener1',
   protocol: ListenerProtocol.HTTPS,
   port: 443,
-  defaultAction: {
-    targetGroup: reservationTg,
-  },
+  defaultAction: RuleAction.forwardAction(reservationTg),
 });
 
 // ------------------------------------------------------
 // Service Network
 // ------------------------------------------------------
 new ServiceNetwork(stack, 'ServiceNetwork', {
-  name: 'superapps-vcnetwork',
+  name: 'superapps-svcnetwork',
   services: [svcReservation, svcParking],
   removalPolicy: cdk.RemovalPolicy.DESTROY,
   vpcAssociations: [{ vpc: clientsVpc, securityGroups: [clientsSg] }],
@@ -208,7 +199,7 @@ new Instance(stack, 'Ec2Instance', {
   vpc: clientsVpc,
   securityGroup: clientsSg,
   instanceType: new cdk.aws_ec2.InstanceType('t3.micro'),
-  machineImage: new cdk.aws_ec2.AmazonLinuxImage({ generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 }),
+  machineImage: new cdk.aws_ec2.AmazonLinuxImage({ generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2023 }),
   ssmSessionPermissions: true,
   userData: cdk.aws_ec2.UserData.custom(`
     #!/bin/bash

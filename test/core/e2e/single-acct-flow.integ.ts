@@ -5,7 +5,8 @@ import { Instance, Peer, Port, SecurityGroup, Vpc, AmazonLinuxGeneration } from 
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { Code, Function as LambdaFunction, Runtime } from 'aws-cdk-lib/aws-lambda';
-import { LambdaTargetGroup, ListenerProtocol, Service, ServiceNetwork, AuthPolicyDocument, AuthType, AuthPolicyStatement } from '../../../src';
+import { LambdaTargetGroup, ListenerProtocol, Service, ServiceNetwork, AuthPolicyDocument, AuthType } from '../../../src';
+import { RuleAction } from '../../../src/rule-action';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-vpclattice-e2e-single-acct-auth');
@@ -85,9 +86,7 @@ testSvc.addListener({
   name: 'listener1',
   protocol: ListenerProtocol.HTTPS,
   port: 443,
-  defaultAction: {
-    targetGroup: serviceTg,
-  },
+  defaultAction: RuleAction.forwardAction(serviceTg),
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 

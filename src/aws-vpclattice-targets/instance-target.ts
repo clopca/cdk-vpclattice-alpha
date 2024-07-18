@@ -7,7 +7,7 @@ import type { Construct } from 'constructs';
 import { RequestProtocol, RequestProtocolVersion, TargetGroupBase, TargetType } from './base-target-group';
 import { HealthCheckProtocolVersion, HealthCheckProtocol } from './health-check';
 import type { HealthCheck } from './health-check';
-import { HTTPFixedResponse } from '../util';
+import { HttpFixedResponse } from '../util';
 
 export interface InstanceTarget {
   /**
@@ -113,7 +113,7 @@ export class InstanceTargetGroup extends TargetGroupBase {
       protocolVersion: props.healthCheck?.protocolVersion ?? HealthCheckProtocolVersion.HTTP1,
       unhealthyThresholdCount: props.healthCheck?.unhealthyThresholdCount ?? 2,
       healthyThresholdCount: props.healthCheck?.healthyThresholdCount ?? 5,
-      matchers: props.healthCheck?.matchers ?? HTTPFixedResponse.OK,
+      matchers: props.healthCheck?.matchers ?? HttpFixedResponse.OK,
     };
 
     // ------------------------------------------------------
@@ -145,7 +145,7 @@ export class InstanceTargetGroup extends TargetGroupBase {
         unhealthyThresholdCount: this.healthCheck.unhealthyThresholdCount,
         healthyThresholdCount: this.healthCheck.healthyThresholdCount,
         matcher: {
-          httpCode: (this.healthCheck.matchers ?? HTTPFixedResponse.OK).toString(),
+          httpCode: (this.healthCheck.matchers ?? HttpFixedResponse.OK).toString(),
         },
       },
     };

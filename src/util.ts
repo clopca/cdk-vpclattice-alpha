@@ -1,7 +1,7 @@
 /**
  * Fixed response codes
  */
-export enum HTTPFixedResponse {
+export enum HttpFixedResponse {
   /**
    * OK 200
    */
@@ -36,7 +36,7 @@ export enum HTTPFixedResponse {
 /**
  * HTTP Methods
  */
-export enum HTTPMethod {
+export enum HttpMethod {
   /**
    * GET Method
    */
@@ -83,3 +83,36 @@ export enum HTTPMethod {
   TRACE = 'TRACE',
 }
 
+/**
+ * Rule Conditions can leverage different operators for Matches
+ */
+export enum HeaderMatchType {
+  /**
+   * Contains Match
+   */
+  CONTAINS = 'contains',
+
+  /**
+   * Exact Match
+   */
+  EXACT = 'exact',
+
+  /**
+   * Prefix Match
+   */
+  PREFIX = 'prefix',
+}
+
+/**
+ * Operators for Path Matches
+ */
+export enum PathMatchType {
+  /**
+   * Exact Match
+   */
+  EXACT = 'exact',
+  /**
+   * Prefix Match
+   */
+  PREFIX = 'prefix',
+}

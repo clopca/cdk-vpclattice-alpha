@@ -5,7 +5,7 @@ import { Peer, Port, SecurityGroup, Vpc } from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { Code, Function as LambdaFunction, Runtime } from 'aws-cdk-lib/aws-lambda';
-import { LambdaTargetGroup, ListenerProtocol, Service, ServiceNetwork, AuthPolicyDocument, AuthType } from '../../../src';
+import { LambdaTargetGroup, ListenerProtocol, Service, ServiceNetwork, AuthPolicyDocument, AuthType, RuleAction } from '../../../src';
 
 const app1 = new cdk.App();
 
@@ -75,9 +75,7 @@ testSvc.addListener({
   name: 'listener1',
   protocol: ListenerProtocol.HTTPS,
   port: 443,
-  defaultAction: {
-    targetGroup: serviceTg,
-  },
+  defaultAction: RuleAction.forwardAction(serviceTg),
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
@@ -85,7 +83,7 @@ testSvc.addListener({
 // Service Network
 // ------------------------------------------------------
 const serviceNetwork = new ServiceNetwork(stack_provider, 'ServiceNetwork', {
-  name: 'superapps-auth-vcnetwork-multi-acct',
+  name: 'superapps-auth-svcnetwork-multi-acct',
   services: [testSvc],
   removalPolicy: cdk.RemovalPolicy.DESTROY,
   vpcAssociations: [{ vpc: serviceVpc }],

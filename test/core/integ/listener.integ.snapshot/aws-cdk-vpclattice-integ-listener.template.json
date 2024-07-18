@@ -394,7 +394,8 @@
   "ServiceDBC79909": {
    "Type": "AWS::VpcLattice::Service",
    "Properties": {
-    "AuthType": "NONE"
+    "AuthType": "NONE",
+    "DnsEntry": {}
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -416,9 +417,11 @@
       "Id"
      ]
     }
-   }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
-  "ServiceListenerlistener1firstruleRule364314F0": {
+  "ServiceListenerlistener1firstrule3389A73E": {
    "Type": "AWS::VpcLattice::Rule",
    "Properties": {
     "Action": {
@@ -465,7 +468,7 @@
     }
    }
   },
-  "ServiceListenerlistener1secondruleRuleFBB01EE4": {
+  "ServiceListenerlistener1secondruleAB0BE22A": {
    "Type": "AWS::VpcLattice::Rule",
    "Properties": {
     "Action": {
@@ -504,7 +507,7 @@
     }
    }
   },
-  "ServiceListenerlistener1thirdruleRuleA3444EF2": {
+  "ServiceListenerlistener1thirdrule86C335C1": {
    "Type": "AWS::VpcLattice::Rule",
    "Properties": {
     "Action": {
@@ -547,10 +550,9 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "ServiceNetworkAssociateVPCc85ecd70a18ff76c17d2d1dfea3506fa57fe14d599VpcAssociationc8c455864073a3b879095a8377289443304d37e765F9026109": {
+  "ServiceNetworkAssociateVPCc85ecd70a18ff76c17d2d1dfea3506fa57fe14d599VpcAssociationc85ecd70a18ff76c17d2d1dfea3506fa57fe14d5998B1EC2E0": {
    "Type": "AWS::VpcLattice::ServiceNetworkVpcAssociation",
    "Properties": {
-    "SecurityGroupIds": [],
     "ServiceNetworkIdentifier": {
      "Fn::GetAtt": [
       "ServiceNetworkEF29AF70",
@@ -575,6 +577,33 @@
      "Fn::GetAtt": [
       "ServiceNetworkEF29AF70",
       "Id"
+     ]
+    }
+   }
+  },
+  "ServiceNetworkServiceNetworkAuthPolicy27A7858F": {
+   "Type": "AWS::VpcLattice::AuthPolicy",
+   "Properties": {
+    "Policy": {
+     "Statement": [
+      {
+       "Action": "vpc-lattice-svcs:*",
+       "Condition": {
+        "StringNotEqualsIgnoreCase": {
+         "aws:PrincipalType": "anonymous"
+        }
+       },
+       "Effect": "Allow",
+       "Principal": "*",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ResourceIdentifier": {
+     "Fn::GetAtt": [
+      "ServiceNetworkEF29AF70",
+      "Arn"
      ]
     }
    }
@@ -616,7 +645,7 @@
     "Code": {
      "ZipFile": "\n\t\t  exports.handler = async (event) => {\n\t\t\t  return {\n\t\t\t\t  isBase64Encoded: false,\n\t\t\t\t  statusCode: 200,\n\t\t\t\t  body: JSON.stringify({ message: \"Hello from Lambda!\" }),\n\t\t\t  };\n\t\t  };\n\t  "
     },
-    "Handler": "index.function_name",
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "LambdaTargetFunctionServiceRole8E9A299C",
