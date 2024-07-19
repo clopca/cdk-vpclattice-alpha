@@ -4,10 +4,11 @@ import * as cdk from 'aws-cdk-lib';
 import * as autoscaling from 'aws-cdk-lib/aws-autoscaling';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { Instance, Peer, Port, SecurityGroup, Vpc } from 'aws-cdk-lib/aws-ec2';
-import { ApplicationLoadBalancedFargateService } from 'aws-cdk-lib/aws-ecs-patterns';
+// import { ApplicationLoadBalancedFargateService } from 'aws-cdk-lib/aws-ecs-patterns';
 import { Code, Function as LambdaFunction, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { HttpFixedResponse, ListenerProtocol, Service, ServiceNetwork, AuthType, RuleAction, RuleMatch, HttpMethod } from '../../../src';
-import { AlbTargetGroup, InstanceTargetGroup, LambdaTargetGroup, RequestProtocol, RequestProtocolVersion } from '../../../src/aws-vpclattice-targets';
+// import { AlbTargetGroup, InstanceTargetGroup, LambdaTargetGroup, RequestProtocol, RequestProtocolVersion } from '../../../src/aws-vpclattice-targets';
+import { InstanceTargetGroup, LambdaTargetGroup, RequestProtocol, RequestProtocolVersion } from '../../../src/aws-vpclattice-targets';
 import { ListenerRule } from '../../../src/rule';
 
 const app = new cdk.App();
@@ -103,37 +104,37 @@ paymentsSecurityGroup.addIngressRule(Peer.ipv4('169.254.0.0/16'), Port.allTraffi
 // ------------------------------------------------------
 // ALB TG
 // ------------------------------------------------------
-const albSvc = new ApplicationLoadBalancedFargateService(stack, 'ALBService', {
-  vpc: paymentsVpc,
-  memoryLimitMiB: 1024,
-  cpu: 512,
-  taskImageOptions: {
-    image: cdk.aws_ecs.ContainerImage.fromRegistry('public.ecr.aws/bitnami/lamp:8.1'),
-    containerPort: 80,
-  },
-  securityGroups: [paymentsSecurityGroup],
-  publicLoadBalancer: false,
-});
+// const albSvc = new ApplicationLoadBalancedFargateService(stack, 'ALBService', {
+//   vpc: paymentsVpc,
+//   memoryLimitMiB: 1024,
+//   cpu: 512,
+//   taskImageOptions: {
+//     image: cdk.aws_ecs.ContainerImage.fromRegistry('public.ecr.aws/bitnami/lamp:8.1'),
+//     containerPort: 80,
+//   },
+//   securityGroups: [paymentsSecurityGroup],
+//   publicLoadBalancer: false,
+// });
 
-const paymentsTg = new AlbTargetGroup(stack, 'ALBTG', {
-  name: 'payments-tg',
-  vpc: paymentsVpc,
-  loadBalancer: albSvc.loadBalancer,
-  protocol: RequestProtocol.HTTP,
-  protocolVersion: RequestProtocolVersion.HTTP1,
-  port: 80,
-});
+// const paymentsTg = new AlbTargetGroup(stack, 'ALBTG', {
+//   name: 'payments-tg',
+//   vpc: paymentsVpc,
+//   loadBalancer: albSvc.loadBalancer,
+//   protocol: RequestProtocol.HTTP,
+//   protocolVersion: RequestProtocolVersion.HTTP1,
+//   port: 80,
+// });
 
 // ------------------------------------------------------
 // Service: Parking
 // ------------------------------------------------------
-const svcParking = new Service(stack, 'Parking', {
+const parkingSvc = new Service(stack, 'Parking', {
   name: 'parking',
   authType: AuthType.NONE,
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
-const parkingListener = svcParking.addListener({
+const parkingListener = parkingSvc.addListener({
   name: 'listener1',
   protocol: ListenerProtocol.HTTP,
   port: 80,
@@ -144,11 +145,11 @@ const parkingListener = svcParking.addListener({
 // Listener & Rules
 // ------------------------------------------------------
 
-new ListenerRule(stack, 'MyRule', {
+const parkingRatesRule = new ListenerRule(stack, 'MyRule', {
   priority: 10,
   listener: parkingListener,
   name: 'header-match-rule',
-  service: svcParking,
+  service: parkingSvc,
   match: {
     pathMatch: RuleMatch.pathExact('/rates', false),
   },
@@ -156,7 +157,8 @@ new ListenerRule(stack, 'MyRule', {
 });
 
 parkingListener.addRule({
-  action: RuleAction.forwardAction(paymentsTg),
+  // action: RuleAction.forwardAction(paymentsTg),
+  action: RuleAction.fixedResponseAction(HttpFixedResponse.NOT_FOUND),
   match: {
     method: RuleMatch.methodMatch(HttpMethod.GET),
     pathMatch: RuleMatch.pathExact('/payments', false),
@@ -168,13 +170,13 @@ parkingListener.addRule({
 // ------------------------------------------------------
 // Service: Reservation
 // ------------------------------------------------------
-const svcReservation = new Service(stack, 'Reservation', {
+const reservationSvc = new Service(stack, 'Reservation', {
   name: 'reservation',
   authType: AuthType.NONE,
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
-svcReservation.addListener({
+const reservationListener = reservationSvc.addListener({
   name: 'listener1',
   protocol: ListenerProtocol.HTTPS,
   port: 443,
@@ -186,7 +188,7 @@ svcReservation.addListener({
 // ------------------------------------------------------
 new ServiceNetwork(stack, 'ServiceNetwork', {
   name: 'superapps-svcnetwork',
-  services: [svcReservation, svcParking],
+  services: [reservationSvc, parkingSvc],
   removalPolicy: cdk.RemovalPolicy.DESTROY,
   vpcAssociations: [{ vpc: clientsVpc, securityGroups: [clientsSg] }],
 });
@@ -206,6 +208,12 @@ new Instance(stack, 'Ec2Instance', {
     sudo yum install -y jq
   `),
 });
+
+// Add explicit dependencies to ensure correct order of deployment and deletion
+reservationListener.node.addDependency(reservationTg);
+reservationSvc.node.addDependency(reservationTg);
+parkingRatesRule.node.addDependency(ratesTg);
+parkingSvc.node.addDependency(ratesTg);
 
 // ------------------------------------------------------
 // Integ Test Runner
