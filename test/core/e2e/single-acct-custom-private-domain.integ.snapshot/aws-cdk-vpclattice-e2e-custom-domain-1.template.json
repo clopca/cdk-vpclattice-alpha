@@ -10,7 +10,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-e2e-custom-domain/SvcVpc"
+      "Value": "aws-cdk-vpclattice-e2e-custom-domain-1/SvcVpc"
      }
     ]
    }
@@ -39,7 +39,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-e2e-custom-domain/SvcVpc/PublicSubnet1"
+      "Value": "aws-cdk-vpclattice-e2e-custom-domain-1/SvcVpc/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -53,7 +53,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-e2e-custom-domain/SvcVpc/PublicSubnet1"
+      "Value": "aws-cdk-vpclattice-e2e-custom-domain-1/SvcVpc/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -94,7 +94,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-e2e-custom-domain/SvcVpc/PublicSubnet1"
+      "Value": "aws-cdk-vpclattice-e2e-custom-domain-1/SvcVpc/PublicSubnet1"
      }
     ]
    }
@@ -114,7 +114,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-e2e-custom-domain/SvcVpc/PublicSubnet1"
+      "Value": "aws-cdk-vpclattice-e2e-custom-domain-1/SvcVpc/PublicSubnet1"
      }
     ]
    },
@@ -147,7 +147,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-e2e-custom-domain/SvcVpc/PublicSubnet2"
+      "Value": "aws-cdk-vpclattice-e2e-custom-domain-1/SvcVpc/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -161,7 +161,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-e2e-custom-domain/SvcVpc/PublicSubnet2"
+      "Value": "aws-cdk-vpclattice-e2e-custom-domain-1/SvcVpc/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -219,7 +219,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-e2e-custom-domain/SvcVpc/PrivateSubnet1"
+      "Value": "aws-cdk-vpclattice-e2e-custom-domain-1/SvcVpc/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -233,7 +233,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-e2e-custom-domain/SvcVpc/PrivateSubnet1"
+      "Value": "aws-cdk-vpclattice-e2e-custom-domain-1/SvcVpc/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -288,7 +288,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-e2e-custom-domain/SvcVpc/PrivateSubnet2"
+      "Value": "aws-cdk-vpclattice-e2e-custom-domain-1/SvcVpc/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -302,7 +302,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-e2e-custom-domain/SvcVpc/PrivateSubnet2"
+      "Value": "aws-cdk-vpclattice-e2e-custom-domain-1/SvcVpc/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -339,7 +339,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-e2e-custom-domain/SvcVpc"
+      "Value": "aws-cdk-vpclattice-e2e-custom-domain-1/SvcVpc"
      }
     ]
    }
@@ -365,7 +365,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-e2e-custom-domain/ClientsVPC"
+      "Value": "aws-cdk-vpclattice-e2e-custom-domain-1/ClientsVPC"
      }
     ]
    }
@@ -394,7 +394,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-e2e-custom-domain/ClientsVPC/PublicSubnet1"
+      "Value": "aws-cdk-vpclattice-e2e-custom-domain-1/ClientsVPC/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -408,7 +408,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-e2e-custom-domain/ClientsVPC/PublicSubnet1"
+      "Value": "aws-cdk-vpclattice-e2e-custom-domain-1/ClientsVPC/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -449,7 +449,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-e2e-custom-domain/ClientsVPC/PublicSubnet1"
+      "Value": "aws-cdk-vpclattice-e2e-custom-domain-1/ClientsVPC/PublicSubnet1"
      }
     ]
    }
@@ -469,7 +469,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-e2e-custom-domain/ClientsVPC/PublicSubnet1"
+      "Value": "aws-cdk-vpclattice-e2e-custom-domain-1/ClientsVPC/PublicSubnet1"
      }
     ]
    },
@@ -502,7 +502,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-e2e-custom-domain/ClientsVPC/PublicSubnet2"
+      "Value": "aws-cdk-vpclattice-e2e-custom-domain-1/ClientsVPC/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -516,7 +516,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-e2e-custom-domain/ClientsVPC/PublicSubnet2"
+      "Value": "aws-cdk-vpclattice-e2e-custom-domain-1/ClientsVPC/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -574,7 +574,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-e2e-custom-domain/ClientsVPC/PrivateSubnet1"
+      "Value": "aws-cdk-vpclattice-e2e-custom-domain-1/ClientsVPC/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -588,7 +588,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-e2e-custom-domain/ClientsVPC/PrivateSubnet1"
+      "Value": "aws-cdk-vpclattice-e2e-custom-domain-1/ClientsVPC/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -643,7 +643,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-e2e-custom-domain/ClientsVPC/PrivateSubnet2"
+      "Value": "aws-cdk-vpclattice-e2e-custom-domain-1/ClientsVPC/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -657,7 +657,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-e2e-custom-domain/ClientsVPC/PrivateSubnet2"
+      "Value": "aws-cdk-vpclattice-e2e-custom-domain-1/ClientsVPC/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -694,7 +694,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-e2e-custom-domain/ClientsVPC"
+      "Value": "aws-cdk-vpclattice-e2e-custom-domain-1/ClientsVPC"
      }
     ]
    }
@@ -713,7 +713,7 @@
   "ResSGE9E4FDE5": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "aws-cdk-vpclattice-e2e-custom-domain/ResSG",
+    "GroupDescription": "aws-cdk-vpclattice-e2e-custom-domain-1/ResSG",
     "GroupName": "reservation-sg",
     "SecurityGroupEgress": [
      {
@@ -824,7 +824,10 @@
     },
     "DomainName": "*.cdktests.com",
     "KeyAlgorithm": "RSA_2048"
-   }
+   },
+   "DependsOn": [
+    "CertActivationPAA"
+   ]
   },
   "PrivateHostedZone6354E1BB": {
    "Type": "AWS::Route53::HostedZone",
@@ -861,16 +864,35 @@
      "Ref": "PrivateCertificate0E51DF0C"
     },
     "CustomDomainName": "parking.cdktests.com",
-    "DnsEntry": {
-     "DomainName": "parking.cdktests.com",
-     "HostedZoneId": {
-      "Ref": "PrivateHostedZone6354E1BB"
-     }
-    },
     "Name": "parking"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
+  },
+  "ParkingALIASResourceA1586DA7": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "AliasTarget": {
+     "DNSName": {
+      "Fn::GetAtt": [
+       "Parking6000F0C6",
+       "DnsEntry.DomainName"
+      ]
+     },
+     "EvaluateTargetHealth": true,
+     "HostedZoneId": {
+      "Fn::GetAtt": [
+       "Parking6000F0C6",
+       "DnsEntry.HostedZoneId"
+      ]
+     }
+    },
+    "HostedZoneId": {
+     "Ref": "PrivateHostedZone6354E1BB"
+    },
+    "Name": "parking.cdktests.com.",
+    "Type": "A"
+   }
   },
   "ParkingListenerlistener1AACA213C": {
    "Type": "AWS::VpcLattice::Listener",
@@ -893,7 +915,7 @@
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
-  "ParkingListenerlistener1reservationRuleC4BA94E0": {
+  "ParkingListenerlistener1Rulereservation5B734D7D": {
    "Type": "AWS::VpcLattice::Rule",
    "Properties": {
     "Action": {
@@ -935,25 +957,6 @@
       "Id"
      ]
     }
-   }
-  },
-  "cnameF3BB6587": {
-   "Type": "AWS::Route53::RecordSet",
-   "Properties": {
-    "HostedZoneId": {
-     "Ref": "PrivateHostedZone6354E1BB"
-    },
-    "Name": "parking.cdktests.com.",
-    "ResourceRecords": [
-     {
-      "Fn::GetAtt": [
-       "Parking6000F0C6",
-       "DnsEntry.DomainName"
-      ]
-     }
-    ],
-    "TTL": "1800",
-    "Type": "CNAME"
    }
   },
   "LatticeLambdaReservationServiceRole4BB66298": {
@@ -1008,7 +1011,7 @@
   "LatticeLambdaReservationSecurityGroupDACFDAFC": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "Automatic security group for Lambda Function awscdkvpclatticee2ecustomdomainLatticeLambdaReservation307420A1",
+    "GroupDescription": "Automatic security group for Lambda Function awscdkvpclatticee2ecustomdomain1LatticeLambdaReservation3CAF8CD3",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -1096,15 +1099,14 @@
    "Type": "AWS::VpcLattice::ServiceNetwork",
    "Properties": {
     "AuthType": "NONE",
-    "Name": "superapps-vcnetwork"
+    "Name": "superapps-vpcnetwork"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "ServiceNetworkAssociateVPCc8bc1f85b03ddce61ca6b6321c68fc398acd9c1723VpcAssociationc8091619c4956386593f6005cd7b42b788d1209f4d157CEA3D": {
+  "ServiceNetworkAssociateVPCc84d91b4dc08bb0d4affdf3a572f65629a5946673eVpcAssociationc84d91b4dc08bb0d4affdf3a572f65629a5946673e43CE3929": {
    "Type": "AWS::VpcLattice::ServiceNetworkVpcAssociation",
    "Properties": {
-    "SecurityGroupIds": [],
     "ServiceNetworkIdentifier": {
      "Fn::GetAtt": [
       "ServiceNetworkEF29AF70",
@@ -1116,10 +1118,9 @@
     }
    }
   },
-  "ServiceNetworkAssociateVPCc8d4fd24d6027e8c24c0be43b731e14ff1a5c2f544VpcAssociationc8199e401ff7601b7172bdc94625d479a282423e5801C02AAC": {
+  "ServiceNetworkAssociateVPCc8635b9e2844b575969157af367509f87860cca955VpcAssociationc8635b9e2844b575969157af367509f87860cca95565B6497B": {
    "Type": "AWS::VpcLattice::ServiceNetworkVpcAssociation",
    "Properties": {
-    "SecurityGroupIds": [],
     "ServiceNetworkIdentifier": {
      "Fn::GetAtt": [
       "ServiceNetworkEF29AF70",
@@ -1131,7 +1132,7 @@
     }
    }
   },
-  "ServiceNetworkServiceAssociationc83ea1743afb0e36cf44f67307904dca6af1b8768aLatticeAssociationc84fc409b8df20b784c160e0c833cbca20f10736ee43A0C97D": {
+  "ServiceNetworkServiceAssociationc8107a339c03d66b5e34f480b8d8315eb23c2f9d56LatticeAssociationc80142b2f96704226d64eff51538ca55284858492857BB8FBA": {
    "Type": "AWS::VpcLattice::ServiceNetworkServiceAssociation",
    "Properties": {
     "ServiceIdentifier": {
@@ -1251,7 +1252,8 @@
   }
  },
  "Outputs": {
-  "DnsName": {
+  "TestingUrl": {
+   "Description": "Curl to this URL must work",
    "Value": {
     "Fn::Join": [
      "",
@@ -1262,12 +1264,18 @@
         "Parking6000F0C6",
         "DnsEntry.DomainName"
        ]
-      }
+      },
+      "/reservation"
      ]
     ]
    }
   },
-  "SsmUrl": {
+  "CustomDomainTestingUrl": {
+   "Description": "Curl to this URL must work",
+   "Value": "http://parking.cdktests.com/reservation"
+  },
+  "ClientSsmUrl": {
+   "Description": "SSM Session to a client instance where to run the command",
    "Value": {
     "Fn::Join": [
      "",

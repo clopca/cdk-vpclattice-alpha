@@ -1,3 +1,26 @@
+export enum MappingRecordType {
+  CNAME = "CNAME",
+  ALIAS = "ALIAS",
+}
+
+// export function getLatticePrefixList(region: string, networkProtocol: string): string {
+//   let prefixListId = ""
+//   switch (region) {
+//     case "eu-central-1":
+//       if (networkProtocol == "ipv4") { prefixListId = "pl-08d9db512f7ada124" }
+//       if (networkProtocol == "ipv6") { prefixListId = "pl-059d8786dae17d9ec" }
+//       break;
+//     case "eu-west-1":
+//       if (networkProtocol == "ipv4") { prefixListId = "XXXXXXXXXXXXXXXXXXXX" }
+//       if (networkProtocol == "ipv6") { prefixListId = "XXXXXXXXXXXXXXXXXXXX" }
+//     case "us-east-1":
+//       if (networkProtocol == "ipv4") { prefixListId = "XXXXXXXXXXXXXXXXXXXX" }
+//       if (networkProtocol == "ipv6") { prefixListId = "XXXXXXXXXXXXXXXXXXXX" }
+
+//   }
+//   return prefixListId
+// }
+
 /**
  * Fixed response codes
  */

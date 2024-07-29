@@ -118,7 +118,7 @@ ec2Client.addToRolePolicy(
 // Outputs
 // ------------------------------------------------------
 new cdk.CfnOutput(stack, 'SvcDomainName', {
-  value: `https://${testSvc.domainName}/`,
+  value: `https://${testSvc.dnsEntry.domainName}/`,
 });
 
 new cdk.CfnOutput(stack, 'ClientSsmUrl', {

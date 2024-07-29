@@ -12,7 +12,7 @@ import { HttpFixedResponse, LambdaTargetGroup, ListenerProtocol, Service, Servic
 // Create Resource Stack
 // ------------------------------------------------------
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-cdk-vpclattice-e2e-custom-domain');
+const stack = new cdk.Stack(app, 'aws-cdk-vpclattice-e2e-custom-domain-1');
 
 // ------------------------------------------------------
 // VPCs
@@ -80,7 +80,7 @@ const cfnCertificate = new acmpca.CfnCertificate(stack, 'Certificate', {
 });
 
 // Enable CA
-new acmpca.CfnCertificateAuthorityActivation(stack, 'CertActivation-PAA', {
+const acmpaActivation = new acmpca.CfnCertificateAuthorityActivation(stack, 'CertActivation-PAA', {
   certificateAuthorityArn: cfnCertificateAuthority.attrArn,
   certificate: cfnCertificate.attrCertificate,
   status: 'ACTIVE',
@@ -94,6 +94,8 @@ const privateCertificate = new acm.PrivateCertificate(stack, 'PrivateCertificate
   certificateAuthority: certificateAuthority,
   keyAlgorithm: acm.KeyAlgorithm.RSA_2048,
 });
+
+privateCertificate.node.addDependency(acmpaActivation)
 
 // ------------------------------------------------------
 // Private Hosted Zone
@@ -157,7 +159,7 @@ parkingListener.addRule({
 // Service Network
 // ------------------------------------------------------
 new ServiceNetwork(stack, 'ServiceNetwork', {
-  name: 'superApps-vpcNetwork',
+  name: 'superapps-vpcnetwork',
   services: [parkingSvc],
   removalPolicy: cdk.RemovalPolicy.DESTROY,
   vpcAssociations: [{ vpc: svcVpc }, { vpc: clientsVpc }],
@@ -184,7 +186,12 @@ const clientEc2 = new Instance(stack, 'Ec2Instance', {
 // ------------------------------------------------------
 new cdk.CfnOutput(stack, 'TestingUrl', {
   description: 'Curl to this URL must work',
-  value: `http://${parkingSvc.domainName}/reservation`,
+  value: `http://${parkingSvc.dnsEntry.domainName}/reservation`,
+});
+
+new cdk.CfnOutput(stack, 'CustomDomainTestingUrl', {
+  description: 'Curl to this URL must work',
+  value: `http://parking.cdktests.com/reservation`,
 });
 
 new cdk.CfnOutput(stack, 'ClientSsmUrl', {

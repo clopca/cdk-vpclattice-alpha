@@ -12,6 +12,7 @@ import type { LoggingDestination } from './logging';
 import type { RuleAction } from './rule-action';
 import type { IServiceNetwork } from './service-network';
 import { ServiceNetworkServiceAssociation } from './service-network-association';
+import { MappingRecordType } from './util';
 
 /**
  * Represents a Vpc Lattice Service.
@@ -100,15 +101,15 @@ export interface AddListenerProps {
   readonly removalPolicy?: RemovalPolicy;
 }
 
-export interface DnsEntryProperty {
+export interface LatticeDnsEntry {
   /**
    * The domain name of the service.
    */
-  readonly domainName?: string;
+  readonly domainName: string;
   /**
    * The Route53 Private Hosted Zone or Public Hosted Zone.
    */
-  readonly hostedZone?: IHostedZone;
+  readonly hostedZone: IHostedZone;
 }
 
 export interface CustomDomainProps {
@@ -123,9 +124,9 @@ export interface CustomDomainProps {
 
   /**
    * The Route53 Private Hosted Zone or Public Hosted Zone.
-   * This will add a CNAME record between the custom domain name and the VPC
+   * This will add a record between the custom domain name and the VPC
    * Lattice service generated DNS name. Leave empty if DNS is managed outside
-   * of Route53 or if you want to manually add the Route53 CNAME record.
+   * of Route53 or if you want to manually add the Route53 Alias or CNAME record.
    */
   readonly hostedZone?: IHostedZone;
 
@@ -136,6 +137,14 @@ export interface CustomDomainProps {
    * @see https://docs.aws.amazon.com/vpc-lattice/latest/ug/service-byoc.html
    */
   readonly certificate?: ICertificate;
+
+  /**
+   * The type of record to be added to the hosted zone.
+   * Available options are: Alias (default), or CNAME
+   * @default MappingRecordType.ALIAS
+   * @see https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resource-record-sets-choosing-alias-non-alias.html
+   */
+  readonly recordType?: MappingRecordType
 }
 
 /**
@@ -176,13 +185,6 @@ export interface ServiceProps {
    * @see https://docs.aws.amazon.com/vpc-lattice/latest/ug/service-custom-domain-name.html
    */
   readonly customDomain?: CustomDomainProps;
-
-  /**
-   * A custom DNS entry.
-   * Note Changing it requires recreating the service.
-   * @default - No custom DNS entry is used.
-   */
-  readonly dnsEntry?: DnsEntryProperty;
 
   /**
    * ServiceNetwork to associate with.
@@ -321,13 +323,13 @@ export class Service extends ServiceBase {
    */
   public readonly authPolicy: AuthPolicyDocument;
   /**
-   * VPC Lattice Domain Name
+   * VPC Lattice DNS Entry
    */
-  public readonly domainName: string;
+  public readonly dnsEntry: LatticeDnsEntry;
   /**
    * Custom Domain Name
    */
-  public readonly customDomainName?: string;
+  public readonly customDomain?: CustomDomainProps;
   /**
    * L1 resource
    */
@@ -346,7 +348,7 @@ export class Service extends ServiceBase {
     this.loggingDestinations = props.loggingDestinations ?? [];
     this.authPolicy = props.authPolicy ?? new AuthPolicyDocument();
     this.authType = props.authType ?? AuthType.NONE;
-    this.customDomainName = props.customDomain?.domainName;
+    this.customDomain = props.customDomain;
 
     // ------------------------------------------------------
     // Validation
@@ -362,12 +364,8 @@ export class Service extends ServiceBase {
     // ------------------------------------------------------
     this._resource = new generated.CfnService(this, 'Resource', {
       authType: this.authType,
-      certificateArn: props.customDomain?.certificate?.certificateArn,
-      customDomainName: props.customDomain?.domainName,
-      dnsEntry: {
-        domainName: props.dnsEntry?.domainName,
-        hostedZoneId: props.dnsEntry?.hostedZone?.hostedZoneId,
-      },
+      certificateArn: this.customDomain?.certificate?.certificateArn,
+      customDomainName: this.customDomain?.domainName,
       name: this.physicalName,
     });
 
@@ -378,17 +376,35 @@ export class Service extends ServiceBase {
     this._resource.applyRemovalPolicy(props.removalPolicy);
     this.serviceArn = this._resource.attrArn;
     this.serviceId = this._resource.attrId;
-    this.domainName = this._resource.getAtt('DnsEntry.DomainName').toString();
+    // Lattice generated DNS entry in service-managed Hosted Zone
+    this.dnsEntry = {
+      domainName: this._resource.attrDnsEntryDomainName,
+      hostedZone: route53.HostedZone.fromHostedZoneId(this, "latticeHZ", this._resource.attrDnsEntryHostedZoneId)
+    };
+
 
     // ------------------------------------------------------
-    // Custom Domain CNAME creation
+    // Custom Domain Alias/CNAME creation
     // ------------------------------------------------------
-    if (props.customDomain?.hostedZone) {
-      new route53.CnameRecord(this, 'CNAME-${}', {
-        recordName: `${props.customDomain?.domainName}.`,
-        zone: props.customDomain?.hostedZone,
-        domainName: this.domainName,
-      });
+    if (this.customDomain?.hostedZone) {
+      if (this.customDomain?.recordType === MappingRecordType.CNAME) {
+        new route53.CnameRecord(this, `CNAME-${this._resource.node.id}`, {
+          recordName: `${this.customDomain?.domainName}.`,
+          zone: this.customDomain?.hostedZone,
+          domainName: this.dnsEntry.domainName,
+        });
+      } else { // defaults to Alias
+        new route53.CfnRecordSet(this, `ALIAS-${this._resource.node.id}`, {
+          name: `${this.customDomain?.domainName}.`,
+          hostedZoneId: this.customDomain?.hostedZone.hostedZoneId,
+          type: "A",
+          aliasTarget: {
+            dnsName: this.dnsEntry.domainName,
+            hostedZoneId: this.dnsEntry.hostedZone.hostedZoneId,
+            evaluateTargetHealth: true,
+          },
+        });
+      }
     }
 
     // ------------------------------------------------------

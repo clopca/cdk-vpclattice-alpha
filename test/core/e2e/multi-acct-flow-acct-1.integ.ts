@@ -98,7 +98,7 @@ serviceNetwork.shareResource({
 // Outputs
 // ------------------------------------------------------
 new cdk.CfnOutput(stack_provider, 'SvcDomainName', {
-  value: `https://${testSvc.domainName}/`,
+  value: `https://${testSvc.dnsEntry.domainName}/`,
 });
 
 // ------------------------------------------------------

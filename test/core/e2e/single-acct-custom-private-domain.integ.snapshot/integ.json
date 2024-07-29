@@ -3,7 +3,7 @@
   "testCases": {
     "ServiceNetworkTest/DefaultTest": {
       "stacks": [
-        "aws-cdk-vpclattice-e2e-custom-domain"
+        "aws-cdk-vpclattice-e2e-custom-domain-1"
       ],
       "assertionStack": "ServiceNetworkTest/DefaultTest/DeployAssert",
       "assertionStackName": "ServiceNetworkTestDefaultTestDeployAssert62481699"
