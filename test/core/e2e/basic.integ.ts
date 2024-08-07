@@ -4,12 +4,13 @@ import * as cdk from 'aws-cdk-lib';
 import * as autoscaling from 'aws-cdk-lib/aws-autoscaling';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { Instance, Peer, Port, SecurityGroup, Vpc } from 'aws-cdk-lib/aws-ec2';
-// import { ApplicationLoadBalancedFargateService } from 'aws-cdk-lib/aws-ecs-patterns';
 import { Code, Function as LambdaFunction, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { HttpFixedResponse, ListenerProtocol, Service, ServiceNetwork, AuthType, RuleAction, RuleMatch, HttpMethod } from '../../../src';
 // import { AlbTargetGroup, InstanceTargetGroup, LambdaTargetGroup, RequestProtocol, RequestProtocolVersion } from '../../../src/aws-vpclattice-targets';
 import { InstanceTargetGroup, LambdaTargetGroup, RequestProtocol, RequestProtocolVersion } from '../../../src/aws-vpclattice-targets';
 import { ListenerRule } from '../../../src/rule';
+//import { ApplicationLoadBalancedFargateService } from 'aws-cdk-lib/aws-ecs-patterns';
+// import * as ecs from 'aws-cdk-lib/aws-ecs';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-vpclattice-integ-basic-e2e');
@@ -100,21 +101,23 @@ const paymentsSecurityGroup = new SecurityGroup(stack, 'PaymentsSG', {
 
 paymentsSecurityGroup.addIngressRule(Peer.ipv4('10.0.0.0/16'), Port.allTraffic());
 paymentsSecurityGroup.addIngressRule(Peer.ipv4('169.254.0.0/16'), Port.allTraffic());
+paymentsSecurityGroup.addIngressRule(Peer.ipv4('172.16.0.0/16'), Port.tcp(80));
 
 // ------------------------------------------------------
 // ALB TG
 // ------------------------------------------------------
-// const albSvc = new ApplicationLoadBalancedFargateService(stack, 'ALBService', {
+//const albSvc =
+// new ApplicationLoadBalancedFargateService(stack, 'ALBService', {
 //   vpc: paymentsVpc,
 //   memoryLimitMiB: 1024,
 //   cpu: 512,
 //   taskImageOptions: {
-//     image: cdk.aws_ecs.ContainerImage.fromRegistry('public.ecr.aws/bitnami/lamp:8.1'),
-//     containerPort: 80,
+//     image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
 //   },
 //   securityGroups: [paymentsSecurityGroup],
 //   publicLoadBalancer: false,
 // });
+
 
 // const paymentsTg = new AlbTargetGroup(stack, 'ALBTG', {
 //   name: 'payments-tg',

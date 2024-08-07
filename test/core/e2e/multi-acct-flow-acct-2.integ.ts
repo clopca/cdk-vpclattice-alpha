@@ -57,7 +57,7 @@ ec2Client.addToRolePolicy(
 // ------------------------------------------------------
 new ServiceNetworkVpcAssociation(stack_consumer, 'ClientVpcAssociation', {
   vpc: clientVpc,
-  serviceNetworkId: 'arn:aws:vpc-lattice:eu-central-1:694275606777:servicenetwork/sn-02be8e925365dafb4',
+  serviceNetworkId: 'arn:aws:vpc-lattice:eu-central-1:694275606777:servicenetwork/sn-01d8737493028116d',
 });
 
 // ------------------------------------------------------

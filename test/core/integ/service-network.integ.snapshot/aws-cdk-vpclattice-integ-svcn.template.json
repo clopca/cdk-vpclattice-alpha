@@ -448,6 +448,37 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
+  "ServiceNetworkAssociateVPCc88c6dfa79006e1d29115a7c01f401d0b8395e2713VpcAssociationc88c6dfa79006e1d29115a7c01f401d0b8395e2713D3CC831C": {
+   "Type": "AWS::VpcLattice::ServiceNetworkVpcAssociation",
+   "Properties": {
+    "ServiceNetworkIdentifier": {
+     "Fn::GetAtt": [
+      "ServiceNetworkEF29AF70",
+      "Id"
+     ]
+    },
+    "VpcIdentifier": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   }
+  },
+  "ServiceNetworkServiceAssociationc8f912c2cccde75362b79ae3f8a1f9b5e6f4ca3cd5LatticeAssociationc8619ac599a869f05a2e15e2a1b1546839b0eaa4062DC7877B": {
+   "Type": "AWS::VpcLattice::ServiceNetworkServiceAssociation",
+   "Properties": {
+    "ServiceIdentifier": {
+     "Fn::GetAtt": [
+      "ServiceDBC79909",
+      "Id"
+     ]
+    },
+    "ServiceNetworkIdentifier": {
+     "Fn::GetAtt": [
+      "ServiceNetworkEF29AF70",
+      "Id"
+     ]
+    }
+   }
+  },
   "ServiceNetworkAccessLogSubscriptionc80b543e43d807a5e09c85647aa4b74f9f3e6d39f343960EFA": {
    "Type": "AWS::VpcLattice::AccessLogSubscription",
    "Properties": {
@@ -482,89 +513,6 @@
     }
    }
   },
-  "ServiceNetworkAssociateVPCc88c6dfa79006e1d29115a7c01f401d0b8395e2713ServiceNetworkSecurityGroupc88e3dbb7584bf9d895ab48af6f4fc4be84039b5dcF347541D": {
-   "Type": "AWS::EC2::SecurityGroup",
-   "Properties": {
-    "GroupDescription": "ServiceNetworkSecurityGroup",
-    "SecurityGroupEgress": [
-     {
-      "CidrIp": "0.0.0.0/0",
-      "Description": "Allow all outbound traffic by default",
-      "IpProtocol": "-1"
-     }
-    ],
-    "SecurityGroupIngress": [
-     {
-      "CidrIp": {
-       "Fn::GetAtt": [
-        "VPCB9E5F0B4",
-        "CidrBlock"
-       ]
-      },
-      "Description": {
-       "Fn::Join": [
-        "",
-        [
-         "from ",
-         {
-          "Fn::GetAtt": [
-           "VPCB9E5F0B4",
-           "CidrBlock"
-          ]
-         },
-         ":443"
-        ]
-       ]
-      },
-      "FromPort": 443,
-      "IpProtocol": "tcp",
-      "ToPort": 443
-     }
-    ],
-    "VpcId": {
-     "Ref": "VPCB9E5F0B4"
-    }
-   }
-  },
-  "ServiceNetworkAssociateVPCc88c6dfa79006e1d29115a7c01f401d0b8395e2713VpcAssociationc88e3dbb7584bf9d895ab48af6f4fc4be84039b5dcCD17AD07": {
-   "Type": "AWS::VpcLattice::ServiceNetworkVpcAssociation",
-   "Properties": {
-    "SecurityGroupIds": [
-     {
-      "Fn::GetAtt": [
-       "ServiceNetworkAssociateVPCc88c6dfa79006e1d29115a7c01f401d0b8395e2713ServiceNetworkSecurityGroupc88e3dbb7584bf9d895ab48af6f4fc4be84039b5dcF347541D",
-       "GroupId"
-      ]
-     }
-    ],
-    "ServiceNetworkIdentifier": {
-     "Fn::GetAtt": [
-      "ServiceNetworkEF29AF70",
-      "Id"
-     ]
-    },
-    "VpcIdentifier": {
-     "Ref": "VPCB9E5F0B4"
-    }
-   }
-  },
-  "ServiceNetworkServiceAssociationc8f912c2cccde75362b79ae3f8a1f9b5e6f4ca3cd5LatticeServicec8619ac599a869f05a2e15e2a1b1546839b0eaa406674488CD": {
-   "Type": "AWS::VpcLattice::ServiceNetworkServiceAssociation",
-   "Properties": {
-    "ServiceIdentifier": {
-     "Fn::GetAtt": [
-      "ServiceDBC79909",
-      "Id"
-     ]
-    },
-    "ServiceNetworkIdentifier": {
-     "Fn::GetAtt": [
-      "ServiceNetworkEF29AF70",
-      "Id"
-     ]
-    }
-   }
-  },
   "ServiceNetworkServiceNetworkShare4B0348FC": {
    "Type": "AWS::RAM::ResourceShare",
    "Properties": {
@@ -580,6 +528,33 @@
       ]
      }
     ]
+   }
+  },
+  "ServiceNetworkServiceNetworkAuthPolicy27A7858F": {
+   "Type": "AWS::VpcLattice::AuthPolicy",
+   "Properties": {
+    "Policy": {
+     "Statement": [
+      {
+       "Action": "vpc-lattice-svcs:*",
+       "Condition": {
+        "StringNotEqualsIgnoreCase": {
+         "aws:PrincipalType": "anonymous"
+        }
+       },
+       "Effect": "Allow",
+       "Principal": "*",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ResourceIdentifier": {
+     "Fn::GetAtt": [
+      "ServiceNetworkEF29AF70",
+      "Arn"
+     ]
+    }
    }
   }
  },

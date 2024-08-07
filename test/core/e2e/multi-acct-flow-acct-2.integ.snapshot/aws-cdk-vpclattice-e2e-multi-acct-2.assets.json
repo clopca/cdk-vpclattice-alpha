@@ -1,7 +1,7 @@
 {
   "version": "36.0.0",
   "files": {
-    "44641f1d60414a0e55d46fcd04c9ff85fa974e8cb6f4ba219b97ac8f26bed84c": {
+    "9ed7c14ad386045b9b90d7692e250127866f52631e8bbe304bf18c7e87087c27": {
       "source": {
         "path": "aws-cdk-vpclattice-e2e-multi-acct-2.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "249522321342-eu-central-1": {
           "bucketName": "cdk-hnb659fds-assets-249522321342-eu-central-1",
-          "objectKey": "44641f1d60414a0e55d46fcd04c9ff85fa974e8cb6f4ba219b97ac8f26bed84c.json",
+          "objectKey": "9ed7c14ad386045b9b90d7692e250127866f52631e8bbe304bf18c7e87087c27.json",
           "region": "eu-central-1",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::249522321342:role/cdk-hnb659fds-file-publishing-role-249522321342-eu-central-1"
         }

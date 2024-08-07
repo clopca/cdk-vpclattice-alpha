@@ -591,7 +591,7 @@
   "ClientVpcAssociationVpcAssociationc8faec6c7a433ca58448e2b2d62e96b3d904da3391D8B8A5C6": {
    "Type": "AWS::VpcLattice::ServiceNetworkVpcAssociation",
    "Properties": {
-    "ServiceNetworkIdentifier": "arn:aws:vpc-lattice:eu-central-1:694275606777:servicenetwork/sn-02be8e925365dafb4",
+    "ServiceNetworkIdentifier": "arn:aws:vpc-lattice:eu-central-1:694275606777:servicenetwork/sn-01d8737493028116d",
     "VpcIdentifier": {
      "Ref": "ClientVPC9BBAC0E1"
     }

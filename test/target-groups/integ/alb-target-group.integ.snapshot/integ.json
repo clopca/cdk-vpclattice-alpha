@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "ServiceTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-vpclattice-integ-alb-target-group"
+      ],
+      "assertionStack": "ServiceTest/DefaultTest/DeployAssert",
+      "assertionStackName": "ServiceTestDefaultTestDeployAssertE49B1ECE"
+    }
+  }
+}

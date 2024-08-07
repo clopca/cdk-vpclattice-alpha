@@ -10,7 +10,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-integ-listener/VPC"
+      "Value": "aws-cdk-vpclattice-integ-alb-target-group/VPC"
      }
     ]
    }
@@ -39,7 +39,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-integ-listener/VPC/PublicSubnet1"
+      "Value": "aws-cdk-vpclattice-integ-alb-target-group/VPC/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -53,7 +53,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-integ-listener/VPC/PublicSubnet1"
+      "Value": "aws-cdk-vpclattice-integ-alb-target-group/VPC/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -94,7 +94,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-integ-listener/VPC/PublicSubnet1"
+      "Value": "aws-cdk-vpclattice-integ-alb-target-group/VPC/PublicSubnet1"
      }
     ]
    }
@@ -114,7 +114,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-integ-listener/VPC/PublicSubnet1"
+      "Value": "aws-cdk-vpclattice-integ-alb-target-group/VPC/PublicSubnet1"
      }
     ]
    },
@@ -147,7 +147,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-integ-listener/VPC/PublicSubnet2"
+      "Value": "aws-cdk-vpclattice-integ-alb-target-group/VPC/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -161,7 +161,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-integ-listener/VPC/PublicSubnet2"
+      "Value": "aws-cdk-vpclattice-integ-alb-target-group/VPC/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -195,42 +195,6 @@
     "VPCVPCGW99B986DC"
    ]
   },
-  "VPCPublicSubnet2EIP4947BC00": {
-   "Type": "AWS::EC2::EIP",
-   "Properties": {
-    "Domain": "vpc",
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "aws-cdk-vpclattice-integ-listener/VPC/PublicSubnet2"
-     }
-    ]
-   }
-  },
-  "VPCPublicSubnet2NATGateway3C070193": {
-   "Type": "AWS::EC2::NatGateway",
-   "Properties": {
-    "AllocationId": {
-     "Fn::GetAtt": [
-      "VPCPublicSubnet2EIP4947BC00",
-      "AllocationId"
-     ]
-    },
-    "SubnetId": {
-     "Ref": "VPCPublicSubnet2Subnet74179F39"
-    },
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "aws-cdk-vpclattice-integ-listener/VPC/PublicSubnet2"
-     }
-    ]
-   },
-   "DependsOn": [
-    "VPCPublicSubnet2DefaultRouteB7481BBA",
-    "VPCPublicSubnet2RouteTableAssociation5A808732"
-   ]
-  },
   "VPCPrivateSubnet1Subnet8BCA10E0": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
@@ -255,7 +219,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-integ-listener/VPC/PrivateSubnet1"
+      "Value": "aws-cdk-vpclattice-integ-alb-target-group/VPC/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -269,7 +233,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-integ-listener/VPC/PrivateSubnet1"
+      "Value": "aws-cdk-vpclattice-integ-alb-target-group/VPC/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -324,7 +288,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-integ-listener/VPC/PrivateSubnet2"
+      "Value": "aws-cdk-vpclattice-integ-alb-target-group/VPC/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -338,7 +302,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-integ-listener/VPC/PrivateSubnet2"
+      "Value": "aws-cdk-vpclattice-integ-alb-target-group/VPC/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -362,7 +326,7 @@
    "Properties": {
     "DestinationCidrBlock": "0.0.0.0/0",
     "NatGatewayId": {
-     "Ref": "VPCPublicSubnet2NATGateway3C070193"
+     "Ref": "VPCPublicSubnet1NATGatewayE0556630"
     },
     "RouteTableId": {
      "Ref": "VPCPrivateSubnet2RouteTable0A19E10E"
@@ -375,7 +339,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpclattice-integ-listener/VPC"
+      "Value": "aws-cdk-vpclattice-integ-alb-target-group/VPC"
      }
     ]
    }
@@ -391,223 +355,110 @@
     }
    }
   },
-  "ServiceDBC79909": {
-   "Type": "AWS::VpcLattice::Service",
+  "ServiceLBE9A1ADBC": {
+   "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
    "Properties": {
-    "AuthType": "NONE"
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "ServiceListenerlistener1DFC41768": {
-   "Type": "AWS::VpcLattice::Listener",
-   "Properties": {
-    "DefaultAction": {
-     "FixedResponse": {
-      "StatusCode": 404
+    "LoadBalancerAttributes": [
+     {
+      "Key": "deletion_protection.enabled",
+      "Value": "false"
      }
-    },
-    "Name": "listener1",
-    "Port": 80,
-    "Protocol": "HTTP",
-    "ServiceIdentifier": {
-     "Fn::GetAtt": [
-      "ServiceDBC79909",
-      "Id"
-     ]
-    }
-   },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
-  },
-  "ServiceListenerlistener1RulefirstruleD67380E7": {
-   "Type": "AWS::VpcLattice::Rule",
-   "Properties": {
-    "Action": {
-     "Forward": {
-      "TargetGroups": [
-       {
-        "TargetGroupIdentifier": {
-         "Fn::GetAtt": [
-          "LambdaTGF1D88294",
-          "Id"
-         ]
-        },
-        "Weight": 100
-       }
+    ],
+    "Scheme": "internal",
+    "SecurityGroups": [
+     {
+      "Fn::GetAtt": [
+       "ServiceLBSecurityGroupF7435A5C",
+       "GroupId"
       ]
      }
-    },
-    "ListenerIdentifier": {
-     "Fn::GetAtt": [
-      "ServiceListenerlistener1DFC41768",
-      "Id"
-     ]
-    },
-    "Match": {
-     "HttpMatch": {
-      "HeaderMatches": [
-       {
-        "CaseSensitive": true,
-        "Match": {
-         "Exact": "some-value"
-        },
-        "Name": "x-custom-header"
-       }
-      ]
+    ],
+    "Subnets": [
+     {
+      "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+     },
+     {
+      "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
      }
-    },
-    "Name": "first-rule",
-    "Priority": 1,
-    "ServiceIdentifier": {
-     "Fn::GetAtt": [
-      "ServiceDBC79909",
-      "Id"
-     ]
-    }
+    ],
+    "Type": "application"
    }
   },
-  "ServiceListenerlistener1Rulesecondrule161720CB": {
-   "Type": "AWS::VpcLattice::Rule",
+  "ServiceLBSecurityGroupF7435A5C": {
+   "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "Action": {
-     "Forward": {
-      "TargetGroups": [
-       {
-        "TargetGroupIdentifier": {
-         "Fn::GetAtt": [
-          "LambdaTGF1D88294",
-          "Id"
-         ]
-        },
-        "Weight": 50
-       }
-      ]
+    "GroupDescription": "Automatically created Security Group for ELB awscdkvpclatticeintegalbtargetgroupServiceLB42F09320",
+    "SecurityGroupIngress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow from anyone on port 80",
+      "FromPort": 80,
+      "IpProtocol": "tcp",
+      "ToPort": 80
      }
-    },
-    "ListenerIdentifier": {
-     "Fn::GetAtt": [
-      "ServiceListenerlistener1DFC41768",
-      "Id"
-     ]
-    },
-    "Match": {
-     "HttpMatch": {
-      "Method": "GET"
-     }
-    },
-    "Name": "second-rule",
-    "Priority": 2,
-    "ServiceIdentifier": {
-     "Fn::GetAtt": [
-      "ServiceDBC79909",
-      "Id"
-     ]
-    }
-   }
-  },
-  "ServiceListenerlistener1Rulethirdrule51311BD3": {
-   "Type": "AWS::VpcLattice::Rule",
-   "Properties": {
-    "Action": {
-     "FixedResponse": {
-      "StatusCode": 404
-     }
-    },
-    "ListenerIdentifier": {
-     "Fn::GetAtt": [
-      "ServiceListenerlistener1DFC41768",
-      "Id"
-     ]
-    },
-    "Match": {
-     "HttpMatch": {
-      "PathMatch": {
-       "CaseSensitive": false,
-       "Match": {
-        "Exact": "/test"
-       }
-      }
-     }
-    },
-    "Name": "third-rule",
-    "Priority": 3,
-    "ServiceIdentifier": {
-     "Fn::GetAtt": [
-      "ServiceDBC79909",
-      "Id"
-     ]
-    }
-   }
-  },
-  "ServiceNetworkEF29AF70": {
-   "Type": "AWS::VpcLattice::ServiceNetwork",
-   "Properties": {
-    "AuthType": "AWS_IAM",
-    "Name": "my-custom-name"
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "ServiceNetworkAssociateVPCc85ecd70a18ff76c17d2d1dfea3506fa57fe14d599VpcAssociationc85ecd70a18ff76c17d2d1dfea3506fa57fe14d5998B1EC2E0": {
-   "Type": "AWS::VpcLattice::ServiceNetworkVpcAssociation",
-   "Properties": {
-    "ServiceNetworkIdentifier": {
-     "Fn::GetAtt": [
-      "ServiceNetworkEF29AF70",
-      "Id"
-     ]
-    },
-    "VpcIdentifier": {
+    ],
+    "VpcId": {
      "Ref": "VPCB9E5F0B4"
     }
    }
   },
-  "ServiceNetworkServiceAssociationc847ec75e7b822c3142d37378a9e1d4e9d15aed398LatticeAssociationc801a63c191db97f7018a3a6798a1946b6a66e3af0AD4D1B15": {
-   "Type": "AWS::VpcLattice::ServiceNetworkServiceAssociation",
+  "ServiceLBSecurityGrouptoawscdkvpclatticeintegalbtargetgroupServiceSecurityGroup4415EFC580FF1B2A1B": {
+   "Type": "AWS::EC2::SecurityGroupEgress",
    "Properties": {
-    "ServiceIdentifier": {
+    "Description": "Load balancer to target",
+    "DestinationSecurityGroupId": {
      "Fn::GetAtt": [
-      "ServiceDBC79909",
-      "Id"
+      "ServiceSecurityGroupEEA09B68",
+      "GroupId"
      ]
     },
-    "ServiceNetworkIdentifier": {
+    "FromPort": 80,
+    "GroupId": {
      "Fn::GetAtt": [
-      "ServiceNetworkEF29AF70",
-      "Id"
+      "ServiceLBSecurityGroupF7435A5C",
+      "GroupId"
      ]
+    },
+    "IpProtocol": "tcp",
+    "ToPort": 80
+   }
+  },
+  "ServiceLBPublicListener46709EAA": {
+   "Type": "AWS::ElasticLoadBalancingV2::Listener",
+   "Properties": {
+    "DefaultActions": [
+     {
+      "TargetGroupArn": {
+       "Ref": "ServiceLBPublicListenerECSGroup0CC8688C"
+      },
+      "Type": "forward"
+     }
+    ],
+    "LoadBalancerArn": {
+     "Ref": "ServiceLBE9A1ADBC"
+    },
+    "Port": 80,
+    "Protocol": "HTTP"
+   }
+  },
+  "ServiceLBPublicListenerECSGroup0CC8688C": {
+   "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+   "Properties": {
+    "Port": 80,
+    "Protocol": "HTTP",
+    "TargetGroupAttributes": [
+     {
+      "Key": "stickiness.enabled",
+      "Value": "false"
+     }
+    ],
+    "TargetType": "ip",
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
     }
    }
   },
-  "ServiceNetworkServiceNetworkAuthPolicy27A7858F": {
-   "Type": "AWS::VpcLattice::AuthPolicy",
-   "Properties": {
-    "Policy": {
-     "Statement": [
-      {
-       "Action": "vpc-lattice-svcs:*",
-       "Condition": {
-        "StringNotEqualsIgnoreCase": {
-         "aws:PrincipalType": "anonymous"
-        }
-       },
-       "Effect": "Allow",
-       "Principal": "*",
-       "Resource": "*"
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "ResourceIdentifier": {
-     "Fn::GetAtt": [
-      "ServiceNetworkEF29AF70",
-      "Arn"
-     ]
-    }
-   }
-  },
-  "LambdaTargetFunctionServiceRole8E9A299C": {
+  "ServiceTaskDefTaskRole0CFE2F57": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -616,64 +467,264 @@
        "Action": "sts:AssumeRole",
        "Effect": "Allow",
        "Principal": {
-        "Service": "lambda.amazonaws.com"
+        "Service": "ecs-tasks.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "ServiceTaskDef1922A00F": {
+   "Type": "AWS::ECS::TaskDefinition",
+   "Properties": {
+    "ContainerDefinitions": [
+     {
+      "Essential": true,
+      "Image": "amazon/amazon-ecs-sample",
+      "LogConfiguration": {
+       "LogDriver": "awslogs",
+       "Options": {
+        "awslogs-group": {
+         "Ref": "ServiceTaskDefwebLogGroup2A898F61"
+        },
+        "awslogs-stream-prefix": "Service",
+        "awslogs-region": {
+         "Ref": "AWS::Region"
+        }
+       }
+      },
+      "Name": "web",
+      "PortMappings": [
+       {
+        "ContainerPort": 80,
+        "Protocol": "tcp"
+       }
+      ]
+     }
+    ],
+    "Cpu": "512",
+    "ExecutionRoleArn": {
+     "Fn::GetAtt": [
+      "ServiceTaskDefExecutionRole919F7BE3",
+      "Arn"
+     ]
+    },
+    "Family": "awscdkvpclatticeintegalbtargetgroupServiceTaskDef7C0569E2",
+    "Memory": "1024",
+    "NetworkMode": "awsvpc",
+    "RequiresCompatibilities": [
+     "FARGATE"
+    ],
+    "TaskRoleArn": {
+     "Fn::GetAtt": [
+      "ServiceTaskDefTaskRole0CFE2F57",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "ServiceTaskDefwebLogGroup2A898F61": {
+   "Type": "AWS::Logs::LogGroup",
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "ServiceTaskDefExecutionRole919F7BE3": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ecs-tasks.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "ServiceTaskDefExecutionRoleDefaultPolicy3073559D": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "ServiceTaskDefwebLogGroup2A898F61",
+         "Arn"
+        ]
        }
       }
      ],
      "Version": "2012-10-17"
     },
-    "ManagedPolicyArns": [
+    "PolicyName": "ServiceTaskDefExecutionRoleDefaultPolicy3073559D",
+    "Roles": [
      {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-       ]
-      ]
+      "Ref": "ServiceTaskDefExecutionRole919F7BE3"
      }
     ]
    }
   },
-  "LambdaTargetFunction2F5BAF5A": {
-   "Type": "AWS::Lambda::Function",
+  "Service9571FDD8": {
+   "Type": "AWS::ECS::Service",
    "Properties": {
-    "Code": {
-     "ZipFile": "\n\t\t  exports.handler = async (event) => {\n\t\t\t  return {\n\t\t\t\t  isBase64Encoded: false,\n\t\t\t\t  statusCode: 200,\n\t\t\t\t  body: JSON.stringify({ message: \"Hello from Lambda!\" }),\n\t\t\t  };\n\t\t  };\n\t  "
+    "Cluster": {
+     "Ref": "EcsDefaultClusterMnL3mNNYNVPC9C1EC7A3"
     },
-    "Handler": "index.handler",
-    "Role": {
-     "Fn::GetAtt": [
-      "LambdaTargetFunctionServiceRole8E9A299C",
-      "Arn"
-     ]
+    "DeploymentConfiguration": {
+     "Alarms": {
+      "AlarmNames": [],
+      "Enable": false,
+      "Rollback": false
+     },
+     "MaximumPercent": 200,
+     "MinimumHealthyPercent": 50
     },
-    "Runtime": "nodejs18.x"
+    "EnableECSManagedTags": false,
+    "HealthCheckGracePeriodSeconds": 60,
+    "LaunchType": "FARGATE",
+    "LoadBalancers": [
+     {
+      "ContainerName": "web",
+      "ContainerPort": 80,
+      "TargetGroupArn": {
+       "Ref": "ServiceLBPublicListenerECSGroup0CC8688C"
+      }
+     }
+    ],
+    "NetworkConfiguration": {
+     "AwsvpcConfiguration": {
+      "AssignPublicIp": "DISABLED",
+      "SecurityGroups": [
+       {
+        "Fn::GetAtt": [
+         "ServiceSecurityGroupEEA09B68",
+         "GroupId"
+        ]
+       }
+      ],
+      "Subnets": [
+       {
+        "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+       },
+       {
+        "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+       }
+      ]
+     }
+    },
+    "TaskDefinition": {
+     "Ref": "ServiceTaskDef1922A00F"
+    }
    },
    "DependsOn": [
-    "LambdaTargetFunctionServiceRole8E9A299C"
+    "ServiceLBPublicListenerECSGroup0CC8688C",
+    "ServiceLBPublicListener46709EAA",
+    "ServiceTaskDefTaskRole0CFE2F57"
    ]
   },
-  "LambdaTGF1D88294": {
+  "ServiceSecurityGroupEEA09B68": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "aws-cdk-vpclattice-integ-alb-target-group/Service/Service/SecurityGroup",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   },
+   "DependsOn": [
+    "ServiceTaskDefTaskRole0CFE2F57"
+   ]
+  },
+  "ServiceSecurityGroupfromawscdkvpclatticeintegalbtargetgroupServiceLBSecurityGroup23D0942880321266CA": {
+   "Type": "AWS::EC2::SecurityGroupIngress",
+   "Properties": {
+    "Description": "Load balancer to target",
+    "FromPort": 80,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "ServiceSecurityGroupEEA09B68",
+      "GroupId"
+     ]
+    },
+    "IpProtocol": "tcp",
+    "SourceSecurityGroupId": {
+     "Fn::GetAtt": [
+      "ServiceLBSecurityGroupF7435A5C",
+      "GroupId"
+     ]
+    },
+    "ToPort": 80
+   },
+   "DependsOn": [
+    "ServiceTaskDefTaskRole0CFE2F57"
+   ]
+  },
+  "EcsDefaultClusterMnL3mNNYNVPC9C1EC7A3": {
+   "Type": "AWS::ECS::Cluster"
+  },
+  "ALBTG3A6B6730": {
    "Type": "AWS::VpcLattice::TargetGroup",
    "Properties": {
     "Config": {
-     "LambdaEventStructureVersion": "V1"
+     "Port": 443,
+     "Protocol": "HTTPS",
+     "ProtocolVersion": "HTTP1",
+     "VpcIdentifier": {
+      "Ref": "VPCB9E5F0B4"
+     }
     },
     "Targets": [
      {
       "Id": {
-       "Fn::GetAtt": [
-        "LambdaTargetFunction2F5BAF5A",
-        "Arn"
-       ]
-      }
+       "Ref": "ServiceLBE9A1ADBC"
+      },
+      "Port": 443
      }
     ],
-    "Type": "LAMBDA"
+    "Type": "ALB"
+   }
+  }
+ },
+ "Outputs": {
+  "ServiceLoadBalancerDNSEC5B149E": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ServiceLBE9A1ADBC",
+     "DNSName"
+    ]
+   }
+  },
+  "ServiceServiceURL250C0FB6": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "http://",
+      {
+       "Fn::GetAtt": [
+        "ServiceLBE9A1ADBC",
+        "DNSName"
+       ]
+      }
+     ]
+    ]
    }
   }
  },

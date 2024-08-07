@@ -1219,14 +1219,14 @@
                     ],
                     "securityGroupIngress": [
                       {
-                        "cidrIp": "10.0.0.0/16",
-                        "ipProtocol": "-1",
-                        "description": "from 10.0.0.0/16:ALL TRAFFIC"
-                      },
-                      {
                         "cidrIp": "169.254.0.0/16",
                         "ipProtocol": "-1",
                         "description": "from 169.254.0.0/16:ALL TRAFFIC"
+                      },
+                      {
+                        "cidrIp": "10.0.0.0/16",
+                        "ipProtocol": "-1",
+                        "description": "from 10.0.0.0/16:ALL TRAFFIC"
                       }
                     ],
                     "vpcId": {
@@ -1266,14 +1266,14 @@
                     ],
                     "securityGroupIngress": [
                       {
-                        "cidrIp": "10.0.0.0/16",
-                        "ipProtocol": "-1",
-                        "description": "from 10.0.0.0/16:ALL TRAFFIC"
-                      },
-                      {
                         "cidrIp": "169.254.0.0/16",
                         "ipProtocol": "-1",
                         "description": "from 169.254.0.0/16:ALL TRAFFIC"
+                      },
+                      {
+                        "cidrIp": "10.0.0.0/16",
+                        "ipProtocol": "-1",
+                        "description": "from 10.0.0.0/16:ALL TRAFFIC"
                       }
                     ],
                     "vpcId": {
@@ -1303,12 +1303,19 @@
                   "aws:cdk:cloudformation:type": "AWS::VpcLattice::Service",
                   "aws:cdk:cloudformation:props": {
                     "authType": "AWS_IAM",
-                    "dnsEntry": {},
                     "name": "test-svc"
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_vpclattice.CfnService",
+                  "version": "2.146.0"
+                }
+              },
+              "latticeHZ": {
+                "id": "latticeHZ",
+                "path": "aws-cdk-vpclattice-e2e-single-acct-auth/Parking/latticeHZ",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
                   "version": "2.146.0"
                 }
               },
@@ -1368,12 +1375,7 @@
                     "policy": {
                       "Statement": [
                         {
-                          "Action": "vpc-lattice-svcs:Invoke",
-                          "Condition": {
-                            "StringNotEqualsIgnoreCase": {
-                              "aws:PrincipalType": "anonymous"
-                            }
-                          },
+                          "Action": "vpc-lattice-svcs:*",
                           "Effect": "Allow",
                           "Principal": "*",
                           "Resource": "*"
@@ -1395,7 +1397,7 @@
                     "resourceIdentifier": {
                       "Fn::GetAtt": [
                         "Parking6000F0C6",
-                        "Id"
+                        "Arn"
                       ]
                     }
                   }
@@ -1434,13 +1436,12 @@
                 "id": "AssociateVPCc82109ec4f50c659081928dce8e8815b12ebd3cfc6",
                 "path": "aws-cdk-vpclattice-e2e-single-acct-auth/ServiceNetwork/AssociateVPCc82109ec4f50c659081928dce8e8815b12ebd3cfc6",
                 "children": {
-                  "VpcAssociationc8201a61ce848455ba897a63301b1e56b016367e4e": {
-                    "id": "VpcAssociationc8201a61ce848455ba897a63301b1e56b016367e4e",
-                    "path": "aws-cdk-vpclattice-e2e-single-acct-auth/ServiceNetwork/AssociateVPCc82109ec4f50c659081928dce8e8815b12ebd3cfc6/VpcAssociationc8201a61ce848455ba897a63301b1e56b016367e4e",
+                  "VpcAssociation-c82109ec4f50c659081928dce8e8815b12ebd3cfc6": {
+                    "id": "VpcAssociation-c82109ec4f50c659081928dce8e8815b12ebd3cfc6",
+                    "path": "aws-cdk-vpclattice-e2e-single-acct-auth/ServiceNetwork/AssociateVPCc82109ec4f50c659081928dce8e8815b12ebd3cfc6/VpcAssociation-c82109ec4f50c659081928dce8e8815b12ebd3cfc6",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::VpcLattice::ServiceNetworkVpcAssociation",
                       "aws:cdk:cloudformation:props": {
-                        "securityGroupIds": [],
                         "serviceNetworkIdentifier": {
                           "Fn::GetAtt": [
                             "ServiceNetworkEF29AF70",
@@ -1467,9 +1468,9 @@
                 "id": "AssociateVPCc8c4413997c6ea78d48ac0d4f42733f9f7d757d6e3",
                 "path": "aws-cdk-vpclattice-e2e-single-acct-auth/ServiceNetwork/AssociateVPCc8c4413997c6ea78d48ac0d4f42733f9f7d757d6e3",
                 "children": {
-                  "VpcAssociationc85cc3687d232b3ef31ed79ed747c9d1ffd5fc654e": {
-                    "id": "VpcAssociationc85cc3687d232b3ef31ed79ed747c9d1ffd5fc654e",
-                    "path": "aws-cdk-vpclattice-e2e-single-acct-auth/ServiceNetwork/AssociateVPCc8c4413997c6ea78d48ac0d4f42733f9f7d757d6e3/VpcAssociationc85cc3687d232b3ef31ed79ed747c9d1ffd5fc654e",
+                  "VpcAssociation-c8c4413997c6ea78d48ac0d4f42733f9f7d757d6e3": {
+                    "id": "VpcAssociation-c8c4413997c6ea78d48ac0d4f42733f9f7d757d6e3",
+                    "path": "aws-cdk-vpclattice-e2e-single-acct-auth/ServiceNetwork/AssociateVPCc8c4413997c6ea78d48ac0d4f42733f9f7d757d6e3/VpcAssociation-c8c4413997c6ea78d48ac0d4f42733f9f7d757d6e3",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::VpcLattice::ServiceNetworkVpcAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -1964,6 +1965,14 @@
           "SvcDomainName": {
             "id": "SvcDomainName",
             "path": "aws-cdk-vpclattice-e2e-single-acct-auth/SvcDomainName",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.146.0"
+            }
+          },
+          "ClientSsmUrl": {
+            "id": "ClientSsmUrl",
+            "path": "aws-cdk-vpclattice-e2e-single-acct-auth/ClientSsmUrl",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnOutput",
               "version": "2.146.0"

@@ -1951,6 +1951,13 @@
       "CidrIp": "169.254.0.0/16",
       "Description": "from 169.254.0.0/16:ALL TRAFFIC",
       "IpProtocol": "-1"
+     },
+     {
+      "CidrIp": "172.16.0.0/16",
+      "Description": "from 172.16.0.0/16:80",
+      "FromPort": 80,
+      "IpProtocol": "tcp",
+      "ToPort": 80
      }
     ],
     "VpcId": {
@@ -1962,7 +1969,6 @@
    "Type": "AWS::VpcLattice::Service",
    "Properties": {
     "AuthType": "NONE",
-    "DnsEntry": {},
     "Name": "parking"
    },
    "DependsOn": [
@@ -2092,7 +2098,6 @@
    "Type": "AWS::VpcLattice::Service",
    "Properties": {
     "AuthType": "NONE",
-    "DnsEntry": {},
     "Name": "reservation"
    },
    "DependsOn": [

@@ -724,13 +724,13 @@
     ],
     "SecurityGroupIngress": [
      {
-      "CidrIp": "10.0.0.0/16",
-      "Description": "from 10.0.0.0/16:ALL TRAFFIC",
+      "CidrIp": "169.254.0.0/16",
+      "Description": "from 169.254.0.0/16:ALL TRAFFIC",
       "IpProtocol": "-1"
      },
      {
-      "CidrIp": "169.254.0.0/16",
-      "Description": "from 169.254.0.0/16:ALL TRAFFIC",
+      "CidrIp": "10.0.0.0/16",
+      "Description": "from 10.0.0.0/16:ALL TRAFFIC",
       "IpProtocol": "-1"
      }
     ],
@@ -753,13 +753,13 @@
     ],
     "SecurityGroupIngress": [
      {
-      "CidrIp": "10.0.0.0/16",
-      "Description": "from 10.0.0.0/16:ALL TRAFFIC",
+      "CidrIp": "169.254.0.0/16",
+      "Description": "from 169.254.0.0/16:ALL TRAFFIC",
       "IpProtocol": "-1"
      },
      {
-      "CidrIp": "169.254.0.0/16",
-      "Description": "from 169.254.0.0/16:ALL TRAFFIC",
+      "CidrIp": "10.0.0.0/16",
+      "Description": "from 10.0.0.0/16:ALL TRAFFIC",
       "IpProtocol": "-1"
      }
     ],
@@ -772,7 +772,6 @@
    "Type": "AWS::VpcLattice::Service",
    "Properties": {
     "AuthType": "AWS_IAM",
-    "DnsEntry": {},
     "Name": "test-svc"
    },
    "UpdateReplacePolicy": "Delete",
@@ -815,12 +814,7 @@
     "Policy": {
      "Statement": [
       {
-       "Action": "vpc-lattice-svcs:Invoke",
-       "Condition": {
-        "StringNotEqualsIgnoreCase": {
-         "aws:PrincipalType": "anonymous"
-        }
-       },
+       "Action": "vpc-lattice-svcs:*",
        "Effect": "Allow",
        "Principal": "*",
        "Resource": "*"
@@ -842,7 +836,7 @@
     "ResourceIdentifier": {
      "Fn::GetAtt": [
       "Parking6000F0C6",
-      "Id"
+      "Arn"
      ]
     }
    }
@@ -856,10 +850,9 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "ServiceNetworkAssociateVPCc82109ec4f50c659081928dce8e8815b12ebd3cfc6VpcAssociationc8201a61ce848455ba897a63301b1e56b016367e4eF9992C9C": {
+  "ServiceNetworkAssociateVPCc82109ec4f50c659081928dce8e8815b12ebd3cfc6VpcAssociationc82109ec4f50c659081928dce8e8815b12ebd3cfc6E206BD14": {
    "Type": "AWS::VpcLattice::ServiceNetworkVpcAssociation",
    "Properties": {
-    "SecurityGroupIds": [],
     "ServiceNetworkIdentifier": {
      "Fn::GetAtt": [
       "ServiceNetworkEF29AF70",
@@ -871,7 +864,7 @@
     }
    }
   },
-  "ServiceNetworkAssociateVPCc8c4413997c6ea78d48ac0d4f42733f9f7d757d6e3VpcAssociationc85cc3687d232b3ef31ed79ed747c9d1ffd5fc654e93CECCF9": {
+  "ServiceNetworkAssociateVPCc8c4413997c6ea78d48ac0d4f42733f9f7d757d6e3VpcAssociationc8c4413997c6ea78d48ac0d4f42733f9f7d757d6e3C89B48BC": {
    "Type": "AWS::VpcLattice::ServiceNetworkVpcAssociation",
    "Properties": {
     "SecurityGroupIds": [
@@ -1182,6 +1175,29 @@
         "Parking6000F0C6",
         "DnsEntry.DomainName"
        ]
+      },
+      "/"
+     ]
+    ]
+   }
+  },
+  "ClientSsmUrl": {
+   "Description": "SSM Session to the client instance where to run test commands",
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "AWS::Region"
+      },
+      ".console.aws.amazon.com/systems-manager/session-manager/",
+      {
+       "Ref": "Ec2InstanceD6444E3D"
+      },
+      "?region=",
+      {
+       "Ref": "AWS::Region"
       }
      ]
     ]

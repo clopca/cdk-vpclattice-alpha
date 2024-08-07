@@ -487,7 +487,6 @@
    "Type": "AWS::VpcLattice::Service",
    "Properties": {
     "AuthType": "AWS_IAM",
-    "DnsEntry": {},
     "Name": "test-svc"
    },
    "UpdateReplacePolicy": "Delete",
@@ -557,7 +556,7 @@
     "ResourceIdentifier": {
      "Fn::GetAtt": [
       "Parking6000F0C6",
-      "Id"
+      "Arn"
      ]
     }
    }
@@ -709,7 +708,7 @@
    "Type": "AWS::VpcLattice::ServiceNetwork",
    "Properties": {
     "AuthType": "NONE",
-    "Name": "superapps-auth-vcnetwork-multi-acct"
+    "Name": "superapps-auth-svcnetwork-multi-acct"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -717,7 +716,6 @@
   "ServiceNetworkAssociateVPCc821072fb84f72ee82338eb73a9a066209539c6f85VpcAssociationc821072fb84f72ee82338eb73a9a066209539c6f85894E73CC": {
    "Type": "AWS::VpcLattice::ServiceNetworkVpcAssociation",
    "Properties": {
-    "SecurityGroupIds": [],
     "ServiceNetworkIdentifier": {
      "Fn::GetAtt": [
       "ServiceNetworkEF29AF70",

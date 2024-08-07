@@ -95,7 +95,7 @@ const privateCertificate = new acm.PrivateCertificate(stack, 'PrivateCertificate
   keyAlgorithm: acm.KeyAlgorithm.RSA_2048,
 });
 
-privateCertificate.node.addDependency(acmpaActivation)
+privateCertificate.node.addDependency(acmpaActivation);
 
 // ------------------------------------------------------
 // Private Hosted Zone
@@ -191,7 +191,7 @@ new cdk.CfnOutput(stack, 'TestingUrl', {
 
 new cdk.CfnOutput(stack, 'CustomDomainTestingUrl', {
   description: 'Curl to this URL must work',
-  value: `http://parking.cdktests.com/reservation`,
+  value: 'http://parking.cdktests.com/reservation',
 });
 
 new cdk.CfnOutput(stack, 'ClientSsmUrl', {

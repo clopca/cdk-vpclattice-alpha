@@ -1811,12 +1811,12 @@ Service.fromServiceId(scope: Construct, id: string, serviceId: string)
 | <code><a href="#cdk-vpclattice-alpha.Service.property.stack">stack</a></code> | <code>aws-cdk-lib.Stack</code> | The stack in which this resource is defined. |
 | <code><a href="#cdk-vpclattice-alpha.Service.property.authPolicy">authPolicy</a></code> | <code><a href="#cdk-vpclattice-alpha.AuthPolicyDocument">AuthPolicyDocument</a></code> | Auth policy to be added to the service. |
 | <code><a href="#cdk-vpclattice-alpha.Service.property.authType">authType</a></code> | <code><a href="#cdk-vpclattice-alpha.AuthType">AuthType</a></code> | The auth type of the service. |
-| <code><a href="#cdk-vpclattice-alpha.Service.property.domainName">domainName</a></code> | <code>string</code> | VPC Lattice Domain Name. |
+| <code><a href="#cdk-vpclattice-alpha.Service.property.dnsEntry">dnsEntry</a></code> | <code><a href="#cdk-vpclattice-alpha.LatticeDnsEntry">LatticeDnsEntry</a></code> | VPC Lattice DNS Entry. |
 | <code><a href="#cdk-vpclattice-alpha.Service.property.loggingDestinations">loggingDestinations</a></code> | <code><a href="#cdk-vpclattice-alpha.LoggingDestination">LoggingDestination</a>[]</code> | Logging destinations of the service. |
 | <code><a href="#cdk-vpclattice-alpha.Service.property.serviceArn">serviceArn</a></code> | <code>string</code> | The Amazon Resource Name (ARN) of the service. |
 | <code><a href="#cdk-vpclattice-alpha.Service.property.serviceId">serviceId</a></code> | <code>string</code> | The Id of the service. |
 | <code><a href="#cdk-vpclattice-alpha.Service.property.serviceName">serviceName</a></code> | <code>string</code> | The name of the service. |
-| <code><a href="#cdk-vpclattice-alpha.Service.property.customDomainName">customDomainName</a></code> | <code>string</code> | Custom Domain Name. |
+| <code><a href="#cdk-vpclattice-alpha.Service.property.customDomain">customDomain</a></code> | <code><a href="#cdk-vpclattice-alpha.CustomDomainProps">CustomDomainProps</a></code> | Custom Domain Name. |
 
 ---
 
@@ -1887,15 +1887,15 @@ The auth type of the service.
 
 ---
 
-##### `domainName`<sup>Required</sup> <a name="domainName" id="cdk-vpclattice-alpha.Service.property.domainName"></a>
+##### `dnsEntry`<sup>Required</sup> <a name="dnsEntry" id="cdk-vpclattice-alpha.Service.property.dnsEntry"></a>
 
 ```typescript
-public readonly domainName: string;
+public readonly dnsEntry: LatticeDnsEntry;
 ```
 
-- *Type:* string
+- *Type:* <a href="#cdk-vpclattice-alpha.LatticeDnsEntry">LatticeDnsEntry</a>
 
-VPC Lattice Domain Name.
+VPC Lattice DNS Entry.
 
 ---
 
@@ -1947,13 +1947,13 @@ The name of the service.
 
 ---
 
-##### `customDomainName`<sup>Optional</sup> <a name="customDomainName" id="cdk-vpclattice-alpha.Service.property.customDomainName"></a>
+##### `customDomain`<sup>Optional</sup> <a name="customDomain" id="cdk-vpclattice-alpha.Service.property.customDomain"></a>
 
 ```typescript
-public readonly customDomainName: string;
+public readonly customDomain: CustomDomainProps;
 ```
 
-- *Type:* string
+- *Type:* <a href="#cdk-vpclattice-alpha.CustomDomainProps">CustomDomainProps</a>
 
 Custom Domain Name.
 
@@ -3412,6 +3412,7 @@ const customDomainProps: CustomDomainProps = { ... }
 | <code><a href="#cdk-vpclattice-alpha.CustomDomainProps.property.domainName">domainName</a></code> | <code>string</code> | A registered custom domain name for your service. |
 | <code><a href="#cdk-vpclattice-alpha.CustomDomainProps.property.certificate">certificate</a></code> | <code>aws-cdk-lib.aws_certificatemanager.ICertificate</code> | A certificate that may be used by the service. |
 | <code><a href="#cdk-vpclattice-alpha.CustomDomainProps.property.hostedZone">hostedZone</a></code> | <code>aws-cdk-lib.aws_route53.IHostedZone</code> | The Route53 Private Hosted Zone or Public Hosted Zone. |
+| <code><a href="#cdk-vpclattice-alpha.CustomDomainProps.property.recordType">recordType</a></code> | <code><a href="#cdk-vpclattice-alpha.MappingRecordType">MappingRecordType</a></code> | The type of record to be added to the hosted zone. |
 
 ---
 
@@ -3462,52 +3463,26 @@ public readonly hostedZone: IHostedZone;
 
 The Route53 Private Hosted Zone or Public Hosted Zone.
 
-This will add a CNAME record between the custom domain name and the VPC
+This will add a record between the custom domain name and the VPC
 Lattice service generated DNS name. Leave empty if DNS is managed outside
-of Route53 or if you want to manually add the Route53 CNAME record.
+of Route53 or if you want to manually add the Route53 Alias or CNAME record.
 
 ---
 
-### DnsEntryProperty <a name="DnsEntryProperty" id="cdk-vpclattice-alpha.DnsEntryProperty"></a>
-
-#### Initializer <a name="Initializer" id="cdk-vpclattice-alpha.DnsEntryProperty.Initializer"></a>
+##### `recordType`<sup>Optional</sup> <a name="recordType" id="cdk-vpclattice-alpha.CustomDomainProps.property.recordType"></a>
 
 ```typescript
-import { DnsEntryProperty } from 'cdk-vpclattice-alpha'
-
-const dnsEntryProperty: DnsEntryProperty = { ... }
+public readonly recordType: MappingRecordType;
 ```
 
-#### Properties <a name="Properties" id="Properties"></a>
+- *Type:* <a href="#cdk-vpclattice-alpha.MappingRecordType">MappingRecordType</a>
+- *Default:* MappingRecordType.ALIAS
 
-| **Name** | **Type** | **Description** |
-| --- | --- | --- |
-| <code><a href="#cdk-vpclattice-alpha.DnsEntryProperty.property.domainName">domainName</a></code> | <code>string</code> | The domain name of the service. |
-| <code><a href="#cdk-vpclattice-alpha.DnsEntryProperty.property.hostedZone">hostedZone</a></code> | <code>aws-cdk-lib.aws_route53.IHostedZone</code> | The Route53 Private Hosted Zone or Public Hosted Zone. |
+The type of record to be added to the hosted zone.
 
----
+Available options are: Alias (default), or CNAME
 
-##### `domainName`<sup>Optional</sup> <a name="domainName" id="cdk-vpclattice-alpha.DnsEntryProperty.property.domainName"></a>
-
-```typescript
-public readonly domainName: string;
-```
-
-- *Type:* string
-
-The domain name of the service.
-
----
-
-##### `hostedZone`<sup>Optional</sup> <a name="hostedZone" id="cdk-vpclattice-alpha.DnsEntryProperty.property.hostedZone"></a>
-
-```typescript
-public readonly hostedZone: IHostedZone;
-```
-
-- *Type:* aws-cdk-lib.aws_route53.IHostedZone
-
-The Route53 Private Hosted Zone or Public Hosted Zone.
+> [https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resource-record-sets-choosing-alias-non-alias.html](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resource-record-sets-choosing-alias-non-alias.html)
 
 ---
 
@@ -4083,6 +4058,49 @@ The name of the target group.
 
 ---
 
+### LatticeDnsEntry <a name="LatticeDnsEntry" id="cdk-vpclattice-alpha.LatticeDnsEntry"></a>
+
+#### Initializer <a name="Initializer" id="cdk-vpclattice-alpha.LatticeDnsEntry.Initializer"></a>
+
+```typescript
+import { LatticeDnsEntry } from 'cdk-vpclattice-alpha'
+
+const latticeDnsEntry: LatticeDnsEntry = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#cdk-vpclattice-alpha.LatticeDnsEntry.property.domainName">domainName</a></code> | <code>string</code> | The domain name of the service. |
+| <code><a href="#cdk-vpclattice-alpha.LatticeDnsEntry.property.hostedZone">hostedZone</a></code> | <code>aws-cdk-lib.aws_route53.IHostedZone</code> | The Route53 Private Hosted Zone or Public Hosted Zone. |
+
+---
+
+##### `domainName`<sup>Required</sup> <a name="domainName" id="cdk-vpclattice-alpha.LatticeDnsEntry.property.domainName"></a>
+
+```typescript
+public readonly domainName: string;
+```
+
+- *Type:* string
+
+The domain name of the service.
+
+---
+
+##### `hostedZone`<sup>Required</sup> <a name="hostedZone" id="cdk-vpclattice-alpha.LatticeDnsEntry.property.hostedZone"></a>
+
+```typescript
+public readonly hostedZone: IHostedZone;
+```
+
+- *Type:* aws-cdk-lib.aws_route53.IHostedZone
+
+The Route53 Private Hosted Zone or Public Hosted Zone.
+
+---
+
 ### ListenerProps <a name="ListenerProps" id="cdk-vpclattice-alpha.ListenerProps"></a>
 
 Properties to Create a Lattice Listener.
@@ -4450,7 +4468,6 @@ const serviceProps: ServiceProps = { ... }
 | <code><a href="#cdk-vpclattice-alpha.ServiceProps.property.authPolicy">authPolicy</a></code> | <code><a href="#cdk-vpclattice-alpha.AuthPolicyDocument">AuthPolicyDocument</a></code> | Policy to apply to the service. |
 | <code><a href="#cdk-vpclattice-alpha.ServiceProps.property.authType">authType</a></code> | <code><a href="#cdk-vpclattice-alpha.AuthType">AuthType</a></code> | The authentication and authorization that manages client access to the service. |
 | <code><a href="#cdk-vpclattice-alpha.ServiceProps.property.customDomain">customDomain</a></code> | <code><a href="#cdk-vpclattice-alpha.CustomDomainProps">CustomDomainProps</a></code> | A registered custom domain name for your service. |
-| <code><a href="#cdk-vpclattice-alpha.ServiceProps.property.dnsEntry">dnsEntry</a></code> | <code><a href="#cdk-vpclattice-alpha.DnsEntryProperty">DnsEntryProperty</a></code> | A custom DNS entry. |
 | <code><a href="#cdk-vpclattice-alpha.ServiceProps.property.loggingDestinations">loggingDestinations</a></code> | <code><a href="#cdk-vpclattice-alpha.LoggingDestination">LoggingDestination</a>[]</code> | Where to send access logs. |
 | <code><a href="#cdk-vpclattice-alpha.ServiceProps.property.name">name</a></code> | <code>string</code> | The name to assign to the service. |
 | <code><a href="#cdk-vpclattice-alpha.ServiceProps.property.removalPolicy">removalPolicy</a></code> | <code>aws-cdk-lib.RemovalPolicy</code> | Determine what happens to the service when the resource/stack is deleted. |
@@ -4504,21 +4521,6 @@ domain are resolved by the DNS server to the VPC Lattice generated domain name.
 Note: **Changing it requires recreating the service.**
 
 > [https://docs.aws.amazon.com/vpc-lattice/latest/ug/service-custom-domain-name.html](https://docs.aws.amazon.com/vpc-lattice/latest/ug/service-custom-domain-name.html)
-
----
-
-##### `dnsEntry`<sup>Optional</sup> <a name="dnsEntry" id="cdk-vpclattice-alpha.ServiceProps.property.dnsEntry"></a>
-
-```typescript
-public readonly dnsEntry: DnsEntryProperty;
-```
-
-- *Type:* <a href="#cdk-vpclattice-alpha.DnsEntryProperty">DnsEntryProperty</a>
-- *Default:* No custom DNS entry is used.
-
-A custom DNS entry.
-
-Note Changing it requires recreating the service.
 
 ---
 
@@ -7322,6 +7324,27 @@ decrypts the encrypted traffic instead of VPC Lattice.
 
 
 ##### `KINESIS_DATA_STREAM` <a name="KINESIS_DATA_STREAM" id="cdk-vpclattice-alpha.LoggingDestinationType.KINESIS_DATA_STREAM"></a>
+
+---
+
+
+### MappingRecordType <a name="MappingRecordType" id="cdk-vpclattice-alpha.MappingRecordType"></a>
+
+#### Members <a name="Members" id="Members"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#cdk-vpclattice-alpha.MappingRecordType.CNAME">CNAME</a></code> | *No description.* |
+| <code><a href="#cdk-vpclattice-alpha.MappingRecordType.ALIAS">ALIAS</a></code> | *No description.* |
+
+---
+
+##### `CNAME` <a name="CNAME" id="cdk-vpclattice-alpha.MappingRecordType.CNAME"></a>
+
+---
+
+
+##### `ALIAS` <a name="ALIAS" id="cdk-vpclattice-alpha.MappingRecordType.ALIAS"></a>
 
 ---
 

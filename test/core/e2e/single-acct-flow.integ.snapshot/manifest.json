@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/180c140ded35acfa4f30c093e3f90dbe62ddc6c150c03792107ba52eb7de2e5d.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/26d2906ba9318494c9a651bf73d0d5a52bf0de67bb8064e10338f67701b07dd0.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -322,16 +322,16 @@
             "data": "ServiceNetworkEF29AF70"
           }
         ],
-        "/aws-cdk-vpclattice-e2e-single-acct-auth/ServiceNetwork/AssociateVPCc82109ec4f50c659081928dce8e8815b12ebd3cfc6/VpcAssociationc8201a61ce848455ba897a63301b1e56b016367e4e": [
+        "/aws-cdk-vpclattice-e2e-single-acct-auth/ServiceNetwork/AssociateVPCc82109ec4f50c659081928dce8e8815b12ebd3cfc6/VpcAssociation-c82109ec4f50c659081928dce8e8815b12ebd3cfc6": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ServiceNetworkAssociateVPCc82109ec4f50c659081928dce8e8815b12ebd3cfc6VpcAssociationc8201a61ce848455ba897a63301b1e56b016367e4eF9992C9C"
+            "data": "ServiceNetworkAssociateVPCc82109ec4f50c659081928dce8e8815b12ebd3cfc6VpcAssociationc82109ec4f50c659081928dce8e8815b12ebd3cfc6E206BD14"
           }
         ],
-        "/aws-cdk-vpclattice-e2e-single-acct-auth/ServiceNetwork/AssociateVPCc8c4413997c6ea78d48ac0d4f42733f9f7d757d6e3/VpcAssociationc85cc3687d232b3ef31ed79ed747c9d1ffd5fc654e": [
+        "/aws-cdk-vpclattice-e2e-single-acct-auth/ServiceNetwork/AssociateVPCc8c4413997c6ea78d48ac0d4f42733f9f7d757d6e3/VpcAssociation-c8c4413997c6ea78d48ac0d4f42733f9f7d757d6e3": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ServiceNetworkAssociateVPCc8c4413997c6ea78d48ac0d4f42733f9f7d757d6e3VpcAssociationc85cc3687d232b3ef31ed79ed747c9d1ffd5fc654e93CECCF9"
+            "data": "ServiceNetworkAssociateVPCc8c4413997c6ea78d48ac0d4f42733f9f7d757d6e3VpcAssociationc8c4413997c6ea78d48ac0d4f42733f9f7d757d6e3C89B48BC"
           }
         ],
         "/aws-cdk-vpclattice-e2e-single-acct-auth/ServiceNetwork/ServiceAssociationc807e308ffd1ea5ea17d63c68c6f5b6b5ec44244af/LatticeAssociationc858cdf9b944219e9d50b44eaf889c38555e954b0a": [
@@ -398,6 +398,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "SvcDomainName"
+          }
+        ],
+        "/aws-cdk-vpclattice-e2e-single-acct-auth/ClientSsmUrl": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClientSsmUrl"
           }
         ],
         "/aws-cdk-vpclattice-e2e-single-acct-auth/BootstrapVersion": [

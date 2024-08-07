@@ -144,7 +144,7 @@ export interface CustomDomainProps {
    * @default MappingRecordType.ALIAS
    * @see https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resource-record-sets-choosing-alias-non-alias.html
    */
-  readonly recordType?: MappingRecordType
+  readonly recordType?: MappingRecordType;
 }
 
 /**
@@ -379,7 +379,7 @@ export class Service extends ServiceBase {
     // Lattice generated DNS entry in service-managed Hosted Zone
     this.dnsEntry = {
       domainName: this._resource.attrDnsEntryDomainName,
-      hostedZone: route53.HostedZone.fromHostedZoneId(this, "latticeHZ", this._resource.attrDnsEntryHostedZoneId)
+      hostedZone: route53.HostedZone.fromHostedZoneId(this, 'latticeHZ', this._resource.attrDnsEntryHostedZoneId),
     };
 
 
@@ -397,7 +397,7 @@ export class Service extends ServiceBase {
         new route53.CfnRecordSet(this, `ALIAS-${this._resource.node.id}`, {
           name: `${this.customDomain?.domainName}.`,
           hostedZoneId: this.customDomain?.hostedZone.hostedZoneId,
-          type: "A",
+          type: 'A',
           aliasTarget: {
             dnsName: this.dnsEntry.domainName,
             hostedZoneId: this.dnsEntry.hostedZone.hostedZoneId,

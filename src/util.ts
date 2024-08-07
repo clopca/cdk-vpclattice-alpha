@@ -1,6 +1,6 @@
 export enum MappingRecordType {
-  CNAME = "CNAME",
-  ALIAS = "ALIAS",
+  CNAME = 'CNAME',
+  ALIAS = 'ALIAS',
 }
 
 // export function getLatticePrefixList(region: string, networkProtocol: string): string {

@@ -37,7 +37,7 @@
     "Code": {
      "ZipFile": "\n        exports.handler = async (event) => {\n            return {\n                isBase64Encoded: false,\n                statusCode: 200,\n                body: JSON.stringify({ message: \"Hello from Lambda!\" }),\n            };\n        };\n    "
     },
-    "Handler": "index.function_name",
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "LambdaTargetFunctionServiceRole8E9A299C",

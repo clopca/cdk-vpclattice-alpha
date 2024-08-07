@@ -74,6 +74,14 @@
                   "version": "2.146.0"
                 }
               },
+              "latticeHZ": {
+                "id": "latticeHZ",
+                "path": "aws-cdk-vpclattice-integ-svc/Service/latticeHZ",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "2.146.0"
+                }
+              },
               "AccessLogSubscriptionc8974a3db413d9161a847a680d280b7e8ea7344c98": {
                 "id": "AccessLogSubscriptionc8974a3db413d9161a847a680d280b7e8ea7344c98",
                 "path": "aws-cdk-vpclattice-integ-svc/Service/AccessLogSubscriptionc8974a3db413d9161a847a680d280b7e8ea7344c98",

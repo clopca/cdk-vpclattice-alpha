@@ -25,11 +25,6 @@ const tg1 = new LambdaTargetGroup(stack, 'LambdaTG', {
   target: lambdaFunction,
 });
 
-// new cdk.CfnOutput(
-// 	stack, 'lambdaTargetGroupName', {
-// 	value: tg1.name
-// })
-
 new cdk.CfnOutput(stack, 'lambdaTargetGroupId', {
   value: tg1.targetGroupId,
 });

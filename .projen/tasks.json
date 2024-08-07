@@ -925,9 +925,6 @@
           "spawn": "integ:single-acct-flow:snapshot"
         },
         {
-          "spawn": "integ:test-1:snapshot"
-        },
-        {
           "spawn": "integ:listener:snapshot"
         },
         {
@@ -947,69 +944,6 @@
         },
         {
           "spawn": "integ:lambda-target-group:snapshot"
-        }
-      ]
-    },
-    "integ:test-1:assert": {
-      "name": "integ:test-1:assert",
-      "description": "assert the snapshot of integration test 'test-1'",
-      "steps": [
-        {
-          "exec": "[ -d \"test/core/e2e/test-1.integ.snapshot\" ] || (echo \"No snapshot available for integration test 'test-1'. Run 'projen integ:test-1:deploy' to capture.\" && exit 1)"
-        },
-        {
-          "exec": "cdk synth --app \"ts-node -P tsconfig.dev.json test/core/e2e/test-1.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata -o test/core/e2e/.tmp/test-1.integ/assert.cdk.out > /dev/null"
-        },
-        {
-          "exec": "diff -r -x asset.* -x cdk.out -x manifest.json -x tree.json test/core/e2e/test-1.integ.snapshot/ test/core/e2e/.tmp/test-1.integ/assert.cdk.out/"
-        }
-      ]
-    },
-    "integ:test-1:deploy": {
-      "name": "integ:test-1:deploy",
-      "description": "deploy integration test 'test-1' and capture snapshot",
-      "steps": [
-        {
-          "exec": "rm -fr test/core/e2e/.tmp/test-1.integ/deploy.cdk.out"
-        },
-        {
-          "exec": "cdk deploy --app \"ts-node -P tsconfig.dev.json test/core/e2e/test-1.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata '**' --require-approval=never -o test/core/e2e/.tmp/test-1.integ/deploy.cdk.out"
-        },
-        {
-          "exec": "rm -fr test/core/e2e/test-1.integ.snapshot"
-        },
-        {
-          "exec": "mv test/core/e2e/.tmp/test-1.integ/deploy.cdk.out test/core/e2e/test-1.integ.snapshot"
-        },
-        {
-          "spawn": "integ:test-1:destroy"
-        }
-      ]
-    },
-    "integ:test-1:destroy": {
-      "name": "integ:test-1:destroy",
-      "description": "destroy integration test 'test-1'",
-      "steps": [
-        {
-          "exec": "cdk destroy --app test/core/e2e/test-1.integ.snapshot '**' --no-version-reporting"
-        }
-      ]
-    },
-    "integ:test-1:snapshot": {
-      "name": "integ:test-1:snapshot",
-      "description": "update snapshot for integration test \"test-1\"",
-      "steps": [
-        {
-          "exec": "cdk synth --app \"ts-node -P tsconfig.dev.json test/core/e2e/test-1.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata -o test/core/e2e/test-1.integ.snapshot > /dev/null"
-        }
-      ]
-    },
-    "integ:test-1:watch": {
-      "name": "integ:test-1:watch",
-      "description": "watch integration test 'test-1' (without updating snapshots)",
-      "steps": [
-        {
-          "exec": "cdk watch --app \"ts-node -P tsconfig.dev.json test/core/e2e/test-1.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata '**' -o test/core/e2e/.tmp/test-1.integ/deploy.cdk.out"
         }
       ]
     },
@@ -1106,9 +1040,6 @@
         },
         {
           "spawn": "integ:single-acct-flow:assert"
-        },
-        {
-          "spawn": "integ:test-1:assert"
         },
         {
           "spawn": "integ:listener:assert"

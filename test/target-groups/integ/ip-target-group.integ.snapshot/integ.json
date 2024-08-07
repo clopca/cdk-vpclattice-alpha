@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "IpTGTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-vpclattice-integ-target-group-ip"
+      ],
+      "assertionStack": "IpTGTest/DefaultTest/DeployAssert",
+      "assertionStackName": "IpTGTestDefaultTestDeployAssert70C03F84"
+    }
+  }
+}

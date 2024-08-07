@@ -6,7 +6,7 @@ import { HealthCheckProtocol, InstanceTargetGroup } from '../../../src/aws-vpcla
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-vpclattice-integ-target-group-instance');
 
-const vpc = new Vpc(stack, 'VPC', {});
+const vpc = new Vpc(stack, 'VPC', { natGateways: 1 });
 const instance1 = new Instance(stack, 'Instance1', {
   vpc,
   instanceType: cdk.aws_ec2.InstanceType.of(cdk.aws_ec2.InstanceClass.T3, cdk.aws_ec2.InstanceSize.SMALL),

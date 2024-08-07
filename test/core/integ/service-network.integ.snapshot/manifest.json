@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2dfe3d3706eaf2951a9b44af4d2b39e12fe351780145de3313f8d2f1e47a1d44.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7989d1365ec430209b2202e799a736ee9e27c5ed3fdabfc722a57d9f2c82b877.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -208,6 +208,18 @@
             "data": "ServiceNetworkEF29AF70"
           }
         ],
+        "/aws-cdk-vpclattice-integ-svcn/ServiceNetwork/AssociateVPCc88c6dfa79006e1d29115a7c01f401d0b8395e2713/VpcAssociation-c88c6dfa79006e1d29115a7c01f401d0b8395e2713": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceNetworkAssociateVPCc88c6dfa79006e1d29115a7c01f401d0b8395e2713VpcAssociationc88c6dfa79006e1d29115a7c01f401d0b8395e2713D3CC831C"
+          }
+        ],
+        "/aws-cdk-vpclattice-integ-svcn/ServiceNetwork/ServiceAssociationc8f912c2cccde75362b79ae3f8a1f9b5e6f4ca3cd5/LatticeAssociationc8619ac599a869f05a2e15e2a1b1546839b0eaa406": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceNetworkServiceAssociationc8f912c2cccde75362b79ae3f8a1f9b5e6f4ca3cd5LatticeAssociationc8619ac599a869f05a2e15e2a1b1546839b0eaa4062DC7877B"
+          }
+        ],
         "/aws-cdk-vpclattice-integ-svcn/ServiceNetwork/AccessLogSubscriptionc80b543e43d807a5e09c85647aa4b74f9f3e6d39f3": [
           {
             "type": "aws:cdk:logicalId",
@@ -220,34 +232,16 @@
             "data": "ServiceNetworkAccessLogSubscriptionc82e66a9fd3a75f440f254b44abc64c019dd5278c6ABA9457D"
           }
         ],
-        "/aws-cdk-vpclattice-integ-svcn/ServiceNetwork/AssociateVPCc88c6dfa79006e1d29115a7c01f401d0b8395e2713/ServiceNetworkSecurityGroupc88e3dbb7584bf9d895ab48af6f4fc4be84039b5dc/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ServiceNetworkAssociateVPCc88c6dfa79006e1d29115a7c01f401d0b8395e2713ServiceNetworkSecurityGroupc88e3dbb7584bf9d895ab48af6f4fc4be84039b5dcF347541D"
-          }
-        ],
-        "/aws-cdk-vpclattice-integ-svcn/ServiceNetwork/AssociateVPCc88c6dfa79006e1d29115a7c01f401d0b8395e2713/VpcAssociationc88e3dbb7584bf9d895ab48af6f4fc4be84039b5dc": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ServiceNetworkAssociateVPCc88c6dfa79006e1d29115a7c01f401d0b8395e2713VpcAssociationc88e3dbb7584bf9d895ab48af6f4fc4be84039b5dcCD17AD07"
-          }
-        ],
-        "/aws-cdk-vpclattice-integ-svcn/ServiceNetwork/ServiceAssociationc8f912c2cccde75362b79ae3f8a1f9b5e6f4ca3cd5/LatticeAssociationc8619ac599a869f05a2e15e2a1b1546839b0eaa406": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ServiceNetworkServiceAssociationc8f912c2cccde75362b79ae3f8a1f9b5e6f4ca3cd5LatticeAssociationc8619ac599a869f05a2e15e2a1b1546839b0eaa4062DC7877B"
-          }
-        ],
-        "/aws-cdk-vpclattice-integ-svcn/ServiceNetwork/AuthPolicy": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ServiceNetworkAuthPolicyD6004AB5"
-          }
-        ],
         "/aws-cdk-vpclattice-integ-svcn/ServiceNetwork/ServiceNetworkShare": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ServiceNetworkServiceNetworkShare4B0348FC"
+          }
+        ],
+        "/aws-cdk-vpclattice-integ-svcn/ServiceNetwork/ServiceNetworkAuthPolicy": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceNetworkServiceNetworkAuthPolicy27A7858F"
           }
         ],
         "/aws-cdk-vpclattice-integ-svcn/BootstrapVersion": [

@@ -741,6 +741,14 @@
                   "version": "2.146.0"
                 }
               },
+              "latticeHZ": {
+                "id": "latticeHZ",
+                "path": "aws-cdk-vpclattice-integ-svcn/Service/latticeHZ",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "2.146.0"
+                }
+              },
               "AccessLogSubscriptionc8dd9f3e425641057824d00376fb948bc29ad2d316": {
                 "id": "AccessLogSubscriptionc8dd9f3e425641057824d00376fb948bc29ad2d316",
                 "path": "aws-cdk-vpclattice-integ-svcn/Service/AccessLogSubscriptionc8dd9f3e425641057824d00376fb948bc29ad2d316",
@@ -791,136 +799,16 @@
                   "version": "2.146.0"
                 }
               },
-              "AccessLogSubscriptionc80b543e43d807a5e09c85647aa4b74f9f3e6d39f3": {
-                "id": "AccessLogSubscriptionc80b543e43d807a5e09c85647aa4b74f9f3e6d39f3",
-                "path": "aws-cdk-vpclattice-integ-svcn/ServiceNetwork/AccessLogSubscriptionc80b543e43d807a5e09c85647aa4b74f9f3e6d39f3",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::VpcLattice::AccessLogSubscription",
-                  "aws:cdk:cloudformation:props": {
-                    "destinationArn": {
-                      "Fn::GetAtt": [
-                        "LogsTest58DCB617",
-                        "Arn"
-                      ]
-                    },
-                    "resourceIdentifier": {
-                      "Fn::GetAtt": [
-                        "ServiceNetworkEF29AF70",
-                        "Id"
-                      ]
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_vpclattice.CfnAccessLogSubscription",
-                  "version": "2.146.0"
-                }
-              },
-              "AccessLogSubscriptionc82e66a9fd3a75f440f254b44abc64c019dd5278c6": {
-                "id": "AccessLogSubscriptionc82e66a9fd3a75f440f254b44abc64c019dd5278c6",
-                "path": "aws-cdk-vpclattice-integ-svcn/ServiceNetwork/AccessLogSubscriptionc82e66a9fd3a75f440f254b44abc64c019dd5278c6",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::VpcLattice::AccessLogSubscription",
-                  "aws:cdk:cloudformation:props": {
-                    "destinationArn": {
-                      "Fn::GetAtt": [
-                        "LogsBucket9C4D8843",
-                        "Arn"
-                      ]
-                    },
-                    "resourceIdentifier": {
-                      "Fn::GetAtt": [
-                        "ServiceNetworkEF29AF70",
-                        "Id"
-                      ]
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_vpclattice.CfnAccessLogSubscription",
-                  "version": "2.146.0"
-                }
-              },
               "AssociateVPCc88c6dfa79006e1d29115a7c01f401d0b8395e2713": {
                 "id": "AssociateVPCc88c6dfa79006e1d29115a7c01f401d0b8395e2713",
                 "path": "aws-cdk-vpclattice-integ-svcn/ServiceNetwork/AssociateVPCc88c6dfa79006e1d29115a7c01f401d0b8395e2713",
                 "children": {
-                  "ServiceNetworkSecurityGroupc88e3dbb7584bf9d895ab48af6f4fc4be84039b5dc": {
-                    "id": "ServiceNetworkSecurityGroupc88e3dbb7584bf9d895ab48af6f4fc4be84039b5dc",
-                    "path": "aws-cdk-vpclattice-integ-svcn/ServiceNetwork/AssociateVPCc88c6dfa79006e1d29115a7c01f401d0b8395e2713/ServiceNetworkSecurityGroupc88e3dbb7584bf9d895ab48af6f4fc4be84039b5dc",
-                    "children": {
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "aws-cdk-vpclattice-integ-svcn/ServiceNetwork/AssociateVPCc88c6dfa79006e1d29115a7c01f401d0b8395e2713/ServiceNetworkSecurityGroupc88e3dbb7584bf9d895ab48af6f4fc4be84039b5dc/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
-                          "aws:cdk:cloudformation:props": {
-                            "groupDescription": "ServiceNetworkSecurityGroup",
-                            "securityGroupEgress": [
-                              {
-                                "cidrIp": "0.0.0.0/0",
-                                "description": "Allow all outbound traffic by default",
-                                "ipProtocol": "-1"
-                              }
-                            ],
-                            "securityGroupIngress": [
-                              {
-                                "cidrIp": {
-                                  "Fn::GetAtt": [
-                                    "VPCB9E5F0B4",
-                                    "CidrBlock"
-                                  ]
-                                },
-                                "ipProtocol": "tcp",
-                                "fromPort": 443,
-                                "toPort": 443,
-                                "description": {
-                                  "Fn::Join": [
-                                    "",
-                                    [
-                                      "from ",
-                                      {
-                                        "Fn::GetAtt": [
-                                          "VPCB9E5F0B4",
-                                          "CidrBlock"
-                                        ]
-                                      },
-                                      ":443"
-                                    ]
-                                  ]
-                                }
-                              }
-                            ],
-                            "vpcId": {
-                              "Ref": "VPCB9E5F0B4"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
-                          "version": "2.146.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
-                      "version": "2.146.0"
-                    }
-                  },
-                  "VpcAssociationc88e3dbb7584bf9d895ab48af6f4fc4be84039b5dc": {
-                    "id": "VpcAssociationc88e3dbb7584bf9d895ab48af6f4fc4be84039b5dc",
-                    "path": "aws-cdk-vpclattice-integ-svcn/ServiceNetwork/AssociateVPCc88c6dfa79006e1d29115a7c01f401d0b8395e2713/VpcAssociationc88e3dbb7584bf9d895ab48af6f4fc4be84039b5dc",
+                  "VpcAssociation-c88c6dfa79006e1d29115a7c01f401d0b8395e2713": {
+                    "id": "VpcAssociation-c88c6dfa79006e1d29115a7c01f401d0b8395e2713",
+                    "path": "aws-cdk-vpclattice-integ-svcn/ServiceNetwork/AssociateVPCc88c6dfa79006e1d29115a7c01f401d0b8395e2713/VpcAssociation-c88c6dfa79006e1d29115a7c01f401d0b8395e2713",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::VpcLattice::ServiceNetworkVpcAssociation",
                       "aws:cdk:cloudformation:props": {
-                        "securityGroupIds": [
-                          {
-                            "Fn::GetAtt": [
-                              "ServiceNetworkAssociateVPCc88c6dfa79006e1d29115a7c01f401d0b8395e2713ServiceNetworkSecurityGroupc88e3dbb7584bf9d895ab48af6f4fc4be84039b5dcF347541D",
-                              "GroupId"
-                            ]
-                          }
-                        ],
                         "serviceNetworkIdentifier": {
                           "Fn::GetAtt": [
                             "ServiceNetworkEF29AF70",
@@ -978,38 +866,53 @@
                   "version": "2.146.0"
                 }
               },
-              "AuthPolicy": {
-                "id": "AuthPolicy",
-                "path": "aws-cdk-vpclattice-integ-svcn/ServiceNetwork/AuthPolicy",
+              "AccessLogSubscriptionc80b543e43d807a5e09c85647aa4b74f9f3e6d39f3": {
+                "id": "AccessLogSubscriptionc80b543e43d807a5e09c85647aa4b74f9f3e6d39f3",
+                "path": "aws-cdk-vpclattice-integ-svcn/ServiceNetwork/AccessLogSubscriptionc80b543e43d807a5e09c85647aa4b74f9f3e6d39f3",
                 "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::VpcLattice::AuthPolicy",
+                  "aws:cdk:cloudformation:type": "AWS::VpcLattice::AccessLogSubscription",
                   "aws:cdk:cloudformation:props": {
-                    "policy": {
-                      "Statement": [
-                        {
-                          "Action": "vpc-lattice-svcs:Invoke",
-                          "Condition": {
-                            "StringNotEqualsIgnoreCase": {
-                              "aws:PrincipalType": "anonymous"
-                            }
-                          },
-                          "Effect": "Allow",
-                          "Principal": "*",
-                          "Resource": "*"
-                        }
-                      ],
-                      "Version": "2012-10-17"
+                    "destinationArn": {
+                      "Fn::GetAtt": [
+                        "LogsTest58DCB617",
+                        "Arn"
+                      ]
                     },
                     "resourceIdentifier": {
                       "Fn::GetAtt": [
                         "ServiceNetworkEF29AF70",
-                        "Arn"
+                        "Id"
                       ]
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_vpclattice.CfnAuthPolicy",
+                  "fqn": "aws-cdk-lib.aws_vpclattice.CfnAccessLogSubscription",
+                  "version": "2.146.0"
+                }
+              },
+              "AccessLogSubscriptionc82e66a9fd3a75f440f254b44abc64c019dd5278c6": {
+                "id": "AccessLogSubscriptionc82e66a9fd3a75f440f254b44abc64c019dd5278c6",
+                "path": "aws-cdk-vpclattice-integ-svcn/ServiceNetwork/AccessLogSubscriptionc82e66a9fd3a75f440f254b44abc64c019dd5278c6",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::VpcLattice::AccessLogSubscription",
+                  "aws:cdk:cloudformation:props": {
+                    "destinationArn": {
+                      "Fn::GetAtt": [
+                        "LogsBucket9C4D8843",
+                        "Arn"
+                      ]
+                    },
+                    "resourceIdentifier": {
+                      "Fn::GetAtt": [
+                        "ServiceNetworkEF29AF70",
+                        "Id"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_vpclattice.CfnAccessLogSubscription",
                   "version": "2.146.0"
                 }
               },
@@ -1035,6 +938,41 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ram.CfnResourceShare",
+                  "version": "2.146.0"
+                }
+              },
+              "ServiceNetworkAuthPolicy": {
+                "id": "ServiceNetworkAuthPolicy",
+                "path": "aws-cdk-vpclattice-integ-svcn/ServiceNetwork/ServiceNetworkAuthPolicy",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::VpcLattice::AuthPolicy",
+                  "aws:cdk:cloudformation:props": {
+                    "policy": {
+                      "Statement": [
+                        {
+                          "Action": "vpc-lattice-svcs:*",
+                          "Condition": {
+                            "StringNotEqualsIgnoreCase": {
+                              "aws:PrincipalType": "anonymous"
+                            }
+                          },
+                          "Effect": "Allow",
+                          "Principal": "*",
+                          "Resource": "*"
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "resourceIdentifier": {
+                      "Fn::GetAtt": [
+                        "ServiceNetworkEF29AF70",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_vpclattice.CfnAuthPolicy",
                   "version": "2.146.0"
                 }
               }
