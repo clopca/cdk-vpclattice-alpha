@@ -2,11 +2,11 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import { Instance, Peer, Port, SecurityGroup, Vpc, AmazonLinuxGeneration } from 'aws-cdk-lib/aws-ec2';
 import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
-import { ServiceNetworkVpcAssociation } from '../../../src';
+import { ServiceNetworkVpcAssociation } from '../../../../src';
 
 const app2 = new cdk.App();
 const ipv4LinkLocalCidrBlock = '169.254.0.0/16';
-const consumerAccount = '249522321342';
+const consumerAccount = '123456789012';
 
 // -----------------------------------------------------------------------------
 // Account 2 - Service Consumer

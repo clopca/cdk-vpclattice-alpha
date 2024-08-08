@@ -23,8 +23,6 @@ tsconfig.tsbuildinfo
 /.eslintrc.json
 !.jsii
 test/core/e2e/basic.integ.snapshot
-test/core/e2e/multi-acct-flow-acct-1.integ.snapshot
-test/core/e2e/multi-acct-flow-acct-2.integ.snapshot
 test/core/e2e/single-acct-custom-private-domain.integ.snapshot
 test/core/e2e/.tmp
 test/core/e2e/single-acct-flow.integ.snapshot

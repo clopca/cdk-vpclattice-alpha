@@ -5,13 +5,13 @@ import { Peer, Port, SecurityGroup, Vpc } from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { Code, Function as LambdaFunction, Runtime } from 'aws-cdk-lib/aws-lambda';
-import { LambdaTargetGroup, ListenerProtocol, Service, ServiceNetwork, AuthPolicyDocument, AuthType, RuleAction } from '../../../src';
+import { LambdaTargetGroup, ListenerProtocol, Service, ServiceNetwork, AuthPolicyDocument, AuthType, RuleAction } from '../../../../src';
 
 const app1 = new cdk.App();
 
 const ipv4LinkLocalCidrBlock = '169.254.0.0/16';
-const providerAccount = '694275606777';
-const consumerAccount = '249522321342';
+const providerAccount = '123456789012';
+const consumerAccount = '123456789012';
 
 // -----------------------------------------------------------------------------
 // Account 1 - Service Provider

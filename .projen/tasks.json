@@ -527,132 +527,6 @@
         }
       ]
     },
-    "integ:multi-acct-flow-acct-1:assert": {
-      "name": "integ:multi-acct-flow-acct-1:assert",
-      "description": "assert the snapshot of integration test 'multi-acct-flow-acct-1'",
-      "steps": [
-        {
-          "exec": "[ -d \"test/core/e2e/multi-acct-flow-acct-1.integ.snapshot\" ] || (echo \"No snapshot available for integration test 'multi-acct-flow-acct-1'. Run 'projen integ:multi-acct-flow-acct-1:deploy' to capture.\" && exit 1)"
-        },
-        {
-          "exec": "cdk synth --app \"ts-node -P tsconfig.dev.json test/core/e2e/multi-acct-flow-acct-1.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata -o test/core/e2e/.tmp/multi-acct-flow-acct-1.integ/assert.cdk.out > /dev/null"
-        },
-        {
-          "exec": "diff -r -x asset.* -x cdk.out -x manifest.json -x tree.json test/core/e2e/multi-acct-flow-acct-1.integ.snapshot/ test/core/e2e/.tmp/multi-acct-flow-acct-1.integ/assert.cdk.out/"
-        }
-      ]
-    },
-    "integ:multi-acct-flow-acct-1:deploy": {
-      "name": "integ:multi-acct-flow-acct-1:deploy",
-      "description": "deploy integration test 'multi-acct-flow-acct-1' and capture snapshot",
-      "steps": [
-        {
-          "exec": "rm -fr test/core/e2e/.tmp/multi-acct-flow-acct-1.integ/deploy.cdk.out"
-        },
-        {
-          "exec": "cdk deploy --app \"ts-node -P tsconfig.dev.json test/core/e2e/multi-acct-flow-acct-1.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata '**' --require-approval=never -o test/core/e2e/.tmp/multi-acct-flow-acct-1.integ/deploy.cdk.out"
-        },
-        {
-          "exec": "rm -fr test/core/e2e/multi-acct-flow-acct-1.integ.snapshot"
-        },
-        {
-          "exec": "mv test/core/e2e/.tmp/multi-acct-flow-acct-1.integ/deploy.cdk.out test/core/e2e/multi-acct-flow-acct-1.integ.snapshot"
-        },
-        {
-          "spawn": "integ:multi-acct-flow-acct-1:destroy"
-        }
-      ]
-    },
-    "integ:multi-acct-flow-acct-1:destroy": {
-      "name": "integ:multi-acct-flow-acct-1:destroy",
-      "description": "destroy integration test 'multi-acct-flow-acct-1'",
-      "steps": [
-        {
-          "exec": "cdk destroy --app test/core/e2e/multi-acct-flow-acct-1.integ.snapshot '**' --no-version-reporting"
-        }
-      ]
-    },
-    "integ:multi-acct-flow-acct-1:snapshot": {
-      "name": "integ:multi-acct-flow-acct-1:snapshot",
-      "description": "update snapshot for integration test \"multi-acct-flow-acct-1\"",
-      "steps": [
-        {
-          "exec": "cdk synth --app \"ts-node -P tsconfig.dev.json test/core/e2e/multi-acct-flow-acct-1.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata -o test/core/e2e/multi-acct-flow-acct-1.integ.snapshot > /dev/null"
-        }
-      ]
-    },
-    "integ:multi-acct-flow-acct-1:watch": {
-      "name": "integ:multi-acct-flow-acct-1:watch",
-      "description": "watch integration test 'multi-acct-flow-acct-1' (without updating snapshots)",
-      "steps": [
-        {
-          "exec": "cdk watch --app \"ts-node -P tsconfig.dev.json test/core/e2e/multi-acct-flow-acct-1.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata '**' -o test/core/e2e/.tmp/multi-acct-flow-acct-1.integ/deploy.cdk.out"
-        }
-      ]
-    },
-    "integ:multi-acct-flow-acct-2:assert": {
-      "name": "integ:multi-acct-flow-acct-2:assert",
-      "description": "assert the snapshot of integration test 'multi-acct-flow-acct-2'",
-      "steps": [
-        {
-          "exec": "[ -d \"test/core/e2e/multi-acct-flow-acct-2.integ.snapshot\" ] || (echo \"No snapshot available for integration test 'multi-acct-flow-acct-2'. Run 'projen integ:multi-acct-flow-acct-2:deploy' to capture.\" && exit 1)"
-        },
-        {
-          "exec": "cdk synth --app \"ts-node -P tsconfig.dev.json test/core/e2e/multi-acct-flow-acct-2.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata -o test/core/e2e/.tmp/multi-acct-flow-acct-2.integ/assert.cdk.out > /dev/null"
-        },
-        {
-          "exec": "diff -r -x asset.* -x cdk.out -x manifest.json -x tree.json test/core/e2e/multi-acct-flow-acct-2.integ.snapshot/ test/core/e2e/.tmp/multi-acct-flow-acct-2.integ/assert.cdk.out/"
-        }
-      ]
-    },
-    "integ:multi-acct-flow-acct-2:deploy": {
-      "name": "integ:multi-acct-flow-acct-2:deploy",
-      "description": "deploy integration test 'multi-acct-flow-acct-2' and capture snapshot",
-      "steps": [
-        {
-          "exec": "rm -fr test/core/e2e/.tmp/multi-acct-flow-acct-2.integ/deploy.cdk.out"
-        },
-        {
-          "exec": "cdk deploy --app \"ts-node -P tsconfig.dev.json test/core/e2e/multi-acct-flow-acct-2.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata '**' --require-approval=never -o test/core/e2e/.tmp/multi-acct-flow-acct-2.integ/deploy.cdk.out"
-        },
-        {
-          "exec": "rm -fr test/core/e2e/multi-acct-flow-acct-2.integ.snapshot"
-        },
-        {
-          "exec": "mv test/core/e2e/.tmp/multi-acct-flow-acct-2.integ/deploy.cdk.out test/core/e2e/multi-acct-flow-acct-2.integ.snapshot"
-        },
-        {
-          "spawn": "integ:multi-acct-flow-acct-2:destroy"
-        }
-      ]
-    },
-    "integ:multi-acct-flow-acct-2:destroy": {
-      "name": "integ:multi-acct-flow-acct-2:destroy",
-      "description": "destroy integration test 'multi-acct-flow-acct-2'",
-      "steps": [
-        {
-          "exec": "cdk destroy --app test/core/e2e/multi-acct-flow-acct-2.integ.snapshot '**' --no-version-reporting"
-        }
-      ]
-    },
-    "integ:multi-acct-flow-acct-2:snapshot": {
-      "name": "integ:multi-acct-flow-acct-2:snapshot",
-      "description": "update snapshot for integration test \"multi-acct-flow-acct-2\"",
-      "steps": [
-        {
-          "exec": "cdk synth --app \"ts-node -P tsconfig.dev.json test/core/e2e/multi-acct-flow-acct-2.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata -o test/core/e2e/multi-acct-flow-acct-2.integ.snapshot > /dev/null"
-        }
-      ]
-    },
-    "integ:multi-acct-flow-acct-2:watch": {
-      "name": "integ:multi-acct-flow-acct-2:watch",
-      "description": "watch integration test 'multi-acct-flow-acct-2' (without updating snapshots)",
-      "steps": [
-        {
-          "exec": "cdk watch --app \"ts-node -P tsconfig.dev.json test/core/e2e/multi-acct-flow-acct-2.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata '**' -o test/core/e2e/.tmp/multi-acct-flow-acct-2.integ/deploy.cdk.out"
-        }
-      ]
-    },
     "integ:service-network:assert": {
       "name": "integ:service-network:assert",
       "description": "assert the snapshot of integration test 'service-network'",
@@ -913,12 +787,6 @@
           "spawn": "integ:basic:snapshot"
         },
         {
-          "spawn": "integ:multi-acct-flow-acct-1:snapshot"
-        },
-        {
-          "spawn": "integ:multi-acct-flow-acct-2:snapshot"
-        },
-        {
           "spawn": "integ:single-acct-custom-private-domain:snapshot"
         },
         {
@@ -1028,12 +896,6 @@
         },
         {
           "spawn": "integ:basic:assert"
-        },
-        {
-          "spawn": "integ:multi-acct-flow-acct-1:assert"
-        },
-        {
-          "spawn": "integ:multi-acct-flow-acct-2:assert"
         },
         {
           "spawn": "integ:single-acct-custom-private-domain:assert"
