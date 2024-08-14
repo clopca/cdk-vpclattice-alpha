@@ -2371,7 +2371,8 @@ The Id of the Service Network.
 
 Creates an Association Between a Lattice Service and a Service Network.
 
-Consider using `.addService` of the ServiceNetwork construct
+Consider using `.associateService` of the ServiceNetwork construct
+or `.associateWithServiceNetwork` of the Service construct
 
 #### Initializers <a name="Initializers" id="cdk-vpclattice-alpha.ServiceNetworkServiceAssociation.Initializer"></a>
 

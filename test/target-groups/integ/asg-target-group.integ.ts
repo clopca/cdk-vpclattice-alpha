@@ -1,7 +1,7 @@
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import { AutoScalingGroup } from 'aws-cdk-lib/aws-autoscaling';
-import { Instance, Vpc } from 'aws-cdk-lib/aws-ec2';
+import { Vpc } from 'aws-cdk-lib/aws-ec2';
 import { HealthCheckProtocol, InstanceTargetGroup } from '../../../src/aws-vpclattice-targets';
 
 const app = new cdk.App();
@@ -14,7 +14,7 @@ const asg = new AutoScalingGroup(stack, 'ASG', {
   machineImage: cdk.aws_ec2.MachineImage.latestAmazonLinux2(),
 });
 
-const tg1 = new InstanceTargetGroup(stack, 'ASG-TG', {
+new InstanceTargetGroup(stack, 'ASG-TG', {
   vpc,
   autoScalingGroups: [asg],
   healthCheck: {
