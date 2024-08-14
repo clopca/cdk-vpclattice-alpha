@@ -3,7 +3,7 @@
 # vpcLattice L2 Construct
 
 - [Project Information](#project-information)
-- [Example Impleentation](#example-implementation)
+- [Example Implementation](#example-implementation)
 - [API Design](#proposed-api-design-for-vpclattice)
 - [FAQ](#faq)
 - [Acceptance](#acceptance)
@@ -14,9 +14,7 @@
 
 **Status** (DRAFT)
 
-**Original Author(s):** @mrpackethead, @taylaand, @nbaillie
-
-**Additional Contributors:** @clopca, @aws-rafams
+**Original Author(s):** @clopca, @aws-rafams
 
 **Tracking Issue:** #502
 
@@ -31,8 +29,6 @@
 - https://github.com/clopca/aws-cdk/tree/mrpackethead/aws-vpclattice-alpha/packages/%40aws-cdk/aws-vpclattice-alpha
 
 **Example implementation**
-
-- https://github.com/clopca/vpclattice-prealpha-demo
 
 **Blog**
 
