@@ -1424,7 +1424,7 @@
                   "aws:cdk:cloudformation:type": "AWS::VpcLattice::ServiceNetwork",
                   "aws:cdk:cloudformation:props": {
                     "authType": "NONE",
-                    "name": "superapps-auth-vcnetwork"
+                    "name": "superapps-auth-vpcnetwork"
                   }
                 },
                 "constructInfo": {

@@ -2,10 +2,11 @@ import type { IResource, RemovalPolicy } from 'aws-cdk-lib';
 import { Resource } from 'aws-cdk-lib';
 import * as generated from 'aws-cdk-lib/aws-vpclattice';
 import type { Construct } from 'constructs';
-import type { RuleAction } from './rule-action';
-import type { RuleMatch } from './rule-match';
+import type { IMatchHeader } from './match-header';
+import type { IMatchPath } from './match-path';
+import type { IRuleAction } from './rule-action';
 import type { Service } from './service';
-import { HttpFixedResponse } from './util';
+import { HttpFixedResponse, type HttpMethod } from './util';
 
 /**
  * It is not required that the listener and target group protocols match.
@@ -86,7 +87,7 @@ export interface ListenerProps {
    *  * A default action that will be taken if no rules match.
    *  @default HTTPFixedResponse.NOT_FOUND
    */
-  readonly defaultAction?: RuleAction;
+  readonly defaultAction?: IRuleAction;
 
   /**
    * Rules to add to the listener.
@@ -133,7 +134,7 @@ export class Listener extends Resource implements IListener {
   /**
    * The default action for this listener
    */
-  readonly defaultAction: RuleAction;
+  readonly defaultAction: IRuleAction;
 
   /**
    * The service this listener is attached to
@@ -264,11 +265,18 @@ export class Listener extends Resource implements IListener {
    * @param rule
    */
   public addRule(rule: AddRuleProps) {
+    const match = {
+      httpMatch: {
+        method: rule.matchMethod,
+        pathMatch: rule.matchPath,
+        headerMatches: rule.matchHeader,
+      },
+    };
     new generated.CfnRule(this, `Rule${rule.name}`, {
       name: rule.name,
       action: rule.action,
       priority: rule.priority,
-      match: { httpMatch: rule.match ?? {} },
+      match,
       listenerIdentifier: this.listenerId,
       serviceIdentifier: this.service.serviceId,
     });
@@ -279,11 +287,22 @@ export interface AddRuleProps {
   /**
    * the action for the rule, is either a fixed Response, or a being sent to  Weighted TargetGroup
    */
-  readonly action: RuleAction;
+  readonly action: IRuleAction;
+
   /**
-   * The listener to attach the rule to
+   * The method to match for the rule
    */
-  readonly match?: RuleMatch;
+  readonly matchMethod?: HttpMethod;
+
+  /**
+   * The headers to match for the rule
+   */
+  readonly matchHeader?: IMatchHeader[];
+
+  /**
+   * The path to match for the rule
+   */
+  readonly matchPath?: IMatchPath;
   /**
    * A name for the the Rule
    */

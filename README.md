@@ -266,7 +266,7 @@ and port that you configure. The rules that you define for a listener determine
 how the service routes requests to its registered targets.
 
 - [Project Information](#project-information)
-- [Example Impleentation](#example-implementation)
+- [Example Implementation](#example-implementation)
 - [API Design](#proposed-api-design-for-vpclattice)
 - [FAQ](#faq)
 - [Acceptance](#acceptance)
@@ -292,8 +292,6 @@ how the service routes requests to its registered targets.
 - https://github.com/clopca/aws-cdk/tree/mrpackethead/aws-vpclattice-alpha/packages/%40aws-cdk/aws-vpclattice-alpha
 
 **Example implementation**
-
-- https://github.com/clopca/vpclattice-prealpha-demo
 
 **Blog**
 

@@ -2,18 +2,10 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import { Vpc } from 'aws-cdk-lib/aws-ec2';
 import { Code, Function as LambdaFunction, Runtime } from 'aws-cdk-lib/aws-lambda';
-import {
-  AuthPolicyDocument,
-  AuthType,
-  HttpFixedResponse,
-  RuleMatch,
-  HttpMethod,
-  ListenerProtocol,
-  RuleAction,
-  Service,
-  ServiceNetwork,
-} from '../../../src';
+import { AuthPolicyDocument, AuthType, HttpFixedResponse, HttpMethod, ListenerProtocol, RuleAction, Service, ServiceNetwork } from '../../../src';
 import { LambdaTargetGroup } from '../../../src/aws-vpclattice-targets';
+import { MatchHeader } from '../../../src/match-header';
+import { MatchPath } from '../../../src/match-path';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-vpclattice-integ-listener');
@@ -60,17 +52,13 @@ const listener1 = sampleSvc.addListener({
     {
       name: 'first-rule',
       priority: 1,
-      match: {
-        headerMatches: [RuleMatch.headerExact('some-value', 'x-custom-header', true)],
-      },
+      matchHeader: [MatchHeader.exact('some-value', 'x-custom-header', true)],
       action: RuleAction.forwardAction(tg1),
     },
     {
       name: 'second-rule',
       priority: 2,
-      match: {
-        method: RuleMatch.methodMatch(HttpMethod.GET),
-      },
+      matchMethod: HttpMethod.GET,
       action: RuleAction.forwardAction(tg1, 50),
     },
   ],
@@ -79,9 +67,7 @@ const listener1 = sampleSvc.addListener({
 listener1.addRule({
   name: 'third-rule',
   priority: 3,
-  match: {
-    pathMatch: RuleMatch.pathExact('/test'),
-  },
+  matchPath: MatchPath.exact('/test'),
   action: RuleAction.fixedResponseAction(HttpFixedResponse.NOT_FOUND),
 });
 

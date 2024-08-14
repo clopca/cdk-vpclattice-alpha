@@ -1396,7 +1396,7 @@ Check whether the given construct is a Resource.
 | <code><a href="#cdk-vpclattice-alpha.Listener.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
 | <code><a href="#cdk-vpclattice-alpha.Listener.property.env">env</a></code> | <code>aws-cdk-lib.ResourceEnvironment</code> | The environment this resource belongs to. |
 | <code><a href="#cdk-vpclattice-alpha.Listener.property.stack">stack</a></code> | <code>aws-cdk-lib.Stack</code> | The stack in which this resource is defined. |
-| <code><a href="#cdk-vpclattice-alpha.Listener.property.defaultAction">defaultAction</a></code> | <code><a href="#cdk-vpclattice-alpha.RuleAction">RuleAction</a></code> | The default action for this listener. |
+| <code><a href="#cdk-vpclattice-alpha.Listener.property.defaultAction">defaultAction</a></code> | <code><a href="#cdk-vpclattice-alpha.IRuleAction">IRuleAction</a></code> | The default action for this listener. |
 | <code><a href="#cdk-vpclattice-alpha.Listener.property.listenerArn">listenerArn</a></code> | <code>string</code> | The Amazon Resource Name (ARN) of the service. |
 | <code><a href="#cdk-vpclattice-alpha.Listener.property.listenerId">listenerId</a></code> | <code>string</code> | The Id of the Service Network. |
 | <code><a href="#cdk-vpclattice-alpha.Listener.property.port">port</a></code> | <code>number</code> | The listener port. |
@@ -1453,10 +1453,10 @@ The stack in which this resource is defined.
 ##### `defaultAction`<sup>Required</sup> <a name="defaultAction" id="cdk-vpclattice-alpha.Listener.property.defaultAction"></a>
 
 ```typescript
-public readonly defaultAction: RuleAction;
+public readonly defaultAction: IRuleAction;
 ```
 
-- *Type:* <a href="#cdk-vpclattice-alpha.RuleAction">RuleAction</a>
+- *Type:* <a href="#cdk-vpclattice-alpha.IRuleAction">IRuleAction</a>
 
 The default action for this listener.
 
@@ -3119,20 +3119,22 @@ const addRuleProps: AddRuleProps = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#cdk-vpclattice-alpha.AddRuleProps.property.action">action</a></code> | <code><a href="#cdk-vpclattice-alpha.RuleAction">RuleAction</a></code> | the action for the rule, is either a fixed Response, or a being sent to  Weighted TargetGroup. |
+| <code><a href="#cdk-vpclattice-alpha.AddRuleProps.property.action">action</a></code> | <code><a href="#cdk-vpclattice-alpha.IRuleAction">IRuleAction</a></code> | the action for the rule, is either a fixed Response, or a being sent to  Weighted TargetGroup. |
 | <code><a href="#cdk-vpclattice-alpha.AddRuleProps.property.name">name</a></code> | <code>string</code> | A name for the the Rule. |
 | <code><a href="#cdk-vpclattice-alpha.AddRuleProps.property.priority">priority</a></code> | <code>number</code> | The priority of this rule, a lower priority will be processed first. |
-| <code><a href="#cdk-vpclattice-alpha.AddRuleProps.property.match">match</a></code> | <code><a href="#cdk-vpclattice-alpha.RuleMatch">RuleMatch</a></code> | The listener to attach the rule to. |
+| <code><a href="#cdk-vpclattice-alpha.AddRuleProps.property.matchHeader">matchHeader</a></code> | <code><a href="#cdk-vpclattice-alpha.IMatchHeader">IMatchHeader</a>[]</code> | The headers to match for the rule. |
+| <code><a href="#cdk-vpclattice-alpha.AddRuleProps.property.matchMethod">matchMethod</a></code> | <code><a href="#cdk-vpclattice-alpha.HttpMethod">HttpMethod</a></code> | The method to match for the rule. |
+| <code><a href="#cdk-vpclattice-alpha.AddRuleProps.property.matchPath">matchPath</a></code> | <code><a href="#cdk-vpclattice-alpha.IMatchPath">IMatchPath</a></code> | The path to match for the rule. |
 
 ---
 
 ##### `action`<sup>Required</sup> <a name="action" id="cdk-vpclattice-alpha.AddRuleProps.property.action"></a>
 
 ```typescript
-public readonly action: RuleAction;
+public readonly action: IRuleAction;
 ```
 
-- *Type:* <a href="#cdk-vpclattice-alpha.RuleAction">RuleAction</a>
+- *Type:* <a href="#cdk-vpclattice-alpha.IRuleAction">IRuleAction</a>
 
 the action for the rule, is either a fixed Response, or a being sent to  Weighted TargetGroup.
 
@@ -3162,15 +3164,39 @@ The priority of this rule, a lower priority will be processed first.
 
 ---
 
-##### `match`<sup>Optional</sup> <a name="match" id="cdk-vpclattice-alpha.AddRuleProps.property.match"></a>
+##### `matchHeader`<sup>Optional</sup> <a name="matchHeader" id="cdk-vpclattice-alpha.AddRuleProps.property.matchHeader"></a>
 
 ```typescript
-public readonly match: RuleMatch;
+public readonly matchHeader: IMatchHeader[];
 ```
 
-- *Type:* <a href="#cdk-vpclattice-alpha.RuleMatch">RuleMatch</a>
+- *Type:* <a href="#cdk-vpclattice-alpha.IMatchHeader">IMatchHeader</a>[]
 
-The listener to attach the rule to.
+The headers to match for the rule.
+
+---
+
+##### `matchMethod`<sup>Optional</sup> <a name="matchMethod" id="cdk-vpclattice-alpha.AddRuleProps.property.matchMethod"></a>
+
+```typescript
+public readonly matchMethod: HttpMethod;
+```
+
+- *Type:* <a href="#cdk-vpclattice-alpha.HttpMethod">HttpMethod</a>
+
+The method to match for the rule.
+
+---
+
+##### `matchPath`<sup>Optional</sup> <a name="matchPath" id="cdk-vpclattice-alpha.AddRuleProps.property.matchPath"></a>
+
+```typescript
+public readonly matchPath: IMatchPath;
+```
+
+- *Type:* <a href="#cdk-vpclattice-alpha.IMatchPath">IMatchPath</a>
+
+The path to match for the rule.
 
 ---
 
@@ -4118,7 +4144,7 @@ const listenerProps: ListenerProps = { ... }
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
 | <code><a href="#cdk-vpclattice-alpha.ListenerProps.property.service">service</a></code> | <code><a href="#cdk-vpclattice-alpha.Service">Service</a></code> | The Id of the service that this listener is associated with. |
-| <code><a href="#cdk-vpclattice-alpha.ListenerProps.property.defaultAction">defaultAction</a></code> | <code><a href="#cdk-vpclattice-alpha.RuleAction">RuleAction</a></code> | * A default action that will be taken if no rules match. |
+| <code><a href="#cdk-vpclattice-alpha.ListenerProps.property.defaultAction">defaultAction</a></code> | <code><a href="#cdk-vpclattice-alpha.IRuleAction">IRuleAction</a></code> | * A default action that will be taken if no rules match. |
 | <code><a href="#cdk-vpclattice-alpha.ListenerProps.property.name">name</a></code> | <code>string</code> | The Name of the listener. |
 | <code><a href="#cdk-vpclattice-alpha.ListenerProps.property.port">port</a></code> | <code>number</code> | Optional port number for the listener. |
 | <code><a href="#cdk-vpclattice-alpha.ListenerProps.property.protocol">protocol</a></code> | <code><a href="#cdk-vpclattice-alpha.ListenerProtocol">ListenerProtocol</a></code> | Protocol that the listener will listen on. |
@@ -4142,10 +4168,10 @@ The Id of the service that this listener is associated with.
 ##### `defaultAction`<sup>Optional</sup> <a name="defaultAction" id="cdk-vpclattice-alpha.ListenerProps.property.defaultAction"></a>
 
 ```typescript
-public readonly defaultAction: RuleAction;
+public readonly defaultAction: IRuleAction;
 ```
 
-- *Type:* <a href="#cdk-vpclattice-alpha.RuleAction">RuleAction</a>
+- *Type:* <a href="#cdk-vpclattice-alpha.IRuleAction">IRuleAction</a>
 - *Default:* HTTPFixedResponse.NOT_FOUND
 
 * A default action that will be taken if no rules match.
@@ -6003,25 +6029,342 @@ A name of the destination.
 ---
 
 
+### MatchHeader <a name="MatchHeader" id="cdk-vpclattice-alpha.MatchHeader"></a>
+
+- *Implements:* <a href="#cdk-vpclattice-alpha.IMatchHeader">IMatchHeader</a>
+
+#### Initializers <a name="Initializers" id="cdk-vpclattice-alpha.MatchHeader.Initializer"></a>
+
+```typescript
+import { MatchHeader } from 'cdk-vpclattice-alpha'
+
+new MatchHeader(name: string, match: {[ key: string ]: string}, caseSensitive: boolean)
+```
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#cdk-vpclattice-alpha.MatchHeader.Initializer.parameter.name">name</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#cdk-vpclattice-alpha.MatchHeader.Initializer.parameter.match">match</a></code> | <code>{[ key: string ]: string}</code> | *No description.* |
+| <code><a href="#cdk-vpclattice-alpha.MatchHeader.Initializer.parameter.caseSensitive">caseSensitive</a></code> | <code>boolean</code> | *No description.* |
+
+---
+
+##### `name`<sup>Required</sup> <a name="name" id="cdk-vpclattice-alpha.MatchHeader.Initializer.parameter.name"></a>
+
+- *Type:* string
+
+---
+
+##### `match`<sup>Required</sup> <a name="match" id="cdk-vpclattice-alpha.MatchHeader.Initializer.parameter.match"></a>
+
+- *Type:* {[ key: string ]: string}
+
+---
+
+##### `caseSensitive`<sup>Required</sup> <a name="caseSensitive" id="cdk-vpclattice-alpha.MatchHeader.Initializer.parameter.caseSensitive"></a>
+
+- *Type:* boolean
+
+---
+
+
+#### Static Functions <a name="Static Functions" id="Static Functions"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#cdk-vpclattice-alpha.MatchHeader.contains">contains</a></code> | Matches if the header value contains the given value. |
+| <code><a href="#cdk-vpclattice-alpha.MatchHeader.exact">exact</a></code> | Matches if the header value is exactly the given value. |
+| <code><a href="#cdk-vpclattice-alpha.MatchHeader.prefix">prefix</a></code> | Matches if the header value starts with the given value. |
+
+---
+
+##### `contains` <a name="contains" id="cdk-vpclattice-alpha.MatchHeader.contains"></a>
+
+```typescript
+import { MatchHeader } from 'cdk-vpclattice-alpha'
+
+MatchHeader.contains(header: string, ruleMatchName?: string, caseSensitive?: boolean)
+```
+
+Matches if the header value contains the given value.
+
+###### `header`<sup>Required</sup> <a name="header" id="cdk-vpclattice-alpha.MatchHeader.contains.parameter.header"></a>
+
+- *Type:* string
+
+the header to match.
+
+---
+
+###### `ruleMatchName`<sup>Optional</sup> <a name="ruleMatchName" id="cdk-vpclattice-alpha.MatchHeader.contains.parameter.ruleMatchName"></a>
+
+- *Type:* string
+
+the name of the rule match.
+
+---
+
+###### `caseSensitive`<sup>Optional</sup> <a name="caseSensitive" id="cdk-vpclattice-alpha.MatchHeader.contains.parameter.caseSensitive"></a>
+
+- *Type:* boolean
+
+whether the match should be case sensitive.
+
+---
+
+##### `exact` <a name="exact" id="cdk-vpclattice-alpha.MatchHeader.exact"></a>
+
+```typescript
+import { MatchHeader } from 'cdk-vpclattice-alpha'
+
+MatchHeader.exact(header: string, ruleMatchName?: string, caseSensitive?: boolean)
+```
+
+Matches if the header value is exactly the given value.
+
+###### `header`<sup>Required</sup> <a name="header" id="cdk-vpclattice-alpha.MatchHeader.exact.parameter.header"></a>
+
+- *Type:* string
+
+the header to match.
+
+---
+
+###### `ruleMatchName`<sup>Optional</sup> <a name="ruleMatchName" id="cdk-vpclattice-alpha.MatchHeader.exact.parameter.ruleMatchName"></a>
+
+- *Type:* string
+
+the name of the rule match.
+
+---
+
+###### `caseSensitive`<sup>Optional</sup> <a name="caseSensitive" id="cdk-vpclattice-alpha.MatchHeader.exact.parameter.caseSensitive"></a>
+
+- *Type:* boolean
+
+whether the match should be case sensitive.
+
+---
+
+##### `prefix` <a name="prefix" id="cdk-vpclattice-alpha.MatchHeader.prefix"></a>
+
+```typescript
+import { MatchHeader } from 'cdk-vpclattice-alpha'
+
+MatchHeader.prefix(header: string, ruleMatchName?: string, caseSensitive?: boolean)
+```
+
+Matches if the header value starts with the given value.
+
+###### `header`<sup>Required</sup> <a name="header" id="cdk-vpclattice-alpha.MatchHeader.prefix.parameter.header"></a>
+
+- *Type:* string
+
+the header to match.
+
+---
+
+###### `ruleMatchName`<sup>Optional</sup> <a name="ruleMatchName" id="cdk-vpclattice-alpha.MatchHeader.prefix.parameter.ruleMatchName"></a>
+
+- *Type:* string
+
+the name of the rule match.
+
+---
+
+###### `caseSensitive`<sup>Optional</sup> <a name="caseSensitive" id="cdk-vpclattice-alpha.MatchHeader.prefix.parameter.caseSensitive"></a>
+
+- *Type:* boolean
+
+whether the match should be case sensitive.
+
+---
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#cdk-vpclattice-alpha.MatchHeader.property.caseSensitive">caseSensitive</a></code> | <code>boolean</code> | *No description.* |
+| <code><a href="#cdk-vpclattice-alpha.MatchHeader.property.match">match</a></code> | <code>{[ key: string ]: string}</code> | *No description.* |
+| <code><a href="#cdk-vpclattice-alpha.MatchHeader.property.name">name</a></code> | <code>string</code> | *No description.* |
+
+---
+
+##### `caseSensitive`<sup>Required</sup> <a name="caseSensitive" id="cdk-vpclattice-alpha.MatchHeader.property.caseSensitive"></a>
+
+```typescript
+public readonly caseSensitive: boolean;
+```
+
+- *Type:* boolean
+
+---
+
+##### `match`<sup>Required</sup> <a name="match" id="cdk-vpclattice-alpha.MatchHeader.property.match"></a>
+
+```typescript
+public readonly match: {[ key: string ]: string};
+```
+
+- *Type:* {[ key: string ]: string}
+
+---
+
+##### `name`<sup>Required</sup> <a name="name" id="cdk-vpclattice-alpha.MatchHeader.property.name"></a>
+
+```typescript
+public readonly name: string;
+```
+
+- *Type:* string
+
+---
+
+
+### MatchPath <a name="MatchPath" id="cdk-vpclattice-alpha.MatchPath"></a>
+
+- *Implements:* <a href="#cdk-vpclattice-alpha.IMatchPath">IMatchPath</a>
+
+#### Initializers <a name="Initializers" id="cdk-vpclattice-alpha.MatchPath.Initializer"></a>
+
+```typescript
+import { MatchPath } from 'cdk-vpclattice-alpha'
+
+new MatchPath(match: {[ key: string ]: string}, caseSensitive: boolean)
+```
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#cdk-vpclattice-alpha.MatchPath.Initializer.parameter.match">match</a></code> | <code>{[ key: string ]: string}</code> | *No description.* |
+| <code><a href="#cdk-vpclattice-alpha.MatchPath.Initializer.parameter.caseSensitive">caseSensitive</a></code> | <code>boolean</code> | *No description.* |
+
+---
+
+##### `match`<sup>Required</sup> <a name="match" id="cdk-vpclattice-alpha.MatchPath.Initializer.parameter.match"></a>
+
+- *Type:* {[ key: string ]: string}
+
+---
+
+##### `caseSensitive`<sup>Required</sup> <a name="caseSensitive" id="cdk-vpclattice-alpha.MatchPath.Initializer.parameter.caseSensitive"></a>
+
+- *Type:* boolean
+
+---
+
+
+#### Static Functions <a name="Static Functions" id="Static Functions"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#cdk-vpclattice-alpha.MatchPath.exact">exact</a></code> | Matches if the path is exactly the given value. |
+| <code><a href="#cdk-vpclattice-alpha.MatchPath.prefix">prefix</a></code> | Matches if the path starts with the given value. |
+
+---
+
+##### `exact` <a name="exact" id="cdk-vpclattice-alpha.MatchPath.exact"></a>
+
+```typescript
+import { MatchPath } from 'cdk-vpclattice-alpha'
+
+MatchPath.exact(path: string, caseSensitive?: boolean)
+```
+
+Matches if the path is exactly the given value.
+
+###### `path`<sup>Required</sup> <a name="path" id="cdk-vpclattice-alpha.MatchPath.exact.parameter.path"></a>
+
+- *Type:* string
+
+the path to match.
+
+---
+
+###### `caseSensitive`<sup>Optional</sup> <a name="caseSensitive" id="cdk-vpclattice-alpha.MatchPath.exact.parameter.caseSensitive"></a>
+
+- *Type:* boolean
+
+whether the match should be case sensitive.
+
+---
+
+##### `prefix` <a name="prefix" id="cdk-vpclattice-alpha.MatchPath.prefix"></a>
+
+```typescript
+import { MatchPath } from 'cdk-vpclattice-alpha'
+
+MatchPath.prefix(path: string, caseSensitive?: boolean)
+```
+
+Matches if the path starts with the given value.
+
+###### `path`<sup>Required</sup> <a name="path" id="cdk-vpclattice-alpha.MatchPath.prefix.parameter.path"></a>
+
+- *Type:* string
+
+the path to match.
+
+---
+
+###### `caseSensitive`<sup>Optional</sup> <a name="caseSensitive" id="cdk-vpclattice-alpha.MatchPath.prefix.parameter.caseSensitive"></a>
+
+- *Type:* boolean
+
+whether the match should be case sensitive.
+
+---
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#cdk-vpclattice-alpha.MatchPath.property.caseSensitive">caseSensitive</a></code> | <code>boolean</code> | *No description.* |
+| <code><a href="#cdk-vpclattice-alpha.MatchPath.property.match">match</a></code> | <code>{[ key: string ]: string}</code> | *No description.* |
+
+---
+
+##### `caseSensitive`<sup>Required</sup> <a name="caseSensitive" id="cdk-vpclattice-alpha.MatchPath.property.caseSensitive"></a>
+
+```typescript
+public readonly caseSensitive: boolean;
+```
+
+- *Type:* boolean
+
+---
+
+##### `match`<sup>Required</sup> <a name="match" id="cdk-vpclattice-alpha.MatchPath.property.match"></a>
+
+```typescript
+public readonly match: {[ key: string ]: string};
+```
+
+- *Type:* {[ key: string ]: string}
+
+---
+
+
 ### RuleAction <a name="RuleAction" id="cdk-vpclattice-alpha.RuleAction"></a>
+
+- *Implements:* <a href="#cdk-vpclattice-alpha.IRuleAction">IRuleAction</a>
 
 #### Initializers <a name="Initializers" id="cdk-vpclattice-alpha.RuleAction.Initializer"></a>
 
 ```typescript
 import { RuleAction } from 'cdk-vpclattice-alpha'
 
-new RuleAction(action: RuleAction)
+new RuleAction(action: IRuleAction)
 ```
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#cdk-vpclattice-alpha.RuleAction.Initializer.parameter.action">action</a></code> | <code><a href="#cdk-vpclattice-alpha.RuleAction">RuleAction</a></code> | *No description.* |
+| <code><a href="#cdk-vpclattice-alpha.RuleAction.Initializer.parameter.action">action</a></code> | <code><a href="#cdk-vpclattice-alpha.IRuleAction">IRuleAction</a></code> | *No description.* |
 
 ---
 
 ##### `action`<sup>Required</sup> <a name="action" id="cdk-vpclattice-alpha.RuleAction.Initializer.parameter.action"></a>
 
-- *Type:* <a href="#cdk-vpclattice-alpha.RuleAction">RuleAction</a>
+- *Type:* <a href="#cdk-vpclattice-alpha.IRuleAction">IRuleAction</a>
 
 ---
 
@@ -6133,213 +6476,54 @@ public readonly forward: ForwardProperty;
 ```typescript
 import { RuleMatch } from 'cdk-vpclattice-alpha'
 
-new RuleMatch()
+new RuleMatch(method?: HttpMethod, headerMatches?: IMatchHeader[], pathMatch?: IMatchPath)
 ```
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
+| <code><a href="#cdk-vpclattice-alpha.RuleMatch.Initializer.parameter.method">method</a></code> | <code><a href="#cdk-vpclattice-alpha.HttpMethod">HttpMethod</a></code> | *No description.* |
+| <code><a href="#cdk-vpclattice-alpha.RuleMatch.Initializer.parameter.headerMatches">headerMatches</a></code> | <code><a href="#cdk-vpclattice-alpha.IMatchHeader">IMatchHeader</a>[]</code> | *No description.* |
+| <code><a href="#cdk-vpclattice-alpha.RuleMatch.Initializer.parameter.pathMatch">pathMatch</a></code> | <code><a href="#cdk-vpclattice-alpha.IMatchPath">IMatchPath</a></code> | *No description.* |
 
 ---
 
-
-#### Static Functions <a name="Static Functions" id="Static Functions"></a>
-
-| **Name** | **Description** |
-| --- | --- |
-| <code><a href="#cdk-vpclattice-alpha.RuleMatch.headerContains">headerContains</a></code> | Matches if the header value contains the given value. |
-| <code><a href="#cdk-vpclattice-alpha.RuleMatch.headerExact">headerExact</a></code> | Matches if the header value is exactly the given value. |
-| <code><a href="#cdk-vpclattice-alpha.RuleMatch.headerPrefix">headerPrefix</a></code> | Matches if the header value starts with the given value. |
-| <code><a href="#cdk-vpclattice-alpha.RuleMatch.methodMatch">methodMatch</a></code> | *No description.* |
-| <code><a href="#cdk-vpclattice-alpha.RuleMatch.pathExact">pathExact</a></code> | Matches if the path is exactly the given value. |
-| <code><a href="#cdk-vpclattice-alpha.RuleMatch.pathPrefix">pathPrefix</a></code> | Matches if the path starts with the given value. |
-
----
-
-##### `headerContains` <a name="headerContains" id="cdk-vpclattice-alpha.RuleMatch.headerContains"></a>
-
-```typescript
-import { RuleMatch } from 'cdk-vpclattice-alpha'
-
-RuleMatch.headerContains(header: string, ruleMatchName?: string, caseSensitive?: boolean)
-```
-
-Matches if the header value contains the given value.
-
-###### `header`<sup>Required</sup> <a name="header" id="cdk-vpclattice-alpha.RuleMatch.headerContains.parameter.header"></a>
-
-- *Type:* string
-
-The header to match.
-
----
-
-###### `ruleMatchName`<sup>Optional</sup> <a name="ruleMatchName" id="cdk-vpclattice-alpha.RuleMatch.headerContains.parameter.ruleMatchName"></a>
-
-- *Type:* string
-
-The name of the rule match.
-
----
-
-###### `caseSensitive`<sup>Optional</sup> <a name="caseSensitive" id="cdk-vpclattice-alpha.RuleMatch.headerContains.parameter.caseSensitive"></a>
-
-- *Type:* boolean
-
-Whether the match should be case sensitive.
-
----
-
-##### `headerExact` <a name="headerExact" id="cdk-vpclattice-alpha.RuleMatch.headerExact"></a>
-
-```typescript
-import { RuleMatch } from 'cdk-vpclattice-alpha'
-
-RuleMatch.headerExact(header: string, ruleMatchName?: string, caseSensitive?: boolean)
-```
-
-Matches if the header value is exactly the given value.
-
-###### `header`<sup>Required</sup> <a name="header" id="cdk-vpclattice-alpha.RuleMatch.headerExact.parameter.header"></a>
-
-- *Type:* string
-
-The header to match.
-
----
-
-###### `ruleMatchName`<sup>Optional</sup> <a name="ruleMatchName" id="cdk-vpclattice-alpha.RuleMatch.headerExact.parameter.ruleMatchName"></a>
-
-- *Type:* string
-
-The name of the rule match.
-
----
-
-###### `caseSensitive`<sup>Optional</sup> <a name="caseSensitive" id="cdk-vpclattice-alpha.RuleMatch.headerExact.parameter.caseSensitive"></a>
-
-- *Type:* boolean
-
-Whether the match should be case sensitive.
-
----
-
-##### `headerPrefix` <a name="headerPrefix" id="cdk-vpclattice-alpha.RuleMatch.headerPrefix"></a>
-
-```typescript
-import { RuleMatch } from 'cdk-vpclattice-alpha'
-
-RuleMatch.headerPrefix(header: string, ruleMatchName?: string, caseSensitive?: boolean)
-```
-
-Matches if the header value starts with the given value.
-
-###### `header`<sup>Required</sup> <a name="header" id="cdk-vpclattice-alpha.RuleMatch.headerPrefix.parameter.header"></a>
-
-- *Type:* string
-
-The header to match.
-
----
-
-###### `ruleMatchName`<sup>Optional</sup> <a name="ruleMatchName" id="cdk-vpclattice-alpha.RuleMatch.headerPrefix.parameter.ruleMatchName"></a>
-
-- *Type:* string
-
-The name of the rule match.
-
----
-
-###### `caseSensitive`<sup>Optional</sup> <a name="caseSensitive" id="cdk-vpclattice-alpha.RuleMatch.headerPrefix.parameter.caseSensitive"></a>
-
-- *Type:* boolean
-
-Whether the match should be case sensitive.
-
----
-
-##### `methodMatch` <a name="methodMatch" id="cdk-vpclattice-alpha.RuleMatch.methodMatch"></a>
-
-```typescript
-import { RuleMatch } from 'cdk-vpclattice-alpha'
-
-RuleMatch.methodMatch(method: HttpMethod)
-```
-
-###### `method`<sup>Required</sup> <a name="method" id="cdk-vpclattice-alpha.RuleMatch.methodMatch.parameter.method"></a>
+##### `method`<sup>Optional</sup> <a name="method" id="cdk-vpclattice-alpha.RuleMatch.Initializer.parameter.method"></a>
 
 - *Type:* <a href="#cdk-vpclattice-alpha.HttpMethod">HttpMethod</a>
 
 ---
 
-##### `pathExact` <a name="pathExact" id="cdk-vpclattice-alpha.RuleMatch.pathExact"></a>
+##### `headerMatches`<sup>Optional</sup> <a name="headerMatches" id="cdk-vpclattice-alpha.RuleMatch.Initializer.parameter.headerMatches"></a>
 
-```typescript
-import { RuleMatch } from 'cdk-vpclattice-alpha'
-
-RuleMatch.pathExact(path: string, caseSensitive?: boolean)
-```
-
-Matches if the path is exactly the given value.
-
-###### `path`<sup>Required</sup> <a name="path" id="cdk-vpclattice-alpha.RuleMatch.pathExact.parameter.path"></a>
-
-- *Type:* string
-
-The path to match.
+- *Type:* <a href="#cdk-vpclattice-alpha.IMatchHeader">IMatchHeader</a>[]
 
 ---
 
-###### `caseSensitive`<sup>Optional</sup> <a name="caseSensitive" id="cdk-vpclattice-alpha.RuleMatch.pathExact.parameter.caseSensitive"></a>
+##### `pathMatch`<sup>Optional</sup> <a name="pathMatch" id="cdk-vpclattice-alpha.RuleMatch.Initializer.parameter.pathMatch"></a>
 
-- *Type:* boolean
-
-Whether the match should be case sensitive.
+- *Type:* <a href="#cdk-vpclattice-alpha.IMatchPath">IMatchPath</a>
 
 ---
 
-##### `pathPrefix` <a name="pathPrefix" id="cdk-vpclattice-alpha.RuleMatch.pathPrefix"></a>
 
-```typescript
-import { RuleMatch } from 'cdk-vpclattice-alpha'
-
-RuleMatch.pathPrefix(path: string, caseSensitive?: boolean)
-```
-
-Matches if the path starts with the given value.
-
-###### `path`<sup>Required</sup> <a name="path" id="cdk-vpclattice-alpha.RuleMatch.pathPrefix.parameter.path"></a>
-
-- *Type:* string
-
-The path to match.
-
----
-
-###### `caseSensitive`<sup>Optional</sup> <a name="caseSensitive" id="cdk-vpclattice-alpha.RuleMatch.pathPrefix.parameter.caseSensitive"></a>
-
-- *Type:* boolean
-
-Whether the match should be case sensitive.
-
----
 
 #### Properties <a name="Properties" id="Properties"></a>
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#cdk-vpclattice-alpha.RuleMatch.property.headerMatches">headerMatches</a></code> | <code><a href="#cdk-vpclattice-alpha.IHeaderMatch">IHeaderMatch</a>[]</code> | *No description.* |
+| <code><a href="#cdk-vpclattice-alpha.RuleMatch.property.headerMatches">headerMatches</a></code> | <code><a href="#cdk-vpclattice-alpha.IMatchHeader">IMatchHeader</a>[]</code> | *No description.* |
 | <code><a href="#cdk-vpclattice-alpha.RuleMatch.property.method">method</a></code> | <code><a href="#cdk-vpclattice-alpha.HttpMethod">HttpMethod</a></code> | *No description.* |
-| <code><a href="#cdk-vpclattice-alpha.RuleMatch.property.pathMatch">pathMatch</a></code> | <code><a href="#cdk-vpclattice-alpha.IPathMatch">IPathMatch</a></code> | *No description.* |
+| <code><a href="#cdk-vpclattice-alpha.RuleMatch.property.pathMatch">pathMatch</a></code> | <code><a href="#cdk-vpclattice-alpha.IMatchPath">IMatchPath</a></code> | *No description.* |
 
 ---
 
 ##### `headerMatches`<sup>Optional</sup> <a name="headerMatches" id="cdk-vpclattice-alpha.RuleMatch.property.headerMatches"></a>
 
 ```typescript
-public readonly headerMatches: IHeaderMatch[];
+public readonly headerMatches: IMatchHeader[];
 ```
 
-- *Type:* <a href="#cdk-vpclattice-alpha.IHeaderMatch">IHeaderMatch</a>[]
+- *Type:* <a href="#cdk-vpclattice-alpha.IMatchHeader">IMatchHeader</a>[]
 
 ---
 
@@ -6356,60 +6540,15 @@ public readonly method: HttpMethod;
 ##### `pathMatch`<sup>Optional</sup> <a name="pathMatch" id="cdk-vpclattice-alpha.RuleMatch.property.pathMatch"></a>
 
 ```typescript
-public readonly pathMatch: IPathMatch;
+public readonly pathMatch: IMatchPath;
 ```
 
-- *Type:* <a href="#cdk-vpclattice-alpha.IPathMatch">IPathMatch</a>
+- *Type:* <a href="#cdk-vpclattice-alpha.IMatchPath">IMatchPath</a>
 
 ---
 
 
 ## Protocols <a name="Protocols" id="Protocols"></a>
-
-### IHeaderMatch <a name="IHeaderMatch" id="cdk-vpclattice-alpha.IHeaderMatch"></a>
-
-- *Implemented By:* <a href="#cdk-vpclattice-alpha.IHeaderMatch">IHeaderMatch</a>
-
-
-#### Properties <a name="Properties" id="Properties"></a>
-
-| **Name** | **Type** | **Description** |
-| --- | --- | --- |
-| <code><a href="#cdk-vpclattice-alpha.IHeaderMatch.property.caseSensitive">caseSensitive</a></code> | <code>boolean</code> | *No description.* |
-| <code><a href="#cdk-vpclattice-alpha.IHeaderMatch.property.match">match</a></code> | <code>{[ key: string ]: string}</code> | *No description.* |
-| <code><a href="#cdk-vpclattice-alpha.IHeaderMatch.property.name">name</a></code> | <code>string</code> | *No description.* |
-
----
-
-##### `caseSensitive`<sup>Required</sup> <a name="caseSensitive" id="cdk-vpclattice-alpha.IHeaderMatch.property.caseSensitive"></a>
-
-```typescript
-public readonly caseSensitive: boolean;
-```
-
-- *Type:* boolean
-
----
-
-##### `match`<sup>Required</sup> <a name="match" id="cdk-vpclattice-alpha.IHeaderMatch.property.match"></a>
-
-```typescript
-public readonly match: {[ key: string ]: string};
-```
-
-- *Type:* {[ key: string ]: string}
-
----
-
-##### `name`<sup>Required</sup> <a name="name" id="cdk-vpclattice-alpha.IHeaderMatch.property.name"></a>
-
-```typescript
-public readonly name: string;
-```
-
-- *Type:* string
-
----
 
 ### IListener <a name="IListener" id="cdk-vpclattice-alpha.IListener"></a>
 
@@ -6527,21 +6666,22 @@ The Id of the Service Network.
 
 ---
 
-### IPathMatch <a name="IPathMatch" id="cdk-vpclattice-alpha.IPathMatch"></a>
+### IMatchHeader <a name="IMatchHeader" id="cdk-vpclattice-alpha.IMatchHeader"></a>
 
-- *Implemented By:* <a href="#cdk-vpclattice-alpha.IPathMatch">IPathMatch</a>
+- *Implemented By:* <a href="#cdk-vpclattice-alpha.MatchHeader">MatchHeader</a>, <a href="#cdk-vpclattice-alpha.IMatchHeader">IMatchHeader</a>
 
 
 #### Properties <a name="Properties" id="Properties"></a>
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#cdk-vpclattice-alpha.IPathMatch.property.caseSensitive">caseSensitive</a></code> | <code>boolean</code> | *No description.* |
-| <code><a href="#cdk-vpclattice-alpha.IPathMatch.property.match">match</a></code> | <code>{[ key: string ]: string}</code> | *No description.* |
+| <code><a href="#cdk-vpclattice-alpha.IMatchHeader.property.caseSensitive">caseSensitive</a></code> | <code>boolean</code> | *No description.* |
+| <code><a href="#cdk-vpclattice-alpha.IMatchHeader.property.match">match</a></code> | <code>{[ key: string ]: string}</code> | *No description.* |
+| <code><a href="#cdk-vpclattice-alpha.IMatchHeader.property.name">name</a></code> | <code>string</code> | *No description.* |
 
 ---
 
-##### `caseSensitive`<sup>Required</sup> <a name="caseSensitive" id="cdk-vpclattice-alpha.IPathMatch.property.caseSensitive"></a>
+##### `caseSensitive`<sup>Required</sup> <a name="caseSensitive" id="cdk-vpclattice-alpha.IMatchHeader.property.caseSensitive"></a>
 
 ```typescript
 public readonly caseSensitive: boolean;
@@ -6551,7 +6691,51 @@ public readonly caseSensitive: boolean;
 
 ---
 
-##### `match`<sup>Required</sup> <a name="match" id="cdk-vpclattice-alpha.IPathMatch.property.match"></a>
+##### `match`<sup>Required</sup> <a name="match" id="cdk-vpclattice-alpha.IMatchHeader.property.match"></a>
+
+```typescript
+public readonly match: {[ key: string ]: string};
+```
+
+- *Type:* {[ key: string ]: string}
+
+---
+
+##### `name`<sup>Required</sup> <a name="name" id="cdk-vpclattice-alpha.IMatchHeader.property.name"></a>
+
+```typescript
+public readonly name: string;
+```
+
+- *Type:* string
+
+---
+
+### IMatchPath <a name="IMatchPath" id="cdk-vpclattice-alpha.IMatchPath"></a>
+
+- *Implemented By:* <a href="#cdk-vpclattice-alpha.MatchPath">MatchPath</a>, <a href="#cdk-vpclattice-alpha.IMatchPath">IMatchPath</a>
+
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#cdk-vpclattice-alpha.IMatchPath.property.caseSensitive">caseSensitive</a></code> | <code>boolean</code> | *No description.* |
+| <code><a href="#cdk-vpclattice-alpha.IMatchPath.property.match">match</a></code> | <code>{[ key: string ]: string}</code> | *No description.* |
+
+---
+
+##### `caseSensitive`<sup>Required</sup> <a name="caseSensitive" id="cdk-vpclattice-alpha.IMatchPath.property.caseSensitive"></a>
+
+```typescript
+public readonly caseSensitive: boolean;
+```
+
+- *Type:* boolean
+
+---
+
+##### `match`<sup>Required</sup> <a name="match" id="cdk-vpclattice-alpha.IMatchPath.property.match"></a>
 
 ```typescript
 public readonly match: {[ key: string ]: string};
@@ -6563,33 +6747,37 @@ public readonly match: {[ key: string ]: string};
 
 ### IRuleAction <a name="IRuleAction" id="cdk-vpclattice-alpha.IRuleAction"></a>
 
-- *Implemented By:* <a href="#cdk-vpclattice-alpha.IRuleAction">IRuleAction</a>
+- *Implemented By:* <a href="#cdk-vpclattice-alpha.RuleAction">RuleAction</a>, <a href="#cdk-vpclattice-alpha.IRuleAction">IRuleAction</a>
 
-#### Methods <a name="Methods" id="Methods"></a>
 
-| **Name** | **Description** |
-| --- | --- |
-| <code><a href="#cdk-vpclattice-alpha.IRuleAction.renderListenerDefaultAction">renderListenerDefaultAction</a></code> | Render the listener default action. |
-| <code><a href="#cdk-vpclattice-alpha.IRuleAction.renderRuleAction">renderRuleAction</a></code> | Render the listener rule action. |
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#cdk-vpclattice-alpha.IRuleAction.property.fixedResponse">fixedResponse</a></code> | <code>aws-cdk-lib.aws_vpclattice.CfnRule.FixedResponseProperty</code> | *No description.* |
+| <code><a href="#cdk-vpclattice-alpha.IRuleAction.property.forward">forward</a></code> | <code>aws-cdk-lib.aws_vpclattice.CfnRule.ForwardProperty</code> | *No description.* |
 
 ---
 
-##### `renderListenerDefaultAction` <a name="renderListenerDefaultAction" id="cdk-vpclattice-alpha.IRuleAction.renderListenerDefaultAction"></a>
+##### `fixedResponse`<sup>Optional</sup> <a name="fixedResponse" id="cdk-vpclattice-alpha.IRuleAction.property.fixedResponse"></a>
 
 ```typescript
-public renderListenerDefaultAction(): DefaultActionProperty
+public readonly fixedResponse: FixedResponseProperty;
 ```
 
-Render the listener default action.
+- *Type:* aws-cdk-lib.aws_vpclattice.CfnRule.FixedResponseProperty
 
-##### `renderRuleAction` <a name="renderRuleAction" id="cdk-vpclattice-alpha.IRuleAction.renderRuleAction"></a>
+---
+
+##### `forward`<sup>Optional</sup> <a name="forward" id="cdk-vpclattice-alpha.IRuleAction.property.forward"></a>
 
 ```typescript
-public renderRuleAction(): ActionProperty
+public readonly forward: ForwardProperty;
 ```
 
-Render the listener rule action.
+- *Type:* aws-cdk-lib.aws_vpclattice.CfnRule.ForwardProperty
 
+---
 
 ### IService <a name="IService" id="cdk-vpclattice-alpha.IService"></a>
 
@@ -6975,41 +7163,6 @@ identity or service level permissions.
 ---
 
 
-### HeaderMatchType <a name="HeaderMatchType" id="cdk-vpclattice-alpha.HeaderMatchType"></a>
-
-Rule Conditions can leverage different operators for Matches.
-
-#### Members <a name="Members" id="Members"></a>
-
-| **Name** | **Description** |
-| --- | --- |
-| <code><a href="#cdk-vpclattice-alpha.HeaderMatchType.CONTAINS">CONTAINS</a></code> | Contains Match. |
-| <code><a href="#cdk-vpclattice-alpha.HeaderMatchType.EXACT">EXACT</a></code> | Exact Match. |
-| <code><a href="#cdk-vpclattice-alpha.HeaderMatchType.PREFIX">PREFIX</a></code> | Prefix Match. |
-
----
-
-##### `CONTAINS` <a name="CONTAINS" id="cdk-vpclattice-alpha.HeaderMatchType.CONTAINS"></a>
-
-Contains Match.
-
----
-
-
-##### `EXACT` <a name="EXACT" id="cdk-vpclattice-alpha.HeaderMatchType.EXACT"></a>
-
-Exact Match.
-
----
-
-
-##### `PREFIX` <a name="PREFIX" id="cdk-vpclattice-alpha.HeaderMatchType.PREFIX"></a>
-
-Prefix Match.
-
----
-
-
 ### HealthCheckProtocol <a name="HealthCheckProtocol" id="cdk-vpclattice-alpha.HealthCheckProtocol"></a>
 
 #### Members <a name="Members" id="Members"></a>
@@ -7345,33 +7498,6 @@ decrypts the encrypted traffic instead of VPC Lattice.
 
 
 ##### `ALIAS` <a name="ALIAS" id="cdk-vpclattice-alpha.MappingRecordType.ALIAS"></a>
-
----
-
-
-### PathMatchType <a name="PathMatchType" id="cdk-vpclattice-alpha.PathMatchType"></a>
-
-Operators for Path Matches.
-
-#### Members <a name="Members" id="Members"></a>
-
-| **Name** | **Description** |
-| --- | --- |
-| <code><a href="#cdk-vpclattice-alpha.PathMatchType.EXACT">EXACT</a></code> | Exact Match. |
-| <code><a href="#cdk-vpclattice-alpha.PathMatchType.PREFIX">PREFIX</a></code> | Prefix Match. |
-
----
-
-##### `EXACT` <a name="EXACT" id="cdk-vpclattice-alpha.PathMatchType.EXACT"></a>
-
-Exact Match.
-
----
-
-
-##### `PREFIX` <a name="PREFIX" id="cdk-vpclattice-alpha.PathMatchType.PREFIX"></a>
-
-Prefix Match.
 
 ---
 

@@ -1,9 +1,12 @@
 import * as generated from 'aws-cdk-lib/aws-vpclattice';
 import { Construct } from 'constructs';
 import type { IListener } from './listener';
+import type { IMatchHeader } from './match-header';
+import type { IMatchPath } from './match-path';
 import type { RuleAction } from './rule-action';
 import type { RuleMatch } from './rule-match';
 import type { IService } from './service';
+import type { HttpMethod } from './util';
 
 /**
  * Access mode for the rule.
@@ -35,10 +38,17 @@ export interface RuleProps {
    */
   readonly listener: IListener;
   /**
-   * the Matching criteria for the rule. This must contain at least one of
-   * header, method or patchMatches
+   * The method match criteria for the rule.
    */
-  readonly match?: RuleMatch;
+  readonly matchMethod?: HttpMethod;
+  /**
+   * The path match criteria for the rule.
+   */
+  readonly matchPath?: IMatchPath;
+  /**
+   * The header match criteria for the rule.
+   */
+  readonly matchHeader?: IMatchHeader[];
   /**
    * A name for the the Rule
    */
@@ -62,8 +72,11 @@ export class ListenerRule extends Construct {
    */
   public readonly listenerRuleArn: string;
 
-  private readonly match?: RuleMatch;
+  private readonly matchMethod?: HttpMethod;
+  private readonly matchPath?: IMatchPath;
+  private readonly matchHeader?: IMatchHeader[];
 
+  private readonly match: RuleMatch;
   private readonly listener: IListener;
   private readonly action: RuleAction;
   private readonly service: IService;
@@ -71,7 +84,14 @@ export class ListenerRule extends Construct {
   constructor(scope: Construct, id: string, props: RuleProps) {
     super(scope, id);
 
-    this.match = props.match;
+    this.matchMethod = props.matchMethod;
+    this.matchPath = props.matchPath;
+    this.matchHeader = props.matchHeader;
+    this.match = {
+      method: this.matchMethod,
+      pathMatch: this.matchPath,
+      headerMatches: this.matchHeader,
+    };
     this.action = props.action;
     this.service = props.service;
 
@@ -82,7 +102,7 @@ export class ListenerRule extends Construct {
       action: this.action,
       listenerIdentifier: this.listener.listenerId,
       serviceIdentifier: this.service.serviceId,
-      match: { httpMatch: this.match ?? {} },
+      match: { httpMatch: this.match },
       priority: props.priority,
     });
 

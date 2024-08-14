@@ -60,7 +60,7 @@ testSvc.authPolicy.addStatements(
 );
 
 new ServiceNetwork(stack, 'ServiceNetwork', {
-  name: 'superapps-auth-vcnetwork',
+  name: 'superapps-auth-vpcnetwork',
   services: [testSvc],
   removalPolicy: cdk.RemovalPolicy.DESTROY,
   vpcAssociations: [{ vpc: serviceVpc }, { vpc: clientVpc, securityGroups: [clientsSg] }],

@@ -105,37 +105,3 @@ export enum HttpMethod {
    */
   TRACE = 'TRACE',
 }
-
-/**
- * Rule Conditions can leverage different operators for Matches
- */
-export enum HeaderMatchType {
-  /**
-   * Contains Match
-   */
-  CONTAINS = 'contains',
-
-  /**
-   * Exact Match
-   */
-  EXACT = 'exact',
-
-  /**
-   * Prefix Match
-   */
-  PREFIX = 'prefix',
-}
-
-/**
- * Operators for Path Matches
- */
-export enum PathMatchType {
-  /**
-   * Exact Match
-   */
-  EXACT = 'exact',
-  /**
-   * Prefix Match
-   */
-  PREFIX = 'prefix',
-}
