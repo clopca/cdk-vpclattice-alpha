@@ -24,17 +24,11 @@ import * as vpclattice from '@aws-cdk/aws-vpclattice-alpha';
 
 # Introduction
 
-AWS VPC Lattice is a fully managed application networking service that helps you
-connect, secure, and monitor communications between your services, whether they
-run in Amazon VPC, containers, or serverless environments. You can use VPC Lattice
-with a single virtual private cloud (VPC) or across multiple VPCs from one or
-more accounts.
+AWS VPC Lattice is a fully managed application networking service that helps you connect, secure, and monitor communications between your services, whether they run in Amazon VPC, containers, or serverless environments. You can use VPC Lattice with a single virtual private cloud (VPC) or across multiple VPCs from one or more accounts.
 
 ## Service
 
-In VPC Lattice, we refer to a microservice as a service. It represents an
-independently deployable unit of software that delivers a specific task or
-function.
+In VPC Lattice, we refer to a microservice as a service. It represents an independently deployable unit of software that delivers a specific task or function.
 
 To create a service, use the `Service` Construct:
 
@@ -52,12 +46,9 @@ new Service(stack, 'Service', {
 ### Service access
 
 Access settings enable you to configure and manage client access to a service.
-Access settings include auth type and auth policies. Auth policies help you
-authenticate and authorize traffic flowing to services within VPC Lattice.
+Access settings include auth type and auth policies. Auth policies help you authenticate and authorize traffic flowing to services within VPC Lattice.
 
-You can apply auth policies at the service network level, the service level, or
-both. At the service level, service owners can apply fine-grained controls,
-which can be more restrictive.
+You can apply auth policies at the service network level, the service level, or both. At the service level, service owners can apply fine-grained controls, which can be more restrictive.
 
 - You can chooose to not define an auth policy:
 
@@ -289,7 +280,7 @@ how the service routes requests to its registered targets.
 
 **Prototype Code**
 
-- https://github.com/clopca/aws-cdk/tree/mrpackethead/aws-vpclattice-alpha/packages/%40aws-cdk/aws-vpclattice-alpha
+https://github.com/clopca/cdk-vpclattice-alpha (Private repo, to be shared with AWS)
 
 **Example implementation**
 

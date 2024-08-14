@@ -21,7 +21,8 @@ export interface ServiceNetworkAssociationProps {
 
 /**
  * Creates an Association Between a Lattice Service and a Service Network.
- * Consider using `.addService` of the ServiceNetwork construct
+ * Consider using `.associateService` of the ServiceNetwork construct
+ * or `.associateWithServiceNetwork` of the Service construct
  *
  * @resource AWS::VpcLattice::ServiceNetworkServiceAssociation
  */
