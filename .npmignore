@@ -31,6 +31,7 @@ test/core/integ/service-network.integ.snapshot
 test/core/integ/.tmp
 test/core/integ/service.integ.snapshot
 test/target-groups/integ/alb-target-group.integ.snapshot
+test/target-groups/integ/asg-target-group.integ.snapshot
 test/target-groups/integ/instance-target-group.integ.snapshot
 test/target-groups/integ/ip-target-group.integ.snapshot
 test/target-groups/integ/.tmp

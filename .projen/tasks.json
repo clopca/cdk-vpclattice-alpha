@@ -212,6 +212,69 @@
         }
       ]
     },
+    "integ:asg-target-group:assert": {
+      "name": "integ:asg-target-group:assert",
+      "description": "assert the snapshot of integration test 'asg-target-group'",
+      "steps": [
+        {
+          "exec": "[ -d \"test/target-groups/integ/asg-target-group.integ.snapshot\" ] || (echo \"No snapshot available for integration test 'asg-target-group'. Run 'projen integ:asg-target-group:deploy' to capture.\" && exit 1)"
+        },
+        {
+          "exec": "cdk synth --app \"ts-node -P tsconfig.dev.json test/target-groups/integ/asg-target-group.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata -o test/target-groups/integ/.tmp/asg-target-group.integ/assert.cdk.out > /dev/null"
+        },
+        {
+          "exec": "diff -r -x asset.* -x cdk.out -x manifest.json -x tree.json test/target-groups/integ/asg-target-group.integ.snapshot/ test/target-groups/integ/.tmp/asg-target-group.integ/assert.cdk.out/"
+        }
+      ]
+    },
+    "integ:asg-target-group:deploy": {
+      "name": "integ:asg-target-group:deploy",
+      "description": "deploy integration test 'asg-target-group' and capture snapshot",
+      "steps": [
+        {
+          "exec": "rm -fr test/target-groups/integ/.tmp/asg-target-group.integ/deploy.cdk.out"
+        },
+        {
+          "exec": "cdk deploy --app \"ts-node -P tsconfig.dev.json test/target-groups/integ/asg-target-group.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata '**' --require-approval=never -o test/target-groups/integ/.tmp/asg-target-group.integ/deploy.cdk.out"
+        },
+        {
+          "exec": "rm -fr test/target-groups/integ/asg-target-group.integ.snapshot"
+        },
+        {
+          "exec": "mv test/target-groups/integ/.tmp/asg-target-group.integ/deploy.cdk.out test/target-groups/integ/asg-target-group.integ.snapshot"
+        },
+        {
+          "spawn": "integ:asg-target-group:destroy"
+        }
+      ]
+    },
+    "integ:asg-target-group:destroy": {
+      "name": "integ:asg-target-group:destroy",
+      "description": "destroy integration test 'asg-target-group'",
+      "steps": [
+        {
+          "exec": "cdk destroy --app test/target-groups/integ/asg-target-group.integ.snapshot '**' --no-version-reporting"
+        }
+      ]
+    },
+    "integ:asg-target-group:snapshot": {
+      "name": "integ:asg-target-group:snapshot",
+      "description": "update snapshot for integration test \"asg-target-group\"",
+      "steps": [
+        {
+          "exec": "cdk synth --app \"ts-node -P tsconfig.dev.json test/target-groups/integ/asg-target-group.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata -o test/target-groups/integ/asg-target-group.integ.snapshot > /dev/null"
+        }
+      ]
+    },
+    "integ:asg-target-group:watch": {
+      "name": "integ:asg-target-group:watch",
+      "description": "watch integration test 'asg-target-group' (without updating snapshots)",
+      "steps": [
+        {
+          "exec": "cdk watch --app \"ts-node -P tsconfig.dev.json test/target-groups/integ/asg-target-group.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata '**' -o test/target-groups/integ/.tmp/asg-target-group.integ/deploy.cdk.out"
+        }
+      ]
+    },
     "integ:basic:assert": {
       "name": "integ:basic:assert",
       "description": "assert the snapshot of integration test 'basic'",
@@ -805,6 +868,9 @@
           "spawn": "integ:alb-target-group:snapshot"
         },
         {
+          "spawn": "integ:asg-target-group:snapshot"
+        },
+        {
           "spawn": "integ:instance-target-group:snapshot"
         },
         {
@@ -914,6 +980,9 @@
         },
         {
           "spawn": "integ:alb-target-group:assert"
+        },
+        {
+          "spawn": "integ:asg-target-group:assert"
         },
         {
           "spawn": "integ:instance-target-group:assert"
