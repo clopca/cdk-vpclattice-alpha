@@ -845,7 +845,7 @@
    "Type": "AWS::VpcLattice::ServiceNetwork",
    "Properties": {
     "AuthType": "NONE",
-    "Name": "superapps-auth-vcnetwork"
+    "Name": "superapps-auth-vpcnetwork"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

@@ -5,7 +5,7 @@ import * as autoscaling from 'aws-cdk-lib/aws-autoscaling';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { Instance, Peer, Port, SecurityGroup, Vpc } from 'aws-cdk-lib/aws-ec2';
 import { Code, Function as LambdaFunction, Runtime } from 'aws-cdk-lib/aws-lambda';
-import { HttpFixedResponse, ListenerProtocol, Service, ServiceNetwork, AuthType, RuleAction, RuleMatch, HttpMethod } from '../../../src';
+import { HttpFixedResponse, ListenerProtocol, Service, ServiceNetwork, AuthType, RuleAction, HttpMethod, MatchPath } from '../../../src';
 // import { AlbTargetGroup, InstanceTargetGroup, LambdaTargetGroup, RequestProtocol, RequestProtocolVersion } from '../../../src/aws-vpclattice-targets';
 import { InstanceTargetGroup, LambdaTargetGroup, RequestProtocol, RequestProtocolVersion } from '../../../src/aws-vpclattice-targets';
 import { ListenerRule } from '../../../src/rule';
@@ -118,7 +118,6 @@ paymentsSecurityGroup.addIngressRule(Peer.ipv4('172.16.0.0/16'), Port.tcp(80));
 //   publicLoadBalancer: false,
 // });
 
-
 // const paymentsTg = new AlbTargetGroup(stack, 'ALBTG', {
 //   name: 'payments-tg',
 //   vpc: paymentsVpc,
@@ -153,19 +152,15 @@ const parkingRatesRule = new ListenerRule(stack, 'MyRule', {
   listener: parkingListener,
   name: 'header-match-rule',
   service: parkingSvc,
-  match: {
-    pathMatch: RuleMatch.pathExact('/rates', false),
-  },
+  matchPath: MatchPath.exact('/rates', false),
   action: RuleAction.forwardAction(ratesTg),
 });
 
 parkingListener.addRule({
   // action: RuleAction.forwardAction(paymentsTg),
   action: RuleAction.fixedResponseAction(HttpFixedResponse.NOT_FOUND),
-  match: {
-    method: RuleMatch.methodMatch(HttpMethod.GET),
-    pathMatch: RuleMatch.pathExact('/payments', false),
-  },
+  matchPath: MatchPath.exact('/payments', false),
+  matchMethod: HttpMethod.GET,
   name: 'payments-rule',
   priority: 20,
 });

@@ -2,7 +2,7 @@ import { EOL } from 'node:os';
 import * as cdk from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { Vpc } from 'aws-cdk-lib/aws-ec2';
-import { HttpFixedResponse, RuleMatch, IpTargetGroup, Listener, ListenerProtocol, RuleAction, Service } from '../../../src';
+import { HttpFixedResponse, IpTargetGroup, Listener, ListenerProtocol, RuleAction, Service, MatchPath, MatchHeader } from '../../../src';
 
 describe('Listener', () => {
   test('Default listener', () => {
@@ -206,9 +206,7 @@ describe('Listener', () => {
           name: 'test-rule',
           priority: 10,
           action: {},
-          match: {
-            pathMatch: RuleMatch.pathExact('/'),
-          },
+          matchPath: MatchPath.exact('/'),
         },
       ],
     });
@@ -242,9 +240,7 @@ describe('Listener', () => {
           name: 'test-rule',
           priority: 10,
           action: {},
-          match: {
-            pathMatch: RuleMatch.pathPrefix('/test', true),
-          },
+          matchPath: MatchPath.prefix('/test', true),
         },
       ],
     });
@@ -278,9 +274,7 @@ describe('Listener', () => {
           name: 'test-rule',
           priority: 10,
           action: {},
-          match: {
-            headerMatches: [RuleMatch.headerPrefix('test', 'x-test', false)],
-          },
+          matchHeader: [MatchHeader.prefix('test', 'x-test', false)],
         },
       ],
     });

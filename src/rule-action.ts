@@ -1,19 +1,13 @@
-import type { CfnListener, CfnRule } from 'aws-cdk-lib/aws-vpclattice';
+import type { CfnRule } from 'aws-cdk-lib/aws-vpclattice';
 import type { ITargetGroup } from './aws-vpclattice-targets';
 import type { HttpFixedResponse } from './util';
 
 export interface IRuleAction {
-  /**
-   * Render the listener default action
-   */
-  renderListenerDefaultAction(): CfnListener.DefaultActionProperty;
-  /**
-   * Render the listener rule action
-   */
-  renderRuleAction(): CfnRule.ActionProperty;
+  forward?: CfnRule.ForwardProperty;
+  fixedResponse?: CfnRule.FixedResponseProperty;
 }
 
-export class RuleAction {
+export class RuleAction implements IRuleAction {
   /**
    * Forward to one or more Target Groups
    *
@@ -66,7 +60,7 @@ export class RuleAction {
    * should be created by using one of the static factory functions,
    * but allow overriding to make sure we allow flexibility for the future.
    */
-  protected constructor(action: RuleAction) {
+  protected constructor(action: IRuleAction) {
     this.forward = action.forward;
     this.fixedResponse = action.fixedResponse;
   }
@@ -85,7 +79,7 @@ export interface WeightedTargetGroup {
    *
    * Range is [0..1000).
    *
-   * @default 1
+   * @default - 1
    */
   readonly weight?: number;
 }
