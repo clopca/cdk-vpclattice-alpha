@@ -75,7 +75,7 @@ testSvc.addListener({
   name: 'listener1',
   protocol: ListenerProtocol.HTTPS,
   port: 443,
-  defaultAction: RuleAction.forward(serviceTg),
+  defaultAction: RuleAction.forwardAction(serviceTg),
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
